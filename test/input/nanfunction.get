@@ -1,0 +1,1 @@
+GET /timeseries?param=name,time,MediumCloudCover,mean_a(MediumCloudCover),nanmean_a(MediumCloudCover)&format=ascii&area=Helsinki&timeformat=timestamp&precision=double&starttime=200808070900&endtime=200808080100 HTTP/1.0

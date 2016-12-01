@@ -1,0 +1,1 @@
+GET /timeseries?producer=fmi&starttime=200808051200&endtime=200808052200&bbox=19,59,24,68&param=stationname,direction,distance,fmisid,time,Temperature&timestep=60 HTTP/1.0

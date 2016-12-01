@@ -1,0 +1,1 @@
+GET /timeseries?producer=opendata&stationtype=opendata&starttime=201305090000&endtime=201305110000&place=Helsinki&param=stationname,lat,lon,time,td&format=ascii&tz=UTC HTTP/1.0

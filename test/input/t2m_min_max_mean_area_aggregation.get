@@ -1,0 +1,1 @@
+GET /timeseries?area=Helsinki&starttime=200808051300&precision=double&param=name,time,min_a(t2m),max_a(t2m),mean_a(t2m),t2m HTTP/1.0

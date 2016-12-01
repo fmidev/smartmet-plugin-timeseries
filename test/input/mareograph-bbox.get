@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&endtime=200808052200&bbox=19,57,34,68&param=stationname,fmisid,time,WATLEV&timestep=60&stationtype=mareograph HTTP/1.0

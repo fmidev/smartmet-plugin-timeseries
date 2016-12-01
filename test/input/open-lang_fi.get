@@ -1,0 +1,1 @@
+GET /timeseries?producer=opendata&stationtype=opendata&starttime=201308051200&endtime=201308052200&lang=fi&places=Kumpula,Tampere,Lahti&param=name,time,Temperature,country HTTP/1.0

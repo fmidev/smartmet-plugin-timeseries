@@ -1,0 +1,1 @@
+GET /timeseries?bbox=19,55,35,80&param=lon,lat,stationname,time,TWATER&format=ascii&producer=syke&tz=UTC&starttime=201309010000&endtime=201309070000 HTTP/1.0

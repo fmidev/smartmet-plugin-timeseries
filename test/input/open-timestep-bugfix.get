@@ -1,0 +1,1 @@
+GET /timeseries?endtime=1455187773&format=ascii&geoids=-16000084&lang=fi&param=time,localtime,utctime,epochtime,Temperature%2Cwmo%2Clat%2Clon&producer=opendata&starttime=1454738400&timeformat=xml&timestep=360 HTTP/1.0

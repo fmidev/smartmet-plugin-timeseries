@@ -1,0 +1,1 @@
+GET /timeseries?missingtext=*&starttime=200808051300&place=Helsinki&precision=double&param=name,time,Snow1h,Precipitation1h,Snow1hLower,Snow1hUpper,integ_t(Precipitation1h:2h),integ_t(Snow1hLower:2h),integ_t(Snow1hUpper:2h) HTTP/1.0

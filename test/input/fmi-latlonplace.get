@@ -1,0 +1,1 @@
+GET /timeseries?producer=fmi&starttime=200808051200&endtime=200808052200&latlon=60.20,24.95&param=stationname,time,Temperature,longitude,latitude,stationlatitude,stationlongitude HTTP/1.0

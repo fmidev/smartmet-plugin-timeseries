@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&timestep=data&places=Helsinki,Tokio&param=name,time,Temperature HTTP/1.0

@@ -1,0 +1,1 @@
+GET /timeseries?format=ascii&places=Tampere,Riihimäki&lonlat=25.451,61.1&geoid=658225&param=place,name,time,Temperature&timestep=60&producer=opendata&starttime=201404080800&endtime=201404081100 HTTP/1.0

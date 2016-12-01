@@ -1,0 +1,1 @@
+GET /timeseries?producer=fmi&param=stationname,localtime,utctime,lat,lon,td&starttime=2013-05-09T06:00:00Z&endtime=2013-05-09T13:00:00Z&timestep=2&fmisid=101004&stationtype=opendata HTTP/1.0

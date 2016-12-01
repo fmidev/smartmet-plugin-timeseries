@@ -1,0 +1,1 @@
+GET /timeseries?producer=opendata&stationtype=opendata&starttime=201308051200&endtime=201308052200&attributes=time&place=Kumpula&format=serial&param=time,Temperature HTTP/1.0

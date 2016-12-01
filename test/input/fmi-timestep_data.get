@@ -1,0 +1,1 @@
+GET /timeseries?producer=fmi&starttime=200808051200&endtime=200808052200&timestep=data&places=Kumpula&param=name,time,Temperature HTTP/1.0
