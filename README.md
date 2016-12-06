@@ -1,5 +1,5 @@
 # SmartMet Server
-SmartMet Server is a data and procut server for MetOcean data. It provides high capacity and high availability data and product server for MetOcean data. The server is written in C++. 
+SmartMet Server is a data and product server for MetOcean data. It provides a high capacity and high availability data and product server for MetOcean data. The server is written in C++, since 2008 it has been in operational use by the Finnish Meteorological Institute FMI. 
 
 The server can read input data from various sources:
 * GRIB (1 and 2) 
