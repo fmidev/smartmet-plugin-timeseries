@@ -23,8 +23,8 @@ INCLUDES = \
 	`pkg-config --cflags libconfig++`
 
 LIBS =  -lsmartmet-spine  \
-	-lsmartmet_macgyver \
-	-lsmartmet_newbase \
+	-lsmartmet-macgyver \
+	-lsmartmet-newbase \
 	`pkg-config --libs libconfig++` \
 	-lboost_date_time \
 	-lboost_thread \
