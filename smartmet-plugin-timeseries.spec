@@ -4,7 +4,7 @@ Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
 Version: 17.1.4
 Release: 1%{?dist}.fmi
-License: FMI
+License: MIT
 Group: SmartMet/Plugins
 URL: http://www.weatherproof.fi
 Source0: %{name}.tar.gz
