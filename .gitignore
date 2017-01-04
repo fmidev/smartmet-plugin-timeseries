@@ -1,0 +1,11 @@
+*~
+#*
+.#*
+Dependencies*
+*.so
+obj/
+*Test
+.sconsign.dblite
+*.pb.h
+*.pb.cpp
+*.c2t
