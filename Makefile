@@ -157,7 +157,6 @@ objdir:
 rpm: clean
 	@if [ -e $(SPEC).spec ]; \
 	then \
-	  smartspecupdate $(SPEC).spec ; \
 	  mkdir -p $(rpmsourcedir) ; \
 	  tar -C ../../ -cf $(rpmsourcedir)/$(SPEC).tar plugins/$(SUBNAME) ; \
 	  gzip -f $(rpmsourcedir)/$(SPEC).tar ; \
