@@ -1,1 +1,0 @@
-GET /timeseries?starttime=20160629T0000&model=kalman&place=Los+Angeles&param=time,Temperature HTTP/1.0
