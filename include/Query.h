@@ -120,7 +120,7 @@ struct Query
 
   void parse_precision(const SmartMet::Spine::HTTP::Request& theReq, const Config& config);
   void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
-                        const SmartMet::Engine::Observation::Engine& theObsEngine);
+                        const SmartMet::Engine::Observation::Engine* theObsEngine);
 };
 
 }  // namespace TimeSeries

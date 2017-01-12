@@ -61,7 +61,7 @@ class State
   // Access engines
   const SmartMet::Engine::Querydata::Engine& getQEngine() const;
   const SmartMet::Engine::Geonames::Engine& getGeoEngine() const;
-  SmartMet::Engine::Observation::Engine& getObsEngine() const;
+  SmartMet::Engine::Observation::Engine* getObsEngine() const;
 
   const Fmi::TimeZones& getTimeZones() const;
   // The fixed time during the query may also be overridden

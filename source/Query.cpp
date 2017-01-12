@@ -23,8 +23,6 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 
-#include <prettyprint.hpp>
-
 using namespace std;
 
 namespace SmartMet
@@ -132,11 +130,6 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
     Query::parse_precision(req, config);
 
     timeformatter.reset(Fmi::TimeFormatter::create(timeformat));
-
-#if MIKA_CHANGED_THIS_FOR_NOW
-    if (!observation)
-      return;
-#endif
 
     // observation params
     numberofstations = SmartMet::Spine::optional_int(req.getParameter("numberofstations"), 1);
@@ -380,7 +373,7 @@ void Query::parse_precision(const SmartMet::Spine::HTTP::Request& req, const Con
 }
 
 void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
-                             const SmartMet::Engine::Observation::Engine& theObsEngine)
+                             const SmartMet::Engine::Observation::Engine* theObsEngine)
 {
   try
   {
@@ -401,11 +394,9 @@ void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
 
     bool obsProducersExist = false;
 
-#ifdef MIKA_CHANGED_THIS
-    if (theObsEngine)
-#endif
+    if (theObsEngine != nullptr)
     {
-      std::set<std::string> obsEngineStationTypes = theObsEngine.getValidStationTypes();
+      std::set<std::string> obsEngineStationTypes = theObsEngine->getValidStationTypes();
       BOOST_FOREACH (const auto& areaproducers, timeproducers)
       {
         if (obsProducersExist)

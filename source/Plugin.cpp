@@ -1670,7 +1670,7 @@ std::size_t Plugin::hash_value(const State& state,
       masterquery.timeproducers.push_back(AreaProducers());
     }
 
-    ObsParameters obsParameters = getObsParamers(masterquery);
+    ObsParameters obsParameters = getObsParameters(masterquery);
     boost::posix_time::ptime latestTimestep = masterquery.latestTimestep;
 
     bool startTimeUTC = masterquery.toptions.startTimeUTC;
@@ -2477,11 +2477,13 @@ void Plugin::fetchQEngineValues(const State& state,
  */
 // ----------------------------------------------------------------------
 
-std::vector<ObsParameter> Plugin::getObsParamers(const Query& query) const
+std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
 {
   try
   {
     std::vector<ObsParameter> ret;
+    if (itsObsEngine == nullptr)
+      return ret;
 
     // if observation query exists, sort out obengine parameters
     std::set<std::string> stationTypes = itsObsEngine->getValidStationTypes();
@@ -3682,7 +3684,7 @@ void Plugin::processQuery(const State& state,
       masterquery.timeproducers.push_back(AreaProducers());
     }
 
-    ObsParameters obsParameters = getObsParamers(masterquery);
+    ObsParameters obsParameters = getObsParameters(masterquery);
     boost::posix_time::ptime latestTimestep = masterquery.latestTimestep;
     bool startTimeUTC = masterquery.toptions.startTimeUTC;
 

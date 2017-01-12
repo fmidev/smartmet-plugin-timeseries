@@ -96,7 +96,7 @@ void ProducerDataPeriod::getObsEngineDataPeriods(
 {
   try
   {
-    std::set<std::string> obsproducers(observation.getValidStationTypes());
+    std::set<std::string> obsproducers = observation.getValidStationTypes();
 
     BOOST_FOREACH (const auto& areaproducers, producers)
     {

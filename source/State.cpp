@@ -63,7 +63,7 @@ const SmartMet::Engine::Geonames::Engine& State::getGeoEngine() const
  */
 // ----------------------------------------------------------------------
 
-SmartMet::Engine::Observation::Engine& State::getObsEngine() const
+SmartMet::Engine::Observation::Engine* State::getObsEngine() const
 {
   try
   {

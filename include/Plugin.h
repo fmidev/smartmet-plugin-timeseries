@@ -85,7 +85,8 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   // Get the engines
   const SmartMet::Engine::Querydata::Engine& getQEngine() const { return *itsQEngine; }
   const SmartMet::Engine::Geonames::Engine& getGeoEngine() const { return *itsGeoEngine; }
-  SmartMet::Engine::Observation::Engine& getObsEngine() const { return *itsObsEngine; }
+  // May return null
+  SmartMet::Engine::Observation::Engine* getObsEngine() const { return itsObsEngine; }
  protected:
   void init();
   void shutdown();
@@ -173,7 +174,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                               Query& query,
                               SmartMet::Spine::PostGISDataSource& postGISDataSource) const;
 
-  std::vector<ObsParameter> getObsParamers(const Query& query) const;
+  std::vector<ObsParameter> getObsParameters(const Query& query) const;
 
   SmartMet::Spine::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(
       const SmartMet::Engine::Querydata::Q& q,
@@ -191,11 +192,11 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   SmartMet::Spine::PostGISDataSource itsPostGISDataSource;
   bool itsReady;
 
-  SmartMet::Spine::Reactor* itsReactor;
-  SmartMet::Engine::Querydata::Engine* itsQEngine;
-  SmartMet::Engine::Geonames::Engine* itsGeoEngine;
-  SmartMet::Engine::Gis::Engine* itsGisEngine;
-  SmartMet::Engine::Observation::Engine* itsObsEngine;
+  SmartMet::Spine::Reactor* itsReactor = nullptr;
+  SmartMet::Engine::Querydata::Engine* itsQEngine = nullptr;
+  SmartMet::Engine::Geonames::Engine* itsGeoEngine = nullptr;
+  SmartMet::Engine::Gis::Engine* itsGisEngine = nullptr;
+  SmartMet::Engine::Observation::Engine* itsObsEngine = nullptr;
 
   // station types (producers) supported by observation
   std::set<std::string> itsObsEngineStationTypes;
