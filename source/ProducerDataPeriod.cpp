@@ -28,18 +28,24 @@ boost::local_time::local_date_time ProducerDataPeriod::getTime(const std::string
 {
   try
   {
-    time_zone_ptr tz = timezones.time_zone_from_string(timezone);
-
-    if (itsDataPeriod.find(producer) != itsDataPeriod.end())
+    try
     {
+      time_zone_ptr tz = timezones.time_zone_from_string(timezone);
+
+      if (itsDataPeriod.find(producer) == itsDataPeriod.end())
+        return local_date_time(not_a_date_time, tz);
+
       if (time_enum == STARTTIME)
         return local_date_time(itsDataPeriod.at(producer).begin(), tz);
       else
         return local_date_time(
             itsDataPeriod.at(producer).last() + boost::posix_time::microseconds(1), tz);
     }
-
-    return local_date_time(not_a_date_time, tz);
+    catch (...)
+    {
+      throw SmartMet::Spine::Exception(
+          BCP, "Failed to construct local time for timezone '" + timezone + "'");
+    }
   }
   catch (...)
   {
