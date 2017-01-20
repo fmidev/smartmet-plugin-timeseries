@@ -15,6 +15,7 @@ BuildRequires: smartmet-library-spine-devel >= 17.1.4
 BuildRequires: smartmet-library-locus-devel >= 16.12.20
 BuildRequires: smartmet-library-macgyver-devel >= 16.12.20
 BuildRequires: smartmet-engine-geonames-devel >= 17.1.4
+BuildRequires: smartmet-engine-observation-devel >= 17.1.4
 BuildRequires: smartmet-engine-querydata-devel >= 17.1.4
 Requires: libconfig
 Requires: smartmet-library-locus >= 16.12.20
