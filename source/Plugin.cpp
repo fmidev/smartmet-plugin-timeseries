@@ -61,8 +61,6 @@
 #include <numeric>
 #include <cmath>
 
-#include <prettyprint.hpp>
-
 using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
