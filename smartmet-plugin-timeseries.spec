@@ -14,16 +14,18 @@ BuildRequires: libconfig-devel
 BuildRequires: smartmet-library-spine-devel >= 17.1.4
 BuildRequires: smartmet-library-locus-devel >= 16.12.20
 BuildRequires: smartmet-library-macgyver-devel >= 16.12.20
+BuildRequires: smartmet-library-newbase-devel >= 17.1.17
 BuildRequires: smartmet-engine-geonames-devel >= 17.1.4
 BuildRequires: smartmet-engine-observation-devel >= 17.1.4
 BuildRequires: smartmet-engine-querydata-devel >= 17.1.4
 Requires: libconfig
 Requires: smartmet-library-locus >= 16.12.20
 Requires: smartmet-library-macgyver >= 16.12.20
+Requires: smartmet-library-newbase >= 17.1.17
+Requires: smartmet-library-spine >= 17.1.4
 Requires: smartmet-engine-geonames >= 17.1.4
 Requires: smartmet-engine-querydata >= 17.1.4
 Requires: smartmet-server >= 17.1.4
-Requires: smartmet-library-spine >= 17.1.4
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
