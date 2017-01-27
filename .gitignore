@@ -9,3 +9,5 @@ obj/
 *.pb.h
 *.pb.cpp
 *.c2t
+test/sqlite/stations.sqlite.2-shm
+test/sqlite/stations.sqlite.2-wal
