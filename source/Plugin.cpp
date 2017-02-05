@@ -39,7 +39,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/foreach.hpp>
 #include <boost/math/constants/constants.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <boost/timer/timer.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -2678,7 +2677,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
                 BCP, "Path " + loc_name + " not found in PostGIS database!");
         }
 
-        boost::scoped_ptr<OGRGeometry> poly;
+        std::unique_ptr<OGRGeometry> poly;
         // if no radius has been given use 200 meters
         double radius = (tloc.loc->radius == 0 ? 200 : tloc.loc->radius * 1000);
         poly.reset(Fmi::OGR::expandGeometry(pGeo, radius));
@@ -2705,7 +2704,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
           throw SmartMet::Spine::Exception(
               BCP, "Area " + tloc.loc->name + " not found in PostGIS database!");
 
-        boost::scoped_ptr<OGRGeometry> poly;
+        std::unique_ptr<OGRGeometry> poly;
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
 
         std::string wktString = Fmi::OGR::exportToWkt(*poly);
@@ -2736,7 +2735,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
           geoCoordinates.push_back(std::pair<double, double>(iter->itsX, iter->itsY));
         const OGRGeometry* pGeo = Fmi::OGR::constructGeometry(geoCoordinates, wkbPolygon, 4326);
 
-        boost::scoped_ptr<OGRGeometry> poly;
+        std::unique_ptr<OGRGeometry> poly;
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
 
         std::string wktString(Fmi::OGR::exportToWkt(*poly));
@@ -2764,7 +2763,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
           throw SmartMet::Spine::Exception(BCP,
                                            "Area " + loc_name + " not found in PostGIS database!");
 
-        boost::scoped_ptr<OGRGeometry> poly;
+        std::unique_ptr<OGRGeometry> poly;
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
 
         std::string wktString = Fmi::OGR::exportToWkt(*poly);
@@ -2787,7 +2786,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
             std::pair<double, double>(tloc.loc->longitude, tloc.loc->latitude));
         const OGRGeometry* pGeo = Fmi::OGR::constructGeometry(geoCoordinates, wkbPoint, 4326);
 
-        boost::scoped_ptr<OGRGeometry> poly;
+        std::unique_ptr<OGRGeometry> poly;
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
 
         std::string wktString = Fmi::OGR::exportToWkt(*poly);
