@@ -15,7 +15,7 @@ CFLAGS = -DUNIX -O0 -g $(MAINFLAGS) -Wno-unknown-pragmas
 
 # Unfortunately otlv4.h forces us to define the full oracle include path
 INCLUDES = \
-	-I ../include \
+	-I ../timeseries \
 	-I /usr/include/mysql \
 	-I /usr/include/smartmet \
 	-I /usr/include/soci \

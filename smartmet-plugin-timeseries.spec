@@ -42,9 +42,9 @@ SmartMet timeseries plugin
 %prep
 rm -rf $RPM_BUILD_ROOT
 
-%setup -q -n plugins/%{SPECNAME}
+%setup -q -n %{SPECNAME}
  
-%build -q -n plugins/%{SPECNAME}
+%build -q -n %{SPECNAME}
 make %{_smp_mflags}
 
 %install
