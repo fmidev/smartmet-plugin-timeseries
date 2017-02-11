@@ -2,7 +2,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 17.1.13
+Version: 17.2.11
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -11,21 +11,21 @@ Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
-BuildRequires: smartmet-library-spine-devel >= 17.1.4
-BuildRequires: smartmet-library-locus-devel >= 16.12.20
-BuildRequires: smartmet-library-macgyver-devel >= 16.12.20
-BuildRequires: smartmet-library-newbase-devel >= 17.1.17
-BuildRequires: smartmet-engine-geonames-devel >= 17.1.4
-BuildRequires: smartmet-engine-observation-devel >= 17.1.4
-BuildRequires: smartmet-engine-querydata-devel >= 17.1.4
+BuildRequires: smartmet-library-spine-devel >= 17.2.3
+BuildRequires: smartmet-library-locus-devel >= 17.2.3
+BuildRequires: smartmet-library-macgyver-devel >= 17.1.18
+BuildRequires: smartmet-library-newbase-devel >= 17.2.10
+BuildRequires: smartmet-engine-geonames-devel >= 17.2.3
+BuildRequires: smartmet-engine-observation-devel >= 17.2.9
+BuildRequires: smartmet-engine-querydata-devel >= 17.2.3
 Requires: libconfig
-Requires: smartmet-library-locus >= 16.12.20
-Requires: smartmet-library-macgyver >= 16.12.20
-Requires: smartmet-library-newbase >= 17.1.17
-Requires: smartmet-library-spine >= 17.1.4
-Requires: smartmet-engine-geonames >= 17.1.4
-Requires: smartmet-engine-querydata >= 17.1.4
-Requires: smartmet-server >= 17.1.4
+Requires: smartmet-library-locus >= 17.2.3
+Requires: smartmet-library-macgyver >= 17.1.18
+Requires: smartmet-library-newbase >= 17.2.10
+Requires: smartmet-library-spine >= 17.2.3
+Requires: smartmet-engine-geonames >= 17.2.3
+Requires: smartmet-engine-querydata >= 17.2.3
+Requires: smartmet-server >= 17.1.25
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -58,6 +58,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Sat Feb 11 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.2.11-1.fmi
+- Repackaged due to newbase API changes
+
 * Fri Jan 13 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.1.13-1.fmi
 - Improved error reports for unknown timezone names
 
