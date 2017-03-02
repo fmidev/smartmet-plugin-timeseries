@@ -1363,6 +1363,8 @@ std::string time_parameter(const std::string paramname,
  */
 // ----------------------------------------------------------------------
 
+#ifndef WITHOUT_OBSERVATION
+
 std::vector<int> getGeoids(SmartMet::Engine::Observation::Engine* observation,
                            const std::string& producer,
                            const std::string& wktstring)
@@ -1386,6 +1388,7 @@ std::vector<int> getGeoids(SmartMet::Engine::Observation::Engine* observation,
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // ----------------------------------------------------------------------
 /*!
@@ -1432,6 +1435,8 @@ SmartMet::Spine::LocationPtr getLocation(const SmartMet::Engine::Geonames::Engin
  */
 // ----------------------------------------------------------------------
 
+#ifndef WITHOUT_OBSERVATION
+
 int get_fmisid_index(const SmartMet::Engine::Observation::Settings& settings)
 {
   try
@@ -1453,11 +1458,15 @@ int get_fmisid_index(const SmartMet::Engine::Observation::Settings& settings)
   }
 }
 
+#endif
+
 // ----------------------------------------------------------------------
 /*!
  * \brief
  */
 // ----------------------------------------------------------------------
+
+#ifndef WITHOUT_OBSERVATION
 
 int get_fmisid_value(const ts::Value& value)
 {
@@ -1484,11 +1493,15 @@ int get_fmisid_value(const ts::Value& value)
   }
 }
 
+#endif
+
 // ----------------------------------------------------------------------
 /*!
  * \brief
  */
 // ----------------------------------------------------------------------
+
+#ifndef WITHOUT_OBSERVATION
 
 TimeSeriesByLocation get_timeseries_by_fmisid(
     const std::string& producer,
@@ -1565,6 +1578,8 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
   }
 }
 
+#endif
+
 }  // anonymous
 
 // ----------------------------------------------------------------------
@@ -1637,6 +1652,8 @@ std::size_t Plugin::hash_value(const State& state,
     if (is_plain_location_query(masterquery.poptions.parameters()))
       return hash;
 
+#ifndef WITHOUT_OBSERVATION
+
     // Check here first if any of the producers is an observation.
     // If so, return zero
 
@@ -1648,6 +1665,7 @@ std::size_t Plugin::hash_value(const State& state,
           return 0;
       }
     }
+#endif
 
     // Maintain a list of handled querydata/timezone combinations
 
@@ -1656,8 +1674,15 @@ std::size_t Plugin::hash_value(const State& state,
     // Basically we mimic what is done in processQuery as far as is needed
 
     ProducerDataPeriod producerDataPeriod;
-    // producerDataPeriod contains information of data periods of different producers
+
+// producerDataPeriod contains information of data periods of different producers
+
+#ifndef WITHOUT_OBSERVATION
     producerDataPeriod.init(state, *itsQEngine, itsObsEngine, masterquery.timeproducers);
+#else
+    producerDataPeriod.init(state, *itsQEngine, masterquery.timeproducers);
+#endif
+
     // the result data is stored here during the query
 
     bool producerMissing = (masterquery.timeproducers.empty());
@@ -1667,7 +1692,10 @@ std::size_t Plugin::hash_value(const State& state,
       masterquery.timeproducers.push_back(AreaProducers());
     }
 
+#ifndef WITHOUT_OBSERVATION
     ObsParameters obsParameters = getObsParameters(masterquery);
+#endif
+
     boost::posix_time::ptime latestTimestep = masterquery.latestTimestep;
 
     bool startTimeUTC = masterquery.toptions.startTimeUTC;
@@ -1689,6 +1717,7 @@ std::size_t Plugin::hash_value(const State& state,
         query.toptions.startTimeUTC = startTimeUTC;
       query.toptions.endTimeUTC = masterquery.toptions.endTimeUTC;
 
+#ifndef WITHOUT_OBSERVATION
       if (!areaproducers.empty() && !itsConfig.obsEngineDisabled() &&
           isObsProducer(areaproducers.front()))
       {
@@ -1696,6 +1725,7 @@ std::size_t Plugin::hash_value(const State& state,
         return 0;
       }
       else
+#endif
       {
         // Here we emulate processQEngineQuery
         // Note name changes: masterquery --> query, and query-->subquery
@@ -2474,6 +2504,7 @@ void Plugin::fetchQEngineValues(const State& state,
  */
 // ----------------------------------------------------------------------
 
+#ifndef WITHOUT_OBSERVATION
 std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
 {
   try
@@ -2527,6 +2558,7 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // ----------------------------------------------------------------------
 /*!
@@ -2534,6 +2566,7 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
  */
 // ----------------------------------------------------------------------
 
+#ifndef WITHOUT_OBSERVATION
 void Plugin::setCommonObsSettings(SmartMet::Engine::Observation::Settings& settings,
                                   const std::string& producer,
                                   const ProducerDataPeriod& producerDataPeriod,
@@ -2582,6 +2615,7 @@ void Plugin::setCommonObsSettings(SmartMet::Engine::Observation::Settings& setti
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // ----------------------------------------------------------------------
 /*!
@@ -2589,6 +2623,7 @@ void Plugin::setCommonObsSettings(SmartMet::Engine::Observation::Settings& setti
  */
 // ----------------------------------------------------------------------
 
+#ifndef WITHOUT_OBSERVATION
 void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& settings,
                                     const std::string& producer,
                                     const ProducerDataPeriod& producerDataPeriod,
@@ -2924,12 +2959,15 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // ----------------------------------------------------------------------
 /*!
  * \brief
  */
 // ----------------------------------------------------------------------
+
+#ifndef WITHOUT_OBSERVATION
 void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                            const std::string& producer,
                                            const SmartMet::Spine::TaggedLocation& tloc,
@@ -3121,12 +3159,15 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // ----------------------------------------------------------------------
 /*!
  * \brief
  */
 // ----------------------------------------------------------------------
+
+#ifndef WITHOUT_OBSERVATION
 void Plugin::fetchObsEngineValuesForArea(const State& state,
                                          const std::string& producer,
                                          const SmartMet::Spine::TaggedLocation& tloc,
@@ -3432,6 +3473,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // ----------------------------------------------------------------------
 /*!
@@ -3439,6 +3481,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
  */
 // ----------------------------------------------------------------------
 
+#ifndef WITHOUT_OBSERVATION
 void Plugin::fetchObsEngineValues(const State& state,
                                   const std::string& producer,
                                   const SmartMet::Spine::TaggedLocation& tloc,
@@ -3467,6 +3510,7 @@ void Plugin::fetchObsEngineValues(const State& state,
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // ----------------------------------------------------------------------
 /*!
@@ -3474,6 +3518,7 @@ void Plugin::fetchObsEngineValues(const State& state,
  */
 // ----------------------------------------------------------------------
 
+#ifndef WITHOUT_OBSERVATION
 void Plugin::processObsEngineQuery(const State& state,
                                    Query& query,
                                    OutputData& outputData,
@@ -3566,6 +3611,7 @@ void Plugin::processObsEngineQuery(const State& state,
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // ----------------------------------------------------------------------
 /*!
@@ -3669,8 +3715,14 @@ void Plugin::processQuery(const State& state,
     }
 
     ProducerDataPeriod producerDataPeriod;
-    // producerDataPeriod contains information of data periods of different producers
+
+// producerDataPeriod contains information of data periods of different producers
+#ifndef WITHOUT_OBSERVATION
     producerDataPeriod.init(state, *itsQEngine, itsObsEngine, masterquery.timeproducers);
+#else
+    producerDataPeriod.init(state, *itsQEngine, masterquery.timeproducers);
+#endif
+
     // the result data is stored here during the query
     OutputData outputData;
 
@@ -3681,7 +3733,10 @@ void Plugin::processQuery(const State& state,
       masterquery.timeproducers.push_back(AreaProducers());
     }
 
+#ifndef WITHOUT_OBSERVATION
     ObsParameters obsParameters = getObsParameters(masterquery);
+#endif
+
     boost::posix_time::ptime latestTimestep = masterquery.latestTimestep;
     bool startTimeUTC = masterquery.toptions.startTimeUTC;
 
@@ -3702,6 +3757,7 @@ void Plugin::processQuery(const State& state,
         query.toptions.startTimeUTC = startTimeUTC;
       query.toptions.endTimeUTC = masterquery.toptions.endTimeUTC;
 
+#ifndef WITHOUT_OBSERVATION
       if (!areaproducers.empty() && !itsConfig.obsEngineDisabled() &&
           isObsProducer(areaproducers.front()))
       {
@@ -3714,6 +3770,7 @@ void Plugin::processQuery(const State& state,
                               postGISDataSource);
       }
       else
+#endif
       {
         processQEngineQuery(
             state, query, outputData, areaproducers, producerDataPeriod, postGISDataSource);
@@ -3725,6 +3782,7 @@ void Plugin::processQuery(const State& state,
       ++producer_group;
     }
 
+#ifndef WITHOUT_OBSERVATION
     // precision for observation special parameters', e.g. fmisid must be zero
     for (unsigned int i = 0; i < obsParameters.size(); i++)
     {
@@ -3734,6 +3792,7 @@ void Plugin::processQuery(const State& state,
           paramname == GEOID_PARAM)
         masterquery.precisions[i] = 0;
     }
+#endif
 
     // insert data into the table
     fill_table(masterquery, outputData, table);
@@ -3771,10 +3830,16 @@ void Plugin::query(const State& state,
     string producer_option = SmartMet::Spine::optional_string(
         request.getParameter(PRODUCER_PARAM),
         SmartMet::Spine::optional_string(request.getParameter(STATIONTYPE_PARAM), ""));
-    // At least one of location specifiers must be set
+
+// At least one of location specifiers must be set
+
+#ifndef WITHOUT_OBSERVATION
     if (query.geoids.size() == 0 && query.fmisids.size() == 0 && query.lpnns.size() == 0 &&
         query.wmos.size() == 0 && query.boundingBox.size() == 0 &&
-        query.loptions->locations().size() == 0 && producer_option != FLASH_PRODUCER)
+        producer_option != FLASH_PRODUCER && query.loptions->locations().size() == 0)
+#else
+    if (query.loptions->locations().size() == 0)
+#endif
       throw SmartMet::Spine::Exception(BCP, "No location option given!");
 
 #ifdef MYDEBUG
@@ -3996,7 +4061,9 @@ Plugin::Plugin(SmartMet::Spine::Reactor* theReactor, const char* theConfig)
       itsPostGISDataSource(),
       itsReady(false),
       itsReactor(theReactor),
+#ifndef WITHOUT_OBSERVATION
       itsObsEngine(0),
+#endif
       itsCache(),
       itsTimeSeriesCache()
 {
@@ -4066,6 +4133,7 @@ void Plugin::init()
       throw SmartMet::Spine::Exception(BCP, "Querydata engine unavailable");
     itsQEngine = reinterpret_cast<SmartMet::Engine::Querydata::Engine*>(engine);
 
+#ifndef WITHOUT_OBSERVATION
     if (!itsConfig.obsEngineDisabled())
     {
       /* ObsEngine */
@@ -4078,6 +4146,7 @@ void Plugin::init()
       // fetch obsebgine station types (producers)
       itsObsEngineStationTypes = itsObsEngine->getValidStationTypes();
     }
+#endif
 
     // Initialization done, register services. We are aware that throwing
     // from a separate thread will cause a crash, but these should never
@@ -4211,17 +4280,13 @@ bool Plugin::ready() const
 {
   return itsReady;
 }
+
+#ifndef WITHOUT_OBSERVATION
 bool Plugin::isObsProducer(const std::string& producer) const
 {
-  try
-  {
-    return (itsObsEngineStationTypes.find(producer) != itsObsEngineStationTypes.end());
-  }
-  catch (...)
-  {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
-  }
+  return (itsObsEngineStationTypes.find(producer) != itsObsEngineStationTypes.end());
 }
+#endif
 
 }  // namespace TimeSeries
 }  // namespace Plugin

@@ -13,7 +13,9 @@
 #include <spine/Convenience.h>
 #include <spine/ParameterFactory.h>
 #include <engines/geonames/Engine.h>
+#ifndef WITHOUT_OBSERVATION
 #include <engines/observation/Engine.h>
+#endif
 
 #include <macgyver/String.h>
 #include <macgyver/TimeParser.h>

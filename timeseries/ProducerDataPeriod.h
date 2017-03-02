@@ -3,7 +3,9 @@
 #include "Producers.h"
 
 #include <engines/querydata/Engine.h>
+#ifndef WITHOUT_OBSERVATION
 #include <engines/observation/Engine.h>
+#endif
 
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/algorithm/copy.hpp>
@@ -49,9 +51,11 @@ class ProducerDataPeriod
   void getQEngineDataPeriods(const SmartMet::Engine::Querydata::Engine& querydata,
                              const TimeProducers& producers);
 
+#ifndef WITHOUT_OBSERVATION
   void getObsEngineDataPeriods(const SmartMet::Engine::Observation::Engine& observation,
                                const TimeProducers& producers,
                                const boost::posix_time::ptime& now);
+#endif
 
  public:
   boost::local_time::local_date_time getLocalStartTime(const std::string& producer,
@@ -66,10 +70,16 @@ class ProducerDataPeriod
 
   boost::posix_time::ptime getUTCEndTime(const std::string& producer) const;
 
+#ifndef WITHOUT_OBSERVATION
   void init(const State& state,
             const SmartMet::Engine::Querydata::Engine& querydata,
             const SmartMet::Engine::Observation::Engine* observation,
             const TimeProducers& producers);
+#else
+  void init(const State& state,
+            const SmartMet::Engine::Querydata::Engine& querydata,
+            const TimeProducers& producers);
+#endif
 
   std::string info()
   {

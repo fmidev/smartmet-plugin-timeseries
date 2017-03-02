@@ -11,6 +11,8 @@
 #include "Producers.h"
 #include "AggregationInterval.h"
 
+#include <engines/geonames/Engine.h>
+
 #include <spine/HTTP.h>
 #include <spine/Location.h>
 #include <spine/Parameter.h>
@@ -74,6 +76,7 @@ struct Query
   std::string timestring;
   std::string localename;
   std::locale outlocale;
+#ifndef WITHOUT_OBSERVATION
   // observation params begin
   std::vector<int> wmos;
   std::vector<int> lpnns;
@@ -84,7 +87,8 @@ struct Query
   int numberofstations;
   bool allplaces;
   bool latestObservation;
-  // observation params end
+// observation params end
+#endif
 
   bool starttimeOptionGiven;
   bool endtimeOptionGiven;
@@ -95,7 +99,7 @@ struct Query
   Levels levels;
 
   // shared so that copying would be fast
-  std::shared_ptr<SmartMet::Engine::Geonames::LocationOptions> loptions;
+  std::shared_ptr<Engine::Geonames::LocationOptions> loptions;
 
   SmartMet::Spine::OptionParsers::ParameterOptions poptions;
   SmartMet::Spine::TimeSeriesGeneratorOptions toptions;
@@ -119,8 +123,13 @@ struct Query
   void parse_levels(const SmartMet::Spine::HTTP::Request& theReq);
 
   void parse_precision(const SmartMet::Spine::HTTP::Request& theReq, const Config& config);
+
+#ifndef WITHOUT_OBSERVATION
   void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
                         const SmartMet::Engine::Observation::Engine* theObsEngine);
+#else
+  void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq);
+#endif
 };
 
 }  // namespace TimeSeries

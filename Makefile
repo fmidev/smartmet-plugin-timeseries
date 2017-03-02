@@ -152,7 +152,7 @@ rpm: clean
 	@if [ -e $(SPEC).spec ]; \
 	then \
 	  tar -czvf $(SPEC).tar.gz --transform "s,^,$(SPEC)/," * ; \
-	  rpmbuild -ta $(SPEC).tar.gz ; \
+	  rpmbuild $(RPMBUILD) -ta $(SPEC).tar.gz ; \
 	  rm -f $(SPEC).tar.gz ; \
 	else \
 	  echo $(SPEC).spec missing; \

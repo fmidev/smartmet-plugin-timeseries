@@ -1,3 +1,4 @@
+%bcond_without observation
 %define DIRNAME timeseries
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
@@ -16,7 +17,9 @@ BuildRequires: smartmet-library-locus-devel >= 17.2.3
 BuildRequires: smartmet-library-macgyver-devel >= 17.1.18
 BuildRequires: smartmet-library-newbase-devel >= 17.2.10
 BuildRequires: smartmet-engine-geonames-devel >= 17.2.3
+%if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 17.2.9
+%endif
 BuildRequires: smartmet-engine-querydata-devel >= 17.2.3
 Requires: libconfig
 Requires: smartmet-library-locus >= 17.2.3
@@ -45,7 +48,8 @@ rm -rf $RPM_BUILD_ROOT
 %setup -q -n %{SPECNAME}
  
 %build -q -n %{SPECNAME}
-make %{_smp_mflags}
+make %{_smp_mflags} \
+     %{?!with_observation:CFLAGS=-DWITHOUT_OBSERVATION}
 
 %install
 %makeinstall

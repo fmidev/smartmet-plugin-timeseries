@@ -55,156 +55,165 @@ namespace TimeSeries
 class State;
 class PluginImpl;
 
-typedef boost::variant<SmartMet::Spine::TimeSeries::TimeSeriesPtr,
-                       SmartMet::Spine::TimeSeries::TimeSeriesVectorPtr,
-                       SmartMet::Spine::TimeSeries::TimeSeriesGroupPtr> TimeSeriesData;
+typedef boost::variant<Spine::TimeSeries::TimeSeriesPtr,
+                       Spine::TimeSeries::TimeSeriesVectorPtr,
+                       Spine::TimeSeries::TimeSeriesGroupPtr> TimeSeriesData;
 typedef std::vector<std::pair<std::string, std::vector<TimeSeriesData> > > OutputData;
 typedef std::pair<int, std::string> PressureLevelParameterPair;
-typedef std::map<PressureLevelParameterPair, SmartMet::Spine::TimeSeries::TimeSeriesPtr>
+typedef std::map<PressureLevelParameterPair, Spine::TimeSeries::TimeSeriesPtr>
     ParameterTimeSeriesMap;
-typedef std::map<PressureLevelParameterPair, SmartMet::Spine::TimeSeries::TimeSeriesGroupPtr>
+typedef std::map<PressureLevelParameterPair, Spine::TimeSeries::TimeSeriesGroupPtr>
     ParameterTimeSeriesGroupMap;
 typedef std::vector<ObsParameter> ObsParameters;
-typedef std::pair<int, SmartMet::Spine::TimeSeries::TimeSeriesVectorPtr> FmisidTSVectorPair;
+typedef std::pair<int, Spine::TimeSeries::TimeSeriesVectorPtr> FmisidTSVectorPair;
 typedef std::vector<FmisidTSVectorPair> TimeSeriesByLocation;
 
 class Plugin : public SmartMetPlugin, private boost::noncopyable
 {
  public:
-  Plugin(SmartMet::Spine::Reactor* theReactor, const char* theConfig);
+  Plugin(Spine::Reactor* theReactor, const char* theConfig);
   virtual ~Plugin();
 
   const std::string& getPluginName() const;
   int getRequiredAPIVersion() const;
-  bool queryIsFast(const SmartMet::Spine::HTTP::Request& theRequest) const;
+  bool queryIsFast(const Spine::HTTP::Request& theRequest) const;
 
   bool ready() const;
 
   // Get timezone information
   const Fmi::TimeZones& getTimeZones() const { return itsGeoEngine->getTimeZones(); }
   // Get the engines
-  const SmartMet::Engine::Querydata::Engine& getQEngine() const { return *itsQEngine; }
-  const SmartMet::Engine::Geonames::Engine& getGeoEngine() const { return *itsGeoEngine; }
+  const Engine::Querydata::Engine& getQEngine() const { return *itsQEngine; }
+  const Engine::Geonames::Engine& getGeoEngine() const { return *itsGeoEngine; }
+#ifndef WITHOUT_OBSERVATION
   // May return null
-  SmartMet::Engine::Observation::Engine* getObsEngine() const { return itsObsEngine; }
+  Engine::Observation::Engine* getObsEngine() const { return itsObsEngine; }
+#endif
+
  protected:
   void init();
   void shutdown();
-  void requestHandler(SmartMet::Spine::Reactor& theReactor,
-                      const SmartMet::Spine::HTTP::Request& theRequest,
-                      SmartMet::Spine::HTTP::Response& theResponse);
+  void requestHandler(Spine::Reactor& theReactor,
+                      const Spine::HTTP::Request& theRequest,
+                      Spine::HTTP::Response& theResponse);
 
  private:
   Plugin();
 
   std::size_t hash_value(const State& state,
                          Query masterquery,
-                         const SmartMet::Spine::HTTP::Request& request);
+                         const Spine::HTTP::Request& request);
 
   void query(const State& theState,
-             const SmartMet::Spine::HTTP::Request& req,
-             SmartMet::Spine::HTTP::Response& response);
+             const Spine::HTTP::Request& req,
+             Spine::HTTP::Response& response);
 
   void processQuery(const State& state,
-                    SmartMet::Spine::Table& data,
+                    Spine::Table& data,
                     Query& masterquery,
-                    SmartMet::Spine::PostGISDataSource& postGISDataSource);
+                    Spine::PostGISDataSource& postGISDataSource);
+
+  void processQEngineQuery(const State& state,
+                           Query& query,
+                           OutputData& outputData,
+                           const AreaProducers& areaproducers,
+                           const ProducerDataPeriod& producerDataPeriod,
+                           Spine::PostGISDataSource& postGISDataSource);
+  void fetchLocationValues(Query& query,
+                           Spine::PostGISDataSource& postGISDataSource,
+                           Spine::Table& data,
+                           unsigned int column_index,
+                           unsigned int row_index);
+
+  void fetchQEngineValues(const State& state,
+                          const Spine::ParameterAndFunctions& paramfunc,
+                          const Spine::TaggedLocation& tloc,
+                          Query& query,
+                          const AreaProducers& areaproducers,
+                          const ProducerDataPeriod& producerDataPeriod,
+                          Spine::PostGISDataSource& postGISDataSource,
+                          QueryLevelDataCache& queryLevelDataCache,
+                          OutputData& outputData);
+
+#ifndef WITHOUT_OBSERVATION
+  bool isObsProducer(const std::string& producer) const;
+
   void processObsEngineQuery(const State& state,
                              Query& query,
                              OutputData& outputData,
                              const AreaProducers& areaproducers,
                              const ProducerDataPeriod& producerDataPeriod,
                              ObsParameters& obsParameters,
-                             SmartMet::Spine::PostGISDataSource& postGISDataSource);
-  void processQEngineQuery(const State& state,
-                           Query& query,
-                           OutputData& outputData,
-                           const AreaProducers& areaproducers,
-                           const ProducerDataPeriod& producerDataPeriod,
-                           SmartMet::Spine::PostGISDataSource& postGISDataSource);
-  void fetchLocationValues(Query& query,
-                           SmartMet::Spine::PostGISDataSource& postGISDataSource,
-                           SmartMet::Spine::Table& data,
-                           unsigned int column_index,
-                           unsigned int row_index);
+                             Spine::PostGISDataSource& postGISDataSource);
   void fetchObsEngineValuesForArea(const State& state,
                                    const std::string& producer,
-                                   const SmartMet::Spine::TaggedLocation& tloc,
+                                   const Spine::TaggedLocation& tloc,
                                    const ObsParameters& obsParameters,
-                                   SmartMet::Engine::Observation::Settings& settings,
+                                   Engine::Observation::Settings& settings,
                                    Query& query,
                                    OutputData& outputData);
   void fetchObsEngineValuesForPlaces(const State& state,
                                      const std::string& producer,
-                                     const SmartMet::Spine::TaggedLocation& tloc,
+                                     const Spine::TaggedLocation& tloc,
                                      const ObsParameters& obsParameters,
-                                     SmartMet::Engine::Observation::Settings& settings,
+                                     Engine::Observation::Settings& settings,
                                      Query& query,
                                      OutputData& outputData);
   void fetchObsEngineValues(const State& state,
                             const std::string& producer,
-                            const SmartMet::Spine::TaggedLocation& tloc,
+                            const Spine::TaggedLocation& tloc,
                             const ObsParameters& obsParameters,
-                            SmartMet::Engine::Observation::Settings& settings,
+                            Engine::Observation::Settings& settings,
                             Query& query,
                             OutputData& outputData);
-  void fetchQEngineValues(const State& state,
-                          const SmartMet::Spine::ParameterAndFunctions& paramfunc,
-                          const SmartMet::Spine::TaggedLocation& tloc,
-                          Query& query,
-                          const AreaProducers& areaproducers,
-                          const ProducerDataPeriod& producerDataPeriod,
-                          SmartMet::Spine::PostGISDataSource& postGISDataSource,
-                          QueryLevelDataCache& queryLevelDataCache,
-                          OutputData& outputData);
-  bool isObsProducer(const std::string& producer) const;
-  void setCommonObsSettings(SmartMet::Engine::Observation::Settings& settings,
+
+  void setCommonObsSettings(Engine::Observation::Settings& settings,
                             const std::string& producer,
                             const ProducerDataPeriod& producerDataPeriod,
                             const boost::posix_time::ptime& now,
                             const ObsParameters& obsParameters,
                             Query& query,
-                            SmartMet::Spine::PostGISDataSource& postGISDataSource) const;
-  void setLocationObsSettings(SmartMet::Engine::Observation::Settings& settings,
+                            Spine::PostGISDataSource& postGISDataSource) const;
+  void setLocationObsSettings(Engine::Observation::Settings& settings,
                               const std::string& producer,
                               const ProducerDataPeriod& producerDataPeriod,
                               const boost::posix_time::ptime& now,
-                              const SmartMet::Spine::TaggedLocation& tloc,
+                              const Spine::TaggedLocation& tloc,
                               const ObsParameters& obsParameters,
                               Query& query,
-                              SmartMet::Spine::PostGISDataSource& postGISDataSource) const;
+                              Spine::PostGISDataSource& postGISDataSource) const;
 
   std::vector<ObsParameter> getObsParameters(const Query& query) const;
+#endif
 
-  SmartMet::Spine::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(
-      const SmartMet::Engine::Querydata::Q& q,
-      const Query& query,
-      const std::string paramname) const;
+  Spine::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(
+      const Engine::Querydata::Q& q, const Query& query, const std::string paramname) const;
 
-  SmartMet::Spine::LocationPtr getLocationForArea(
-      const SmartMet::Spine::TaggedLocation& tloc,
-      const Query& query,
-      const NFmiSvgPath& svgPath,
-      SmartMet::Spine::PostGISDataSource& postGISDataSource) const;
+  Spine::LocationPtr getLocationForArea(const Spine::TaggedLocation& tloc,
+                                        const Query& query,
+                                        const NFmiSvgPath& svgPath,
+                                        Spine::PostGISDataSource& postGISDataSource) const;
 
   const std::string itsModuleName;
   Config itsConfig;
-  SmartMet::Spine::PostGISDataSource itsPostGISDataSource;
+  Spine::PostGISDataSource itsPostGISDataSource;
   bool itsReady;
 
-  SmartMet::Spine::Reactor* itsReactor = nullptr;
-  SmartMet::Engine::Querydata::Engine* itsQEngine = nullptr;
-  SmartMet::Engine::Geonames::Engine* itsGeoEngine = nullptr;
-  SmartMet::Engine::Gis::Engine* itsGisEngine = nullptr;
-  SmartMet::Engine::Observation::Engine* itsObsEngine = nullptr;
+  Spine::Reactor* itsReactor = nullptr;
+  Engine::Querydata::Engine* itsQEngine = nullptr;
+  Engine::Geonames::Engine* itsGeoEngine = nullptr;
+  Engine::Gis::Engine* itsGisEngine = nullptr;
+#ifndef WITHOUT_OBSERVATION
+  Engine::Observation::Engine* itsObsEngine = nullptr;
+#endif
 
   // station types (producers) supported by observation
   std::set<std::string> itsObsEngineStationTypes;
 
   // Cached results
-  mutable std::unique_ptr<SmartMet::Spine::SmartMetCache> itsCache;
+  mutable std::unique_ptr<Spine::SmartMetCache> itsCache;
   // Cached time series
-  mutable std::unique_ptr<SmartMet::Spine::TimeSeriesGeneratorCache> itsTimeSeriesCache;
+  mutable std::unique_ptr<Spine::TimeSeriesGeneratorCache> itsTimeSeriesCache;
 
 };  // class Plugin
 
