@@ -95,6 +95,7 @@ void ProducerDataPeriod::getQEngineDataPeriods(const SmartMet::Engine::Querydata
   }
 }
 
+#ifndef WITHOUT_OBSERVATION
 void ProducerDataPeriod::getObsEngineDataPeriods(
     const SmartMet::Engine::Observation::Engine& observation,
     const TimeProducers& producers,
@@ -121,6 +122,7 @@ void ProducerDataPeriod::getObsEngineDataPeriods(
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // localtime
 boost::local_time::local_date_time ProducerDataPeriod::getLocalStartTime(
@@ -178,15 +180,19 @@ boost::posix_time::ptime ProducerDataPeriod::getUTCEndTime(const std::string& pr
 
 void ProducerDataPeriod::init(const State& state,
                               const SmartMet::Engine::Querydata::Engine& querydata,
+#ifndef WITHOUT_OBSERVATION
                               const SmartMet::Engine::Observation::Engine* observation,
+#endif
                               const TimeProducers& producers)
 {
   try
   {
     itsDataPeriod.clear();
     getQEngineDataPeriods(querydata, producers);
+#ifndef WITHOUT_OBSERVATION
     if (observation)
       getObsEngineDataPeriods(*observation, producers, state.getTime());
+#endif
   }
   catch (...)
   {

@@ -59,10 +59,12 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
 
     starttimeOptionGiven = (!!req.getParameter("starttime") || !!req.getParameter("now"));
     std::string endtime = SmartMet::Spine::optional_string(req.getParameter("endtime"), "");
-    latestObservation = (endtime == "now");
     endtimeOptionGiven = (endtime != "now");
 
+#ifndef WITHOUT_OBSERVATION
+    latestObservation = (endtime == "now");
     allplaces = (SmartMet::Spine::optional_string(req.getParameter("places"), "") == "all");
+#endif
 
     timezone = SmartMet::Spine::optional_string(req.getParameter("tz"), default_timezone);
 
@@ -106,7 +108,11 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
 
     Query::parse_producers(req);
 
+#ifndef WITHOUT_OBSERVATION
     Query::parse_parameters(req, state.getObsEngine());
+#else
+    Query::parse_parameters(req);
+#endif
 
     Query::parse_levels(req);
 
@@ -133,52 +139,12 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
 
     timeformatter.reset(Fmi::TimeFormatter::create(timeformat));
 
+#ifndef WITHOUT_OBSERVATION
     // observation params
     numberofstations = SmartMet::Spine::optional_int(req.getParameter("numberofstations"), 1);
+#endif
 
-    auto name = req.getParameter("fmisid");
-    if (name)
-    {
-      const string fmisidreq = *name;
-      vector<string> parts;
-      boost::algorithm::split(parts, fmisidreq, boost::algorithm::is_any_of(","));
-
-      BOOST_FOREACH (const string& sfmisid, parts)
-      {
-        int f = Fmi::stoi(sfmisid);
-        this->fmisids.push_back(f);
-      }
-    }
-
-    name = req.getParameter("wmo");
-    if (name)
-    {
-      const string wmoreq = *name;
-      vector<string> parts;
-      boost::algorithm::split(parts, wmoreq, boost::algorithm::is_any_of(","));
-
-      BOOST_FOREACH (const string& swmo, parts)
-      {
-        int w = Fmi::stoi(swmo);
-        this->wmos.push_back(w);
-      }
-    }
-
-    name = req.getParameter("lpnn");
-    if (name)
-    {
-      const string lpnnreq = *name;
-      vector<string> parts;
-      boost::algorithm::split(parts, lpnnreq, boost::algorithm::is_any_of(","));
-
-      BOOST_FOREACH (const string& slpnn, parts)
-      {
-        int l = Fmi::stoi(slpnn);
-        this->lpnns.push_back(l);
-      }
-    }
-
-    name = req.getParameter("geoid");
+    auto name = req.getParameter("geoid");
     if (name)
     {
       const string geoidreq = *name;
@@ -206,6 +172,55 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
       }
     }
 
+#ifndef WITHOUT_OBSERVATION
+    name = req.getParameter("fmisid");
+    if (name)
+    {
+      const string fmisidreq = *name;
+      vector<string> parts;
+      boost::algorithm::split(parts, fmisidreq, boost::algorithm::is_any_of(","));
+
+      BOOST_FOREACH (const string& sfmisid, parts)
+      {
+        int f = Fmi::stoi(sfmisid);
+        this->fmisids.push_back(f);
+      }
+    }
+#endif
+
+#ifndef WITHOUT_OBSERVATION
+    name = req.getParameter("wmo");
+    if (name)
+    {
+      const string wmoreq = *name;
+      vector<string> parts;
+      boost::algorithm::split(parts, wmoreq, boost::algorithm::is_any_of(","));
+
+      BOOST_FOREACH (const string& swmo, parts)
+      {
+        int w = Fmi::stoi(swmo);
+        this->wmos.push_back(w);
+      }
+    }
+#endif
+
+#ifndef WITHOUT_OBSERVATION
+    name = req.getParameter("lpnn");
+    if (name)
+    {
+      const string lpnnreq = *name;
+      vector<string> parts;
+      boost::algorithm::split(parts, lpnnreq, boost::algorithm::is_any_of(","));
+
+      BOOST_FOREACH (const string& slpnn, parts)
+      {
+        int l = Fmi::stoi(slpnn);
+        this->lpnns.push_back(l);
+      }
+    }
+#endif
+
+#ifndef WITHOUT_OBSERVATION
     if (!!req.getParameter("bbox"))
     {
       string bbox = *req.getParameter("bbox");
@@ -238,6 +253,7 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
         boundingBox["maxy"] = Fmi::stod(lat2);
       }
     }
+#endif
 
     if (!!req.getParameter("weekday"))
     {
@@ -374,8 +390,12 @@ void Query::parse_precision(const SmartMet::Spine::HTTP::Request& req, const Con
   }
 }
 
+#ifndef WITHOUT_OBSERVATION
 void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
                              const SmartMet::Engine::Observation::Engine* theObsEngine)
+#else
+void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq)
+#endif
 {
   try
   {
@@ -391,6 +411,8 @@ void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
     typedef list<string> Names;
     Names names;
     boost::algorithm::split(names, opt, boost::algorithm::is_any_of(","));
+
+#ifndef WITHOUT_OBSERVATION
 
     // Determine whether any producer implies observations are needed
 
@@ -414,6 +436,7 @@ void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
         }
       }
     }
+#endif
 
     // Validate and convert
     BOOST_FOREACH (const string& paramname, names)

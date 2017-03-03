@@ -34,10 +34,14 @@ namespace Querydata
 {
 class Engine;
 }
+
+#ifndef WITHOUT_OBSERVATION
 namespace Observation
 {
 class Engine;
 }
+#endif
+
 namespace Geonames
 {
 class Engine;
@@ -61,7 +65,9 @@ class State
   // Access engines
   const SmartMet::Engine::Querydata::Engine& getQEngine() const;
   const SmartMet::Engine::Geonames::Engine& getGeoEngine() const;
+#ifndef WITHOUT_OBSERVATION
   SmartMet::Engine::Observation::Engine* getObsEngine() const;
+#endif
 
   const Fmi::TimeZones& getTimeZones() const;
   // The fixed time during the query may also be overridden

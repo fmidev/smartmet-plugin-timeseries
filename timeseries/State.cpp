@@ -63,6 +63,7 @@ const SmartMet::Engine::Geonames::Engine& State::getGeoEngine() const
  */
 // ----------------------------------------------------------------------
 
+#ifndef WITHOUT_OBSERVATION
 SmartMet::Engine::Observation::Engine* State::getObsEngine() const
 {
   try
@@ -74,6 +75,7 @@ SmartMet::Engine::Observation::Engine* State::getObsEngine() const
     throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
+#endif
 
 // ----------------------------------------------------------------------
 /*!

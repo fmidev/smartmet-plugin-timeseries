@@ -76,18 +76,17 @@ struct Query
   std::string timestring;
   std::string localename;
   std::locale outlocale;
+  std::vector<int> geoids;
+  std::vector<int> weekdays;
+
 #ifndef WITHOUT_OBSERVATION
-  // observation params begin
   std::vector<int> wmos;
   std::vector<int> lpnns;
   std::vector<int> fmisids;
-  std::vector<int> geoids;
-  std::vector<int> weekdays;
   std::map<std::string, double> boundingBox;
   int numberofstations;
   bool allplaces;
   bool latestObservation;
-// observation params end
 #endif
 
   bool starttimeOptionGiven;
