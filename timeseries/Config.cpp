@@ -7,7 +7,7 @@
 #include "Config.h"
 #include "Precision.h"
 #include <spine/Exception.h>
-#include <macgyver/String.h>
+#include <macgyver/StringConversion.h>
 #include <stdexcept>
 #include <boost/foreach.hpp>
 

@@ -17,7 +17,7 @@
 #include <engines/observation/Engine.h>
 #endif
 
-#include <macgyver/String.h>
+#include <macgyver/StringConversion.h>
 #include <macgyver/TimeParser.h>
 #include <newbase/NFmiPoint.h>
 

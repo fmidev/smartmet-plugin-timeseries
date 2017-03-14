@@ -6,7 +6,7 @@
 
 #pragma once
 #include "State.h"
-#include <macgyver/String.h>
+#include <macgyver/StringConversion.h>
 #include <boost/functional/hash.hpp>
 #include <boost/shared_ptr.hpp>
 #include <list>

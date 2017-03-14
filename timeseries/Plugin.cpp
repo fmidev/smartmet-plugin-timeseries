@@ -26,7 +26,7 @@
 
 #include <macgyver/Astronomy.h>
 #include <macgyver/CharsetTools.h>
-#include <macgyver/String.h>
+#include <macgyver/StringConversion.h>
 #include <macgyver/TimeFormatter.h>
 
 #include <boost/algorithm/string/classification.hpp>
