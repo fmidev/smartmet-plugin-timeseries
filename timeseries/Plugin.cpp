@@ -1819,7 +1819,7 @@ std::size_t Plugin::hash_value(const State& state,
             if (producer.empty())
             {
               Spine::Exception ex(BCP, "No data available for '" + loc->name + "'!");
-              ex.disableStackTrace();
+              ex.disableLogging();
               throw ex;
             }
 
@@ -2181,7 +2181,11 @@ void Plugin::fetchQEngineValues(const State& state,
         (producer.empty() ? false : itsQEngine->getProducerConfig(producer).isclimatology);
 
     if (producer.empty())
-      throw SmartMet::Spine::Exception(BCP, "No data available for " + loc->name);
+    {
+      Spine::Exception ex(BCP, "No data available for " + loc->name);
+      ex.disableLogging();
+      throw ex;
+    }
 
     auto qi = (query.origintime ? state.get(producer, *query.origintime) : state.get(producer));
 
