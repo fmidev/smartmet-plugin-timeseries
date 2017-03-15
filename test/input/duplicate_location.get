@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&geoids=840070,633643&timesteps=1&param=time,geoid,longitude,latitude,Temperature HTTP/1.0
