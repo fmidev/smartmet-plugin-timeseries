@@ -1817,7 +1817,11 @@ std::size_t Plugin::hash_value(const State& state,
             auto producer = select_producer(*itsQEngine, *loc, subquery, areaproducers);
 
             if (producer.empty())
-              throw SmartMet::Spine::Exception(BCP, "No data available for '" + loc->name + "'!");
+            {
+              Spine::Exception ex(BCP, "No data available for '" + loc->name + "'!");
+              ex.disableStackTrace();
+              throw ex;
+            }
 
             auto qi = (subquery.origintime ? state.get(producer, *subquery.origintime)
                                            : state.get(producer));
@@ -4020,7 +4024,10 @@ void Plugin::requestHandler(SmartMet::Spine::Reactor& theReactor,
       SmartMet::Spine::Exception exception(BCP, "Request processing exception!", NULL);
       exception.addParameter("URI", theRequest.getURI());
 
-      std::cerr << exception.getStackTrace();
+      if (!exception.stackTraceDisabled())
+        std::cerr << exception.getStackTrace();
+      else
+        std::cerr << "Error: " << exception.what() << std::endl;
 
       if (isdebug)
       {

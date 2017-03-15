@@ -183,7 +183,9 @@ SmartMet::Engine::Querydata::Q State::get(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    Spine::Exception ex(BCP, "Failed to get querydata for the requested origintime", NULL);
+    ex.disableStackTrace();
+    throw ex;
   }
 }
 

@@ -42,15 +42,14 @@ static const char* default_timezone = "localtime";
 // ----------------------------------------------------------------------
 
 Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Config& config)
-    : loptions(new SmartMet::Engine::Geonames::LocationOptions(
-          state.getGeoEngine().parseLocations(req))),
-      poptions(),
-      toptions(SmartMet::Spine::OptionParsers::parseTimes(req)),
-      valueformatter(req),
-      timeAggregationRequested(false)
+    : valueformatter(req), timeAggregationRequested(false)
 {
   try
   {
+    toptions = Spine::OptionParsers::parseTimes(req);
+
+    loptions.reset(new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(req)));
+
 #ifdef MYDEBUG
     std::cout << "Time options: " << std::endl << toptions << std::endl;
 #endif
@@ -270,7 +269,10 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    Spine::Exception ex(BCP, "TimeSeries plugin failed to parse query string options!", NULL);
+    // The stack traces are useless when the user has made a typo
+    ex.disableStackTrace();
+    throw ex;
   }
 }
 
