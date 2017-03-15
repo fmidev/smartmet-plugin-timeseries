@@ -43,13 +43,12 @@ boost::local_time::local_date_time ProducerDataPeriod::getTime(const std::string
     }
     catch (...)
     {
-      throw SmartMet::Spine::Exception(
-          BCP, "Failed to construct local time for timezone '" + timezone + "'");
+      throw Spine::Exception(BCP, "Failed to construct local time for timezone '" + timezone + "'");
     }
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -70,11 +69,11 @@ boost::posix_time::ptime ProducerDataPeriod::getTime(const std::string& producer
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
-void ProducerDataPeriod::getQEngineDataPeriods(const SmartMet::Engine::Querydata::Engine& querydata,
+void ProducerDataPeriod::getQEngineDataPeriods(const Engine::Querydata::Engine& querydata,
                                                const TimeProducers& producers)
 {
   try
@@ -91,15 +90,14 @@ void ProducerDataPeriod::getQEngineDataPeriods(const SmartMet::Engine::Querydata
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
 #ifndef WITHOUT_OBSERVATION
-void ProducerDataPeriod::getObsEngineDataPeriods(
-    const SmartMet::Engine::Observation::Engine& observation,
-    const TimeProducers& producers,
-    const boost::posix_time::ptime& now)
+void ProducerDataPeriod::getObsEngineDataPeriods(const Engine::Observation::Engine& observation,
+                                                 const TimeProducers& producers,
+                                                 const boost::posix_time::ptime& now)
 {
   try
   {
@@ -119,7 +117,7 @@ void ProducerDataPeriod::getObsEngineDataPeriods(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -134,7 +132,7 @@ boost::local_time::local_date_time ProducerDataPeriod::getLocalStartTime(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -147,7 +145,7 @@ boost::posix_time::ptime ProducerDataPeriod::getUTCStartTime(const std::string& 
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -161,7 +159,7 @@ boost::local_time::local_date_time ProducerDataPeriod::getLocalEndTime(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -174,14 +172,14 @@ boost::posix_time::ptime ProducerDataPeriod::getUTCEndTime(const std::string& pr
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
 void ProducerDataPeriod::init(const State& state,
-                              const SmartMet::Engine::Querydata::Engine& querydata,
+                              const Engine::Querydata::Engine& querydata,
 #ifndef WITHOUT_OBSERVATION
-                              const SmartMet::Engine::Observation::Engine* observation,
+                              const Engine::Observation::Engine* observation,
 #endif
                               const TimeProducers& producers)
 {
@@ -196,7 +194,7 @@ void ProducerDataPeriod::init(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 

@@ -41,7 +41,7 @@ static const char* default_timezone = "localtime";
  */
 // ----------------------------------------------------------------------
 
-Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Config& config)
+Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config)
     : valueformatter(req), timeAggregationRequested(false)
 {
   try
@@ -57,19 +57,19 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
     latestTimestep = toptions.startTime;
 
     starttimeOptionGiven = (!!req.getParameter("starttime") || !!req.getParameter("now"));
-    std::string endtime = SmartMet::Spine::optional_string(req.getParameter("endtime"), "");
+    std::string endtime = Spine::optional_string(req.getParameter("endtime"), "");
     endtimeOptionGiven = (endtime != "now");
 
 #ifndef WITHOUT_OBSERVATION
     latestObservation = (endtime == "now");
-    allplaces = (SmartMet::Spine::optional_string(req.getParameter("places"), "") == "all");
+    allplaces = (Spine::optional_string(req.getParameter("places"), "") == "all");
 #endif
 
-    timezone = SmartMet::Spine::optional_string(req.getParameter("tz"), default_timezone);
+    timezone = Spine::optional_string(req.getParameter("tz"), default_timezone);
 
-    step = SmartMet::Spine::optional_double(req.getParameter("step"), 1.0);
-    leveltype = SmartMet::Spine::optional_string(req.getParameter("leveltype"), "");
-    format = SmartMet::Spine::optional_string(req.getParameter("format"), "ascii");
+    step = Spine::optional_double(req.getParameter("step"), 1.0);
+    leveltype = Spine::optional_string(req.getParameter("leveltype"), "");
+    format = Spine::optional_string(req.getParameter("format"), "ascii");
 
     // Either create the requested locale or use the default one constructed
     // by the Config parser. TODO: If constructing from strings is slow, we should cache locales
@@ -81,18 +81,16 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
     else
       outlocale = locale(opt_locale->c_str());
 
-    timeformat = SmartMet::Spine::optional_string(req.getParameter("timeformat"),
-                                                  config.defaultTimeFormat());
+    timeformat = Spine::optional_string(req.getParameter("timeformat"), config.defaultTimeFormat());
 
-    language = SmartMet::Spine::optional_string(req.getParameter("lang"), config.defaultLanguage());
+    language = Spine::optional_string(req.getParameter("lang"), config.defaultLanguage());
     maxdistanceOptionGiven = !!req.getParameter("maxdistance");
-    maxdistance = SmartMet::Spine::optional_double(req.getParameter("maxdistance"),
-                                                   config.defaultMaxDistance());
+    maxdistance =
+        Spine::optional_double(req.getParameter("maxdistance"), config.defaultMaxDistance());
 
-    keyword = SmartMet::Spine::optional_string(req.getParameter("keyword"), "");
+    keyword = Spine::optional_string(req.getParameter("keyword"), "");
 
-    findnearestvalidpoint =
-        SmartMet::Spine::optional_bool(req.getParameter("findnearestvalid"), false);
+    findnearestvalidpoint = Spine::optional_bool(req.getParameter("findnearestvalid"), false);
 
     boost::optional<std::string> tmp = req.getParameter("origintime");
     if (tmp)
@@ -117,18 +115,18 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
 
     // wxml requires 8 parameters
 
-    timestring = SmartMet::Spine::optional_string(req.getParameter("timestring"), "");
+    timestring = Spine::optional_string(req.getParameter("timestring"), "");
     if (format == "wxml")
     {
       timeformat = "xml";
-      poptions.add(SmartMet::Spine::ParameterFactory::instance().parse("origintime"));
-      poptions.add(SmartMet::Spine::ParameterFactory::instance().parse("xmltime"));
-      poptions.add(SmartMet::Spine::ParameterFactory::instance().parse("weekday"));
-      poptions.add(SmartMet::Spine::ParameterFactory::instance().parse("timestring"));
-      poptions.add(SmartMet::Spine::ParameterFactory::instance().parse("name"));
-      poptions.add(SmartMet::Spine::ParameterFactory::instance().parse("geoid"));
-      poptions.add(SmartMet::Spine::ParameterFactory::instance().parse("longitude"));
-      poptions.add(SmartMet::Spine::ParameterFactory::instance().parse("latitude"));
+      poptions.add(Spine::ParameterFactory::instance().parse("origintime"));
+      poptions.add(Spine::ParameterFactory::instance().parse("xmltime"));
+      poptions.add(Spine::ParameterFactory::instance().parse("weekday"));
+      poptions.add(Spine::ParameterFactory::instance().parse("timestring"));
+      poptions.add(Spine::ParameterFactory::instance().parse("name"));
+      poptions.add(Spine::ParameterFactory::instance().parse("geoid"));
+      poptions.add(Spine::ParameterFactory::instance().parse("longitude"));
+      poptions.add(Spine::ParameterFactory::instance().parse("latitude"));
     }
 
     // This must be done after params is no longer being modified
@@ -140,7 +138,7 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
 
 #ifndef WITHOUT_OBSERVATION
     // observation params
-    numberofstations = SmartMet::Spine::optional_int(req.getParameter("numberofstations"), 1);
+    numberofstations = Spine::optional_int(req.getParameter("numberofstations"), 1);
 #endif
 
     auto name = req.getParameter("geoid");
@@ -232,7 +230,7 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
       // Bounding box must contain exactly 4 elements
       if (parts.size() != 4)
       {
-        throw SmartMet::Spine::Exception(BCP, "Invalid bounding box '" + bbox + "'!");
+        throw Spine::Exception(BCP, "Invalid bounding box '" + bbox + "'!");
       }
 
       if (!parts[0].empty())
@@ -282,13 +280,13 @@ Query::Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Conf
  */
 // ----------------------------------------------------------------------
 
-void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq)
+void Query::parse_producers(const Spine::HTTP::Request& theReq)
 {
   try
   {
-    string opt = SmartMet::Spine::optional_string(theReq.getParameter("model"), "");
+    string opt = Spine::optional_string(theReq.getParameter("model"), "");
 
-    string opt2 = SmartMet::Spine::optional_string(theReq.getParameter("producer"), "");
+    string opt2 = Spine::optional_string(theReq.getParameter("producer"), "");
 
     if (opt == "default" || opt2 == "default")
     {
@@ -298,7 +296,7 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq)
 
     // observation uses stationtype-parameter
     if (opt.empty() && opt2.empty())
-      opt2 = SmartMet::Spine::optional_string(theReq.getParameter("stationtype"), "");
+      opt2 = Spine::optional_string(theReq.getParameter("stationtype"), "");
 
     std::list<std::string> firstProducers, secondProducers, resultProducers;
 
@@ -319,7 +317,7 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -331,20 +329,20 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq)
  */
 // ----------------------------------------------------------------------
 
-void Query::parse_levels(const SmartMet::Spine::HTTP::Request& theReq)
+void Query::parse_levels(const Spine::HTTP::Request& theReq)
 {
   try
   {
     // Get the option string
 
-    string opt = SmartMet::Spine::optional_string(theReq.getParameter("level"), "");
+    string opt = Spine::optional_string(theReq.getParameter("level"), "");
     if (!opt.empty())
     {
       levels.insert(Fmi::stoi(opt));
     }
 
     // Allow also "levels"
-    opt = SmartMet::Spine::optional_string(theReq.getParameter("levels"), "");
+    opt = Spine::optional_string(theReq.getParameter("levels"), "");
     if (!opt.empty())
     {
       vector<string> parts;
@@ -355,7 +353,7 @@ void Query::parse_levels(const SmartMet::Spine::HTTP::Request& theReq)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -365,19 +363,18 @@ void Query::parse_levels(const SmartMet::Spine::HTTP::Request& theReq)
  */
 // ----------------------------------------------------------------------
 
-void Query::parse_precision(const SmartMet::Spine::HTTP::Request& req, const Config& config)
+void Query::parse_precision(const Spine::HTTP::Request& req, const Config& config)
 {
   try
   {
     string precname =
-        SmartMet::Spine::optional_string(req.getParameter("precision"), config.defaultPrecision());
+        Spine::optional_string(req.getParameter("precision"), config.defaultPrecision());
 
     const Precision& prec = config.getPrecision(precname);
 
     precisions.reserve(poptions.size());
 
-    BOOST_FOREACH (const SmartMet::Spine::OptionParsers::ParameterList::value_type& p,
-                   poptions.parameters())
+    BOOST_FOREACH (const Spine::OptionParsers::ParameterList::value_type& p, poptions.parameters())
     {
       Precision::Map::const_iterator it = prec.parameter_precisions.find(p.name());
       if (it == prec.parameter_precisions.end())
@@ -388,26 +385,26 @@ void Query::parse_precision(const SmartMet::Spine::HTTP::Request& req, const Con
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
 #ifndef WITHOUT_OBSERVATION
-void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
-                             const SmartMet::Engine::Observation::Engine* theObsEngine)
+void Query::parse_parameters(const Spine::HTTP::Request& theReq,
+                             const Engine::Observation::Engine* theObsEngine)
 #else
-void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq)
+void Query::parse_parameters(const Spine::HTTP::Request& theReq)
 #endif
 {
   try
   {
     // Get the option string
-    string opt = SmartMet::Spine::required_string(theReq.getParameter("param"),
-                                                  "The 'param' option is required!");
+    string opt =
+        Spine::required_string(theReq.getParameter("param"), "The 'param' option is required!");
 
     // Protect against empty selection
     if (opt.empty())
-      throw SmartMet::Spine::Exception(BCP, "The 'param' option is empty!");
+      throw Spine::Exception(BCP, "The 'param' option is empty!");
 
     // Split
     typedef list<string> Names;
@@ -443,14 +440,14 @@ void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq)
     // Validate and convert
     BOOST_FOREACH (const string& paramname, names)
     {
-      SmartMet::Spine::ParameterAndFunctions paramfuncs =
-          SmartMet::Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
+      Spine::ParameterAndFunctions paramfuncs =
+          Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
 
       poptions.add(paramfuncs.parameter, paramfuncs.functions);
     }
 
     std::string aggregationIntervalStringBehind =
-        SmartMet::Spine::optional_string(theReq.getParameter("interval"), "0m");
+        Spine::optional_string(theReq.getParameter("interval"), "0m");
     std::string aggregationIntervalStringAhead = ("0m");
 
     // check if second aggregation interval is defined
@@ -462,47 +459,43 @@ void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq)
           aggregationIntervalStringBehind.substr(0, aggregationIntervalStringBehind.find(":"));
     }
 
-    int agg_interval_behind(
-        SmartMet::Spine::duration_string_to_minutes(aggregationIntervalStringBehind));
-    int agg_interval_ahead(
-        SmartMet::Spine::duration_string_to_minutes(aggregationIntervalStringAhead));
+    int agg_interval_behind(Spine::duration_string_to_minutes(aggregationIntervalStringBehind));
+    int agg_interval_ahead(Spine::duration_string_to_minutes(aggregationIntervalStringAhead));
 
     if (agg_interval_behind < 0 || agg_interval_ahead < 0)
-      throw SmartMet::Spine::Exception(BCP, "The 'interval' option must be positive!");
+      throw Spine::Exception(BCP, "The 'interval' option must be positive!");
 
     // set aggregation interval if it has not been set in parameter parser
-    BOOST_FOREACH (const SmartMet::Spine::ParameterAndFunctions& paramfuncs,
-                   poptions.parameterFunctions())
+    BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfuncs, poptions.parameterFunctions())
     {
       if (paramfuncs.functions.innerFunction.getAggregationIntervalBehind() ==
           std::numeric_limits<unsigned int>::max())
-        const_cast<SmartMet::Spine::ParameterFunction&>(paramfuncs.functions.innerFunction)
+        const_cast<Spine::ParameterFunction&>(paramfuncs.functions.innerFunction)
             .setAggregationIntervalBehind(agg_interval_behind);
       if (paramfuncs.functions.innerFunction.getAggregationIntervalAhead() ==
           std::numeric_limits<unsigned int>::max())
-        const_cast<SmartMet::Spine::ParameterFunction&>(paramfuncs.functions.innerFunction)
+        const_cast<Spine::ParameterFunction&>(paramfuncs.functions.innerFunction)
             .setAggregationIntervalAhead(agg_interval_ahead);
 
       if (paramfuncs.functions.outerFunction.getAggregationIntervalBehind() ==
           std::numeric_limits<unsigned int>::max())
-        const_cast<SmartMet::Spine::ParameterFunction&>(paramfuncs.functions.outerFunction)
+        const_cast<Spine::ParameterFunction&>(paramfuncs.functions.outerFunction)
             .setAggregationIntervalBehind(agg_interval_behind);
       if (paramfuncs.functions.outerFunction.getAggregationIntervalAhead() ==
           std::numeric_limits<unsigned int>::max())
-        const_cast<SmartMet::Spine::ParameterFunction&>(paramfuncs.functions.outerFunction)
+        const_cast<Spine::ParameterFunction&>(paramfuncs.functions.outerFunction)
             .setAggregationIntervalAhead(agg_interval_ahead);
     }
 
     // store maximum aggregation intervals per parameter for later use
-    BOOST_FOREACH (const SmartMet::Spine::ParameterAndFunctions& paramfuncs,
-                   poptions.parameterFunctions())
+    BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfuncs, poptions.parameterFunctions())
     {
       std::string paramname(paramfuncs.parameter.name());
 
       if (maxAggregationIntervals.find(paramname) == maxAggregationIntervals.end())
         maxAggregationIntervals.insert(make_pair(paramname, AggregationInterval(0, 0)));
 
-      if (paramfuncs.functions.innerFunction.type() == SmartMet::Spine::FunctionType::TimeFunction)
+      if (paramfuncs.functions.innerFunction.type() == Spine::FunctionType::TimeFunction)
       {
         if (maxAggregationIntervals[paramname].behind <
             paramfuncs.functions.innerFunction.getAggregationIntervalBehind())
@@ -513,8 +506,7 @@ void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq)
           maxAggregationIntervals[paramname].ahead =
               paramfuncs.functions.innerFunction.getAggregationIntervalAhead();
       }
-      else if (paramfuncs.functions.outerFunction.type() ==
-               SmartMet::Spine::FunctionType::TimeFunction)
+      else if (paramfuncs.functions.outerFunction.type() == Spine::FunctionType::TimeFunction)
       {
         if (maxAggregationIntervals[paramname].behind <
             paramfuncs.functions.outerFunction.getAggregationIntervalBehind())
@@ -533,7 +525,7 @@ void Query::parse_parameters(const SmartMet::Spine::HTTP::Request& theReq)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 

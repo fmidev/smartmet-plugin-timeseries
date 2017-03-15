@@ -27,7 +27,7 @@ State::State(const Plugin& thePlugin)
  */
 // ----------------------------------------------------------------------
 
-const SmartMet::Engine::Querydata::Engine& State::getQEngine() const
+const Engine::Querydata::Engine& State::getQEngine() const
 {
   try
   {
@@ -35,7 +35,7 @@ const SmartMet::Engine::Querydata::Engine& State::getQEngine() const
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -45,7 +45,7 @@ const SmartMet::Engine::Querydata::Engine& State::getQEngine() const
  */
 // ----------------------------------------------------------------------
 
-const SmartMet::Engine::Geonames::Engine& State::getGeoEngine() const
+const Engine::Geonames::Engine& State::getGeoEngine() const
 {
   try
   {
@@ -53,7 +53,7 @@ const SmartMet::Engine::Geonames::Engine& State::getGeoEngine() const
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -64,7 +64,7 @@ const SmartMet::Engine::Geonames::Engine& State::getGeoEngine() const
 // ----------------------------------------------------------------------
 
 #ifndef WITHOUT_OBSERVATION
-SmartMet::Engine::Observation::Engine* State::getObsEngine() const
+Engine::Observation::Engine* State::getObsEngine() const
 {
   try
   {
@@ -72,7 +72,7 @@ SmartMet::Engine::Observation::Engine* State::getObsEngine() const
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -91,7 +91,7 @@ const Fmi::TimeZones& State::getTimeZones() const
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -127,8 +127,7 @@ void State::setTime(const boost::posix_time::ptime& theTime)
  */
 // ----------------------------------------------------------------------
 
-SmartMet::Engine::Querydata::Q State::get(
-    const SmartMet::Engine::Querydata::Producer& theProducer) const
+Engine::Querydata::Q State::get(const Engine::Querydata::Producer& theProducer) const
 {
   try
   {
@@ -147,7 +146,7 @@ SmartMet::Engine::Querydata::Q State::get(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -157,9 +156,8 @@ SmartMet::Engine::Querydata::Q State::get(
  */
 // ----------------------------------------------------------------------
 
-SmartMet::Engine::Querydata::Q State::get(
-    const SmartMet::Engine::Querydata::Producer& theProducer,
-    const SmartMet::Engine::Querydata::OriginTime& theOriginTime) const
+Engine::Querydata::Q State::get(const Engine::Querydata::Producer& theProducer,
+                                const Engine::Querydata::OriginTime& theOriginTime) const
 {
   try
   {

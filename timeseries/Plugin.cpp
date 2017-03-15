@@ -75,17 +75,17 @@ namespace ts = SmartMet::Spine::TimeSeries;
 
 namespace SmartMet
 {
-bool special(const SmartMet::Spine::Parameter& theParam)
+bool special(const Spine::Parameter& theParam)
 {
   try
   {
     switch (theParam.type())
     {
-      case SmartMet::Spine::Parameter::Type::Data:
-      case SmartMet::Spine::Parameter::Type::Landscaped:
+      case Spine::Parameter::Type::Data:
+      case Spine::Parameter::Type::Landscaped:
         return false;
-      case SmartMet::Spine::Parameter::Type::DataDerived:
-      case SmartMet::Spine::Parameter::Type::DataIndependent:
+      case Spine::Parameter::Type::DataDerived:
+      case Spine::Parameter::Type::DataIndependent:
         return true;
     }
     // ** NOT REACHED **
@@ -93,7 +93,7 @@ bool special(const SmartMet::Spine::Parameter& theParam)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -185,17 +185,17 @@ const std::string MODEL_PARAM = "model";
  */
 // ----------------------------------------------------------------------
 
-bool parameterIsArithmetic(const SmartMet::Spine::Parameter& theParameter)
+bool parameterIsArithmetic(const Spine::Parameter& theParameter)
 {
   try
   {
     switch (theParameter.type())
     {
-      case SmartMet::Spine::Parameter::Type::Data:
-      case SmartMet::Spine::Parameter::Type::Landscaped:
-      case SmartMet::Spine::Parameter::Type::DataDerived:
+      case Spine::Parameter::Type::Data:
+      case Spine::Parameter::Type::Landscaped:
+      case Spine::Parameter::Type::DataDerived:
         return true;
-      case SmartMet::Spine::Parameter::Type::DataIndependent:
+      case Spine::Parameter::Type::DataIndependent:
         return false;
     }
     // NOT REACHED //
@@ -203,7 +203,7 @@ bool parameterIsArithmetic(const SmartMet::Spine::Parameter& theParameter)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -213,7 +213,7 @@ bool parameterIsArithmetic(const SmartMet::Spine::Parameter& theParameter)
  */
 // ----------------------------------------------------------------------
 
-bool is_plain_location_query(const SmartMet::Spine::OptionParsers::ParameterList& theParams)
+bool is_plain_location_query(const Spine::OptionParsers::ParameterList& theParams)
 {
   try
   {
@@ -230,7 +230,7 @@ bool is_plain_location_query(const SmartMet::Spine::OptionParsers::ParameterList
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -240,11 +240,10 @@ bool is_plain_location_query(const SmartMet::Spine::OptionParsers::ParameterList
  */
 // ----------------------------------------------------------------------
 
-SmartMet::Engine::Querydata::Producer select_producer(
-    const SmartMet::Engine::Querydata::Engine& querydata,
-    const SmartMet::Spine::Location& location,
-    const Query& query,
-    const AreaProducers& areaproducers)
+Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& querydata,
+                                            const Spine::Location& location,
+                                            const Query& query,
+                                            const AreaProducers& areaproducers)
 {
   try
   {
@@ -270,7 +269,7 @@ SmartMet::Engine::Querydata::Producer select_producer(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -291,7 +290,7 @@ void make_point_path(NFmiSvgPath& thePath, const std::pair<double, double>& theP
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -326,7 +325,7 @@ void make_rectangle_path(NFmiSvgPath& thePath,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -350,7 +349,7 @@ std::string get_name_base(const std::string& theName)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -360,22 +359,21 @@ std::string get_name_base(const std::string& theName)
  */
 // ----------------------------------------------------------------------
 
-void get_svg_path(const SmartMet::Spine::TaggedLocation& tloc,
-                  SmartMet::Spine::PostGISDataSource& postGISDataSource,
+void get_svg_path(const Spine::TaggedLocation& tloc,
+                  Spine::PostGISDataSource& postGISDataSource,
                   NFmiSvgPath& svgPath)
 {
   try
   {
-    SmartMet::Spine::LocationPtr loc = tloc.loc;
+    Spine::LocationPtr loc = tloc.loc;
     std::string place = get_name_base(loc->name);
 
-    if (loc->type == SmartMet::Spine::Location::Place ||
-        loc->type == SmartMet::Spine::Location::CoordinatePoint)
+    if (loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint)
     {
       std::pair<double, double> thePoint = make_pair(loc->longitude, loc->latitude);
       make_point_path(svgPath, thePoint);
     }
-    else if (loc->type == SmartMet::Spine::Location::Area)
+    else if (loc->type == Spine::Location::Area)
     {
       if (postGISDataSource.isPolygon(place))
       {
@@ -390,11 +388,10 @@ void get_svg_path(const SmartMet::Spine::TaggedLocation& tloc,
       }
       else
       {
-        throw SmartMet::Spine::Exception(BCP,
-                                         "Area '" + place + "' not found in PostGIS database!");
+        throw Spine::Exception(BCP, "Area '" + place + "' not found in PostGIS database!");
       }
     }
-    else if (loc->type == SmartMet::Spine::Location::Path)
+    else if (loc->type == Spine::Location::Path)
     {
       if (place.find(',') != std::string::npos)
       {
@@ -429,15 +426,14 @@ void get_svg_path(const SmartMet::Spine::TaggedLocation& tloc,
         }
         else
         {
-          throw SmartMet::Spine::Exception(BCP,
-                                           "Path '" + place + "' not found in PostGIS database!");
+          throw Spine::Exception(BCP, "Path '" + place + "' not found in PostGIS database!");
         }
       }
     }
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -447,14 +443,14 @@ void get_svg_path(const SmartMet::Spine::TaggedLocation& tloc,
  */
 // ----------------------------------------------------------------------
 
-SmartMet::Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
-                                                const std::string& thePathName,
-                                                const double& stepInKm,
-                                                SmartMet::Engine::Geonames::Engine& geonames)
+Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
+                                      const std::string& thePathName,
+                                      const double& stepInKm,
+                                      Engine::Geonames::Engine& geonames)
 {
   try
   {
-    SmartMet::Spine::LocationList locationList;
+    Spine::LocationList locationList;
 
     std::pair<double, double> from(thePath.begin()->itsX, thePath.begin()->itsY);
     std::pair<double, double> to(thePath.begin()->itsX, thePath.begin()->itsY);
@@ -471,21 +467,20 @@ SmartMet::Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
       {
         // fetch geoinfo only for the first coordinate, because geosearch is so slow
         // reuse name and timezone for rest of the locations
-        SmartMet::Spine::LocationPtr locFirst = geonames.lonlatSearch(it->itsX, it->itsY, "");
+        Spine::LocationPtr locFirst = geonames.lonlatSearch(it->itsX, it->itsY, "");
 
-        SmartMet::Spine::LocationPtr loc =
-            SmartMet::Spine::LocationPtr(new SmartMet::Spine::Location(locFirst->geoid,
-                                                                       thePathName,
-                                                                       locFirst->iso2,
-                                                                       locFirst->municipality,
-                                                                       locFirst->area,
-                                                                       locFirst->feature,
-                                                                       locFirst->country,
-                                                                       locFirst->longitude,
-                                                                       locFirst->latitude,
-                                                                       locFirst->timezone,
-                                                                       locFirst->population,
-                                                                       locFirst->elevation));
+        Spine::LocationPtr loc = Spine::LocationPtr(new Spine::Location(locFirst->geoid,
+                                                                        thePathName,
+                                                                        locFirst->iso2,
+                                                                        locFirst->municipality,
+                                                                        locFirst->area,
+                                                                        locFirst->feature,
+                                                                        locFirst->country,
+                                                                        locFirst->longitude,
+                                                                        locFirst->latitude,
+                                                                        locFirst->timezone,
+                                                                        locFirst->population,
+                                                                        locFirst->elevation));
 
         theTimezone = loc->timezone;
         locationList.push_back(loc);
@@ -503,13 +498,13 @@ SmartMet::Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
           double missingDistance = stepInKm - leftoverDistanceKmFromPreviousLeg;
           std::pair<double, double> intermediatePoint =
               destination_point(from, to, missingDistance);
-          locationList.push_back(SmartMet::Spine::LocationPtr(new SmartMet::Spine::Location(
+          locationList.push_back(Spine::LocationPtr(new Spine::Location(
               intermediatePoint.first, intermediatePoint.second, thePathName, theTimezone)));
           from = intermediatePoint;
           while (distance_in_kilometers(from, to) > stepInKm)
           {
             intermediatePoint = destination_point(from, to, stepInKm);
-            locationList.push_back(SmartMet::Spine::LocationPtr(new SmartMet::Spine::Location(
+            locationList.push_back(Spine::LocationPtr(new Spine::Location(
                 intermediatePoint.first, intermediatePoint.second, thePathName, theTimezone)));
             from = intermediatePoint;
           }
@@ -522,12 +517,12 @@ SmartMet::Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
     // last leg is not full
     if (leftoverDistanceKmFromPreviousLeg > 0.001)
     {
-      locationList.push_back(SmartMet::Spine::LocationPtr(
-          new SmartMet::Spine::Location(to.first, to.second, thePathName, theTimezone)));
+      locationList.push_back(
+          Spine::LocationPtr(new Spine::Location(to.first, to.second, thePathName, theTimezone)));
     }
 
-    SmartMet::Spine::LocationPtr front = locationList.front();
-    SmartMet::Spine::LocationPtr back = locationList.back();
+    Spine::LocationPtr front = locationList.front();
+    Spine::LocationPtr back = locationList.back();
 
     if (locationList.size() > 1 && front->longitude == back->longitude &&
         front->latitude == back->latitude)
@@ -537,7 +532,7 @@ SmartMet::Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -548,7 +543,7 @@ SmartMet::Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
 // ----------------------------------------------------------------------
 
 void erase_redundant_timesteps(ts::TimeSeries& ts,
-                               const SmartMet::Spine::TimeSeriesGenerator::LocalTimeList& timesteps)
+                               const Spine::TimeSeriesGenerator::LocalTimeList& timesteps)
 {
   try
   {
@@ -568,7 +563,7 @@ void erase_redundant_timesteps(ts::TimeSeries& ts,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -579,7 +574,7 @@ void erase_redundant_timesteps(ts::TimeSeries& ts,
 // ----------------------------------------------------------------------
 
 ts::TimeSeriesPtr erase_redundant_timesteps(
-    ts::TimeSeriesPtr ts, const SmartMet::Spine::TimeSeriesGenerator::LocalTimeList& timesteps)
+    ts::TimeSeriesPtr ts, const Spine::TimeSeriesGenerator::LocalTimeList& timesteps)
 {
   try
   {
@@ -588,7 +583,7 @@ ts::TimeSeriesPtr erase_redundant_timesteps(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -599,8 +594,7 @@ ts::TimeSeriesPtr erase_redundant_timesteps(
 // ----------------------------------------------------------------------
 
 ts::TimeSeriesVectorPtr erase_redundant_timesteps(
-    ts::TimeSeriesVectorPtr tsv,
-    const SmartMet::Spine::TimeSeriesGenerator::LocalTimeList& timesteps)
+    ts::TimeSeriesVectorPtr tsv, const Spine::TimeSeriesGenerator::LocalTimeList& timesteps)
 {
   try
   {
@@ -611,7 +605,7 @@ ts::TimeSeriesVectorPtr erase_redundant_timesteps(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -622,8 +616,7 @@ ts::TimeSeriesVectorPtr erase_redundant_timesteps(
 // ----------------------------------------------------------------------
 
 ts::TimeSeriesGroupPtr erase_redundant_timesteps(
-    ts::TimeSeriesGroupPtr tsg,
-    const SmartMet::Spine::TimeSeriesGenerator::LocalTimeList& timesteps)
+    ts::TimeSeriesGroupPtr tsg, const Spine::TimeSeriesGenerator::LocalTimeList& timesteps)
 {
   try
   {
@@ -633,7 +626,7 @@ ts::TimeSeriesGroupPtr erase_redundant_timesteps(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -644,7 +637,7 @@ ts::TimeSeriesGroupPtr erase_redundant_timesteps(
 // ----------------------------------------------------------------------
 
 template <typename T>
-T aggregate(const T& raw_data, const SmartMet::Spine::ParameterFunctions& pf)
+T aggregate(const T& raw_data, const Spine::ParameterFunctions& pf)
 {
   try
   {
@@ -663,7 +656,7 @@ T aggregate(const T& raw_data, const SmartMet::Spine::ParameterFunctions& pf)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -695,7 +688,7 @@ void update_latest_timestep(Query& query, const ts::TimeSeriesVectorPtr& tsv)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -721,7 +714,7 @@ void update_latest_timestep(Query& query, const ts::TimeSeries& ts)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -746,7 +739,7 @@ void update_latest_timestep(Query& query, const ts::TimeSeriesGroup& tsg)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -770,7 +763,7 @@ void store_data(ts::TimeSeriesVectorPtr aggregatedData, Query& query, OutputData
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -821,11 +814,11 @@ void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, Outpu
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
-void add_data_to_table(const SmartMet::Spine::OptionParsers::ParameterList& paramlist,
+void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
                        ts::TableFeeder& tf,
                        OutputData& outputData,
                        const std::string& location_name,
@@ -854,11 +847,11 @@ void add_data_to_table(const SmartMet::Spine::OptionParsers::ParameterList& para
         std::string paramName = paramlist[j % numberOfParameters].name();
         if (paramName == LATLON_PARAM || paramName == NEARLATLON_PARAM)
         {
-          tf << SmartMet::Spine::TimeSeries::LonLatFormat::LATLON;
+          tf << Spine::TimeSeries::LonLatFormat::LATLON;
         }
         else if (paramName == LONLAT_PARAM || paramName == NEARLONLAT_PARAM)
         {
-          tf << SmartMet::Spine::TimeSeries::LonLatFormat::LONLAT;
+          tf << Spine::TimeSeries::LonLatFormat::LONLAT;
         }
 
         if (boost::get<ts::TimeSeriesPtr>(&tsdata))
@@ -884,13 +877,13 @@ void add_data_to_table(const SmartMet::Spine::OptionParsers::ParameterList& para
         }
 
         // Reset formatting to the default value
-        tf << SmartMet::Spine::TimeSeries::LonLatFormat::LONLAT;
+        tf << Spine::TimeSeries::LonLatFormat::LONLAT;
       }
     }
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -900,7 +893,7 @@ void add_data_to_table(const SmartMet::Spine::OptionParsers::ParameterList& para
  */
 // ----------------------------------------------------------------------
 
-std::string get_location_id(SmartMet::Spine::LocationPtr loc)
+std::string get_location_id(Spine::LocationPtr loc)
 {
   try
   {
@@ -912,7 +905,7 @@ std::string get_location_id(SmartMet::Spine::LocationPtr loc)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -923,7 +916,7 @@ std::string get_location_id(SmartMet::Spine::LocationPtr loc)
 // ----------------------------------------------------------------------
 
 // fills the table with data
-void fill_table(Query& query, OutputData& outputData, SmartMet::Spine::Table& table)
+void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
 {
   try
   {
@@ -949,7 +942,7 @@ void fill_table(Query& query, OutputData& outputData, SmartMet::Spine::Table& ta
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -975,7 +968,7 @@ bool is_location_parameter(const std::string& paramname)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -985,9 +978,9 @@ bool is_location_parameter(const std::string& paramname)
  */
 // ----------------------------------------------------------------------
 
-std::string location_parameter(const SmartMet::Spine::LocationPtr loc,
+std::string location_parameter(const Spine::LocationPtr loc,
                                const std::string paramName,
-                               const SmartMet::Spine::ValueFormatter& valueformatter,
+                               const Spine::ValueFormatter& valueformatter,
                                const std::string& timezone,
                                int precision)
 {
@@ -1052,11 +1045,11 @@ std::string location_parameter(const SmartMet::Spine::LocationPtr loc,
     else if (paramName == ELEVATION_PARAM || paramName == STATION_ELEVATION_PARAM)
       return valueformatter.format(loc->elevation, precision);
 
-    throw SmartMet::Spine::Exception(BCP, "Unknown location parameter: '" + paramName + "'");
+    throw Spine::Exception(BCP, "Unknown location parameter: '" + paramName + "'");
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1090,7 +1083,7 @@ bool is_time_parameter(const std::string& paramname)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1114,7 +1107,7 @@ std::string format_date(const boost::local_time::local_date_time& ldt,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1127,7 +1120,7 @@ std::string format_date(const boost::local_time::local_date_time& ldt,
 std::string time_parameter(const std::string paramname,
                            const boost::local_time::local_date_time& ldt,
                            const boost::posix_time::ptime now,
-                           const SmartMet::Spine::Location& loc,
+                           const Spine::Location& loc,
                            const std::string& timezone,
                            const Fmi::TimeZones& timezones,
                            const std::locale& outlocale,
@@ -1353,7 +1346,7 @@ std::string time_parameter(const std::string paramname,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1365,7 +1358,7 @@ std::string time_parameter(const std::string paramname,
 
 #ifndef WITHOUT_OBSERVATION
 
-std::vector<int> getGeoids(SmartMet::Engine::Observation::Engine* observation,
+std::vector<int> getGeoids(Engine::Observation::Engine* observation,
                            const std::string& producer,
                            const std::string& wktstring)
 {
@@ -1373,8 +1366,8 @@ std::vector<int> getGeoids(SmartMet::Engine::Observation::Engine* observation,
   {
     std::vector<int> geoids;
 
-    SmartMet::Spine::Stations stations;
-    SmartMet::Engine::Observation::Settings mysettings;
+    Spine::Stations stations;
+    Engine::Observation::Settings mysettings;
     mysettings.stationtype = producer;
 
     stations = observation->getStationsByArea(mysettings, wktstring);
@@ -1385,7 +1378,7 @@ std::vector<int> getGeoids(SmartMet::Engine::Observation::Engine* observation,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -1396,10 +1389,10 @@ std::vector<int> getGeoids(SmartMet::Engine::Observation::Engine* observation,
  */
 // ----------------------------------------------------------------------
 
-SmartMet::Spine::LocationPtr getLocation(const SmartMet::Engine::Geonames::Engine* geonames,
-                                         const int id,
-                                         const std::string& idtype,
-                                         const std::string& language)
+Spine::LocationPtr getLocation(const Engine::Geonames::Engine* geonames,
+                               const int id,
+                               const std::string& idtype,
+                               const std::string& language)
 {
   try
   {
@@ -1413,9 +1406,9 @@ SmartMet::Spine::LocationPtr getLocation(const SmartMet::Engine::Geonames::Engin
     opts.SetResultLimit(1);
     opts.SetFeatures("SYNOP");
 
-    SmartMet::Spine::LocationList ll = geonames->nameSearch(opts, Fmi::to_string(id));
+    Spine::LocationList ll = geonames->nameSearch(opts, Fmi::to_string(id));
 
-    SmartMet::Spine::LocationPtr loc;
+    Spine::LocationPtr loc;
 
     // lets just take the first one
     if (ll.size() > 0)
@@ -1425,7 +1418,7 @@ SmartMet::Spine::LocationPtr getLocation(const SmartMet::Engine::Geonames::Engin
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1437,7 +1430,7 @@ SmartMet::Spine::LocationPtr getLocation(const SmartMet::Engine::Geonames::Engin
 
 #ifndef WITHOUT_OBSERVATION
 
-int get_fmisid_index(const SmartMet::Engine::Observation::Settings& settings)
+int get_fmisid_index(const Engine::Observation::Settings& settings)
 {
   try
   {
@@ -1454,7 +1447,7 @@ int get_fmisid_index(const SmartMet::Engine::Observation::Settings& settings)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1489,7 +1482,7 @@ int get_fmisid_value(const ts::Value& value)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1503,12 +1496,11 @@ int get_fmisid_value(const ts::Value& value)
 
 #ifndef WITHOUT_OBSERVATION
 
-TimeSeriesByLocation get_timeseries_by_fmisid(
-    const std::string& producer,
-    const ts::TimeSeriesVectorPtr observation_result,
-    const SmartMet::Engine::Observation::Settings& settings,
-    const Query& query,
-    int fmisid_index)
+TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
+                                              const ts::TimeSeriesVectorPtr observation_result,
+                                              const Engine::Observation::Settings& settings,
+                                              const Query& query,
+                                              int fmisid_index)
 
 {
   try
@@ -1574,7 +1566,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1621,7 +1613,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
 
 std::size_t Plugin::hash_value(const State& state,
                                Query masterquery,
-                               const SmartMet::Spine::HTTP::Request& request)
+                               const Spine::HTTP::Request& request)
 {
   try
   {
@@ -1767,16 +1759,15 @@ std::size_t Plugin::hash_value(const State& state,
           {
             // Emulate fetchQEngineValues here
 
-            SmartMet::Spine::LocationPtr loc = tloc.loc;
+            Spine::LocationPtr loc = tloc.loc;
             std::string place = get_name_base(loc->name);
             NFmiSvgPath svgPath;
-            if (loc->type == SmartMet::Spine::Location::Path ||
-                loc->type == SmartMet::Spine::Location::Area)
+            if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
             {
               get_svg_path(tloc, itsPostGISDataSource, svgPath);
               loc = getLocationForArea(tloc, query, svgPath, itsPostGISDataSource);
             }
-            else if (loc->type == SmartMet::Spine::Location::BoundingBox)
+            else if (loc->type == Spine::Location::BoundingBox)
             {
               // find geoinfo for the corner coordinate
               vector<string> parts;
@@ -1789,22 +1780,21 @@ std::size_t Plugin::hash_value(const State& state,
 
               // get location info for center coordinate
               std::pair<double, double> lonlatCenter((lon1 + lon2) / 2.0, (lat1 + lat2) / 2.0);
-              SmartMet::Spine::LocationPtr locCenter = itsGeoEngine->lonlatSearch(
+              Spine::LocationPtr locCenter = itsGeoEngine->lonlatSearch(
                   lonlatCenter.first, lonlatCenter.second, subquery.language);
 
-              std::unique_ptr<SmartMet::Spine::Location> tmp(
-                  new SmartMet::Spine::Location(locCenter->geoid,
-                                                tloc.tag,
-                                                locCenter->iso2,
-                                                locCenter->municipality,
-                                                locCenter->area,
-                                                locCenter->feature,
-                                                locCenter->country,
-                                                locCenter->longitude,
-                                                locCenter->latitude,
-                                                locCenter->timezone,
-                                                locCenter->population,
-                                                locCenter->elevation));
+              std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
+                                                                       tloc.tag,
+                                                                       locCenter->iso2,
+                                                                       locCenter->municipality,
+                                                                       locCenter->area,
+                                                                       locCenter->feature,
+                                                                       locCenter->country,
+                                                                       locCenter->longitude,
+                                                                       locCenter->latitude,
+                                                                       locCenter->timezone,
+                                                                       locCenter->population,
+                                                                       locCenter->elevation));
               tmp->type = tloc.loc->type;
               tmp->radius = tloc.loc->radius;
               loc.reset(tmp.release());
@@ -1827,7 +1817,7 @@ std::size_t Plugin::hash_value(const State& state,
                                            : state.get(producer));
 
             // Generated timeseries may depend on the available querydata
-            auto querydata_hash = SmartMet::Engine::Querydata::hash_value(qi);
+            auto querydata_hash = Engine::Querydata::hash_value(qi);
 
             // No need to generate the timeseries again if the combination has already been handled
 
@@ -1841,15 +1831,14 @@ std::size_t Plugin::hash_value(const State& state,
 
               const auto validtimes = qi->validTimes();
               if (validtimes->empty())
-                throw SmartMet::Spine::Exception(
-                    BCP, "Producer '" + producer + "' has no valid timesteps!");
+                throw Spine::Exception(BCP, "Producer '" + producer + "' has no valid timesteps!");
               subquery.toptions.setDataTimes(validtimes, qi->isClimatology());
 
               // no area operations allowed for non-grid data
-              if (!qi->isGrid() && ((loc->type != SmartMet::Spine::Location::Place &&
-                                     loc->type != SmartMet::Spine::Location::CoordinatePoint) ||
-                                    ((loc->type == SmartMet::Spine::Location::Place ||
-                                      loc->type == SmartMet::Spine::Location::CoordinatePoint) &&
+              if (!qi->isGrid() && ((loc->type != Spine::Location::Place &&
+                                     loc->type != Spine::Location::CoordinatePoint) ||
+                                    ((loc->type == Spine::Location::Place ||
+                                      loc->type == Spine::Location::CoordinatePoint) &&
                                      loc->radius > 0)))
                 return 0;
 
@@ -1908,7 +1897,7 @@ std::size_t Plugin::hash_value(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1918,11 +1907,10 @@ std::size_t Plugin::hash_value(const State& state,
  */
 // ----------------------------------------------------------------------
 
-SmartMet::Spine::LocationPtr Plugin::getLocationForArea(
-    const SmartMet::Spine::TaggedLocation& tloc,
-    const Query& query,
-    const NFmiSvgPath& svgPath,
-    SmartMet::Spine::PostGISDataSource& postGISDataSource) const
+Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
+                                              const Query& query,
+                                              const NFmiSvgPath& svgPath,
+                                              Spine::PostGISDataSource& postGISDataSource) const
 {
   try
   {
@@ -1943,31 +1931,30 @@ SmartMet::Spine::LocationPtr Plugin::getLocationForArea(
     std::pair<double, double> lonlatCenter((right + left) / 2.0, (top + bottom) / 2.0);
     ;
 
-    SmartMet::Spine::LocationPtr locCenter =
+    Spine::LocationPtr locCenter =
         itsGeoEngine->lonlatSearch(lonlatCenter.first, lonlatCenter.second, query.language);
 
-    // SmartMet::Spine::LocationPtr contains a const Location, so some trickery is used here
-    std::unique_ptr<SmartMet::Spine::Location> tmp(
-        new SmartMet::Spine::Location(locCenter->geoid,
-                                      tloc.tag,
-                                      locCenter->iso2,
-                                      locCenter->municipality,
-                                      locCenter->area,
-                                      locCenter->feature,
-                                      locCenter->country,
-                                      locCenter->longitude,
-                                      locCenter->latitude,
-                                      locCenter->timezone,
-                                      locCenter->population,
-                                      locCenter->elevation));
+    // Spine::LocationPtr contains a const Location, so some trickery is used here
+    std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
+                                                             tloc.tag,
+                                                             locCenter->iso2,
+                                                             locCenter->municipality,
+                                                             locCenter->area,
+                                                             locCenter->feature,
+                                                             locCenter->country,
+                                                             locCenter->longitude,
+                                                             locCenter->latitude,
+                                                             locCenter->timezone,
+                                                             locCenter->population,
+                                                             locCenter->elevation));
     tmp->type = tloc.loc->type;
     tmp->radius = tloc.loc->radius;
 
-    return SmartMet::Spine::LocationPtr(tmp.release());
+    return Spine::LocationPtr(tmp.release());
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -1977,8 +1964,8 @@ SmartMet::Spine::LocationPtr Plugin::getLocationForArea(
  */
 // ----------------------------------------------------------------------
 
-SmartMet::Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
-    const SmartMet::Engine::Querydata::Q& q, const Query& query, const std::string paramname) const
+Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
+    const Engine::Querydata::Q& q, const Query& query, const std::string paramname) const
 {
   try
   {
@@ -2017,7 +2004,7 @@ SmartMet::Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQuery
     std::cout << "timeseriesEndTime: " << timeseriesEndTime << std::endl;
 #endif
 
-    SmartMet::Spine::TimeSeriesGeneratorOptions topt = query.toptions;
+    Spine::TimeSeriesGeneratorOptions topt = query.toptions;
 
     topt.startTime = (query.toptions.startTimeUTC ? timeseriesStartTime.utc_time()
                                                   : timeseriesStartTime.local_time());
@@ -2044,7 +2031,7 @@ SmartMet::Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQuery
     qdtimesteps.insert(tlist->begin(), tlist->end());
 
     // add timesteps to LocalTimeList
-    SmartMet::Spine::TimeSeriesGenerator::LocalTimeList ret;
+    Spine::TimeSeriesGenerator::LocalTimeList ret;
     for (const auto& ldt : qdtimesteps)
       ret.push_back(ldt);
 
@@ -2060,7 +2047,7 @@ SmartMet::Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQuery
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -2071,8 +2058,8 @@ SmartMet::Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQuery
 // ----------------------------------------------------------------------
 
 void Plugin::fetchLocationValues(Query& query,
-                                 SmartMet::Spine::PostGISDataSource& postGISDataSource,
-                                 SmartMet::Spine::Table& data,
+                                 Spine::PostGISDataSource& postGISDataSource,
+                                 Spine::Table& data,
                                  unsigned int column_index,
                                  unsigned int row_index)
 {
@@ -2081,17 +2068,16 @@ void Plugin::fetchLocationValues(Query& query,
     unsigned int column = column_index;
     unsigned int row = row_index;
 
-    BOOST_FOREACH (const SmartMet::Spine::Parameter& param, query.poptions.parameters())
+    BOOST_FOREACH (const Spine::Parameter& param, query.poptions.parameters())
     {
       row = row_index;
       std::string pname = param.name();
       BOOST_FOREACH (const auto& tloc, query.loptions->locations())
       {
-        SmartMet::Spine::LocationPtr loc = tloc.loc;
+        Spine::LocationPtr loc = tloc.loc;
         NFmiSvgPath svgPath;
         get_svg_path(tloc, postGISDataSource, svgPath);
-        if (loc->type == SmartMet::Spine::Location::Path ||
-            loc->type == SmartMet::Spine::Location::Area)
+        if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
           loc = getLocationForArea(tloc, query, svgPath, postGISDataSource);
 
         std::string val = location_parameter(
@@ -2103,7 +2089,7 @@ void Plugin::fetchLocationValues(Query& query,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -2114,30 +2100,29 @@ void Plugin::fetchLocationValues(Query& query,
 // ----------------------------------------------------------------------
 
 void Plugin::fetchQEngineValues(const State& state,
-                                const SmartMet::Spine::ParameterAndFunctions& paramfunc,
-                                const SmartMet::Spine::TaggedLocation& tloc,
+                                const Spine::ParameterAndFunctions& paramfunc,
+                                const Spine::TaggedLocation& tloc,
                                 Query& query,
                                 const AreaProducers& areaproducers,
                                 const ProducerDataPeriod& producerDataPeriod,
-                                SmartMet::Spine::PostGISDataSource& postGISDataSource,
+                                Spine::PostGISDataSource& postGISDataSource,
                                 QueryLevelDataCache& queryLevelDataCache,
                                 OutputData& outputData)
 
 {
   try
   {
-    SmartMet::Spine::LocationPtr loc = tloc.loc;
+    Spine::LocationPtr loc = tloc.loc;
     std::string place = get_name_base(loc->name);
     std::string paramname = paramfunc.parameter.name();
 
     NFmiSvgPath svgPath;
-    if (loc->type == SmartMet::Spine::Location::Path ||
-        loc->type == SmartMet::Spine::Location::Area)
+    if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
     {
       get_svg_path(tloc, postGISDataSource, svgPath);
       loc = getLocationForArea(tloc, query, svgPath, postGISDataSource);
     }
-    else if (loc->type == SmartMet::Spine::Location::BoundingBox)
+    else if (loc->type == Spine::Location::BoundingBox)
     {
       // find geoinfo for the corner coordinate
       vector<string> parts;
@@ -2150,22 +2135,21 @@ void Plugin::fetchQEngineValues(const State& state,
 
       // get location info for center coordinate
       std::pair<double, double> lonlatCenter((lon1 + lon2) / 2.0, (lat1 + lat2) / 2.0);
-      SmartMet::Spine::LocationPtr locCenter =
+      Spine::LocationPtr locCenter =
           itsGeoEngine->lonlatSearch(lonlatCenter.first, lonlatCenter.second, query.language);
 
-      std::unique_ptr<SmartMet::Spine::Location> tmp(
-          new SmartMet::Spine::Location(locCenter->geoid,
-                                        tloc.tag,
-                                        locCenter->iso2,
-                                        locCenter->municipality,
-                                        locCenter->area,
-                                        locCenter->feature,
-                                        locCenter->country,
-                                        locCenter->longitude,
-                                        locCenter->latitude,
-                                        locCenter->timezone,
-                                        locCenter->population,
-                                        locCenter->elevation));
+      std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
+                                                               tloc.tag,
+                                                               locCenter->iso2,
+                                                               locCenter->municipality,
+                                                               locCenter->area,
+                                                               locCenter->feature,
+                                                               locCenter->country,
+                                                               locCenter->longitude,
+                                                               locCenter->latitude,
+                                                               locCenter->timezone,
+                                                               locCenter->population,
+                                                               locCenter->elevation));
       tmp->type = tloc.loc->type;
       tmp->radius = tloc.loc->radius;
       loc.reset(tmp.release());
@@ -2191,15 +2175,14 @@ void Plugin::fetchQEngineValues(const State& state,
 
     const auto validtimes = qi->validTimes();
     if (validtimes->empty())
-      throw SmartMet::Spine::Exception(BCP, "Producer " + producer + " has no valid time steps");
+      throw Spine::Exception(BCP, "Producer " + producer + " has no valid time steps");
     query.toptions.setDataTimes(validtimes, qi->isClimatology());
 
     // no area operations allowed for non-grid data
-    if (!qi->isGrid() && ((loc->type != SmartMet::Spine::Location::Place &&
-                           loc->type != SmartMet::Spine::Location::CoordinatePoint) ||
-                          ((loc->type == SmartMet::Spine::Location::Place ||
-                            loc->type == SmartMet::Spine::Location::CoordinatePoint) &&
-                           loc->radius > 0)))
+    if (!qi->isGrid() &&
+        ((loc->type != Spine::Location::Place && loc->type != Spine::Location::CoordinatePoint) ||
+         ((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
+          loc->radius > 0)))
       return;
 
 #ifdef BREAKS_REQUESTS_WHICH_START_BEFORE_QUERYDATA_BY_SHIFTING_DATA
@@ -2287,7 +2270,7 @@ void Plugin::fetchQEngineValues(const State& state,
           query.toptions.timeSteps = (*query.toptions.timeSteps) * 24;
         else
         {
-          if (query.toptions.mode != SmartMet::Spine::TimeSeriesGeneratorOptions::DataTimes)
+          if (query.toptions.mode != Spine::TimeSeriesGeneratorOptions::DataTimes)
           {
             // In case of datatimes, setting timeSteps to zero results in empty times
             // due to start and end-times being identical
@@ -2301,7 +2284,7 @@ void Plugin::fetchQEngineValues(const State& state,
       // restore original timestep
       query.toptions.timeSteps = timeStepOriginal;
 
-      ts::Value missing_value = SmartMet::Spine::TimeSeries::None();
+      ts::Value missing_value = Spine::TimeSeries::None();
 
 #ifdef MYDEBUG
       cout << endl << "producer: " << producer << endl;
@@ -2323,8 +2306,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
       std::pair<int, std::string> cacheKey(qi->levelValue(), paramname);
 
-      if ((loc->type == SmartMet::Spine::Location::Place ||
-           loc->type == SmartMet::Spine::Location::CoordinatePoint) &&
+      if ((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
           loc->radius == 0)
       {
         ts::TimeSeriesPtr querydata_result;
@@ -2336,19 +2318,19 @@ void Plugin::fetchQEngineValues(const State& state,
         }
         else
         {
-          SmartMet::Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
-                                                                        producer,
-                                                                        *loc,
-                                                                        country,
-                                                                        tloc.tag,
-                                                                        *query.timeformatter,
-                                                                        query.timestring,
-                                                                        query.language,
-                                                                        query.outlocale,
-                                                                        query.timezone,
-                                                                        query.findnearestvalidpoint,
-                                                                        nearestpoint,
-                                                                        query.lastpoint);
+          Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
+                                                              producer,
+                                                              *loc,
+                                                              country,
+                                                              tloc.tag,
+                                                              *query.timeformatter,
+                                                              query.timestring,
+                                                              query.language,
+                                                              query.outlocale,
+                                                              query.timezone,
+                                                              query.findnearestvalidpoint,
+                                                              nearestpoint,
+                                                              query.lastpoint);
 
           // one location, list of local times (no radius -> pointforecast)
           querydata_result = qi->values(querydata_param, querydata_tlist);
@@ -2371,25 +2353,24 @@ void Plugin::fetchQEngineValues(const State& state,
         }
         else
         {
-          if (loc->type == SmartMet::Spine::Location::Path)
+          if (loc->type == Spine::Location::Path)
           {
-            SmartMet::Spine::LocationList llist =
+            Spine::LocationList llist =
                 get_location_list(svgPath, tloc.tag, query.step, *itsGeoEngine);
 
-            SmartMet::Engine::Querydata::ParameterOptions querydata_param(
-                paramfunc.parameter,
-                producer,
-                *loc,
-                country,
-                tloc.tag,
-                *query.timeformatter,
-                query.timestring,
-                query.language,
-                query.outlocale,
-                query.timezone,
-                query.findnearestvalidpoint,
-                nearestpoint,
-                query.lastpoint);
+            Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
+                                                                producer,
+                                                                *loc,
+                                                                country,
+                                                                tloc.tag,
+                                                                *query.timeformatter,
+                                                                query.timestring,
+                                                                query.language,
+                                                                query.outlocale,
+                                                                query.timezone,
+                                                                query.findnearestvalidpoint,
+                                                                nearestpoint,
+                                                                query.lastpoint);
 
             // list of locations, list of local times
             querydata_result =
@@ -2411,22 +2392,21 @@ void Plugin::fetchQEngineValues(const State& state,
 
             queryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(cacheKey, querydata_result));
           }
-          else if (qi->isGrid() && (loc->type == SmartMet::Spine::Location::BoundingBox ||
-                                    loc->type == SmartMet::Spine::Location::Area ||
-                                    loc->type == SmartMet::Spine::Location::Place ||
-                                    loc->type == SmartMet::Spine::Location::CoordinatePoint))
+          else if (qi->isGrid() &&
+                   (loc->type == Spine::Location::BoundingBox ||
+                    loc->type == Spine::Location::Area || loc->type == Spine::Location::Place ||
+                    loc->type == Spine::Location::CoordinatePoint))
           {
             NFmiIndexMask mask;
 
-            if (loc->type == SmartMet::Spine::Location::BoundingBox)
+            if (loc->type == Spine::Location::BoundingBox)
             {
               vector<string> coordinates;
               boost::algorithm::split(coordinates, place, boost::algorithm::is_any_of(","));
               if (coordinates.size() != 4)
-                throw SmartMet::Spine::Exception(
-                    BCP,
-                    "Invalid bbox parameter " + place +
-                        ", should be in format 'lon,lat,lon,lat[:radius]'!");
+                throw Spine::Exception(BCP,
+                                       "Invalid bbox parameter " + place +
+                                           ", should be in format 'lon,lat,lon,lat[:radius]'!");
 
               string lonstr1 = coordinates[0];
               string latstr1 = coordinates[1];
@@ -2448,28 +2428,26 @@ void Plugin::fetchQEngineValues(const State& state,
 
               mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), boundingBoxPath, loc->radius);
             }
-            else if (loc->type == SmartMet::Spine::Location::Area ||
-                     loc->type == SmartMet::Spine::Location::Place ||
-                     loc->type == SmartMet::Spine::Location::CoordinatePoint)
+            else if (loc->type == Spine::Location::Area || loc->type == Spine::Location::Place ||
+                     loc->type == Spine::Location::CoordinatePoint)
             {
               get_svg_path(tloc, postGISDataSource, svgPath);
               mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, loc->radius);
             }
 
-            SmartMet::Engine::Querydata::ParameterOptions querydata_param(
-                paramfunc.parameter,
-                producer,
-                *loc,
-                country,
-                tloc.tag,
-                *query.timeformatter,
-                query.timestring,
-                query.language,
-                query.outlocale,
-                query.timezone,
-                query.findnearestvalidpoint,
-                nearestpoint,
-                query.lastpoint);
+            Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
+                                                                producer,
+                                                                *loc,
+                                                                country,
+                                                                tloc.tag,
+                                                                *query.timeformatter,
+                                                                query.timestring,
+                                                                query.language,
+                                                                query.outlocale,
+                                                                query.timezone,
+                                                                query.findnearestvalidpoint,
+                                                                nearestpoint,
+                                                                query.lastpoint);
 
             // indexmask (indexed locations on the area), list of local times
             querydata_result = qi->values(querydata_param, mask, querydata_tlist);
@@ -2502,7 +2480,7 @@ void Plugin::fetchQEngineValues(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -2533,10 +2511,10 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
         {
           std::map<std::string, unsigned int> parameter_columns;
           unsigned int column_index = 0;
-          BOOST_FOREACH (const SmartMet::Spine::ParameterAndFunctions& paramfuncs,
+          BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfuncs,
                          query.poptions.parameterFunctions())
           {
-            SmartMet::Spine::Parameter parameter(paramfuncs.parameter);
+            Spine::Parameter parameter(paramfuncs.parameter);
 
             if (parameter_columns.find(parameter.name()) != parameter_columns.end())
             {
@@ -2563,7 +2541,7 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -2575,13 +2553,13 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
 // ----------------------------------------------------------------------
 
 #ifndef WITHOUT_OBSERVATION
-void Plugin::setCommonObsSettings(SmartMet::Engine::Observation::Settings& settings,
+void Plugin::setCommonObsSettings(Engine::Observation::Settings& settings,
                                   const std::string& producer,
                                   const ProducerDataPeriod& producerDataPeriod,
                                   const boost::posix_time::ptime& now,
                                   const ObsParameters& obsParameters,
                                   Query& query,
-                                  SmartMet::Spine::PostGISDataSource& postGISDataSource) const
+                                  Spine::PostGISDataSource& postGISDataSource) const
 {
   try
   {
@@ -2620,7 +2598,7 @@ void Plugin::setCommonObsSettings(SmartMet::Engine::Observation::Settings& setti
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -2632,14 +2610,14 @@ void Plugin::setCommonObsSettings(SmartMet::Engine::Observation::Settings& setti
 // ----------------------------------------------------------------------
 
 #ifndef WITHOUT_OBSERVATION
-void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& settings,
+void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
                                     const std::string& producer,
                                     const ProducerDataPeriod& producerDataPeriod,
                                     const boost::posix_time::ptime& now,
-                                    const SmartMet::Spine::TaggedLocation& tloc,
+                                    const Spine::TaggedLocation& tloc,
                                     const ObsParameters& obsParameters,
                                     Query& query,
-                                    SmartMet::Spine::PostGISDataSource& postGISDataSource) const
+                                    Spine::PostGISDataSource& postGISDataSource) const
 {
   try
   {
@@ -2652,7 +2630,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
     int fmisid_index = -1;
     for (unsigned int i = 0; i < obsParameters.size(); i++)
     {
-      const SmartMet::Spine::Parameter& param = obsParameters[i].param;
+      const Spine::Parameter& param = obsParameters[i].param;
 
       if (query.maxAggregationIntervals[param.name()].behind > aggregationIntervalBehind)
         aggregationIntervalBehind = query.maxAggregationIntervals[param.name()].behind;
@@ -2688,7 +2666,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
     // 4) Fetch the observations from ObsEngine using the geoids
     if (tloc.loc)
     {
-      if (tloc.loc->type == SmartMet::Spine::Location::Path)
+      if (tloc.loc->type == Spine::Location::Path)
       {
 #ifdef MYDEBUG
         std::cout << tloc.loc->name << " is a Path" << std::endl;
@@ -2705,7 +2683,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
           pGeo = Fmi::OGR::constructGeometry(geoCoordinates, wkbLineString, 4326);
 
           if (!pGeo)
-            throw SmartMet::Spine::Exception(
+            throw Spine::Exception(
                 BCP,
                 "Invalid path parameter " + tloc.loc->name +
                     ", should be in format 'lon0,lat0,lon1,lat1,...,lonn,latn[:radius]'!");
@@ -2716,8 +2694,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
           pGeo = postGISDataSource.getOGRGeometry(loc_name, wkbMultiLineString);
 
           if (!pGeo)
-            throw SmartMet::Spine::Exception(
-                BCP, "Path " + loc_name + " not found in PostGIS database!");
+            throw Spine::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
         }
 
         std::unique_ptr<OGRGeometry> poly;
@@ -2735,7 +2712,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
 
         query.maxdistance = 0;
       }
-      else if (tloc.loc->type == SmartMet::Spine::Location::Area)
+      else if (tloc.loc->type == Spine::Location::Area)
       {
 #ifdef MYDEBUG
         std::cout << tloc.loc->name << " is an Area" << std::endl;
@@ -2744,8 +2721,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
         const OGRGeometry* pGeo = postGISDataSource.getOGRGeometry(loc_name, wkbMultiPolygon);
 
         if (!pGeo)
-          throw SmartMet::Spine::Exception(
-              BCP, "Area " + tloc.loc->name + " not found in PostGIS database!");
+          throw Spine::Exception(BCP, "Area " + tloc.loc->name + " not found in PostGIS database!");
 
         std::unique_ptr<OGRGeometry> poly;
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
@@ -2760,14 +2736,13 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
 
         query.maxdistance = 0;
       }
-      else if (tloc.loc->type == SmartMet::Spine::Location::BoundingBox &&
-               producer != FLASH_PRODUCER)
+      else if (tloc.loc->type == Spine::Location::BoundingBox && producer != FLASH_PRODUCER)
       {
 #ifdef MYDEBUG
         std::cout << tloc.loc->name << " is a BoundingBox" << std::endl;
 #endif
 
-        SmartMet::Spine::BoundingBox bbox(loc_name);
+        Spine::BoundingBox bbox(loc_name);
 
         NFmiSvgPath svgPath;
         std::pair<double, double> firstCorner(bbox.xMin, bbox.yMin);
@@ -2791,9 +2766,8 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
 
         query.maxdistance = 0;
       }
-      else if (producer != FLASH_PRODUCER &&
-               (tloc.loc->type == SmartMet::Spine::Location::Place ||
-                tloc.loc->type == SmartMet::Spine::Location::CoordinatePoint) &&
+      else if (producer != FLASH_PRODUCER && (tloc.loc->type == Spine::Location::Place ||
+                                              tloc.loc->type == Spine::Location::CoordinatePoint) &&
                tloc.loc->radius > 0)
       {
 #ifdef MYDEBUG
@@ -2803,8 +2777,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
         const OGRGeometry* pGeo = postGISDataSource.getOGRGeometry(loc_name, wkbPoint);
 
         if (!pGeo)
-          throw SmartMet::Spine::Exception(BCP,
-                                           "Area " + loc_name + " not found in PostGIS database!");
+          throw Spine::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
 
         std::unique_ptr<OGRGeometry> poly;
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
@@ -2818,8 +2791,8 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
         std::cout << "#" << settings.area_geoids.size() << " stations found" << std::endl;
 #endif
       }
-      else if (producer != FLASH_PRODUCER &&
-               tloc.loc->type == SmartMet::Spine::Location::CoordinatePoint && tloc.loc->radius > 0)
+      else if (producer != FLASH_PRODUCER && tloc.loc->type == Spine::Location::CoordinatePoint &&
+               tloc.loc->radius > 0)
       {
 #ifdef MYDEBUG
         std::cout << tloc.loc->name << " is an Area (coordinate point + radius)" << std::endl;
@@ -2847,8 +2820,8 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
     // fmisid must be always included in order to get thelocation info from geonames
     if (fmisid_index == -1 && producer != FLASH_PRODUCER)
     {
-      SmartMet::Spine::Parameter fmisidParam = SmartMet::Spine::Parameter(
-          FMISID_PARAM, SmartMet::Spine::Parameter::Type::DataIndependent);
+      Spine::Parameter fmisidParam =
+          Spine::Parameter(FMISID_PARAM, Spine::Parameter::Type::DataIndependent);
       settings.parameters.push_back(fmisidParam);
     }
 
@@ -2964,7 +2937,7 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -2978,9 +2951,9 @@ void Plugin::setLocationObsSettings(SmartMet::Engine::Observation::Settings& set
 #ifndef WITHOUT_OBSERVATION
 void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                            const std::string& producer,
-                                           const SmartMet::Spine::TaggedLocation& tloc,
+                                           const Spine::TaggedLocation& tloc,
                                            const ObsParameters& obsParameters,
-                                           SmartMet::Engine::Observation::Settings& settings,
+                                           Engine::Observation::Settings& settings,
                                            Query& query,
                                            OutputData& outputData)
 {
@@ -2996,7 +2969,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     else
     {
       // Request all observations in order to do aggregation
-      SmartMet::Spine::TimeSeriesGeneratorOptions tmpoptions;
+      Spine::TimeSeriesGeneratorOptions tmpoptions;
       tmpoptions.startTime = settings.starttime;
       tmpoptions.endTime = settings.endtime;
       tmpoptions.startTimeUTC = query.toptions.startTimeUTC;
@@ -3015,7 +2988,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     TimeSeriesByLocation observation_result_by_location =
         get_timeseries_by_fmisid(producer, observation_result, settings, query, fmisid_index);
 
-    SmartMet::Spine::TimeSeriesGeneratorCache::TimeList tlist;
+    Spine::TimeSeriesGeneratorCache::TimeList tlist;
     auto tz = getTimeZones().time_zone_from_string(query.timezone);
     if (!query.toptions.all())
       tlist = itsTimeSeriesCache->generate(query.toptions, tz);
@@ -3027,7 +3000,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       int fmisid = observation_result_by_location[i].first;
 
       // get location
-      SmartMet::Spine::LocationPtr loc;
+      Spine::LocationPtr loc;
       if (producer != FLASH_PRODUCER)
       {
         loc = getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
@@ -3036,8 +3009,8 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       }
       else
       {
-        SmartMet::Spine::Location location(0, 0, "", query.timezone);
-        loc = boost::make_shared<SmartMet::Spine::Location>(location);
+        Spine::Location location(0, 0, "", query.timezone);
+        loc = boost::make_shared<Spine::Location>(location);
       }
 
       // lets find out actual timesteps
@@ -3075,7 +3048,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         else if (is_time_parameter(paramname))
         {
           // add data for time fields
-          SmartMet::Spine::Location location(0, 0, "", query.timezone);
+          Spine::Location location(0, 0, "", query.timezone);
           ts::TimeSeries timeseries;
           for (unsigned int j = 0; j < timestep_vector.size(); j++)
           {
@@ -3112,14 +3085,14 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
       observation_result = observationResult2;
 
-      ts::Value missing_value = SmartMet::Spine::TimeSeries::None();
+      ts::Value missing_value = Spine::TimeSeries::None();
       ts::TimeSeriesVectorPtr aggregated_observation_result(new ts::TimeSeriesVector());
       std::vector<TimeSeriesData> aggregatedData;
       // iterate parameters and do aggregation
       for (unsigned int i = 0; i < obsParameters.size(); i++)
       {
         unsigned int data_column = obsParameters[i].data_column;
-        SmartMet::Spine::ParameterFunctions pfunc = obsParameters[i].functions;
+        Spine::ParameterFunctions pfunc = obsParameters[i].functions;
 
         if (data_column >= observation_result->size())
           continue;
@@ -3147,7 +3120,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       // if producer is syke or flash accept all timesteps
       if (query.toptions.all() || producer == FLASH_PRODUCER || producer == SYKE_PRODUCER)
       {
-        SmartMet::Spine::TimeSeriesGenerator::LocalTimeList aggtimes;
+        Spine::TimeSeriesGenerator::LocalTimeList aggtimes;
         for (const ts::TimedValue& tv : aggregated_observation_result->at(0))
           aggtimes.push_back(tv.time);
         // store observation data
@@ -3164,7 +3137,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -3178,9 +3151,9 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 #ifndef WITHOUT_OBSERVATION
 void Plugin::fetchObsEngineValuesForArea(const State& state,
                                          const std::string& producer,
-                                         const SmartMet::Spine::TaggedLocation& tloc,
+                                         const Spine::TaggedLocation& tloc,
                                          const ObsParameters& obsParameters,
-                                         SmartMet::Engine::Observation::Settings& settings,
+                                         Engine::Observation::Settings& settings,
                                          Query& query,
                                          OutputData& outputData)
 {
@@ -3198,7 +3171,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     if (observation_result->size() == 0)
       return;
 
-    SmartMet::Spine::LocationPtr loc = tloc.loc;
+    Spine::LocationPtr loc = tloc.loc;
     std::string place = (loc ? loc->name : "");
 
     // lets find out actual timesteps: different locations may have different timesteps
@@ -3257,7 +3230,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           for (unsigned int j = 0; j < ts_vector.size(); j++)
           {
             int fmisid = get_fmisid_value(fmisid_ts[j].value);
-            SmartMet::Spine::LocationPtr loc =
+            Spine::LocationPtr loc =
                 getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
             ts::Value value = location_parameter(loc,
                                                  obsParameters[i].param.name(),
@@ -3272,14 +3245,14 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         else if (is_time_parameter(paramname))
         {
           // add data for time fields
-          SmartMet::Spine::Location location(0, 0, "", query.timezone);
+          Spine::Location location(0, 0, "", query.timezone);
 
           ts::TimeSeriesGroupPtr grp(new ts::TimeSeriesGroup);
           ts::TimeSeries time_ts;
           for (unsigned int j = 0; j < ts_vector.size(); j++)
           {
             int fmisid = get_fmisid_value(fmisid_ts[j].value);
-            SmartMet::Spine::LocationPtr loc =
+            Spine::LocationPtr loc =
                 getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
             std::string paramvalue = time_parameter(paramname,
                                                     ts_vector[j],
@@ -3366,12 +3339,12 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 #endif
 
     // first generate timesteps
-    SmartMet::Spine::TimeSeriesGeneratorCache::TimeList tlist;
+    Spine::TimeSeriesGeneratorCache::TimeList tlist;
     auto tz = getTimeZones().time_zone_from_string(query.timezone);
     if (!query.toptions.all())
       tlist = itsTimeSeriesCache->generate(query.toptions, tz);
 
-    ts::Value missing_value = SmartMet::Spine::TimeSeries::None();
+    ts::Value missing_value = Spine::TimeSeries::None();
     // iterate parameters, aggregate, and store aggregated result
     for (unsigned int i = 0; i < obsParameters.size(); i++)
     {
@@ -3445,7 +3418,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         }
       }
 
-      SmartMet::Spine::ParameterFunctions pfunc = obsParameters[i].functions;
+      Spine::ParameterFunctions pfunc = obsParameters[i].functions;
       // do the aggregation
       ts::TimeSeriesGroupPtr aggregated_tsg = ts::aggregate(*tsg, pfunc);
 
@@ -3458,7 +3431,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       // If all timesteps are requested or producer is syke or flash accept all timesteps
       if (query.toptions.all() || producer == FLASH_PRODUCER || producer == SYKE_PRODUCER)
       {
-        SmartMet::Spine::TimeSeriesGenerator::LocalTimeList aggtimes;
+        Spine::TimeSeriesGenerator::LocalTimeList aggtimes;
         ts::TimeSeries ts = aggregated_tsg->at(0).timeseries;
         for (const ts::TimedValue& tv : ts)
           aggtimes.push_back(tv.time);
@@ -3478,7 +3451,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -3492,9 +3465,9 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 #ifndef WITHOUT_OBSERVATION
 void Plugin::fetchObsEngineValues(const State& state,
                                   const std::string& producer,
-                                  const SmartMet::Spine::TaggedLocation& tloc,
+                                  const Spine::TaggedLocation& tloc,
                                   const ObsParameters& obsParameters,
-                                  SmartMet::Engine::Observation::Settings& settings,
+                                  Engine::Observation::Settings& settings,
                                   Query& query,
                                   OutputData& outputData)
 {
@@ -3515,7 +3488,7 @@ void Plugin::fetchObsEngineValues(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -3533,12 +3506,12 @@ void Plugin::processObsEngineQuery(const State& state,
                                    const AreaProducers& areaproducers,
                                    const ProducerDataPeriod& producerDataPeriod,
                                    ObsParameters& obsParameters,
-                                   SmartMet::Spine::PostGISDataSource& postGISDataSource)
+                                   Spine::PostGISDataSource& postGISDataSource)
 {
   try
   {
     if (areaproducers.empty())
-      throw SmartMet::Spine::Exception(BCP, "BUG: processObsEngineQuery producer list empty");
+      throw Spine::Exception(BCP, "BUG: processObsEngineQuery producer list empty");
 
     std::string producer = *areaproducers.begin();
 
@@ -3547,7 +3520,7 @@ void Plugin::processObsEngineQuery(const State& state,
 
     // Settings which are the same for all locations
 
-    SmartMet::Engine::Observation::Settings settings;
+    Engine::Observation::Settings settings;
     setCommonObsSettings(settings,
                          producer,
                          producerDataPeriod,
@@ -3559,8 +3532,8 @@ void Plugin::processObsEngineQuery(const State& state,
     if (query.loptions->locations().empty())
     {
       // This is not beautiful
-      SmartMet::Spine::LocationPtr loc;
-      SmartMet::Spine::TaggedLocation tloc("", loc);
+      Spine::LocationPtr loc;
+      Spine::TaggedLocation tloc("", loc);
 
       // Update settings for this particular location
       setLocationObsSettings(settings,
@@ -3616,7 +3589,7 @@ void Plugin::processObsEngineQuery(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 #endif
@@ -3632,7 +3605,7 @@ void Plugin::processQEngineQuery(const State& state,
                                  OutputData& outputData,
                                  const AreaProducers& areaproducers,
                                  const ProducerDataPeriod& producerDataPeriod,
-                                 SmartMet::Spine::PostGISDataSource& postGISDataSource)
+                                 Spine::PostGISDataSource& postGISDataSource)
 {
   try
   {
@@ -3667,7 +3640,7 @@ void Plugin::processQEngineQuery(const State& state,
       // Reset for each new location, since fetchQEngineValues modifies it
       auto old_start_time = query.toptions.startTime;
 
-      BOOST_FOREACH (const SmartMet::Spine::ParameterAndFunctions& paramfunc,
+      BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfunc,
                      query.poptions.parameterFunctions())
       {
         // reset to original start time for each new location
@@ -3697,7 +3670,7 @@ void Plugin::processQEngineQuery(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -3708,9 +3681,9 @@ void Plugin::processQEngineQuery(const State& state,
 // ----------------------------------------------------------------------
 
 void Plugin::processQuery(const State& state,
-                          SmartMet::Spine::Table& table,
+                          Spine::Table& table,
                           Query& masterquery,
-                          SmartMet::Spine::PostGISDataSource& postGISDataSource)
+                          Spine::PostGISDataSource& postGISDataSource)
 {
   try
   {
@@ -3807,7 +3780,7 @@ void Plugin::processQuery(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -3818,15 +3791,15 @@ void Plugin::processQuery(const State& state,
 // ----------------------------------------------------------------------
 
 void Plugin::query(const State& state,
-                   const SmartMet::Spine::HTTP::Request& request,
-                   SmartMet::Spine::HTTP::Response& response)
+                   const Spine::HTTP::Request& request,
+                   Spine::HTTP::Response& response)
 {
   try
   {
     using namespace std;
     using namespace std::chrono;
 
-    SmartMet::Spine::Table data;
+    Spine::Table data;
 
     std::string timeheader;
 
@@ -3835,9 +3808,9 @@ void Plugin::query(const State& state,
     Query query(state, request, itsConfig);
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
-    string producer_option = SmartMet::Spine::optional_string(
-        request.getParameter(PRODUCER_PARAM),
-        SmartMet::Spine::optional_string(request.getParameter(STATIONTYPE_PARAM), ""));
+    string producer_option =
+        Spine::optional_string(request.getParameter(PRODUCER_PARAM),
+                               Spine::optional_string(request.getParameter(STATIONTYPE_PARAM), ""));
 
 // At least one of location specifiers must be set
 
@@ -3848,7 +3821,7 @@ void Plugin::query(const State& state,
 #else
     if (query.loptions->locations().size() == 0)
 #endif
-      throw SmartMet::Spine::Exception(BCP, "No location option given!");
+      throw Spine::Exception(BCP, "No location option given!");
 
 #ifdef MYDEBUG
     std::cout << query.loptions->locations().size() << " locations:" << std::endl;
@@ -3860,8 +3833,8 @@ void Plugin::query(const State& state,
 #endif
 
     // The formatter knows which mimetype to send
-    boost::shared_ptr<SmartMet::Spine::TableFormatter> formatter(
-        SmartMet::Spine::TableFormatterFactory::create(query.format));
+    boost::shared_ptr<Spine::TableFormatter> formatter(
+        Spine::TableFormatterFactory::create(query.format));
     string mime = formatter->mimetype() + "; charset=UTF-8";
     response.setHeader("Content-Type", mime.c_str());
 
@@ -3916,8 +3889,8 @@ void Plugin::query(const State& state,
     data.setMissingText(query.valueformatter.missing());
 
     // The names of the columns
-    SmartMet::Spine::TableFormatter::Names headers;
-    BOOST_FOREACH (const SmartMet::Spine::Parameter& p, query.poptions.parameters())
+    Spine::TableFormatter::Names headers;
+    BOOST_FOREACH (const Spine::Parameter& p, query.poptions.parameters())
     {
       headers.push_back(p.alias());
     }
@@ -3972,7 +3945,7 @@ void Plugin::query(const State& state,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -3982,14 +3955,13 @@ void Plugin::query(const State& state,
  */
 // ----------------------------------------------------------------------
 
-void Plugin::requestHandler(SmartMet::Spine::Reactor& theReactor,
-                            const SmartMet::Spine::HTTP::Request& theRequest,
-                            SmartMet::Spine::HTTP::Response& theResponse)
+void Plugin::requestHandler(Spine::Reactor& theReactor,
+                            const Spine::HTTP::Request& theRequest,
+                            Spine::HTTP::Response& theResponse)
 {
   try
   {
-    bool isdebug =
-        ("debug" == SmartMet::Spine::optional_string(theRequest.getParameter("format"), ""));
+    bool isdebug = ("debug" == Spine::optional_string(theRequest.getParameter("format"), ""));
 
     try
     {
@@ -3997,7 +3969,7 @@ void Plugin::requestHandler(SmartMet::Spine::Reactor& theReactor,
       State state(*this);
 
       query(state, theRequest, theResponse);
-      theResponse.setStatus(SmartMet::Spine::HTTP::Status::ok);
+      theResponse.setStatus(Spine::HTTP::Status::ok);
 
       // Adding response headers
 
@@ -4025,7 +3997,7 @@ void Plugin::requestHandler(SmartMet::Spine::Reactor& theReactor,
     {
       // Catching all exceptions
 
-      SmartMet::Spine::Exception exception(BCP, "Request processing exception!", NULL);
+      Spine::Exception exception(BCP, "Request processing exception!", NULL);
       exception.addParameter("URI", theRequest.getURI());
 
       if (!exception.stackTraceDisabled())
@@ -4038,11 +4010,11 @@ void Plugin::requestHandler(SmartMet::Spine::Reactor& theReactor,
         // Delivering the exception information as HTTP content
         std::string fullMessage = exception.getHtmlStackTrace();
         theResponse.setContent(fullMessage);
-        theResponse.setStatus(SmartMet::Spine::HTTP::Status::ok);
+        theResponse.setStatus(Spine::HTTP::Status::ok);
       }
       else
       {
-        theResponse.setStatus(SmartMet::Spine::HTTP::Status::bad_request);
+        theResponse.setStatus(Spine::HTTP::Status::bad_request);
       }
 
       // Adding the first exception information into the response header
@@ -4055,7 +4027,7 @@ void Plugin::requestHandler(SmartMet::Spine::Reactor& theReactor,
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -4065,7 +4037,7 @@ void Plugin::requestHandler(SmartMet::Spine::Reactor& theReactor,
  */
 // ----------------------------------------------------------------------
 
-Plugin::Plugin(SmartMet::Spine::Reactor* theReactor, const char* theConfig)
+Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
     : SmartMetPlugin(),
       itsModuleName("TimeSeries"),
       itsConfig(theConfig),
@@ -4088,7 +4060,7 @@ Plugin::Plugin(SmartMet::Spine::Reactor* theReactor, const char* theConfig)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -4103,12 +4075,12 @@ void Plugin::init()
   try
   {
     // Result cache
-    itsCache.reset(new SmartMet::Spine::SmartMetCache(itsConfig.maxMemoryCacheSize(),
-                                                      itsConfig.maxFilesystemCacheSize(),
-                                                      itsConfig.filesystemCacheDirectory()));
+    itsCache.reset(new Spine::SmartMetCache(itsConfig.maxMemoryCacheSize(),
+                                            itsConfig.maxFilesystemCacheSize(),
+                                            itsConfig.filesystemCacheDirectory()));
 
     // Time series cache
-    itsTimeSeriesCache.reset(new SmartMet::Spine::TimeSeriesGeneratorCache);
+    itsTimeSeriesCache.reset(new Spine::TimeSeriesGeneratorCache);
     itsTimeSeriesCache->resize(itsConfig.maxTimeSeriesCacheSize());
 
     // PostGIS
@@ -4119,7 +4091,7 @@ void Plugin::init()
       if (itsShutdownRequested)
         return;
 
-      SmartMet::Spine::postgis_identifier pgis_identifier(
+      Spine::postgis_identifier pgis_identifier(
           itsConfig.getPostGISIdentifier(postgis_identifier_keys[i]));
       std::string log_message;
 
@@ -4129,20 +4101,20 @@ void Plugin::init()
     /* GeoEngine */
     auto engine = itsReactor->getSingleton("Geonames", NULL);
     if (!engine)
-      throw SmartMet::Spine::Exception(BCP, "Geonames engine unavailable");
-    itsGeoEngine = reinterpret_cast<SmartMet::Engine::Geonames::Engine*>(engine);
+      throw Spine::Exception(BCP, "Geonames engine unavailable");
+    itsGeoEngine = reinterpret_cast<Engine::Geonames::Engine*>(engine);
 
     /* GisEngine */
     engine = itsReactor->getSingleton("Gis", NULL);
     if (!engine)
-      throw SmartMet::Spine::Exception(BCP, "Gis engine unavailable");
-    itsGisEngine = reinterpret_cast<SmartMet::Engine::Gis::Engine*>(engine);
+      throw Spine::Exception(BCP, "Gis engine unavailable");
+    itsGisEngine = reinterpret_cast<Engine::Gis::Engine*>(engine);
 
     /* QEngine */
     engine = itsReactor->getSingleton("Querydata", NULL);
     if (!engine)
-      throw SmartMet::Spine::Exception(BCP, "Querydata engine unavailable");
-    itsQEngine = reinterpret_cast<SmartMet::Engine::Querydata::Engine*>(engine);
+      throw Spine::Exception(BCP, "Querydata engine unavailable");
+    itsQEngine = reinterpret_cast<Engine::Querydata::Engine*>(engine);
 
 #ifndef WITHOUT_OBSERVATION
     if (!itsConfig.obsEngineDisabled())
@@ -4150,8 +4122,8 @@ void Plugin::init()
       /* ObsEngine */
       engine = itsReactor->getSingleton("Observation", NULL);
       if (!engine)
-        throw SmartMet::Spine::Exception(BCP, "Observation engine unavailable");
-      itsObsEngine = reinterpret_cast<SmartMet::Engine::Observation::Engine*>(engine);
+        throw Spine::Exception(BCP, "Observation engine unavailable");
+      itsObsEngine = reinterpret_cast<Engine::Observation::Engine*>(engine);
 
       itsObsEngine->setGeonames(itsGeoEngine);
       // fetch obsebgine station types (producers)
@@ -4165,20 +4137,20 @@ void Plugin::init()
     if (!itsReactor->addContentHandler(this,
                                        itsConfig.defaultUrl(),
                                        boost::bind(&Plugin::callRequestHandler, this, _1, _2, _3)))
-      throw SmartMet::Spine::Exception(BCP, "Failed to register timeseries content handler");
+      throw Spine::Exception(BCP, "Failed to register timeseries content handler");
 
     // DEPRECATED:
 
     if (!itsReactor->addContentHandler(
             this, "/pointforecast", boost::bind(&Plugin::callRequestHandler, this, _1, _2, _3)))
-      throw SmartMet::Spine::Exception(BCP, "Failed to register pointforecast content handler");
+      throw Spine::Exception(BCP, "Failed to register pointforecast content handler");
 
     // DONE
     itsReady = true;
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -4198,7 +4170,7 @@ void Plugin::shutdown()
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -4208,7 +4180,7 @@ void Plugin::shutdown()
  */
 // ----------------------------------------------------------------------
 
-bool Plugin::queryIsFast(const SmartMet::Spine::HTTP::Request& theRequest) const
+bool Plugin::queryIsFast(const Spine::HTTP::Request& theRequest) const
 {
   try
   {
@@ -4238,7 +4210,7 @@ bool Plugin::queryIsFast(const SmartMet::Spine::HTTP::Request& theRequest) const
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -4257,7 +4229,7 @@ Plugin::~Plugin()
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 

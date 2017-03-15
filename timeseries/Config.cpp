@@ -45,7 +45,7 @@ void Config::add_default_precisions()
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -55,56 +55,56 @@ void Config::add_default_precisions()
  */
 // ----------------------------------------------------------------------
 
-SmartMet::Spine::FunctionId get_function_id(const string& configName)
+Spine::FunctionId get_function_id(const string& configName)
 {
   try
   {
     if (configName == "mean")
     {
-      return SmartMet::Spine::FunctionId::Mean;
+      return Spine::FunctionId::Mean;
     }
     else if (configName == "max")
     {
-      return SmartMet::Spine::FunctionId::Maximum;
+      return Spine::FunctionId::Maximum;
     }
     else if (configName == "min")
     {
-      return SmartMet::Spine::FunctionId::Minimum;
+      return Spine::FunctionId::Minimum;
     }
     else if (configName == "median")
     {
-      return SmartMet::Spine::FunctionId::Median;
+      return Spine::FunctionId::Median;
     }
     else if (configName == "sum")
     {
-      return SmartMet::Spine::FunctionId::Sum;
+      return Spine::FunctionId::Sum;
     }
     else if (configName == "sdev")
     {
-      return SmartMet::Spine::FunctionId::StandardDeviation;
+      return Spine::FunctionId::StandardDeviation;
     }
     else if (configName == "trend")
     {
-      return SmartMet::Spine::FunctionId::Trend;
+      return Spine::FunctionId::Trend;
     }
     else if (configName == "change")
     {
-      return SmartMet::Spine::FunctionId::Change;
+      return Spine::FunctionId::Change;
     }
     else if (configName == "count")
     {
-      return SmartMet::Spine::FunctionId::Count;
+      return Spine::FunctionId::Count;
     }
     else if (configName == "percentage")
     {
-      return SmartMet::Spine::FunctionId::Percentage;
+      return Spine::FunctionId::Percentage;
     }
 
-    return SmartMet::Spine::FunctionId::NullFunction;
+    return Spine::FunctionId::NullFunction;
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -121,14 +121,14 @@ void Config::parse_config_precision(const string& name)
     string optname = "precision." + name;
 
     if (!itsConfig.exists(optname))
-      throw SmartMet::Spine::Exception(BCP,
-                                       string("Precision settings for ") + name +
-                                           " are missing from pointforecast configuration");
+      throw Spine::Exception(BCP,
+                             string("Precision settings for ") + name +
+                                 " are missing from pointforecast configuration");
 
     libconfig::Setting& settings = itsConfig.lookup(optname);
 
     if (!settings.isGroup())
-      throw SmartMet::Spine::Exception(
+      throw Spine::Exception(
           BCP,
           "Precision settings for point forecasts must be stored in groups delimited by {}: line " +
               Fmi::to_string(settings.getSourceLine()));
@@ -143,7 +143,7 @@ void Config::parse_config_precision(const string& name)
       {
         int value = settings[i];
         if (value < 0)
-          throw SmartMet::Spine::Exception(
+          throw Spine::Exception(
               BCP,
               "Precision settings must be nonnegative in pointforecast configuration for " +
                   string(name) + "." + paramname);
@@ -155,23 +155,23 @@ void Config::parse_config_precision(const string& name)
       }
       catch (libconfig::ParseException& e)
       {
-        throw SmartMet::Spine::Exception(BCP,
-                                         string("TimeSeries configuration error ' ") +
-                                             e.getError() + "' with variable '" + paramname +
-                                             "' on line " + Fmi::to_string(e.getLine()));
+        throw Spine::Exception(BCP,
+                               string("TimeSeries configuration error ' ") + e.getError() +
+                                   "' with variable '" + paramname + "' on line " +
+                                   Fmi::to_string(e.getLine()));
       }
       catch (libconfig::ConfigException&)
       {
-        throw SmartMet::Spine::Exception(BCP,
-                                         string("TimeSeries configuration error with variable '") +
-                                             paramname + "' on line " +
-                                             Fmi::to_string(settings[i].getSourceLine()));
+        throw Spine::Exception(BCP,
+                               string("TimeSeries configuration error with variable '") +
+                                   paramname + "' on line " +
+                                   Fmi::to_string(settings[i].getSourceLine()));
       }
       catch (std::exception& e)
       {
-        throw SmartMet::Spine::Exception(BCP,
-                                         e.what() + string(" (line number ") +
-                                             Fmi::to_string(settings[i].getSourceLine()) + ")");
+        throw Spine::Exception(BCP,
+                               e.what() + string(" (line number ") +
+                                   Fmi::to_string(settings[i].getSourceLine()) + ")");
       }
     }
 
@@ -182,7 +182,7 @@ void Config::parse_config_precision(const string& name)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -203,13 +203,13 @@ void Config::parse_config_precisions()
       // Require available precisions in
 
       if (!itsConfig.exists("precision.enabled"))
-        throw SmartMet::Spine::Exception(
-            BCP, "precision.enabled missing from pointforecast congiguration file");
+        throw Spine::Exception(BCP,
+                               "precision.enabled missing from pointforecast congiguration file");
 
       libconfig::Setting& enabled = itsConfig.lookup("precision.enabled");
       if (!enabled.isArray())
       {
-        throw SmartMet::Spine::Exception(
+        throw Spine::Exception(
             BCP,
             "precision.enabled must be an array in pointforecast configuration file line " +
                 Fmi::to_string(enabled.getSourceLine()));
@@ -224,13 +224,12 @@ void Config::parse_config_precisions()
       }
 
       if (itsPrecisions.empty())
-        throw SmartMet::Spine::Exception(
-            BCP, "No precisions defined in pointforecast precision: datablock!");
+        throw Spine::Exception(BCP, "No precisions defined in pointforecast precision: datablock!");
     }
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -248,7 +247,7 @@ string parse_config_key(const char* str1 = 0, const char* str2 = 0, const char* 
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -326,7 +325,7 @@ Config::Config(const string& configfile)
       itsConfig.lookupValue("cache.directory", itsFilesystemCacheDirectory);
       itsConfig.lookupValue("cache.timeseries_size", itsMaxTimeSeriesCacheSize);
 
-      itsFormatterOptions = SmartMet::Spine::TableFormatterOptions(itsConfig);
+      itsFormatterOptions = Spine::TableFormatterOptions(itsConfig);
 
       parse_config_precisions();
 
@@ -340,11 +339,11 @@ Config::Config(const string& configfile)
       {
         if (!itsConfig.exists("postgis.default"))
         {
-          throw SmartMet::Spine::Exception(
-              BCP, "PostGIS configuration error: postgis.default-section missing!");
+          throw Spine::Exception(BCP,
+                                 "PostGIS configuration error: postgis.default-section missing!");
         }
 
-        SmartMet::Spine::postgis_identifier postgis_default_identifier;
+        Spine::postgis_identifier postgis_default_identifier;
         postgis_default_identifier.postGISClientEncoding = default_postgis_client_encoding;
         itsConfig.lookupValue("postgis.default.host", postgis_default_identifier.postGISHost);
         itsConfig.lookupValue("postgis.default.port", postgis_default_identifier.postGISPort);
@@ -369,7 +368,7 @@ Config::Config(const string& configfile)
 
           if (!config_items.isArray())
           {
-            throw SmartMet::Spine::Exception(
+            throw Spine::Exception(
                 BCP,
                 "postgis.config_items not an array in areaforecastplugin configuration file line " +
                     Fmi::to_string(config_items.getSourceLine()));
@@ -379,12 +378,11 @@ Config::Config(const string& configfile)
           for (int i = 0; i < config_items.getLength(); ++i)
           {
             if (!itsConfig.exists(parse_config_key("postgis.", config_items[i])))
-              throw SmartMet::Spine::Exception(
-                  BCP,
-                  parse_config_key("postgis.", config_items[i]) +
-                      " -section does not exists in configuration file");
+              throw Spine::Exception(BCP,
+                                     parse_config_key("postgis.", config_items[i]) +
+                                         " -section does not exists in configuration file");
 
-            SmartMet::Spine::postgis_identifier postgis_id(
+            Spine::postgis_identifier postgis_id(
                 postgis_identifiers[itsDefaultPostGISIdentifierKey]);
 
             itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".host").c_str(),
@@ -425,7 +423,7 @@ Config::Config(const string& configfile)
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -443,11 +441,11 @@ const Precision& Config::getPrecision(const string& name) const
     if (p != itsPrecisions.end())
       return p->second;
 
-    throw SmartMet::Spine::Exception(BCP, "Unknown precision '" + name + "'!");
+    throw Spine::Exception(BCP, "Unknown precision '" + name + "'!");
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -457,7 +455,7 @@ vector<std::string> Config::getPostGISIdentifierKeys()
   {
     vector<std::string> keys;
 
-    for (std::map<string, SmartMet::Spine::postgis_identifier>::const_iterator it =
+    for (std::map<string, Spine::postgis_identifier>::const_iterator it =
              postgis_identifiers.begin();
          it != postgis_identifiers.end();
          it++)
@@ -469,16 +467,16 @@ vector<std::string> Config::getPostGISIdentifierKeys()
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
-const SmartMet::Spine::postgis_identifier& Config::getPostGISIdentifier(const std::string& key)
+const Spine::postgis_identifier& Config::getPostGISIdentifier(const std::string& key)
 {
   try
   {
     if (postgis_identifiers.find(key) == postgis_identifiers.end())
-      throw SmartMet::Spine::Exception(
+      throw Spine::Exception(
           BCP,
           "Config::getPostGISIdentifier(const std::string& key): parameter key '" + key +
               "' not found");
@@ -487,11 +485,11 @@ const SmartMet::Spine::postgis_identifier& Config::getPostGISIdentifier(const st
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
-const SmartMet::Spine::postgis_identifier& Config::getDefaultPostGISIdentifier()
+const Spine::postgis_identifier& Config::getDefaultPostGISIdentifier()
 {
   try
   {
@@ -499,7 +497,7 @@ const SmartMet::Spine::postgis_identifier& Config::getDefaultPostGISIdentifier()
   }
   catch (...)
   {
-    throw SmartMet::Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
