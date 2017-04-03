@@ -350,6 +350,38 @@ void Query::parse_levels(const Spine::HTTP::Request& theReq)
       BOOST_FOREACH (const string& tmp, parts)
         levels.insert(Fmi::stoi(tmp));
     }
+
+    // Get pressures and heights to extract data
+
+    opt = Spine::optional_string(theReq.getParameter("pressure"), "");
+    if (!opt.empty())
+    {
+      pressures.insert(Fmi::stod(opt));
+    }
+
+    opt = Spine::optional_string(theReq.getParameter("pressures"), "");
+    if (!opt.empty())
+    {
+      vector<string> parts;
+      boost::algorithm::split(parts, opt, boost::algorithm::is_any_of(","));
+      BOOST_FOREACH (const string& tmp, parts)
+        pressures.insert(Fmi::stod(tmp));
+    }
+
+    opt = Spine::optional_string(theReq.getParameter("height"), "");
+    if (!opt.empty())
+    {
+      heights.insert(Fmi::stod(opt));
+    }
+
+    opt = Spine::optional_string(theReq.getParameter("heights"), "");
+    if (!opt.empty())
+    {
+      vector<string> parts;
+      boost::algorithm::split(parts, opt, boost::algorithm::is_any_of(","));
+      BOOST_FOREACH (const string& tmp, parts)
+        heights.insert(Fmi::stod(tmp));
+    }
   }
   catch (...)
   {
