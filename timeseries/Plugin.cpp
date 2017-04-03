@@ -2221,15 +2221,48 @@ void Plugin::fetchQEngineValues(const State& state,
 
     std::vector<TimeSeriesData> aggregatedData;  // store here data of all levels
 
+    // If no pressures/heights are chosen, loading all or just chosen data levels.
+    //
+    // Otherwise loading chosen data levels if any, then the chosen pressure
+    // and/or height levels (interpolated values at chosen pressures/heights)
+
+    bool loadDataLevels = (!query.levels.empty() || (query.pressures.empty() && query.heights.empty()));
+    string levelType(loadDataLevels ? "data:" : "");
+    Query::Pressures::const_iterator itPressure = query.pressures.begin();
+    Query::Heights::const_iterator itHeight = query.heights.begin();
+
     // Loop over the levels
-    for (qi->resetLevel(); qi->nextLevel();)
+    for (qi->resetLevel(); ;)
     {
-      // check if only some levels are chosen
-      if (!query.levels.empty())
-      {
-        int level = static_cast<int>(qi->levelValue());
-        if (query.levels.find(level) == query.levels.end())
-          continue;
+      boost::optional<float> pressure,height;
+      float levelValue;
+
+      if (loadDataLevels) {
+        if (!qi->nextLevel())
+          // No more native/data levels; load/interpolate pressure and height levels if any
+          loadDataLevels = false;
+    	else {
+		  // check if only some levels are chosen
+		  if (!query.levels.empty())
+		  {
+			int level = static_cast<int>(qi->levelValue());
+			if (query.levels.find(level) == query.levels.end())
+			  continue;
+		  }
+    	}
+      }
+
+      if (!loadDataLevels) {
+    	if (itPressure != query.pressures.end()) {
+    	  levelType = "pressure:";
+    	  pressure = levelValue = *(itPressure++);
+    	}
+    	else if (itHeight != query.heights.end()) {
+      	  levelType = "height:";
+    	  height = levelValue = *(itHeight++);
+    	}
+    	else
+    	  break;
       }
 
       // Generate the desired time steps as a new copy, since we'll modify the list (???)
@@ -2304,7 +2337,7 @@ void Plugin::fetchQEngineValues(const State& state,
       }
 #endif
 
-      std::pair<int, std::string> cacheKey(qi->levelValue(), paramname);
+      std::pair<float, std::string> cacheKey(loadDataLevels ? qi->levelValue() : levelValue, levelType + paramname);
 
       if ((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
           loc->radius == 0)
@@ -2333,7 +2366,7 @@ void Plugin::fetchQEngineValues(const State& state,
                                                               query.lastpoint);
 
           // one location, list of local times (no radius -> pointforecast)
-          querydata_result = qi->values(querydata_param, querydata_tlist);
+          querydata_result = qi->values(querydata_param, querydata_tlist, pressure, height);
           if (querydata_result->size() > 0)
             queryLevelDataCache.itsTimeSeries.insert(make_pair(cacheKey, querydata_result));
         }
@@ -2374,7 +2407,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
             // list of locations, list of local times
             querydata_result =
-                qi->values(querydata_param, llist, querydata_tlist, query.maxdistance);
+                qi->values(querydata_param, llist, querydata_tlist, query.maxdistance, pressure, height);
             if (querydata_result->size() > 0)
             {
               // if the value is not dependent on location inside area we just need to have the
@@ -2450,7 +2483,7 @@ void Plugin::fetchQEngineValues(const State& state,
                                                                 query.lastpoint);
 
             // indexmask (indexed locations on the area), list of local times
-            querydata_result = qi->values(querydata_param, mask, querydata_tlist);
+            querydata_result = qi->values(querydata_param, mask, querydata_tlist, pressure, height);
 
             if (querydata_result->size() > 0)
             {
