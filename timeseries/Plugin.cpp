@@ -10,30 +10,30 @@
 #include "QueryLevelDataCache.h"
 #include "State.h"
 
-#include <spine/SmartMet.h>
-#include <spine/Exception.h>
-#include <engines/querydata/OriginTime.h>
 #include <engines/gis/Engine.h>
+#include <engines/querydata/OriginTime.h>
+#include <spine/Exception.h>
+#include <spine/SmartMet.h>
 
 #include <spine/Convenience.h>
-#include <spine/ValueFormatter.h>
+#include <spine/ParameterFactory.h>
 #include <spine/Table.h>
+#include <spine/TableFeeder.h>
 #include <spine/TableFormatterFactory.h>
 #include <spine/TimeSeriesAggregator.h>
 #include <spine/TimeSeriesOutput.h>
-#include <spine/TableFeeder.h>
-#include <spine/ParameterFactory.h>
+#include <spine/ValueFormatter.h>
 
 #include <macgyver/Astronomy.h>
 #include <macgyver/CharsetTools.h>
 #include <macgyver/StringConversion.h>
 #include <macgyver/TimeFormatter.h>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -42,23 +42,22 @@
 #include <boost/timer/timer.hpp>
 #include <boost/tokenizer.hpp>
 
-#include <newbase/NFmiIndexMaskTools.h>
 #include <newbase/NFmiIndexMask.h>
-#include <newbase/NFmiSvgTools.h>
-#include <newbase/NFmiQueryData.h>
+#include <newbase/NFmiIndexMaskTools.h>
 #include <newbase/NFmiMultiQueryInfo.h>
+#include <newbase/NFmiQueryData.h>
+#include <newbase/NFmiSvgTools.h>
 
 #include <gis/OGR.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <limits>
-#include <stdexcept>
-#include <algorithm>
-#include <functional>
 #include <numeric>
-#include <cmath>
+#include <stdexcept>
 
 using namespace std;
 using namespace boost::posix_time;
@@ -3845,8 +3844,9 @@ void Plugin::query(const State& state,
 
     high_resolution_clock::time_point t3 = high_resolution_clock::now();
 
-    timeheader.append(Fmi::to_string(
-                          std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()))
+    timeheader
+        .append(
+            Fmi::to_string(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()))
         .append("+")
         .append(
             Fmi::to_string(std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count()));
@@ -3965,6 +3965,8 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
 
     try
     {
+      theResponse.setHeader("Access-Control-Allow-Origin", "*");
+
       auto expires_seconds = itsConfig.expirationTime();
       State state(*this);
 
