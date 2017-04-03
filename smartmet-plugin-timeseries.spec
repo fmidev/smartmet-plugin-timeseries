@@ -43,7 +43,9 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 SmartMet timeseries plugin
 
 %prep
-rm -rf $RPM_BUILD_ROOT %setup -q -n %{SPECNAME}
+rm -rf $RPM_BUILD_ROOT
+
+%setup -q -n %{SPECNAME}
  
 %build -q -n %{SPECNAME}
 make %{_smp_mflags} \
