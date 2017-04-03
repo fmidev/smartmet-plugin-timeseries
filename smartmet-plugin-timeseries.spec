@@ -12,34 +12,20 @@ Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
-<<<<<<< HEAD
-BuildRequires: smartmet-library-spine-devel >= 17.3.15
-BuildRequires: smartmet-library-locus-devel >= 17.3.14
-BuildRequires: smartmet-library-macgyver-devel >= 17.3.14
-BuildRequires: smartmet-library-newbase-devel >= 1
-=======
 BuildRequires: smartmet-library-spine-devel >= 17.3.16
 BuildRequires: smartmet-library-locus-devel >= 17.3.23
 BuildRequires: smartmet-library-macgyver-devel >= 17.3.16
-BuildRequires: smartmet-library-newbase-devel >= 17.4.3
->>>>>>> master
+BuildRequires: smartmet-library-newbase-devel >= 1
 BuildRequires: smartmet-engine-geonames-devel >= 17.3.15
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 17.3.26
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 1
 Requires: libconfig
-<<<<<<< HEAD
-Requires: smartmet-library-locus >= 17.3.14
-Requires: smartmet-library-macgyver >= 17.3.14
-Requires: smartmet-library-newbase >= 1
-Requires: smartmet-library-spine >= 17.3.15
-=======
 Requires: smartmet-library-locus >= 17.3.23
 Requires: smartmet-library-macgyver >= 17.3.16
-Requires: smartmet-library-newbase >= 17.4.3
+Requires: smartmet-library-newbase >= 1
 Requires: smartmet-library-spine >= 17.3.16
->>>>>>> master
 Requires: smartmet-engine-geonames >= 17.3.15
 Requires: smartmet-engine-querydata >= 1
 Requires: smartmet-server >= 17.3.15
@@ -57,9 +43,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 SmartMet timeseries plugin
 
 %prep
-rm -rf $RPM_BUILD_ROOT
-
-%setup -q -n %{SPECNAME}
+rm -rf $RPM_BUILD_ROOT %setup -q -n %{SPECNAME}
  
 %build -q -n %{SPECNAME}
 make %{_smp_mflags} \
