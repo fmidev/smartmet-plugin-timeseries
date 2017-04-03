@@ -56,6 +56,8 @@ struct Query
 
   typedef std::vector<int> ParamPrecisions;
   typedef std::set<int> Levels;
+  typedef std::set<double> Pressures;
+  typedef std::set<double> Heights;
 
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
@@ -96,6 +98,8 @@ struct Query
 
   TimeProducers timeproducers;
   Levels levels;
+  Pressures pressures;
+  Heights heights;
 
   // shared so that copying would be fast
   std::shared_ptr<Engine::Geonames::LocationOptions> loptions;
