@@ -2365,7 +2365,10 @@ void Plugin::fetchQEngineValues(const State& state,
                                                               query.lastpoint);
 
           // one location, list of local times (no radius -> pointforecast)
-          querydata_result = qi->values(querydata_param, querydata_tlist, pressure, height);
+          querydata_result =
+              loadDataLevels ? qi->values(querydata_param, querydata_tlist) :
+              pressure ? qi->valuesAtPressure(querydata_param, querydata_tlist, *pressure) :
+              qi->valuesAtHeight(querydata_param, querydata_tlist, *height);
           if (querydata_result->size() > 0)
             queryLevelDataCache.itsTimeSeries.insert(make_pair(cacheKey, querydata_result));
         }
@@ -2406,7 +2409,9 @@ void Plugin::fetchQEngineValues(const State& state,
 
             // list of locations, list of local times
             querydata_result =
-                qi->values(querydata_param, llist, querydata_tlist, query.maxdistance, pressure, height);
+                loadDataLevels ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance) :
+                pressure ? qi->valuesAtPressure(querydata_param, llist, querydata_tlist, query.maxdistance, *pressure) :
+                qi->valuesAtHeight(querydata_param, llist, querydata_tlist, query.maxdistance, *height);
             if (querydata_result->size() > 0)
             {
               // if the value is not dependent on location inside area we just need to have the
@@ -2482,7 +2487,10 @@ void Plugin::fetchQEngineValues(const State& state,
                                                                 query.lastpoint);
 
             // indexmask (indexed locations on the area), list of local times
-            querydata_result = qi->values(querydata_param, mask, querydata_tlist, pressure, height);
+            querydata_result =
+                loadDataLevels ? qi->values(querydata_param, mask, querydata_tlist) :
+                pressure ? qi->valuesAtPressure(querydata_param, mask, querydata_tlist, *pressure) :
+                qi->valuesAtHeight(querydata_param, mask, querydata_tlist, *height);
 
             if (querydata_result->size() > 0)
             {
