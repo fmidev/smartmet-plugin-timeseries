@@ -15,19 +15,19 @@ BuildRequires: libconfig-devel
 BuildRequires: smartmet-library-spine-devel >= 17.3.16
 BuildRequires: smartmet-library-locus-devel >= 17.3.23
 BuildRequires: smartmet-library-macgyver-devel >= 17.3.16
-BuildRequires: smartmet-library-newbase-devel >= 17.4.3
+BuildRequires: smartmet-library-newbase-devel >= 1
 BuildRequires: smartmet-engine-geonames-devel >= 17.3.15
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 17.3.26
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 17.3.15
+BuildRequires: smartmet-engine-querydata-devel >= 1
 Requires: libconfig
 Requires: smartmet-library-locus >= 17.3.23
 Requires: smartmet-library-macgyver >= 17.3.16
-Requires: smartmet-library-newbase >= 17.4.3
+Requires: smartmet-library-newbase >= 1
 Requires: smartmet-library-spine >= 17.3.16
 Requires: smartmet-engine-geonames >= 17.3.15
-Requires: smartmet-engine-querydata >= 17.3.15
+Requires: smartmet-engine-querydata >= 1
 Requires: smartmet-server >= 17.3.15
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -62,6 +62,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Upcoming
+- Support for pressure and height value queries
+
 * Mon Apr  3 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.4.3-1.fmi
 - Added Access-Control-Allow-Origin: * header
 

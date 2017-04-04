@@ -17,7 +17,7 @@ namespace TimeSeries
 {
 struct QueryLevelDataCache
 {
-  typedef std::pair<int, std::string> PressureLevelParameterPair;
+  typedef std::pair<float, std::string> PressureLevelParameterPair;
   typedef std::map<PressureLevelParameterPair, SmartMet::Spine::TimeSeries::TimeSeriesPtr>
       ParameterTimeSeriesMap;
   typedef std::map<PressureLevelParameterPair, SmartMet::Spine::TimeSeries::TimeSeriesGroupPtr>
