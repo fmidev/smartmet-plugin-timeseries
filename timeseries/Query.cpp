@@ -9,10 +9,10 @@
 #include "Hash.h"
 #include "State.h"
 
-#include <spine/Exception.h>
-#include <spine/Convenience.h>
-#include <spine/ParameterFactory.h>
 #include <engines/geonames/Engine.h>
+#include <spine/Convenience.h>
+#include <spine/Exception.h>
+#include <spine/ParameterFactory.h>
 #ifndef WITHOUT_OBSERVATION
 #include <engines/observation/Engine.h>
 #endif
@@ -180,6 +180,21 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       BOOST_FOREACH (const string& sfmisid, parts)
       {
         int f = Fmi::stoi(sfmisid);
+        this->fmisids.push_back(f);
+      }
+    }
+
+    // sid is an alias for fmisid
+    name = req.getParameter("sid");
+    if (name)
+    {
+      const string sidreq = *name;
+      vector<string> parts;
+      boost::algorithm::split(parts, sidreq, boost::algorithm::is_any_of(","));
+
+      BOOST_FOREACH (const string& ssid, parts)
+      {
+        int f = Fmi::stoi(ssid);
         this->fmisids.push_back(f);
       }
     }
