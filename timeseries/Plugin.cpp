@@ -2225,43 +2225,49 @@ void Plugin::fetchQEngineValues(const State& state,
     // Otherwise loading chosen data levels if any, then the chosen pressure
     // and/or height levels (interpolated values at chosen pressures/heights)
 
-    bool loadDataLevels = (!query.levels.empty() || (query.pressures.empty() && query.heights.empty()));
+    bool loadDataLevels =
+        (!query.levels.empty() || (query.pressures.empty() && query.heights.empty()));
     string levelType(loadDataLevels ? "data:" : "");
     Query::Pressures::const_iterator itPressure = query.pressures.begin();
     Query::Heights::const_iterator itHeight = query.heights.begin();
 
     // Loop over the levels
-    for (qi->resetLevel(); ;)
+    for (qi->resetLevel();;)
     {
-      boost::optional<float> pressure,height;
+      boost::optional<float> pressure, height;
       float levelValue;
 
-      if (loadDataLevels) {
+      if (loadDataLevels)
+      {
         if (!qi->nextLevel())
           // No more native/data levels; load/interpolate pressure and height levels if any
           loadDataLevels = false;
-    	else {
-		  // check if only some levels are chosen
-		  if (!query.levels.empty())
-		  {
-			int level = static_cast<int>(qi->levelValue());
-			if (query.levels.find(level) == query.levels.end())
-			  continue;
-		  }
-    	}
+        else
+        {
+          // check if only some levels are chosen
+          if (!query.levels.empty())
+          {
+            int level = static_cast<int>(qi->levelValue());
+            if (query.levels.find(level) == query.levels.end())
+              continue;
+          }
+        }
       }
 
-      if (!loadDataLevels) {
-    	if (itPressure != query.pressures.end()) {
-    	  levelType = "pressure:";
-    	  pressure = levelValue = *(itPressure++);
-    	}
-    	else if (itHeight != query.heights.end()) {
-      	  levelType = "height:";
-    	  height = levelValue = *(itHeight++);
-    	}
-    	else
-    	  break;
+      if (!loadDataLevels)
+      {
+        if (itPressure != query.pressures.end())
+        {
+          levelType = "pressure:";
+          pressure = levelValue = *(itPressure++);
+        }
+        else if (itHeight != query.heights.end())
+        {
+          levelType = "height:";
+          height = levelValue = *(itHeight++);
+        }
+        else
+          break;
       }
 
       // Generate the desired time steps as a new copy, since we'll modify the list (???)
@@ -2336,7 +2342,8 @@ void Plugin::fetchQEngineValues(const State& state,
       }
 #endif
 
-      std::pair<float, std::string> cacheKey(loadDataLevels ? qi->levelValue() : levelValue, levelType + paramname);
+      std::pair<float, std::string> cacheKey(loadDataLevels ? qi->levelValue() : levelValue,
+                                             levelType + paramname);
 
       if ((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
           loc->radius == 0)
@@ -2366,9 +2373,10 @@ void Plugin::fetchQEngineValues(const State& state,
 
           // one location, list of local times (no radius -> pointforecast)
           querydata_result =
-              loadDataLevels ? qi->values(querydata_param, querydata_tlist) :
-              pressure ? qi->valuesAtPressure(querydata_param, querydata_tlist, *pressure) :
-              qi->valuesAtHeight(querydata_param, querydata_tlist, *height);
+              loadDataLevels
+                  ? qi->values(querydata_param, querydata_tlist)
+                  : pressure ? qi->valuesAtPressure(querydata_param, querydata_tlist, *pressure)
+                             : qi->valuesAtHeight(querydata_param, querydata_tlist, *height);
           if (querydata_result->size() > 0)
             queryLevelDataCache.itsTimeSeries.insert(make_pair(cacheKey, querydata_result));
         }
@@ -2409,9 +2417,19 @@ void Plugin::fetchQEngineValues(const State& state,
 
             // list of locations, list of local times
             querydata_result =
-                loadDataLevels ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance) :
-                pressure ? qi->valuesAtPressure(querydata_param, llist, querydata_tlist, query.maxdistance, *pressure) :
-                qi->valuesAtHeight(querydata_param, llist, querydata_tlist, query.maxdistance, *height);
+                loadDataLevels
+                    ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance)
+                    : pressure
+                          ? qi->valuesAtPressure(querydata_param,
+                                                 llist,
+                                                 querydata_tlist,
+                                                 query.maxdistance,
+                                                 *pressure)
+                          : qi->valuesAtHeight(querydata_param,
+                                               llist,
+                                               querydata_tlist,
+                                               query.maxdistance,
+                                               *height);
             if (querydata_result->size() > 0)
             {
               // if the value is not dependent on location inside area we just need to have the
@@ -2488,9 +2506,11 @@ void Plugin::fetchQEngineValues(const State& state,
 
             // indexmask (indexed locations on the area), list of local times
             querydata_result =
-                loadDataLevels ? qi->values(querydata_param, mask, querydata_tlist) :
-                pressure ? qi->valuesAtPressure(querydata_param, mask, querydata_tlist, *pressure) :
-                qi->valuesAtHeight(querydata_param, mask, querydata_tlist, *height);
+                loadDataLevels
+                    ? qi->values(querydata_param, mask, querydata_tlist)
+                    : pressure
+                          ? qi->valuesAtPressure(querydata_param, mask, querydata_tlist, *pressure)
+                          : qi->valuesAtHeight(querydata_param, mask, querydata_tlist, *height);
 
             if (querydata_result->size() > 0)
             {
@@ -4042,11 +4062,7 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
 
       Spine::Exception exception(BCP, "Request processing exception!", NULL);
       exception.addParameter("URI", theRequest.getURI());
-
-      if (!exception.stackTraceDisabled())
-        std::cerr << exception.getStackTrace();
-      else
-        std::cerr << "Error: " << exception.what() << std::endl;
+      exception.printError();
 
       if (isdebug)
       {
