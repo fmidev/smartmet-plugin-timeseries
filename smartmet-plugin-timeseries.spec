@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 17.4.8
+Version: 17.7.10
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -12,23 +12,23 @@ Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
-BuildRequires: smartmet-library-spine-devel >= 17.4.8
-BuildRequires: smartmet-library-locus-devel >= 17.3.23
-BuildRequires: smartmet-library-macgyver-devel >= 17.3.16
-BuildRequires: smartmet-library-newbase-devel >= 17.4.4
-BuildRequires: smartmet-engine-geonames-devel >= 17.3.15
+BuildRequires: smartmet-library-spine-devel >= 17.7.10
+BuildRequires: smartmet-library-locus-devel >= 17.5.18
+BuildRequires: smartmet-library-macgyver-devel >= 17.4.19
+BuildRequires: smartmet-library-newbase-devel >= 17.6.30
+BuildRequires: smartmet-engine-geonames-devel >= 17.5.24
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 17.4.7
+BuildRequires: smartmet-engine-observation-devel >= 17.5.29
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 17.4.8
+BuildRequires: smartmet-engine-querydata-devel >= 17.5.24
 Requires: libconfig
-Requires: smartmet-library-locus >= 17.3.23
-Requires: smartmet-library-macgyver >= 17.3.16
-Requires: smartmet-library-newbase >= 17.4.4
-Requires: smartmet-library-spine >= 17.4.8
-Requires: smartmet-engine-geonames >= 17.3.15
-Requires: smartmet-engine-querydata >= 17.4.8
-Requires: smartmet-server >= 17.4.7
+Requires: smartmet-library-locus >= 17.5.18
+Requires: smartmet-library-macgyver >= 17.4.19
+Requires: smartmet-library-newbase >= 17.6.30
+Requires: smartmet-library-spine >= 17.7.10
+Requires: smartmet-engine-geonames >= 17.5.24
+Requires: smartmet-engine-querydata >= 17.5.24
+Requires: smartmet-server >= 17.4.8
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -62,6 +62,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Jul 10 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.7.10-1.fmi
+- default locale is now an obligatory configuration variable
+- default language is now an obligatory configuration variable
+
 * Sat Apr  8 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.4.8-1.fmi
 - Simplified error reporting
 - sid is now an alias for fmisid

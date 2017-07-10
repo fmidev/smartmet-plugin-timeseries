@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include "Query.h"
 #include "Precision.h"
+#include "Query.h"
 
+#include <boost/utility.hpp>
 #include <spine/Parameter.h>
 #include <spine/PostGISDataSource.h>
 #include <spine/TableFormatterOptions.h>
 #include <libconfig.h++>
-#include <boost/utility.hpp>
 #include <string>
 
 namespace SmartMet
@@ -28,14 +28,14 @@ class Config : private boost::noncopyable
 {
  public:
   Config(const std::string& configfile);
-  Config();
+  Config() = delete;
 
   const Precision& getPrecision(const std::string& name) const;
 
   const std::string& defaultPrecision() const { return itsDefaultPrecision; }
   const std::string& defaultLanguage() const { return itsDefaultLanguage; }
   // You can copy the locale, not modify it!
-  const std::locale& defaultLocale() const { return itsDefaultLocale; }
+  const std::locale& defaultLocale() const { return *itsDefaultLocale; }
   const std::string& defaultLocaleName() const { return itsDefaultLocaleName; }
   const std::string& defaultTimeFormat() const { return itsDefaultTimeFormat; }
   const std::string& defaultUrl() const { return itsDefaultUrl; }
@@ -64,13 +64,14 @@ class Config : private boost::noncopyable
   unsigned long long maxTimeSeriesCacheSize() const;
 
   unsigned int expirationTime() const { return itsExpirationTime; }
+
  private:
   libconfig::Config itsConfig;
   bool itsDisabled = false;
   std::string itsDefaultPrecision;
   std::string itsDefaultLanguage;
   std::string itsDefaultLocaleName;
-  std::locale itsDefaultLocale;
+  std::unique_ptr<std::locale> itsDefaultLocale;
   std::string itsDefaultTimeFormat;
   std::string itsDefaultUrl;
   double itsDefaultMaxDistance;

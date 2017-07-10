@@ -6,16 +6,14 @@
 
 #include "Config.h"
 #include "Precision.h"
-#include <spine/Exception.h>
-#include <macgyver/StringConversion.h>
-#include <stdexcept>
 #include <boost/foreach.hpp>
+#include <macgyver/StringConversion.h>
+#include <spine/Exception.h>
+#include <stdexcept>
 
 using namespace std;
 
 static const char* default_url = "/timeseries";
-static const char* default_language = "fi";
-static const char* default_locale = "fi_FI";
 static const char* default_timeformat = "iso";
 static const char* default_postgis_client_encoding = "latin1";
 
@@ -257,37 +255,8 @@ string parse_config_key(const char* str1 = 0, const char* str2 = 0, const char* 
  */
 // ----------------------------------------------------------------------
 
-Config::Config()
-    : itsDefaultPrecision("normal"),
-      itsDefaultLanguage(default_language),
-      itsDefaultLocaleName(default_locale),
-      itsDefaultLocale(std::locale(default_locale)),
-      itsDefaultTimeFormat(default_timeformat),
-      itsDefaultUrl(default_url),
-      itsDefaultMaxDistance(default_maxdistance),
-      itsExpirationTime(default_expires),
-      itsFormatterOptions(),
-      itsPrecisions(),
-      itsObsEngineDisabled(false),
-      itsFilesystemCacheDirectory("/var/smartmet/timeseriescache"),
-      itsMaxMemoryCacheSize(104857600)  // 100 MB
-      ,
-      itsMaxFilesystemCacheSize(209715200)  // 200 MB
-      ,
-      itsMaxTimeSeriesCacheSize(10000)
-{
-}
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Constructor
- */
-// ----------------------------------------------------------------------
-
 Config::Config(const string& configfile)
     : itsDefaultPrecision("normal"),
-      itsDefaultLanguage(default_language),
-      itsDefaultLocaleName(default_locale),
       itsDefaultTimeFormat(default_timeformat),
       itsDefaultUrl(default_url),
       itsDefaultMaxDistance(default_maxdistance),
@@ -305,125 +274,126 @@ Config::Config(const string& configfile)
   try
   {
     if (configfile.empty())
-    {
-      add_default_precisions();  // set sensible defaults
-    }
+      throw Spine::Exception(BCP, "TimeSeries configuration file cannot be empty");
+
+    itsConfig.readFile(configfile.c_str());
+
+    // Obligatory settings
+    itsDefaultLocaleName = itsConfig.lookup("locale").c_str();
+    itsDefaultLanguage = itsConfig.lookup("language").c_str();
+
+    if (itsDefaultLocaleName.empty())
+      throw Spine::Exception(BCP, "Default locale name cannot be empty");
+
+    if (itsDefaultLanguage.empty())
+      throw Spine::Exception(BCP, "Default language code cannot be empty");
+
+    // Optional settings
+    itsConfig.lookupValue("timeformat", itsDefaultTimeFormat);
+    itsConfig.lookupValue("url", itsDefaultUrl);
+    itsConfig.lookupValue("maxdistance", itsDefaultMaxDistance);
+    itsConfig.lookupValue("expires", itsExpirationTime);
+    itsConfig.lookupValue("observation_disabled", itsObsEngineDisabled);
+
+    itsConfig.lookupValue("cache.memory_bytes", itsMaxMemoryCacheSize);
+    itsConfig.lookupValue("cache.filesystem_bytes", itsMaxFilesystemCacheSize);
+    itsConfig.lookupValue("cache.directory", itsFilesystemCacheDirectory);
+    itsConfig.lookupValue("cache.timeseries_size", itsMaxTimeSeriesCacheSize);
+
+    itsFormatterOptions = Spine::TableFormatterOptions(itsConfig);
+
+    parse_config_precisions();
+
+    // PostGIS
+    if (!itsConfig.exists("postgis"))
+      itsDisabled = true;
     else
+      itsConfig.lookupValue("postgis.disabled", itsDisabled);
+
+    if (!itsDisabled)
     {
-      itsConfig.readFile(configfile.c_str());
-
-      itsConfig.lookupValue("timeformat", itsDefaultTimeFormat);
-      itsConfig.lookupValue("language", itsDefaultLanguage);
-      itsConfig.lookupValue("locale", itsDefaultLocaleName);
-      itsConfig.lookupValue("url", itsDefaultUrl);
-      itsConfig.lookupValue("maxdistance", itsDefaultMaxDistance);
-      itsConfig.lookupValue("expires", itsExpirationTime);
-      itsConfig.lookupValue("observation_disabled", itsObsEngineDisabled);
-
-      itsConfig.lookupValue("cache.memory_bytes", itsMaxMemoryCacheSize);
-      itsConfig.lookupValue("cache.filesystem_bytes", itsMaxFilesystemCacheSize);
-      itsConfig.lookupValue("cache.directory", itsFilesystemCacheDirectory);
-      itsConfig.lookupValue("cache.timeseries_size", itsMaxTimeSeriesCacheSize);
-
-      itsFormatterOptions = Spine::TableFormatterOptions(itsConfig);
-
-      parse_config_precisions();
-
-      // PostGIS
-      if (!itsConfig.exists("postgis"))
-        itsDisabled = true;
-      else
-        itsConfig.lookupValue("postgis.disabled", itsDisabled);
-
-      if (!itsDisabled)
+      if (!itsConfig.exists("postgis.default"))
       {
-        if (!itsConfig.exists("postgis.default"))
+        throw Spine::Exception(BCP,
+                               "PostGIS configuration error: postgis.default-section missing!");
+      }
+
+      Spine::postgis_identifier postgis_default_identifier;
+      postgis_default_identifier.postGISClientEncoding = default_postgis_client_encoding;
+      itsConfig.lookupValue("postgis.default.host", postgis_default_identifier.postGISHost);
+      itsConfig.lookupValue("postgis.default.port", postgis_default_identifier.postGISPort);
+      itsConfig.lookupValue("postgis.default.database", postgis_default_identifier.postGISDatabase);
+      itsConfig.lookupValue("postgis.default.username", postgis_default_identifier.postGISUsername);
+      itsConfig.lookupValue("postgis.default.password", postgis_default_identifier.postGISPassword);
+      itsConfig.lookupValue("postgis.default.client_encoding",
+                            postgis_default_identifier.postGISClientEncoding);
+      itsConfig.lookupValue("postgis.default.schema", postgis_default_identifier.postGISSchema);
+      itsConfig.lookupValue("postgis.default.table", postgis_default_identifier.postGISTable);
+      itsConfig.lookupValue("postgis.default.field", postgis_default_identifier.postGISField);
+      std::string postgis_identifier_key(postgis_default_identifier.key());
+      itsDefaultPostGISIdentifierKey = postgis_identifier_key;
+      postgis_identifiers.insert(make_pair(postgis_identifier_key, postgis_default_identifier));
+
+      if (itsConfig.exists("postgis.config_items"))
+      {
+        libconfig::Setting& config_items = itsConfig.lookup("postgis.config_items");
+
+        if (!config_items.isArray())
         {
-          throw Spine::Exception(BCP,
-                                 "PostGIS configuration error: postgis.default-section missing!");
+          throw Spine::Exception(
+              BCP,
+              "postgis.config_items not an array in areaforecastplugin configuration file line " +
+                  Fmi::to_string(config_items.getSourceLine()));
+          ;
         }
 
-        Spine::postgis_identifier postgis_default_identifier;
-        postgis_default_identifier.postGISClientEncoding = default_postgis_client_encoding;
-        itsConfig.lookupValue("postgis.default.host", postgis_default_identifier.postGISHost);
-        itsConfig.lookupValue("postgis.default.port", postgis_default_identifier.postGISPort);
-        itsConfig.lookupValue("postgis.default.database",
-                              postgis_default_identifier.postGISDatabase);
-        itsConfig.lookupValue("postgis.default.username",
-                              postgis_default_identifier.postGISUsername);
-        itsConfig.lookupValue("postgis.default.password",
-                              postgis_default_identifier.postGISPassword);
-        itsConfig.lookupValue("postgis.default.client_encoding",
-                              postgis_default_identifier.postGISClientEncoding);
-        itsConfig.lookupValue("postgis.default.schema", postgis_default_identifier.postGISSchema);
-        itsConfig.lookupValue("postgis.default.table", postgis_default_identifier.postGISTable);
-        itsConfig.lookupValue("postgis.default.field", postgis_default_identifier.postGISField);
-        std::string postgis_identifier_key(postgis_default_identifier.key());
-        itsDefaultPostGISIdentifierKey = postgis_identifier_key;
-        postgis_identifiers.insert(make_pair(postgis_identifier_key, postgis_default_identifier));
-
-        if (itsConfig.exists("postgis.config_items"))
+        for (int i = 0; i < config_items.getLength(); ++i)
         {
-          libconfig::Setting& config_items = itsConfig.lookup("postgis.config_items");
+          if (!itsConfig.exists(parse_config_key("postgis.", config_items[i])))
+            throw Spine::Exception(BCP,
+                                   parse_config_key("postgis.", config_items[i]) +
+                                       " -section does not exists in configuration file");
 
-          if (!config_items.isArray())
-          {
-            throw Spine::Exception(
-                BCP,
-                "postgis.config_items not an array in areaforecastplugin configuration file line " +
-                    Fmi::to_string(config_items.getSourceLine()));
-            ;
-          }
+          Spine::postgis_identifier postgis_id(postgis_identifiers[itsDefaultPostGISIdentifierKey]);
 
-          for (int i = 0; i < config_items.getLength(); ++i)
-          {
-            if (!itsConfig.exists(parse_config_key("postgis.", config_items[i])))
-              throw Spine::Exception(BCP,
-                                     parse_config_key("postgis.", config_items[i]) +
-                                         " -section does not exists in configuration file");
+          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".host").c_str(),
+                                postgis_id.postGISHost);
+          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".port").c_str(),
+                                postgis_id.postGISPort);
+          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".database").c_str(),
+                                postgis_id.postGISDatabase);
+          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".username").c_str(),
+                                postgis_id.postGISUsername);
+          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".password").c_str(),
+                                postgis_id.postGISPassword);
+          itsConfig.lookupValue(
+              parse_config_key("postgis.", config_items[i], ".client_encoding").c_str(),
+              postgis_id.postGISClientEncoding);
+          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".schema").c_str(),
+                                postgis_id.postGISSchema);
+          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".table").c_str(),
+                                postgis_id.postGISTable);
+          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".field").c_str(),
+                                postgis_id.postGISField);
 
-            Spine::postgis_identifier postgis_id(
-                postgis_identifiers[itsDefaultPostGISIdentifierKey]);
-
-            itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".host").c_str(),
-                                  postgis_id.postGISHost);
-            itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".port").c_str(),
-                                  postgis_id.postGISPort);
-            itsConfig.lookupValue(
-                parse_config_key("postgis.", config_items[i], ".database").c_str(),
-                postgis_id.postGISDatabase);
-            itsConfig.lookupValue(
-                parse_config_key("postgis.", config_items[i], ".username").c_str(),
-                postgis_id.postGISUsername);
-            itsConfig.lookupValue(
-                parse_config_key("postgis.", config_items[i], ".password").c_str(),
-                postgis_id.postGISPassword);
-            itsConfig.lookupValue(
-                parse_config_key("postgis.", config_items[i], ".client_encoding").c_str(),
-                postgis_id.postGISClientEncoding);
-            itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".schema").c_str(),
-                                  postgis_id.postGISSchema);
-            itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".table").c_str(),
-                                  postgis_id.postGISTable);
-            itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".field").c_str(),
-                                  postgis_id.postGISField);
-
-            std::string key(postgis_id.key());
-            if (postgis_identifiers.find(key) == postgis_identifiers.end())
-              postgis_identifiers.insert(make_pair(postgis_id.key(), postgis_id));
-          }
+          std::string key(postgis_id.key());
+          if (postgis_identifiers.find(key) == postgis_identifiers.end())
+            postgis_identifiers.insert(make_pair(postgis_id.key(), postgis_id));
         }
       }
     }
 
     // We construct the default locale only once from the string,
-    // creating it from scratch is more expensive.
-
-    itsDefaultLocale = std::locale(itsDefaultLocaleName.c_str());
+    // creating it from scratch for every request is very expensive
+    itsDefaultLocale.reset(new std::locale(itsDefaultLocaleName.c_str()));
+  }
+  catch (const libconfig::SettingNotFoundException& e)
+  {
+    throw Spine::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
