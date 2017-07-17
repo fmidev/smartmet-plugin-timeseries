@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 17.7.10
+Version: 17.7.17
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -15,7 +15,7 @@ BuildRequires: libconfig-devel
 BuildRequires: smartmet-library-spine-devel >= 17.7.10
 BuildRequires: smartmet-library-locus-devel >= 17.5.18
 BuildRequires: smartmet-library-macgyver-devel >= 17.4.19
-BuildRequires: smartmet-library-newbase-devel >= 17.6.30
+BuildRequires: smartmet-library-newbase-devel >= 17.6.1
 BuildRequires: smartmet-engine-geonames-devel >= 17.5.24
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 17.5.29
@@ -24,7 +24,7 @@ BuildRequires: smartmet-engine-querydata-devel >= 17.5.24
 Requires: libconfig
 Requires: smartmet-library-locus >= 17.5.18
 Requires: smartmet-library-macgyver >= 17.4.19
-Requires: smartmet-library-newbase >= 17.6.30
+Requires: smartmet-library-newbase >= 17.6.1
 Requires: smartmet-library-spine >= 17.7.10
 Requires: smartmet-engine-geonames >= 17.5.24
 Requires: smartmet-engine-querydata >= 17.5.24
@@ -62,6 +62,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Jul 17 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.7.17-1.fmi
+- Downgraded newbase dependency, a development version was installed in the build machine
+
 * Mon Jul 10 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.7.10-1.fmi
 - default locale is now an obligatory configuration variable
 - default language is now an obligatory configuration variable
