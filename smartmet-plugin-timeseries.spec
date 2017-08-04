@@ -21,6 +21,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 17.5.24
 BuildRequires: smartmet-engine-observation-devel >= 17.5.29
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 17.5.24
+BuildRequires: smartmet-engine-gis-devel
 Requires: libconfig
 Requires: smartmet-library-locus >= 17.5.18
 Requires: smartmet-library-macgyver >= 17.4.19
