@@ -10,6 +10,8 @@ Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
 Source0: %{name}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRequires: gcc-c++
+BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
 BuildRequires: smartmet-library-spine-devel >= 17.8.3
@@ -21,6 +23,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 17.5.24
 BuildRequires: smartmet-engine-observation-devel >= 17.5.29
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 17.5.24
+BuildRequires: smartmet-engine-gis-devel
 Requires: libconfig
 Requires: smartmet-library-locus >= 17.5.18
 Requires: smartmet-library-macgyver >= 17.7.29
