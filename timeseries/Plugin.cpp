@@ -10,6 +10,8 @@
 #include "QueryLevelDataCache.h"
 #include "State.h"
 
+#include <prettyprint.hpp>
+
 #include <engines/gis/Engine.h>
 #include <engines/querydata/OriginTime.h>
 #include <spine/Exception.h>
@@ -1729,7 +1731,7 @@ std::size_t Plugin::hash_value(const State& state,
           Query subquery = query;
           QueryLevelDataCache queryLevelDataCache;
 
-          if (query.timezone == LOCALTIME_PARAM)
+          if (subquery.timezone == LOCALTIME_PARAM)
             subquery.timezone = tloc.loc->timezone;
 
           subquery.toptions.startTime = first_timestep;
@@ -1819,6 +1821,9 @@ std::size_t Plugin::hash_value(const State& state,
             auto querydata_hash = Engine::Querydata::hash_value(qi);
 
             // No need to generate the timeseries again if the combination has already been handled
+            // Note that timeseries_hash is used only for caching the generated timeseries,
+            // the value should not be used for calculating the actual product hash. Instead,
+            // we use the hash of the generated timeseries itself.
 
             auto timeseries_hash = querydata_hash;
             boost::hash_combine(timeseries_hash, boost::hash_value(subquery.timezone));
@@ -1867,7 +1872,7 @@ std::size_t Plugin::hash_value(const State& state,
               }
 #endif
 
-              auto tz = getTimeZones().time_zone_from_string(query.timezone);
+              auto tz = getTimeZones().time_zone_from_string(subquery.timezone);
               auto tlist = itsTimeSeriesCache->generate(subquery.toptions, tz);
 
               // This is enough to generate an unique hash for the request, even
@@ -1875,7 +1880,7 @@ std::size_t Plugin::hash_value(const State& state,
               // in generating the result.
 
               boost::hash_combine(hash, querydata_hash);
-              boost::hash_combine(hash, SmartMet::Plugin::TimeSeries::hash_value(tlist));
+              boost::hash_combine(hash, SmartMet::Plugin::TimeSeries::hash_value(*tlist));
             }
           }
 
@@ -3921,7 +3926,10 @@ void Plugin::query(const State& state,
       // If the product is cacheable and etag was requested, respond with etag only
 
       if (request.getHeader("X-Request-ETag"))
+      {
+        response.setStatus(Spine::HTTP::Status::no_content);
         return;
+      }
 
       // Else see if we have cached the result
 
@@ -4031,8 +4039,9 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
       auto expires_seconds = itsConfig.expirationTime();
       State state(*this);
 
-      query(state, theRequest, theResponse);
       theResponse.setStatus(Spine::HTTP::Status::ok);
+
+      query(state, theRequest, theResponse);  // may modify the status
 
       // Adding response headers
 
