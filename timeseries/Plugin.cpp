@@ -10,8 +10,6 @@
 #include "QueryLevelDataCache.h"
 #include "State.h"
 
-#include <prettyprint.hpp>
-
 #include <engines/gis/Engine.h>
 #include <engines/querydata/OriginTime.h>
 #include <spine/Exception.h>
