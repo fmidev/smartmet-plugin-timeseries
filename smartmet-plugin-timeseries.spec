@@ -14,6 +14,7 @@ BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
+BuildRequires: bzip2-devel
 BuildRequires: smartmet-library-spine-devel >= 17.8.28
 BuildRequires: smartmet-library-locus-devel >= 17.8.28
 BuildRequires: smartmet-library-macgyver-devel >= 17.8.28
