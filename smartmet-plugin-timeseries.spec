@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 17.8.28
+Version: 17.10.28
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -15,23 +15,23 @@ BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
-BuildRequires: smartmet-library-spine-devel >= 17.8.28
+BuildRequires: smartmet-library-spine-devel >= 17.10.23
 BuildRequires: smartmet-library-locus-devel >= 17.8.28
 BuildRequires: smartmet-library-macgyver-devel >= 17.8.28
-BuildRequires: smartmet-library-newbase-devel >= 17.8.28
-BuildRequires: smartmet-engine-geonames-devel >= 17.8.28
+BuildRequires: smartmet-library-newbase-devel >= 17.10.17
+BuildRequires: smartmet-engine-geonames-devel >= 17.8.29
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 17.8.28
+BuildRequires: smartmet-engine-observation-devel >= 17.10.23
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 17.8.28
+BuildRequires: smartmet-engine-querydata-devel >= 17.10.24
 BuildRequires: smartmet-engine-gis-devel
 Requires: libconfig
 Requires: smartmet-library-locus >= 17.8.28
 Requires: smartmet-library-macgyver >= 17.8.28
-Requires: smartmet-library-newbase >= 17.8.28
-Requires: smartmet-library-spine >= 17.8.28
-Requires: smartmet-engine-geonames >= 17.8.28
-Requires: smartmet-engine-querydata >= 17.8.28
+Requires: smartmet-library-newbase >= 17.10.17
+Requires: smartmet-library-spine >= 17.10.23
+Requires: smartmet-engine-geonames >= 17.8.29
+Requires: smartmet-engine-querydata >= 17.10.24
 Requires: smartmet-server >= 17.8.28
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -66,6 +66,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Sat Oct 28 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.10.28-1.fmi
+- Allow STUK and FINAVIA stations in addition to SYNOP stations
+
 * Mon Aug 28 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.8.28-1.fmi
 - Upgrade to boost 1.65
 

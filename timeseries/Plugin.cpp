@@ -1403,7 +1403,7 @@ Spine::LocationPtr getLocation(const Engine::Geonames::Engine* geonames,
     opts.SetSearchVariants(true);
     opts.SetLanguage(idtype);
     opts.SetResultLimit(1);
-    opts.SetFeatures("SYNOP");
+    opts.SetFeatures({"SYNOP", "FINAVIA", "STUK"});
 
     Spine::LocationList ll = geonames->nameSearch(opts, Fmi::to_string(id));
 
