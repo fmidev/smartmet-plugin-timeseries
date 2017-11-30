@@ -10,8 +10,8 @@
 #include "Query.h"
 
 #include <boost/utility.hpp>
+#include <engines/gis/GeometryStorage.h>
 #include <spine/Parameter.h>
-#include <spine/PostGISDataSource.h>
 #include <spine/TableFormatterOptions.h>
 #include <libconfig.h++>
 #include <string>
@@ -52,10 +52,8 @@ class Config : private boost::noncopyable
     return itsFormatterOptions;
   }
   const libconfig::Config& config() const { return itsConfig; }
-  std::vector<std::string> getPostGISIdentifierKeys();
-  const SmartMet::Spine::postgis_identifier& getDefaultPostGISIdentifier();
-  const SmartMet::Spine::postgis_identifier& getPostGISIdentifier(const std::string& key);
-  std::size_t numberOfPostGISIdentifiers() const { return postgis_identifiers.size(); }
+  Engine::Gis::PostGISIdentifierVector getPostGISIdentifiers() const;
+
   bool obsEngineDisabled() const { return itsObsEngineDisabled; }
   unsigned long long maxMemoryCacheSize() const;
   unsigned long long maxFilesystemCacheSize() const;
@@ -80,7 +78,7 @@ class Config : private boost::noncopyable
   SmartMet::Spine::TableFormatterOptions itsFormatterOptions;
   Precisions itsPrecisions;
 
-  std::map<std::string, SmartMet::Spine::postgis_identifier> postgis_identifiers;
+  std::map<std::string, Engine::Gis::postgis_identifier> postgis_identifiers;
   std::string itsDefaultPostGISIdentifierKey;
   bool itsObsEngineDisabled;
 
