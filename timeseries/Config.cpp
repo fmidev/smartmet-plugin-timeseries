@@ -318,18 +318,17 @@ Config::Config(const string& configfile)
                                "PostGIS configuration error: postgis.default-section missing!");
       }
 
-      Spine::postgis_identifier postgis_default_identifier;
-      postgis_default_identifier.postGISClientEncoding = default_postgis_client_encoding;
-      itsConfig.lookupValue("postgis.default.host", postgis_default_identifier.postGISHost);
-      itsConfig.lookupValue("postgis.default.port", postgis_default_identifier.postGISPort);
-      itsConfig.lookupValue("postgis.default.database", postgis_default_identifier.postGISDatabase);
-      itsConfig.lookupValue("postgis.default.username", postgis_default_identifier.postGISUsername);
-      itsConfig.lookupValue("postgis.default.password", postgis_default_identifier.postGISPassword);
-      itsConfig.lookupValue("postgis.default.client_encoding",
-                            postgis_default_identifier.postGISClientEncoding);
-      itsConfig.lookupValue("postgis.default.schema", postgis_default_identifier.postGISSchema);
-      itsConfig.lookupValue("postgis.default.table", postgis_default_identifier.postGISTable);
-      itsConfig.lookupValue("postgis.default.field", postgis_default_identifier.postGISField);
+      Engine::Gis::postgis_identifier postgis_default_identifier;
+      postgis_default_identifier.encoding = default_postgis_client_encoding;
+      itsConfig.lookupValue("postgis.default.host", postgis_default_identifier.host);
+      itsConfig.lookupValue("postgis.default.port", postgis_default_identifier.port);
+      itsConfig.lookupValue("postgis.default.database", postgis_default_identifier.database);
+      itsConfig.lookupValue("postgis.default.username", postgis_default_identifier.username);
+      itsConfig.lookupValue("postgis.default.password", postgis_default_identifier.password);
+      itsConfig.lookupValue("postgis.default.client_encoding", postgis_default_identifier.encoding);
+      itsConfig.lookupValue("postgis.default.schema", postgis_default_identifier.schema);
+      itsConfig.lookupValue("postgis.default.table", postgis_default_identifier.table);
+      itsConfig.lookupValue("postgis.default.field", postgis_default_identifier.field);
       std::string postgis_identifier_key(postgis_default_identifier.key());
       itsDefaultPostGISIdentifierKey = postgis_identifier_key;
       postgis_identifiers.insert(make_pair(postgis_identifier_key, postgis_default_identifier));
@@ -354,27 +353,28 @@ Config::Config(const string& configfile)
                                    parse_config_key("postgis.", config_items[i]) +
                                        " -section does not exists in configuration file");
 
-          Spine::postgis_identifier postgis_id(postgis_identifiers[itsDefaultPostGISIdentifierKey]);
+          Engine::Gis::postgis_identifier postgis_id(
+              postgis_identifiers[itsDefaultPostGISIdentifierKey]);
 
           itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".host").c_str(),
-                                postgis_id.postGISHost);
+                                postgis_id.host);
           itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".port").c_str(),
-                                postgis_id.postGISPort);
+                                postgis_id.port);
           itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".database").c_str(),
-                                postgis_id.postGISDatabase);
+                                postgis_id.database);
           itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".username").c_str(),
-                                postgis_id.postGISUsername);
+                                postgis_id.username);
           itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".password").c_str(),
-                                postgis_id.postGISPassword);
+                                postgis_id.password);
           itsConfig.lookupValue(
               parse_config_key("postgis.", config_items[i], ".client_encoding").c_str(),
-              postgis_id.postGISClientEncoding);
+              postgis_id.encoding);
           itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".schema").c_str(),
-                                postgis_id.postGISSchema);
+                                postgis_id.schema);
           itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".table").c_str(),
-                                postgis_id.postGISTable);
+                                postgis_id.table);
           itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".field").c_str(),
-                                postgis_id.postGISField);
+                                postgis_id.field);
 
           std::string key(postgis_id.key());
           if (postgis_identifiers.find(key) == postgis_identifiers.end())
@@ -419,56 +419,13 @@ const Precision& Config::getPrecision(const string& name) const
   }
 }
 
-vector<std::string> Config::getPostGISIdentifierKeys()
+Engine::Gis::PostGISIdentifierVector Config::getPostGISIdentifiers() const
 {
-  try
-  {
-    vector<std::string> keys;
+  Engine::Gis::PostGISIdentifierVector ret;
+  for (auto item : postgis_identifiers)
+    ret.push_back(item.second);
 
-    for (std::map<string, Spine::postgis_identifier>::const_iterator it =
-             postgis_identifiers.begin();
-         it != postgis_identifiers.end();
-         it++)
-    {
-      keys.push_back(it->first);
-    }
-
-    return keys;
-  }
-  catch (...)
-  {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
-  }
-}
-
-const Spine::postgis_identifier& Config::getPostGISIdentifier(const std::string& key)
-{
-  try
-  {
-    if (postgis_identifiers.find(key) == postgis_identifiers.end())
-      throw Spine::Exception(
-          BCP,
-          "Config::getPostGISIdentifier(const std::string& key): parameter key '" + key +
-              "' not found");
-
-    return postgis_identifiers[key];
-  }
-  catch (...)
-  {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
-  }
-}
-
-const Spine::postgis_identifier& Config::getDefaultPostGISIdentifier()
-{
-  try
-  {
-    return postgis_identifiers[itsDefaultPostGISIdentifierKey];
-  }
-  catch (...)
-  {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
-  }
+  return ret;
 }
 
 const std::string& Config::filesystemCacheDirectory() const

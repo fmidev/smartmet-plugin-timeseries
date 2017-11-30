@@ -11,6 +11,7 @@
 #include "State.h"
 
 #include <engines/gis/Engine.h>
+#include <engines/gis/MapOptions.h>
 #include <engines/querydata/OriginTime.h>
 #include <spine/Exception.h>
 #include <spine/SmartMet.h>
@@ -252,11 +253,13 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
     bool use_data_max_distance = !query.maxdistanceOptionGiven;
 
     if (areaproducers.empty())
+    {
       return querydata.find(location.longitude,
                             location.latitude,
                             query.maxdistance,
                             use_data_max_distance,
                             query.leveltype);
+    }
 
     // Allow listed producers only
     return querydata.find(areaproducers,
@@ -352,14 +355,44 @@ std::string get_name_base(const std::string& theName)
   }
 }
 
-// ----------------------------------------------------------------------
-/*!
- * \brief
- */
-// ----------------------------------------------------------------------
+const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
+                                    const Engine::Gis::GeometryStorage& geometryStorage)
+{
+  const OGRGeometry* ret = nullptr;
+
+  try
+  {
+    Spine::LocationPtr loc = tloc.loc;
+    std::string place = get_name_base(loc->name);
+    boost::algorithm::to_lower(place);
+
+    if (loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint)
+    {
+      ret = geometryStorage.getOGRGeometry(place, wkbPoint);
+    }
+    else if (loc->type == Spine::Location::Area)
+    {
+      ret = geometryStorage.getOGRGeometry(place, wkbPolygon);
+      if (ret == nullptr)
+        ret = geometryStorage.getOGRGeometry(place, wkbMultiPolygon);
+    }
+    else if (loc->type == Spine::Location::Path)
+    {
+      ret = geometryStorage.getOGRGeometry(place, wkbLineString);
+      if (ret == nullptr)
+        ret = geometryStorage.getOGRGeometry(place, wkbMultiLineString);
+    }
+  }
+  catch (...)
+  {
+    throw Spine::Exception(BCP, "Operation failed!", NULL);
+  }
+
+  return ret;
+}
 
 void get_svg_path(const Spine::TaggedLocation& tloc,
-                  Spine::PostGISDataSource& postGISDataSource,
+                  const Engine::Gis::GeometryStorage& geometryStorage,
                   NFmiSvgPath& svgPath)
 {
   try
@@ -374,15 +407,15 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
     }
     else if (loc->type == Spine::Location::Area)
     {
-      if (postGISDataSource.isPolygon(place))
+      if (geometryStorage.isPolygon(place))
       {
-        stringstream svg_string_stream(postGISDataSource.getSVGPath(place));
-        svgPath.Read(svg_string_stream);
+        stringstream svgStringStream(geometryStorage.getSVGPath(place));
+        svgPath.Read(svgStringStream);
       }
-      else if (postGISDataSource.isPoint(place))
+      else if (geometryStorage.isPoint(place))
       {
-        std::pair<double, double> thePoint(postGISDataSource.getPoint(place).first,
-                                           postGISDataSource.getPoint(place).second);
+        std::pair<double, double> thePoint(geometryStorage.getPoint(place).first,
+                                           geometryStorage.getPoint(place).second);
         make_point_path(svgPath, thePoint);
       }
       else
@@ -395,32 +428,27 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
       if (place.find(',') != std::string::npos)
       {
         // path given as a query parameter in format "lon,lat,lon,lat,lon,lat,..."
-        std::vector<string> lonlat_vector;
-        boost::algorithm::split(lonlat_vector, place, boost::algorithm::is_any_of(","));
-        for (unsigned int i = 0; i < lonlat_vector.size(); i += 2)
+        std::vector<string> lonLatVector;
+        boost::algorithm::split(lonLatVector, place, boost::algorithm::is_any_of(","));
+        for (unsigned int i = 0; i < lonLatVector.size(); i += 2)
         {
-          double longitude = Fmi::stod(lonlat_vector[i]);
-          double latitude = Fmi::stod(lonlat_vector[i + 1]);
-          if (svgPath.size() == 0)
-            svgPath.push_back(
-                NFmiSvgPath::Element(NFmiSvgPath::kElementMoveto, longitude, latitude));
-          else
-            svgPath.push_back(
-                NFmiSvgPath::Element(NFmiSvgPath::kElementLineto, longitude, latitude));
+          double longitude = Fmi::stod(lonLatVector[i]);
+          double latitude = Fmi::stod(lonLatVector[i + 1]);
+          svgPath.push_back(NFmiSvgPath::Element(NFmiSvgPath::kElementMoveto, longitude, latitude));
         }
       }
       else
       {
         // path fetched from PostGIS database
-        if (postGISDataSource.isPolygon(place) || postGISDataSource.isLine(place))
+        if (geometryStorage.isPolygon(place) || geometryStorage.isLine(place))
         {
-          stringstream svg_string_stream(postGISDataSource.getSVGPath(place));
-          svgPath.Read(svg_string_stream);
+          stringstream svgStringStream(geometryStorage.getSVGPath(place));
+          svgPath.Read(svgStringStream);
         }
-        else if (postGISDataSource.isPoint(place))
+        else if (geometryStorage.isPoint(place))
         {
-          std::pair<double, double> thePoint(postGISDataSource.getPoint(place).first,
-                                             postGISDataSource.getPoint(place).second);
+          std::pair<double, double> thePoint(geometryStorage.getPoint(place).first,
+                                             geometryStorage.getPoint(place).second);
           make_point_path(svgPath, thePoint);
         }
         else
@@ -863,7 +891,7 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
           ts::TimeSeriesVectorPtr tsv = *(boost::get<ts::TimeSeriesVectorPtr>(&tsdata));
           for (unsigned int k = 0; k < tsv->size(); k++)
           {
-            tf.setCurrentColumn(0 + k);  //<-- WTF??
+            tf.setCurrentColumn(k);
             tf.setCurrentRow(startRow);
             tf << tsv->at(k);
           }
@@ -898,7 +926,8 @@ std::string get_location_id(Spine::LocationPtr loc)
   {
     std::ostringstream ss;
 
-    ss << loc->name << " " << fixed << setprecision(7) << loc->longitude << " " << loc->latitude;
+    ss << loc->name << " " << fixed << setprecision(7) << loc->longitude << " " << loc->latitude
+       << " " << loc->geoid;
 
     return ss.str();
   }
@@ -1617,7 +1646,6 @@ std::size_t Plugin::hash_value(const State& state,
   try
   {
     // Initial hash value = geonames hash (may change during reloads) + querystring hash
-
     auto hash = state.getGeoEngine().hash_value();
 
     // Calculate a hash for the query. We can ignore the time series options
@@ -1637,7 +1665,6 @@ std::size_t Plugin::hash_value(const State& state,
         boost::hash_combine(hash, boost::hash_value(name_value.second));
       }
     }
-
     // If the query depends on locations only, that's it!
 
     if (is_plain_location_query(masterquery.poptions.parameters()))
@@ -1757,14 +1784,12 @@ std::size_t Plugin::hash_value(const State& state,
 
           {
             // Emulate fetchQEngineValues here
-
             Spine::LocationPtr loc = tloc.loc;
             std::string place = get_name_base(loc->name);
-            NFmiSvgPath svgPath;
             if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
             {
-              get_svg_path(tloc, itsPostGISDataSource, svgPath);
-              loc = getLocationForArea(tloc, query, svgPath, itsPostGISDataSource);
+              NFmiSvgPath svgPath;
+              loc = getLocationForArea(tloc, query, &svgPath);
             }
             else if (loc->type == Spine::Location::BoundingBox)
             {
@@ -1869,7 +1894,6 @@ std::size_t Plugin::hash_value(const State& state,
                 }
               }
 #endif
-
               auto tz = getTimeZones().time_zone_from_string(subquery.timezone);
               auto tlist = itsTimeSeriesCache->generate(subquery.toptions, tz);
 
@@ -1911,27 +1935,49 @@ std::size_t Plugin::hash_value(const State& state,
 
 Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
                                               const Query& query,
-                                              const NFmiSvgPath& svgPath,
-                                              Spine::PostGISDataSource& postGISDataSource) const
+                                              NFmiSvgPath* svgPath /* = nullptr*/) const
 {
   try
   {
-    // get location info for center coordinate
-    double bottom(svgPath.begin()->itsY), top(svgPath.begin()->itsY), left(svgPath.begin()->itsX),
-        right(svgPath.begin()->itsX);
-    for (NFmiSvgPath::const_iterator it = svgPath.begin(); it != svgPath.end(); ++it)
+    double bottom = 0.0, top = 0.0, left = 0.0, right = 0.0;
+
+    const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
+    if (geom)
     {
-      if (it->itsX < left)
-        left = it->itsX;
-      if (it->itsX > right)
-        right = it->itsX;
-      if (it->itsY < bottom)
-        bottom = it->itsY;
-      if (it->itsY > top)
-        top = it->itsY;
+      OGREnvelope envelope;
+      geom->getEnvelope(&envelope);
+      top = envelope.MaxY;
+      bottom = envelope.MinY;
+      left = envelope.MinX;
+      right = envelope.MaxX;
     }
+    if (svgPath != nullptr)
+    {
+      get_svg_path(tloc, itsGeometryStorage, *svgPath);
+
+      if (!geom)
+      {
+        // get location info for center coordinate
+        bottom = svgPath->begin()->itsY;
+        top = svgPath->begin()->itsY;
+        left = svgPath->begin()->itsX;
+        right = svgPath->begin()->itsX;
+
+        for (NFmiSvgPath::const_iterator it = svgPath->begin(); it != svgPath->end(); ++it)
+        {
+          if (it->itsX < left)
+            left = it->itsX;
+          if (it->itsX > right)
+            right = it->itsX;
+          if (it->itsY < bottom)
+            bottom = it->itsY;
+          if (it->itsY > top)
+            top = it->itsY;
+        }
+      }
+    }
+
     std::pair<double, double> lonlatCenter((right + left) / 2.0, (top + bottom) / 2.0);
-    ;
 
     Spine::LocationPtr locCenter =
         itsGeoEngine->lonlatSearch(lonlatCenter.first, lonlatCenter.second, query.language);
@@ -2060,7 +2106,6 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
 // ----------------------------------------------------------------------
 
 void Plugin::fetchLocationValues(Query& query,
-                                 Spine::PostGISDataSource& postGISDataSource,
                                  Spine::Table& data,
                                  unsigned int column_index,
                                  unsigned int row_index)
@@ -2077,10 +2122,8 @@ void Plugin::fetchLocationValues(Query& query,
       BOOST_FOREACH (const auto& tloc, query.loptions->locations())
       {
         Spine::LocationPtr loc = tloc.loc;
-        NFmiSvgPath svgPath;
-        get_svg_path(tloc, postGISDataSource, svgPath);
         if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
-          loc = getLocationForArea(tloc, query, svgPath, postGISDataSource);
+          loc = getLocationForArea(tloc, query);
 
         std::string val = location_parameter(
             tloc.loc, pname, query.valueformatter, query.timezone, query.precisions[column]);
@@ -2107,7 +2150,6 @@ void Plugin::fetchQEngineValues(const State& state,
                                 Query& query,
                                 const AreaProducers& areaproducers,
                                 const ProducerDataPeriod& producerDataPeriod,
-                                Spine::PostGISDataSource& postGISDataSource,
                                 QueryLevelDataCache& queryLevelDataCache,
                                 OutputData& outputData)
 
@@ -2121,8 +2163,7 @@ void Plugin::fetchQEngineValues(const State& state,
     NFmiSvgPath svgPath;
     if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
     {
-      get_svg_path(tloc, postGISDataSource, svgPath);
-      loc = getLocationForArea(tloc, query, svgPath, postGISDataSource);
+      loc = getLocationForArea(tloc, query, &svgPath);
     }
     else if (loc->type == Spine::Location::BoundingBox)
     {
@@ -2489,7 +2530,7 @@ void Plugin::fetchQEngineValues(const State& state,
             else if (loc->type == Spine::Location::Area || loc->type == Spine::Location::Place ||
                      loc->type == Spine::Location::CoordinatePoint)
             {
-              get_svg_path(tloc, postGISDataSource, svgPath);
+              get_svg_path(tloc, itsGeometryStorage, svgPath);
               mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, loc->radius);
             }
 
@@ -2621,8 +2662,7 @@ void Plugin::setCommonObsSettings(Engine::Observation::Settings& settings,
                                   const ProducerDataPeriod& producerDataPeriod,
                                   const boost::posix_time::ptime& now,
                                   const ObsParameters& obsParameters,
-                                  Query& query,
-                                  Spine::PostGISDataSource& postGISDataSource) const
+                                  Query& query) const
 {
   try
   {
@@ -2679,8 +2719,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
                                     const boost::posix_time::ptime& now,
                                     const Spine::TaggedLocation& tloc,
                                     const ObsParameters& obsParameters,
-                                    Query& query,
-                                    Spine::PostGISDataSource& postGISDataSource) const
+                                    Query& query) const
 {
   try
   {
@@ -2739,7 +2778,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         if (pathName.find(',') != std::string::npos)
         {
           NFmiSvgPath svgPath;
-          get_svg_path(tloc, postGISDataSource, svgPath);
+          get_svg_path(tloc, itsGeometryStorage, svgPath);
           Fmi::OGR::CoordinatePoints geoCoordinates;
           for (NFmiSvgPath::const_iterator iter = svgPath.begin(); iter != svgPath.end(); iter++)
             geoCoordinates.push_back(std::pair<double, double>(iter->itsX, iter->itsY));
@@ -2754,7 +2793,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         else
         {
           // path is fetched from database
-          pGeo = postGISDataSource.getOGRGeometry(loc_name, wkbMultiLineString);
+          pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiLineString);
 
           if (!pGeo)
             throw Spine::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
@@ -2781,7 +2820,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         std::cout << tloc.loc->name << " is an Area" << std::endl;
 #endif
 
-        const OGRGeometry* pGeo = postGISDataSource.getOGRGeometry(loc_name, wkbMultiPolygon);
+        const OGRGeometry* pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
 
         if (!pGeo)
           throw Spine::Exception(BCP, "Area " + tloc.loc->name + " not found in PostGIS database!");
@@ -2837,7 +2876,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         std::cout << tloc.loc->name << " is an Area (Place + radius)" << std::endl;
 #endif
 
-        const OGRGeometry* pGeo = postGISDataSource.getOGRGeometry(loc_name, wkbPoint);
+        const OGRGeometry* pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbPoint);
 
         if (!pGeo)
           throw Spine::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
@@ -2877,7 +2916,6 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         std::cout << "#" << settings.area_geoids.size() << " stations found" << std::endl;
 #endif
       }
-
     }  // if(tloc.loc)
 
     // fmisid must be always included in order to get thelocation info from geonames
@@ -3568,8 +3606,7 @@ void Plugin::processObsEngineQuery(const State& state,
                                    OutputData& outputData,
                                    const AreaProducers& areaproducers,
                                    const ProducerDataPeriod& producerDataPeriod,
-                                   ObsParameters& obsParameters,
-                                   Spine::PostGISDataSource& postGISDataSource)
+                                   ObsParameters& obsParameters)
 {
   try
   {
@@ -3584,13 +3621,8 @@ void Plugin::processObsEngineQuery(const State& state,
     // Settings which are the same for all locations
 
     Engine::Observation::Settings settings;
-    setCommonObsSettings(settings,
-                         producer,
-                         producerDataPeriod,
-                         state.getTime(),
-                         obsParameters,
-                         query,
-                         postGISDataSource);
+    setCommonObsSettings(
+        settings, producer, producerDataPeriod, state.getTime(), obsParameters, query);
 
     if (query.loptions->locations().empty())
     {
@@ -3599,14 +3631,8 @@ void Plugin::processObsEngineQuery(const State& state,
       Spine::TaggedLocation tloc("", loc);
 
       // Update settings for this particular location
-      setLocationObsSettings(settings,
-                             producer,
-                             producerDataPeriod,
-                             state.getTime(),
-                             tloc,
-                             obsParameters,
-                             query,
-                             postGISDataSource);
+      setLocationObsSettings(
+          settings, producer, producerDataPeriod, state.getTime(), tloc, obsParameters, query);
 
       // single locations are fetched all at once
       // area locations are fetched area by area
@@ -3627,14 +3653,8 @@ void Plugin::processObsEngineQuery(const State& state,
       BOOST_FOREACH (const auto& tloc, query.loptions->locations())
       {
         // Update settings for this particular location
-        setLocationObsSettings(settings,
-                               producer,
-                               producerDataPeriod,
-                               state.getTime(),
-                               tloc,
-                               obsParameters,
-                               query,
-                               postGISDataSource);
+        setLocationObsSettings(
+            settings, producer, producerDataPeriod, state.getTime(), tloc, obsParameters, query);
 
         // single locations are fetched all at once
         // area locations are fetched area by area
@@ -3667,8 +3687,7 @@ void Plugin::processQEngineQuery(const State& state,
                                  Query& masterquery,
                                  OutputData& outputData,
                                  const AreaProducers& areaproducers,
-                                 const ProducerDataPeriod& producerDataPeriod,
-                                 Spine::PostGISDataSource& postGISDataSource)
+                                 const ProducerDataPeriod& producerDataPeriod)
 {
   try
   {
@@ -3722,7 +3741,6 @@ void Plugin::processQEngineQuery(const State& state,
                            query,
                            areaproducers,
                            producerDataPeriod,
-                           postGISDataSource,
                            queryLevelDataCache,
                            outputData);
       }
@@ -3743,18 +3761,14 @@ void Plugin::processQEngineQuery(const State& state,
  */
 // ----------------------------------------------------------------------
 
-void Plugin::processQuery(const State& state,
-                          Spine::Table& table,
-                          Query& masterquery,
-                          Spine::PostGISDataSource& postGISDataSource)
+void Plugin::processQuery(const State& state, Spine::Table& table, Query& masterquery)
 {
   try
   {
     // if only location related parameters queried, use shortcut
-
     if (is_plain_location_query(masterquery.poptions.parameters()))
     {
-      fetchLocationValues(masterquery, postGISDataSource, table, 0, 0);
+      fetchLocationValues(masterquery, table, 0, 0);
       return;
     }
 
@@ -3771,19 +3785,16 @@ void Plugin::processQuery(const State& state,
     OutputData outputData;
 
     bool producerMissing = (masterquery.timeproducers.empty());
-
     if (producerMissing)
     {
       masterquery.timeproducers.push_back(AreaProducers());
     }
-
 #ifndef WITHOUT_OBSERVATION
     ObsParameters obsParameters = getObsParameters(masterquery);
 #endif
 
     boost::posix_time::ptime latestTimestep = masterquery.latestTimestep;
     bool startTimeUTC = masterquery.toptions.startTimeUTC;
-
     // This loop will iterate through the producers, collecting as much
     // data in order as is possible. The later producers patch the data
     // *after* the first ones if possible.
@@ -3805,19 +3816,13 @@ void Plugin::processQuery(const State& state,
       if (!areaproducers.empty() && !itsConfig.obsEngineDisabled() &&
           isObsProducer(areaproducers.front()))
       {
-        processObsEngineQuery(state,
-                              query,
-                              outputData,
-                              areaproducers,
-                              producerDataPeriod,
-                              obsParameters,
-                              postGISDataSource);
+        processObsEngineQuery(
+            state, query, outputData, areaproducers, producerDataPeriod, obsParameters);
       }
       else
 #endif
       {
-        processQEngineQuery(
-            state, query, outputData, areaproducers, producerDataPeriod, postGISDataSource);
+        processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
       }
 
       // get the latestTimestep from previous query
@@ -3874,7 +3879,6 @@ void Plugin::query(const State& state,
     string producer_option =
         Spine::optional_string(request.getParameter(PRODUCER_PARAM),
                                Spine::optional_string(request.getParameter(STATIONTYPE_PARAM), ""));
-
 // At least one of location specifiers must be set
 
 #ifndef WITHOUT_OBSERVATION
@@ -3947,7 +3951,7 @@ void Plugin::query(const State& state,
 
     // No cached result available - generate the result
 
-    processQuery(state, data, query, itsPostGISDataSource);
+    processQuery(state, data, query);
 
     high_resolution_clock::time_point t4 = high_resolution_clock::now();
     timeheader.append("+").append(
@@ -4107,7 +4111,6 @@ Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
     : SmartMetPlugin(),
       itsModuleName("TimeSeries"),
       itsConfig(theConfig),
-      itsPostGISDataSource(),
       itsReady(false),
       itsReactor(theReactor),
 #ifndef WITHOUT_OBSERVATION
@@ -4149,21 +4152,6 @@ void Plugin::init()
     itsTimeSeriesCache.reset(new Spine::TimeSeriesGeneratorCache);
     itsTimeSeriesCache->resize(itsConfig.maxTimeSeriesCacheSize());
 
-    // PostGIS
-    std::vector<std::string> postgis_identifier_keys(itsConfig.getPostGISIdentifierKeys());
-
-    for (unsigned int i = 0; i < postgis_identifier_keys.size(); i++)
-    {
-      if (itsShutdownRequested)
-        return;
-
-      Spine::postgis_identifier pgis_identifier(
-          itsConfig.getPostGISIdentifier(postgis_identifier_keys[i]));
-      std::string log_message;
-
-      itsPostGISDataSource.readData(pgis_identifier, log_message);
-    }
-
     /* GeoEngine */
     auto engine = itsReactor->getSingleton("Geonames", NULL);
     if (!engine)
@@ -4175,6 +4163,9 @@ void Plugin::init()
     if (!engine)
       throw Spine::Exception(BCP, "Gis engine unavailable");
     itsGisEngine = reinterpret_cast<Engine::Gis::Engine*>(engine);
+
+    // Read the geometries from PostGIS database
+    itsGisEngine->populateGeometryStorage(itsConfig.getPostGISIdentifiers(), itsGeometryStorage);
 
     /* QEngine */
     engine = itsReactor->getSingleton("Querydata", NULL);

@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 17.10.28
+Version: 17.11.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -24,7 +24,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 17.8.29
 BuildRequires: smartmet-engine-observation-devel >= 17.10.23
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 17.10.24
-BuildRequires: smartmet-engine-gis-devel
+BuildRequires: smartmet-engine-gis-devel >= 17.11.30
 Requires: libconfig
 Requires: smartmet-library-locus >= 17.8.28
 Requires: smartmet-library-macgyver >= 17.8.28
@@ -32,6 +32,7 @@ Requires: smartmet-library-newbase >= 17.10.17
 Requires: smartmet-library-spine >= 17.10.23
 Requires: smartmet-engine-geonames >= 17.8.29
 Requires: smartmet-engine-querydata >= 17.10.24
+Requires: smartmet-engine-gis >= 17.11.30
 Requires: smartmet-server >= 17.8.28
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -66,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Nov 30 2017 Anssi Reponen <anssi.reponen@fmi.fi> - 17.11.30-1.fmi
+- Start using GisEngine instead of PostGISDataSource class (BRAINSTORM-722)
+
 * Sat Oct 28 2017 Mika Heiskanen <mika.heiskanen@fmi.fi> - 17.10.28-1.fmi
 - Allow STUK and FINAVIA stations in addition to SYNOP stations
 

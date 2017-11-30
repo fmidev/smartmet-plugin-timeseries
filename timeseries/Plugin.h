@@ -7,28 +7,28 @@
 #pragma once
 
 #include "Config.h"
-#include "Query.h"
-#include "QueryLevelDataCache.h"
 #include "LonLatDistance.h"
 #include "ObsParameter.h"
+#include "Query.h"
+#include "QueryLevelDataCache.h"
 
+#include <spine/HTTP.h>
+#include <spine/Reactor.h>
 #include <spine/SmartMetCache.h>
 #include <spine/SmartMetPlugin.h>
-#include <spine/HTTP.h>
-#include <spine/PostGISDataSource.h>
-#include <spine/Reactor.h>
 #include <spine/TimeSeriesGeneratorCache.h>
 
-#include <newbase/NFmiSvgPath.h>
 #include <newbase/NFmiPoint.h>
+#include <newbase/NFmiSvgPath.h>
 
+#include <engines/gis/GeometryStorage.h>
 #include <macgyver/TimeZones.h>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <map>
-#include <string>
 #include <queue>
+#include <string>
 
 namespace SmartMet
 {
@@ -57,7 +57,8 @@ class PluginImpl;
 
 typedef boost::variant<Spine::TimeSeries::TimeSeriesPtr,
                        Spine::TimeSeries::TimeSeriesVectorPtr,
-                       Spine::TimeSeries::TimeSeriesGroupPtr> TimeSeriesData;
+                       Spine::TimeSeries::TimeSeriesGroupPtr>
+    TimeSeriesData;
 typedef std::vector<std::pair<std::string, std::vector<TimeSeriesData> > > OutputData;
 typedef std::pair<int, std::string> PressureLevelParameterPair;
 typedef std::map<PressureLevelParameterPair, Spine::TimeSeries::TimeSeriesPtr>
@@ -108,19 +109,14 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
              const Spine::HTTP::Request& req,
              Spine::HTTP::Response& response);
 
-  void processQuery(const State& state,
-                    Spine::Table& data,
-                    Query& masterquery,
-                    Spine::PostGISDataSource& postGISDataSource);
+  void processQuery(const State& state, Spine::Table& data, Query& masterquery);
 
   void processQEngineQuery(const State& state,
                            Query& query,
                            OutputData& outputData,
                            const AreaProducers& areaproducers,
-                           const ProducerDataPeriod& producerDataPeriod,
-                           Spine::PostGISDataSource& postGISDataSource);
+                           const ProducerDataPeriod& producerDataPeriod);
   void fetchLocationValues(Query& query,
-                           Spine::PostGISDataSource& postGISDataSource,
                            Spine::Table& data,
                            unsigned int column_index,
                            unsigned int row_index);
@@ -131,7 +127,6 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                           Query& query,
                           const AreaProducers& areaproducers,
                           const ProducerDataPeriod& producerDataPeriod,
-                          Spine::PostGISDataSource& postGISDataSource,
                           QueryLevelDataCache& queryLevelDataCache,
                           OutputData& outputData);
 
@@ -143,8 +138,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                              OutputData& outputData,
                              const AreaProducers& areaproducers,
                              const ProducerDataPeriod& producerDataPeriod,
-                             ObsParameters& obsParameters,
-                             Spine::PostGISDataSource& postGISDataSource);
+                             ObsParameters& obsParameters);
   void fetchObsEngineValuesForArea(const State& state,
                                    const std::string& producer,
                                    const Spine::TaggedLocation& tloc,
@@ -172,16 +166,14 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                             const ProducerDataPeriod& producerDataPeriod,
                             const boost::posix_time::ptime& now,
                             const ObsParameters& obsParameters,
-                            Query& query,
-                            Spine::PostGISDataSource& postGISDataSource) const;
+                            Query& query) const;
   void setLocationObsSettings(Engine::Observation::Settings& settings,
                               const std::string& producer,
                               const ProducerDataPeriod& producerDataPeriod,
                               const boost::posix_time::ptime& now,
                               const Spine::TaggedLocation& tloc,
                               const ObsParameters& obsParameters,
-                              Query& query,
-                              Spine::PostGISDataSource& postGISDataSource) const;
+                              Query& query) const;
 
   std::vector<ObsParameter> getObsParameters(const Query& query) const;
 #endif
@@ -191,12 +183,10 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
 
   Spine::LocationPtr getLocationForArea(const Spine::TaggedLocation& tloc,
                                         const Query& query,
-                                        const NFmiSvgPath& svgPath,
-                                        Spine::PostGISDataSource& postGISDataSource) const;
+                                        NFmiSvgPath* svgPath = nullptr) const;
 
   const std::string itsModuleName;
   Config itsConfig;
-  Spine::PostGISDataSource itsPostGISDataSource;
   bool itsReady;
 
   Spine::Reactor* itsReactor = nullptr;
@@ -215,6 +205,8 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   // Cached time series
   mutable std::unique_ptr<Spine::TimeSeriesGeneratorCache> itsTimeSeriesCache;
 
+  // Geometries and their svg-representations are stored here
+  Engine::Gis::GeometryStorage itsGeometryStorage;
 };  // class Plugin
 
 }  // namespace TimeSeries
