@@ -94,7 +94,6 @@ LIBS = -L$(libdir) \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_iostreams \
-	-lpqxx \
 	-lbz2 -lz
 
 # What to install

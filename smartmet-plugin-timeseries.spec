@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 17.11.30
+Version: 18.1.15
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -15,23 +15,23 @@ BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
-BuildRequires: smartmet-library-spine-devel >= 17.11.30
-BuildRequires: smartmet-library-locus-devel >= 17.8.28
+BuildRequires: smartmet-library-spine-devel >= 18.1.15
+BuildRequires: smartmet-library-locus-devel >= 18.1.15
 BuildRequires: smartmet-library-macgyver-devel >= 17.11.27
-BuildRequires: smartmet-library-newbase-devel >= 17.11.29
-BuildRequires: smartmet-engine-geonames-devel >= 17.11.1
+BuildRequires: smartmet-library-newbase-devel >= 18.1.13
+BuildRequires: smartmet-engine-geonames-devel >= 18.1.15
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 17.10.23
+BuildRequires: smartmet-engine-observation-devel >= 18.1.15
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 17.11.28
+BuildRequires: smartmet-engine-querydata-devel >= 17.12.11
 BuildRequires: smartmet-engine-gis-devel >= 17.11.30
 Requires: libconfig
-Requires: smartmet-library-locus >= 17.8.28
+Requires: smartmet-library-locus >= 18.1.15
 Requires: smartmet-library-macgyver >= 17.11.27
-Requires: smartmet-library-newbase >= 17.11.29
-Requires: smartmet-library-spine >= 17.11.30
-Requires: smartmet-engine-geonames >= 17.11.1
-Requires: smartmet-engine-querydata >= 17.11.28
+Requires: smartmet-library-newbase >= 18.1.13
+Requires: smartmet-library-spine >= 18.1.15
+Requires: smartmet-engine-geonames >= 18.1.15
+Requires: smartmet-engine-querydata >= 17.12.11
 Requires: smartmet-engine-gis >= 17.11.30
 Requires: smartmet-server >= 17.11.10
 Requires: boost-date-time
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Jan 15 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.1.15-1.fmi
+- Removed libpqxx linkage
+
 * Thu Nov 30 2017 Anssi Reponen <anssi.reponen@fmi.fi> - 17.11.30-1.fmi
 - Start using GisEngine instead of PostGISDataSource class (BRAINSTORM-722)
 
