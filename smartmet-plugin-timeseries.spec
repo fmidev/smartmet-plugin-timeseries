@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.1.15
+Version: 18.2.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -15,24 +15,24 @@ BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
-BuildRequires: smartmet-library-spine-devel >= 18.1.15
+BuildRequires: smartmet-library-spine-devel >= 18.2.9
 BuildRequires: smartmet-library-locus-devel >= 18.1.15
-BuildRequires: smartmet-library-macgyver-devel >= 17.11.27
-BuildRequires: smartmet-library-newbase-devel >= 18.1.13
-BuildRequires: smartmet-engine-geonames-devel >= 18.1.15
+BuildRequires: smartmet-library-macgyver-devel >= 18.2.9
+BuildRequires: smartmet-library-newbase-devel >= 18.2.8
+BuildRequires: smartmet-engine-geonames-devel >= 18.2.9
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 18.1.15
+BuildRequires: smartmet-engine-observation-devel >= 18.2.9
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 17.12.11
-BuildRequires: smartmet-engine-gis-devel >= 17.11.30
+BuildRequires: smartmet-engine-querydata-devel >= 18.2.9
+BuildRequires: smartmet-engine-gis-devel >= 18.2.9
 Requires: libconfig
 Requires: smartmet-library-locus >= 18.1.15
-Requires: smartmet-library-macgyver >= 17.11.27
-Requires: smartmet-library-newbase >= 18.1.13
-Requires: smartmet-library-spine >= 18.1.15
-Requires: smartmet-engine-geonames >= 18.1.15
-Requires: smartmet-engine-querydata >= 17.12.11
-Requires: smartmet-engine-gis >= 17.11.30
+Requires: smartmet-library-macgyver >= 18.2.9
+Requires: smartmet-library-newbase >= 18.2.8
+Requires: smartmet-library-spine >= 18.2.9
+Requires: smartmet-engine-geonames >= 18.2.9
+Requires: smartmet-engine-querydata >= 18.2.9
+Requires: smartmet-engine-gis >= 18.2.9
 Requires: smartmet-server >= 17.11.10
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Fri Feb  9 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.2.9-1.fmi
+- Repackaged due to macgyver TimeZones API change
+
 * Mon Jan 15 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.1.15-1.fmi
 - Removed libpqxx linkage
 
