@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.2.27
+Version: 18.3.1
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,9 +21,9 @@ BuildRequires: smartmet-library-macgyver-devel >= 18.2.12
 BuildRequires: smartmet-library-newbase-devel >= 18.2.8
 BuildRequires: smartmet-engine-geonames-devel >= 18.2.9
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 18.2.27
+BuildRequires: smartmet-engine-observation-devel >= 18.3.1
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 18.2.27
+BuildRequires: smartmet-engine-querydata-devel >= 18.3.1
 BuildRequires: smartmet-engine-gis-devel >= 18.2.20
 Requires: libconfig
 Requires: smartmet-library-locus >= 18.1.15
@@ -31,7 +31,7 @@ Requires: smartmet-library-macgyver >= 18.2.12
 Requires: smartmet-library-newbase >= 18.2.8
 Requires: smartmet-library-spine >= 18.2.27
 Requires: smartmet-engine-geonames >= 18.2.9
-Requires: smartmet-engine-querydata >= 18.2.27
+Requires: smartmet-engine-querydata >= 18.3.1
 Requires: smartmet-engine-gis >= 18.2.20
 Requires: smartmet-server >= 17.11.10
 Requires: boost-date-time
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Mar  1 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.3.1-1.fmi
+- Avoid locale copying in case conversions
+
 * Tue Feb 27 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.2.27-1.fmi
 - Querydata engine API was changed to be const correct
 

@@ -66,8 +66,8 @@ using namespace boost::gregorian;
 using namespace boost::local_time;
 using boost::numeric_cast;
 using boost::numeric::bad_numeric_cast;
-using boost::numeric::positive_overflow;
 using boost::numeric::negative_overflow;
+using boost::numeric::positive_overflow;
 
 // #define MYDEBUG ON
 
@@ -75,6 +75,9 @@ namespace ts = SmartMet::Spine::TimeSeries;
 
 namespace SmartMet
 {
+// Construct the locale for case conversions only once
+std::locale stdlocale = std::locale();
+
 bool special(const Spine::Parameter& theParam)
 {
   try
@@ -364,7 +367,7 @@ const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
   {
     Spine::LocationPtr loc = tloc.loc;
     std::string place = get_name_base(loc->name);
-    boost::algorithm::to_lower(place);
+    boost::algorithm::to_lower(place, stdlocale);
 
     if (loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint)
     {
@@ -988,9 +991,8 @@ bool is_location_parameter(const std::string& paramname)
             paramname == LONGITUDE_PARAM || paramname == LAT_PARAM || paramname == LON_PARAM ||
             paramname == LATLON_PARAM || paramname == LONLAT_PARAM || paramname == GEOID_PARAM ||
             // paramname == PLACE_PARAM||
-            paramname == FEATURE_PARAM ||
-            paramname == LOCALTZ_PARAM || paramname == NAME_PARAM || paramname == ISO2_PARAM ||
-            paramname == REGION_PARAM || paramname == COUNTRY_PARAM ||
+            paramname == FEATURE_PARAM || paramname == LOCALTZ_PARAM || paramname == NAME_PARAM ||
+            paramname == ISO2_PARAM || paramname == REGION_PARAM || paramname == COUNTRY_PARAM ||
             paramname == ELEVATION_PARAM || paramname == POPULATION_PARAM ||
             paramname == STATION_ELEVATION_PARAM);
   }
@@ -1600,7 +1602,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
 
 #endif
 
-}  // anonymous
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
@@ -1693,7 +1695,7 @@ std::size_t Plugin::hash_value(const State& state,
 
     ProducerDataPeriod producerDataPeriod;
 
-// producerDataPeriod contains information of data periods of different producers
+    // producerDataPeriod contains information of data periods of different producers
 
 #ifndef WITHOUT_OBSERVATION
     producerDataPeriod.init(state, *itsQEngine, itsObsEngine, masterquery.timeproducers);
@@ -2463,17 +2465,16 @@ void Plugin::fetchQEngineValues(const State& state,
             querydata_result =
                 loadDataLevels
                     ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance)
-                    : pressure
-                          ? qi->valuesAtPressure(querydata_param,
-                                                 llist,
-                                                 querydata_tlist,
-                                                 query.maxdistance,
-                                                 *pressure)
-                          : qi->valuesAtHeight(querydata_param,
-                                               llist,
-                                               querydata_tlist,
-                                               query.maxdistance,
-                                               *height);
+                    : pressure ? qi->valuesAtPressure(querydata_param,
+                                                      llist,
+                                                      querydata_tlist,
+                                                      query.maxdistance,
+                                                      *pressure)
+                               : qi->valuesAtHeight(querydata_param,
+                                                    llist,
+                                                    querydata_tlist,
+                                                    query.maxdistance,
+                                                    *height);
             if (querydata_result->size() > 0)
             {
               // if the value is not dependent on location inside area we just need to have the
@@ -2868,8 +2869,9 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
         query.maxdistance = 0;
       }
-      else if (producer != FLASH_PRODUCER && (tloc.loc->type == Spine::Location::Place ||
-                                              tloc.loc->type == Spine::Location::CoordinatePoint) &&
+      else if (producer != FLASH_PRODUCER &&
+               (tloc.loc->type == Spine::Location::Place ||
+                tloc.loc->type == Spine::Location::CoordinatePoint) &&
                tloc.loc->radius > 0)
       {
 #ifdef MYDEBUG
@@ -3879,7 +3881,7 @@ void Plugin::query(const State& state,
     string producer_option =
         Spine::optional_string(request.getParameter(PRODUCER_PARAM),
                                Spine::optional_string(request.getParameter(STATIONTYPE_PARAM), ""));
-// At least one of location specifiers must be set
+    // At least one of location specifiers must be set
 
 #ifndef WITHOUT_OBSERVATION
     if (query.geoids.size() == 0 && query.fmisids.size() == 0 && query.lpnns.size() == 0 &&
