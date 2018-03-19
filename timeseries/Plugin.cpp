@@ -4184,7 +4184,6 @@ void Plugin::init()
         throw Spine::Exception(BCP, "Observation engine unavailable");
       itsObsEngine = reinterpret_cast<Engine::Observation::Engine*>(engine);
 
-      itsObsEngine->setGeonames(itsGeoEngine);
       // fetch obsebgine station types (producers)
       itsObsEngineStationTypes = itsObsEngine->getValidStationTypes();
     }

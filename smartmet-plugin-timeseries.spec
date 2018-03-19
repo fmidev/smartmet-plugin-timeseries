@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.3.1
+Version: 18.3.19
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -15,24 +15,24 @@ BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
-BuildRequires: smartmet-library-spine-devel >= 18.2.27
+BuildRequires: smartmet-library-spine-devel >= 18.3.7
 BuildRequires: smartmet-library-locus-devel >= 18.1.15
 BuildRequires: smartmet-library-macgyver-devel >= 18.2.12
-BuildRequires: smartmet-library-newbase-devel >= 18.2.8
+BuildRequires: smartmet-library-newbase-devel >= 18.3.10
 BuildRequires: smartmet-engine-geonames-devel >= 18.2.9
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 18.3.1
+BuildRequires: smartmet-engine-observation-devel >= 18.3.19
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 18.3.1
-BuildRequires: smartmet-engine-gis-devel >= 18.2.20
+BuildRequires: smartmet-engine-querydata-devel >= 18.3.17
+BuildRequires: smartmet-engine-gis-devel >= 18.3.7
 Requires: libconfig
 Requires: smartmet-library-locus >= 18.1.15
 Requires: smartmet-library-macgyver >= 18.2.12
-Requires: smartmet-library-newbase >= 18.2.8
-Requires: smartmet-library-spine >= 18.2.27
+Requires: smartmet-library-newbase >= 18.3.10
+Requires: smartmet-library-spine >= 18.3.7
 Requires: smartmet-engine-geonames >= 18.2.9
-Requires: smartmet-engine-querydata >= 18.3.1
-Requires: smartmet-engine-gis >= 18.2.20
+Requires: smartmet-engine-querydata >= 18.3.17
+Requires: smartmet-engine-gis >= 18.3.7
 Requires: smartmet-server >= 17.11.10
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Mar 19 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.3.19-1.fmi
+- Removed obsolete call to Observation::Engine::setGeonames
+
 * Thu Mar  1 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.3.1-1.fmi
 - Avoid locale copying in case conversions
 
