@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.3.20
+Version: 18.3.21
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -15,7 +15,7 @@ BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
-BuildRequires: smartmet-library-spine-devel >= 18.3.7
+BuildRequires: smartmet-library-spine-devel >= 18.3.21
 BuildRequires: smartmet-library-locus-devel >= 18.1.15
 BuildRequires: smartmet-library-macgyver-devel >= 18.2.12
 BuildRequires: smartmet-library-newbase-devel >= 18.3.10
@@ -29,7 +29,7 @@ Requires: libconfig
 Requires: smartmet-library-locus >= 18.1.15
 Requires: smartmet-library-macgyver >= 18.2.12
 Requires: smartmet-library-newbase >= 18.3.10
-Requires: smartmet-library-spine >= 18.3.7
+Requires: smartmet-library-spine >= 18.3.21
 Requires: smartmet-engine-geonames >= 18.3.20
 Requires: smartmet-engine-querydata >= 18.3.20
 Requires: smartmet-engine-gis >= 18.3.20
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Mar 21 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.3.21-1.fmi
+- SmartMetCache ABI changed
+
 * Tue Mar 20 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.3.20-1.fmi
 - Full recompile of all server plugins
 
