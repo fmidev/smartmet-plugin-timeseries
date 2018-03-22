@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&places=Pietari,Helsinki,Turku,Tukholma&timesteps=2&param=name,time,GridNorth HTTP/1.0
