@@ -1464,16 +1464,12 @@ int get_fmisid_index(const Engine::Observation::Settings& settings)
 {
   try
   {
-    int fmisid_index(-1);
     // find out fmisid column
     for (unsigned int i = 0; i < settings.parameters.size(); i++)
       if (settings.parameters[i].name() == FMISID_PARAM)
-      {
-        fmisid_index = i;
-        break;
-      }
+        return i;
 
-    return fmisid_index;
+    return -1;
   }
   catch (...)
   {
@@ -1495,28 +1491,55 @@ int get_fmisid_value(const ts::Value& value)
 {
   try
   {
-    int fmisid = -1;
-
     // fmisid can be std::string or double
     if (boost::get<std::string>(&value))
     {
       std::string fmisidstr = boost::get<std::string>(value);
       boost::algorithm::trim(fmisidstr);
       if (!fmisidstr.empty())
-        fmisid = std::stod(boost::get<std::string>(value));
+        return std::stoi(fmisidstr);
+      else
+        throw Spine::Exception(BCP, "fmisid value is an empty string");
     }
+    else if (boost::get<int>(&value))
+      return boost::get<int>(value);
     else if (boost::get<double>(&value))
-      fmisid = boost::get<double>(value);
-
-    return fmisid;
+      return boost::get<double>(value);
+    else if (boost::get<Spine::TimeSeries::None>(&value))
+      throw Spine::Exception(BCP, "Station with NULL fmisid encountered!");
+    else if (boost::get<Spine::TimeSeries::LonLat>(&value))
+      throw Spine::Exception(BCP, "Station with latlon as fmisid encountered!");
+    else
+      throw Spine::Exception(BCP, "Unknown fmisid type");
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
 #endif
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Extract fmisid from a timeseries vector where fmisid may not be set for all rows
+ */
+// ----------------------------------------------------------------------
+
+int get_fmisid_value(const ts::TimeSeries& ts)
+{
+  for (std::size_t i = 0; i < ts.size(); i++)
+  {
+    try
+    {
+      return get_fmisid_value(ts[i].value);
+    }
+    catch (...)
+    {
+    }
+  }
+  return -1;
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -3320,6 +3343,11 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       ts::TimeSeriesVectorPtr observation_result_with_added_fields(new ts::TimeSeriesVector());
       //		  ts::TimeSeriesVector* tsv_observation_result = observation_result.get();
       const ts::TimeSeries& fmisid_ts = tsv_observation_result->at(fmisid_index);
+
+      // fmisid may be missing for rows for which there is no data. Hence we extract
+      // it from the full time timeseries once.
+      int fmisid = get_fmisid_value(fmisid_ts);
+
       unsigned int obs_result_field_index = 0;
       for (unsigned int i = 0; i < obsParameters.size(); i++)
       {
@@ -3332,7 +3360,6 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
           for (unsigned int j = 0; j < ts_vector.size(); j++)
           {
-            int fmisid = get_fmisid_value(fmisid_ts[j].value);
             Spine::LocationPtr loc =
                 getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
             ts::Value value = location_parameter(loc,
@@ -3354,7 +3381,6 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           ts::TimeSeries time_ts;
           for (unsigned int j = 0; j < ts_vector.size(); j++)
           {
-            int fmisid = get_fmisid_value(fmisid_ts[j].value);
             Spine::LocationPtr loc =
                 getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
             std::string paramvalue = time_parameter(paramname,
@@ -3554,7 +3580,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif

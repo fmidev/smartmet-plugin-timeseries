@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.3.21
+Version: 18.4.4
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Apr  4 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.4.4-1.fmi
+- Fixed fmisid extraction from timeseries to ignore gaps in actual observations
+
 * Wed Mar 21 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.3.21-1.fmi
 - SmartMetCache ABI changed
 
