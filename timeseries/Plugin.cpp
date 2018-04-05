@@ -3348,6 +3348,9 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       // it from the full time timeseries once.
       int fmisid = get_fmisid_value(fmisid_ts);
 
+      Spine::LocationPtr loc =
+          getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
+
       unsigned int obs_result_field_index = 0;
       for (unsigned int i = 0; i < obsParameters.size(); i++)
       {
@@ -3360,8 +3363,6 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
           for (unsigned int j = 0; j < ts_vector.size(); j++)
           {
-            Spine::LocationPtr loc =
-                getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
             ts::Value value = location_parameter(loc,
                                                  obsParameters[i].param.name(),
                                                  query.valueformatter,
@@ -3375,18 +3376,16 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         else if (is_time_parameter(paramname))
         {
           // add data for time fields
-          Spine::Location location(0, 0, "", query.timezone);
+          Spine::Location dummyloc(0, 0, "", query.timezone);
 
           ts::TimeSeriesGroupPtr grp(new ts::TimeSeriesGroup);
           ts::TimeSeries time_ts;
           for (unsigned int j = 0; j < ts_vector.size(); j++)
           {
-            Spine::LocationPtr loc =
-                getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
             std::string paramvalue = time_parameter(paramname,
                                                     ts_vector[j],
                                                     state.getTime(),
-                                                    (loc ? *loc : location),
+                                                    (loc ? *loc : dummyloc),
                                                     query.timezone,
                                                     getTimeZones(),
                                                     query.outlocale,
