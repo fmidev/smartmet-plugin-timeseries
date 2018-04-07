@@ -3348,8 +3348,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       // it from the full time timeseries once.
       int fmisid = get_fmisid_value(fmisid_ts);
 
-      Spine::LocationPtr loc =
-          getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
+      Spine::LocationPtr loc = getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
 
       unsigned int obs_result_field_index = 0;
       for (unsigned int i = 0; i < obsParameters.size(); i++)

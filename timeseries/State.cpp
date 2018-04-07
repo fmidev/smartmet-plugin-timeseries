@@ -1,8 +1,7 @@
 #include "State.h"
 #include "Plugin.h"
-#include <spine/Exception.h>
-#include <spine/Exception.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <spine/Exception.h>
 
 namespace SmartMet
 {

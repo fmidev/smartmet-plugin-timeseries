@@ -16,10 +16,10 @@
 // ======================================================================
 
 #pragma once
+#include <boost/date_time/posix_time/ptime.hpp>
 #include <engines/querydata/OriginTime.h>
 #include <engines/querydata/Producer.h>
 #include <engines/querydata/Q.h>
-#include <boost/date_time/posix_time/ptime.hpp>
 
 namespace Fmi
 {
@@ -46,7 +46,7 @@ namespace Geonames
 {
 class Engine;
 }
-}
+}  // namespace Engine
 
 namespace Plugin
 {

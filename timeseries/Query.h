@@ -8,24 +8,24 @@
 
 #pragma once
 
-#include "Producers.h"
 #include "AggregationInterval.h"
+#include "Producers.h"
 
 #include <engines/geonames/Engine.h>
 
 #include <spine/HTTP.h>
 #include <spine/Location.h>
-#include <spine/Parameter.h>
-#include <spine/ValueFormatter.h>
-#include <spine/TimeSeriesGeneratorOptions.h>
 #include <spine/OptionParsers.h>
+#include <spine/Parameter.h>
 #include <spine/TableFeeder.h>
+#include <spine/TimeSeriesGeneratorOptions.h>
+#include <spine/ValueFormatter.h>
 
-#include <newbase/NFmiPoint.h>
 #include <macgyver/TimeFormatter.h>
+#include <newbase/NFmiPoint.h>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <list>
 #include <locale>
