@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.4.5
+Version: 18.4.7
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -15,25 +15,25 @@ BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
-BuildRequires: smartmet-library-spine-devel >= 18.3.21
-BuildRequires: smartmet-library-locus-devel >= 18.1.15
-BuildRequires: smartmet-library-macgyver-devel >= 18.2.12
-BuildRequires: smartmet-library-newbase-devel >= 18.3.10
-BuildRequires: smartmet-engine-geonames-devel >= 18.3.20
+BuildRequires: smartmet-library-spine-devel >= 18.4.7
+BuildRequires: smartmet-library-locus-devel >= 18.4.7
+BuildRequires: smartmet-library-macgyver-devel >= 18.4.7
+BuildRequires: smartmet-library-newbase-devel >= 18.4.7
+BuildRequires: smartmet-engine-geonames-devel >= 18.4.7
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 18.3.20
+BuildRequires: smartmet-engine-observation-devel >= 18.4.7
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 18.3.20
-BuildRequires: smartmet-engine-gis-devel >= 18.3.20
+BuildRequires: smartmet-engine-querydata-devel >= 18.4.7
+BuildRequires: smartmet-engine-gis-devel >= 18.4.7
 Requires: libconfig
-Requires: smartmet-library-locus >= 18.1.15
-Requires: smartmet-library-macgyver >= 18.2.12
-Requires: smartmet-library-newbase >= 18.3.10
-Requires: smartmet-library-spine >= 18.3.21
-Requires: smartmet-engine-geonames >= 18.3.20
-Requires: smartmet-engine-querydata >= 18.3.20
-Requires: smartmet-engine-gis >= 18.3.20
-Requires: smartmet-server >= 17.11.10
+Requires: smartmet-library-locus >= 18.4.7
+Requires: smartmet-library-macgyver >= 18.4.7
+Requires: smartmet-library-newbase >= 18.4.7
+Requires: smartmet-library-spine >= 18.4.7
+Requires: smartmet-engine-geonames >= 18.4.7
+Requires: smartmet-engine-querydata >= 18.4.7
+Requires: smartmet-engine-gis >= 18.4.7
+Requires: smartmet-server >= 18.4.7
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -67,6 +67,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Sat Apr  7 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.4.7-1.fmi
+- Upgrade to boost 1.66
+
 * Thu Apr  5 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.4.5-1.fmi
 - Optimized speed of bbox queries by reducing geonames lookups
 
