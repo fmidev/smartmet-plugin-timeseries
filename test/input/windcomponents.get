@@ -1,0 +1,1 @@
+GET /timeseries?model=hirwind&starttime=201804060600&tz=UTC&place=Helsinki&timesteps=1&precision=double&param=time,WindSpeedMS,WindDirection,WindUMS.raw,WindVMS.raw,WindUMS,WIndVMS HTTP/1.0
