@@ -4024,11 +4024,14 @@ void Plugin::query(const State& state,
     std::string tmp = output.str();
     std::swap(tmp, *result);
 
+    // Too many flash data requests with empty output filling the logs...
+#if 0    
     if (result->size() == 0)
     {
       std::cerr << "Warning: Empty output for request " << request.getQueryString() << " from "
                 << request.getClientIP() << std::endl;
     }
+#endif
 
 #ifdef MYDEBUG
     std::cout << "Output:" << std::endl << *result << std::endl;
