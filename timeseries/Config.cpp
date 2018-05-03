@@ -151,21 +151,21 @@ void Config::parse_config_precision(const string& name)
         else
           prec.parameter_precisions.insert(Precision::Map::value_type(paramname, value));
       }
-      catch (libconfig::ParseException& e)
+      catch (const libconfig::ParseException& e)
       {
         throw Spine::Exception(BCP,
                                string("TimeSeries configuration error ' ") + e.getError() +
                                    "' with variable '" + paramname + "' on line " +
                                    Fmi::to_string(e.getLine()));
       }
-      catch (libconfig::ConfigException&)
+      catch (const libconfig::ConfigException&)
       {
         throw Spine::Exception(BCP,
                                string("TimeSeries configuration error with variable '") +
                                    paramname + "' on line " +
                                    Fmi::to_string(settings[i].getSourceLine()));
       }
-      catch (std::exception& e)
+      catch (const std::exception& e)
       {
         throw Spine::Exception(BCP,
                                e.what() + string(" (line number ") +
