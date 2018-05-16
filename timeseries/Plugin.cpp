@@ -4059,74 +4059,70 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
                             const Spine::HTTP::Request& theRequest,
                             Spine::HTTP::Response& theResponse)
 {
+  // We need this in the catch block
+  bool isdebug = false;
+
   try
   {
-    bool isdebug = ("debug" == Spine::optional_string(theRequest.getParameter("format"), ""));
+    isdebug = ("debug" == Spine::optional_string(theRequest.getParameter("format"), ""));
 
-    try
+    theResponse.setHeader("Access-Control-Allow-Origin", "*");
+
+    auto expires_seconds = itsConfig.expirationTime();
+    State state(*this);
+
+    theResponse.setStatus(Spine::HTTP::Status::ok);
+
+    query(state, theRequest, theResponse);  // may modify the status
+
+    // Adding response headers
+
+    boost::shared_ptr<Fmi::TimeFormatter> tformat(Fmi::TimeFormatter::create("http"));
+
+    if (expires_seconds == 0)
     {
-      theResponse.setHeader("Access-Control-Allow-Origin", "*");
-
-      auto expires_seconds = itsConfig.expirationTime();
-      State state(*this);
-
-      theResponse.setStatus(Spine::HTTP::Status::ok);
-
-      query(state, theRequest, theResponse);  // may modify the status
-
-      // Adding response headers
-
-      boost::shared_ptr<Fmi::TimeFormatter> tformat(Fmi::TimeFormatter::create("http"));
-
-      if (expires_seconds == 0)
-      {
-        theResponse.setHeader("Cache-Control", "no-cache, must-revalidate");  // HTTP/1.1
-        theResponse.setHeader("Pragma", "no-cache");                          // HTTP/1.0
-      }
-      else
-      {
-        std::string cachecontrol = "public, max-age=" + Fmi::to_string(expires_seconds);
-        theResponse.setHeader("Cache-Control", cachecontrol.c_str());
-
-        ptime t_expires = state.getTime() + seconds(expires_seconds);
-        std::string expiration = tformat->format(t_expires);
-        theResponse.setHeader("Expires", expiration.c_str());
-      }
-
-      std::string modification = tformat->format(state.getTime());
-      theResponse.setHeader("Last-Modified", modification.c_str());
+      theResponse.setHeader("Cache-Control", "no-cache, must-revalidate");  // HTTP/1.1
+      theResponse.setHeader("Pragma", "no-cache");                          // HTTP/1.0
     }
-    catch (...)
+    else
     {
-      // Catching all exceptions
+      std::string cachecontrol = "public, max-age=" + Fmi::to_string(expires_seconds);
+      theResponse.setHeader("Cache-Control", cachecontrol.c_str());
 
-      Spine::Exception exception(BCP, "Request processing exception!", NULL);
-      exception.addParameter("URI", theRequest.getURI());
-      exception.printError();
-
-      if (isdebug)
-      {
-        // Delivering the exception information as HTTP content
-        std::string fullMessage = exception.getHtmlStackTrace();
-        theResponse.setContent(fullMessage);
-        theResponse.setStatus(Spine::HTTP::Status::ok);
-      }
-      else
-      {
-        theResponse.setStatus(Spine::HTTP::Status::bad_request);
-      }
-
-      // Adding the first exception information into the response header
-
-      std::string firstMessage = exception.what();
-      boost::algorithm::replace_all(firstMessage, "\n", " ");
-      firstMessage = firstMessage.substr(0, 300);
-      theResponse.setHeader("X-TimeSeriesPlugin-Error", firstMessage.c_str());
+      ptime t_expires = state.getTime() + seconds(expires_seconds);
+      std::string expiration = tformat->format(t_expires);
+      theResponse.setHeader("Expires", expiration.c_str());
     }
+
+    std::string modification = tformat->format(state.getTime());
+    theResponse.setHeader("Last-Modified", modification.c_str());
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    // Catching all exceptions
+
+    Spine::Exception exception(BCP, "Request processing exception!", NULL);
+    exception.addParameter("URI", theRequest.getURI());
+    exception.printError();
+
+    if (isdebug)
+    {
+      // Delivering the exception information as HTTP content
+      std::string fullMessage = exception.getHtmlStackTrace();
+      theResponse.setContent(fullMessage);
+      theResponse.setStatus(Spine::HTTP::Status::ok);
+    }
+    else
+    {
+      theResponse.setStatus(Spine::HTTP::Status::bad_request);
+    }
+
+    // Adding the first exception information into the response header
+
+    std::string firstMessage = exception.what();
+    boost::algorithm::replace_all(firstMessage, "\n", " ");
+    firstMessage = firstMessage.substr(0, 300);
+    theResponse.setHeader("X-TimeSeriesPlugin-Error", firstMessage.c_str());
   }
 }
 
