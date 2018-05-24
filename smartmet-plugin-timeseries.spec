@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.4.16
+Version: 18.5.24
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -68,6 +68,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu May 24 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.5.24-1.fmi
+- Fixed time series generation to avoid generating excessive amounts of time steps for aggregation
+
 * Wed May 16 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.4.16-1.fmi
 - Fixed error handling when the format option is given more than once
 

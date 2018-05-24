@@ -179,7 +179,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
 #endif
 
   Spine::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(
-      const Engine::Querydata::Q& q, const Query& query, const std::string paramname) const;
+      const Engine::Querydata::Q& q, const Query& query, const std::string& paramname) const;
 
   Spine::LocationPtr getLocationForArea(const Spine::TaggedLocation& tloc,
                                         const Query& query,

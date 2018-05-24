@@ -60,6 +60,9 @@
 #include <numeric>
 #include <stdexcept>
 
+#pragma message("Remove prettyprint.hpp")
+#include <prettyprint.hpp>
+
 using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
@@ -2038,7 +2041,7 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
 // ----------------------------------------------------------------------
 
 Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
-    const Engine::Querydata::Q& q, const Query& query, const std::string paramname) const
+    const Engine::Querydata::Q& q, const Query& query, const std::string& paramname) const
 {
   try
   {
@@ -2069,20 +2072,19 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
     timeseriesStartTime -= boost::posix_time::minutes(aggregationIntervalBehind);
     timeseriesEndTime += boost::posix_time::minutes(aggregationIntervalAhead);
 
-#ifdef MYDEBUG
-    std::cout << "parameter name: " << paramname << std::endl;
-    std::cout << "aggregationIntervalBehind: " << aggregationIntervalBehind << std::endl;
-    std::cout << "aggregationIntervalAhead: " << aggregationIntervalAhead << std::endl;
-    std::cout << "timeseriesStartTime: " << timeseriesStartTime << std::endl;
-    std::cout << "timeseriesEndTime: " << timeseriesEndTime << std::endl;
-#endif
-
     Spine::TimeSeriesGeneratorOptions topt = query.toptions;
 
     topt.startTime = (query.toptions.startTimeUTC ? timeseriesStartTime.utc_time()
                                                   : timeseriesStartTime.local_time());
     topt.endTime =
         (query.toptions.endTimeUTC ? timeseriesEndTime.utc_time() : timeseriesEndTime.local_time());
+
+#ifdef MYDEBUG
+    std::cout << "parameter name: " << paramname << std::endl;
+    std::cout << "aggregationIntervalBehind: " << aggregationIntervalBehind << std::endl;
+    std::cout << "aggregationIntervalAhead: " << aggregationIntervalAhead << std::endl;
+    std::cout << topt << std::endl;
+#endif
 
     // generate timelist for aggregation
     tlist = itsTimeSeriesCache->generate(topt, tz);
@@ -2097,11 +2099,11 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
       topt.timeSteps = boost::none;
       topt.timeStep = boost::none;
       topt.timeList.clear();
-    }
-    // generate timelist for aggregation
-    tlist = itsTimeSeriesCache->generate(topt, tz);
 
-    qdtimesteps.insert(tlist->begin(), tlist->end());
+      // generate timelist for aggregation
+      tlist = itsTimeSeriesCache->generate(topt, tz);
+      qdtimesteps.insert(tlist->begin(), tlist->end());
+    }
 
     // add timesteps to LocalTimeList
     Spine::TimeSeriesGenerator::LocalTimeList ret;
@@ -2367,8 +2369,10 @@ void Plugin::fetchQEngineValues(const State& state,
       if (tlist.size() == 0)
         return;
 
+#ifdef BRAINSTORM_1195
       // store original timestep
       boost::optional<unsigned int> timeStepOriginal = query.toptions.timeSteps;
+
       // no timestep limitation for the query
       // redundant steps are removed later
       if (query.toptions.timeSteps)
@@ -2385,11 +2389,14 @@ void Plugin::fetchQEngineValues(const State& state,
           }
         }
       }
+#endif
 
       auto querydata_tlist = generateQEngineQueryTimes(qi, query, paramname);
 
+#ifdef BRAINSTORM_1195
       // restore original timestep
       query.toptions.timeSteps = timeStepOriginal;
+#endif
 
       ts::Value missing_value = Spine::TimeSeries::None();
 
