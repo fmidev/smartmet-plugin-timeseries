@@ -267,7 +267,7 @@ Config::Config(const string& configfile)
       itsFilesystemCacheDirectory("/var/smartmet/timeseriescache"),
       itsMaxMemoryCacheSize(104857600)  // 100 MB
       ,
-      itsMaxFilesystemCacheSize(209715200)  // 200 MB
+      itsMaxFilesystemCacheSize(0)  // off by default
       ,
       itsMaxTimeSeriesCacheSize(10000)
 {
