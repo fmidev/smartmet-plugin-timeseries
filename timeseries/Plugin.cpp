@@ -60,9 +60,6 @@
 #include <numeric>
 #include <stdexcept>
 
-#pragma message("Remove prettyprint.hpp")
-#include <prettyprint.hpp>
-
 using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
