@@ -64,10 +64,6 @@ array(
 "Temperature" => "16"
 ),
 array(
-"time" => "20080805T143900",
-"Temperature" => "16"
-),
-array(
 "time" => "20080805T144000",
 "Temperature" => "16"
 ),
@@ -140,10 +136,6 @@ array(
 "Temperature" => "16"
 ),
 array(
-"time" => "20080805T173900",
-"Temperature" => "16"
-),
-array(
 "time" => "20080805T174000",
 "Temperature" => "16"
 ),
@@ -213,10 +205,6 @@ array(
 ),
 array(
 "time" => "20080805T203000",
-"Temperature" => "15"
-),
-array(
-"time" => "20080805T203900",
 "Temperature" => "15"
 ),
 array(

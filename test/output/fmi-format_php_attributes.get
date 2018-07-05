@@ -31,8 +31,6 @@ array(
 "Temperature" => "15"),
 "20080805T143000" => array(
 "Temperature" => "16"),
-"20080805T143900" => array(
-"Temperature" => "16"),
 "20080805T144000" => array(
 "Temperature" => "16"),
 "20080805T145000" => array(
@@ -69,8 +67,6 @@ array(
 "Temperature" => "16"),
 "20080805T173000" => array(
 "Temperature" => "16"),
-"20080805T173900" => array(
-"Temperature" => "16"),
 "20080805T174000" => array(
 "Temperature" => "16"),
 "20080805T175000" => array(
@@ -106,8 +102,6 @@ array(
 "20080805T202000" => array(
 "Temperature" => "15"),
 "20080805T203000" => array(
-"Temperature" => "15"),
-"20080805T203900" => array(
 "Temperature" => "15"),
 "20080805T204000" => array(
 "Temperature" => "15"),

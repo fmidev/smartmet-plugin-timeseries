@@ -65,10 +65,6 @@
 <Temperature>16</Temperature>
 </row>
 <row>
-<time>20080805T143900</time>
-<Temperature>16</Temperature>
-</row>
-<row>
 <time>20080805T144000</time>
 <Temperature>16</Temperature>
 </row>
@@ -141,10 +137,6 @@
 <Temperature>16</Temperature>
 </row>
 <row>
-<time>20080805T173900</time>
-<Temperature>16</Temperature>
-</row>
-<row>
 <time>20080805T174000</time>
 <Temperature>16</Temperature>
 </row>
@@ -214,10 +206,6 @@
 </row>
 <row>
 <time>20080805T203000</time>
-<Temperature>15</Temperature>
-</row>
-<row>
-<time>20080805T203900</time>
 <Temperature>15</Temperature>
 </row>
 <row>

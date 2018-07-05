@@ -16,7 +16,6 @@
 <row time="20080805T141000" Temperature="15"/>
 <row time="20080805T142000" Temperature="15"/>
 <row time="20080805T143000" Temperature="16"/>
-<row time="20080805T143900" Temperature="16"/>
 <row time="20080805T144000" Temperature="16"/>
 <row time="20080805T145000" Temperature="16"/>
 <row time="20080805T150000" Temperature="16"/>
@@ -35,7 +34,6 @@
 <row time="20080805T171000" Temperature="16"/>
 <row time="20080805T172000" Temperature="16"/>
 <row time="20080805T173000" Temperature="16"/>
-<row time="20080805T173900" Temperature="16"/>
 <row time="20080805T174000" Temperature="16"/>
 <row time="20080805T175000" Temperature="16"/>
 <row time="20080805T180000" Temperature="16"/>
@@ -54,7 +52,6 @@
 <row time="20080805T201000" Temperature="15"/>
 <row time="20080805T202000" Temperature="15"/>
 <row time="20080805T203000" Temperature="15"/>
-<row time="20080805T203900" Temperature="15"/>
 <row time="20080805T204000" Temperature="15"/>
 <row time="20080805T205000" Temperature="15"/>
 <row time="20080805T210000" Temperature="14"/>
