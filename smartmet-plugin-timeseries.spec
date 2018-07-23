@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.5.24
-Release: 2%{?dist}.fmi
+Version: 18.7.23
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -16,25 +16,25 @@ BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
-BuildRequires: smartmet-library-spine-devel >= 18.4.7
-BuildRequires: smartmet-library-locus-devel >= 18.4.7
-BuildRequires: smartmet-library-macgyver-devel >= 18.4.7
-BuildRequires: smartmet-library-newbase-devel >= 18.4.7
-BuildRequires: smartmet-engine-geonames-devel >= 18.4.7
+BuildRequires: smartmet-library-spine-devel >= 18.7.23
+BuildRequires: smartmet-library-locus-devel >= 18.6.14
+BuildRequires: smartmet-library-macgyver-devel >= 18.6.7
+BuildRequires: smartmet-library-newbase-devel >= 18.6.13
+BuildRequires: smartmet-engine-geonames-devel >= 18.6.20
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 18.4.7
+BuildRequires: smartmet-engine-observation-devel >= 18.7.23
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 18.4.7
+BuildRequires: smartmet-engine-querydata-devel >= 18.6.28
 BuildRequires: smartmet-engine-gis-devel >= 18.4.7
 Requires: libconfig
-Requires: smartmet-library-locus >= 18.4.7
-Requires: smartmet-library-macgyver >= 18.4.7
-Requires: smartmet-library-newbase >= 18.4.7
-Requires: smartmet-library-spine >= 18.4.7
-Requires: smartmet-engine-geonames >= 18.4.7
-Requires: smartmet-engine-querydata >= 18.4.7
+Requires: smartmet-library-locus >= 18.6.14
+Requires: smartmet-library-macgyver >= 18.6.7
+Requires: smartmet-library-newbase >= 18.6.13
+Requires: smartmet-library-spine >= 18.7.23
+Requires: smartmet-engine-geonames >= 18.6.20
+Requires: smartmet-engine-querydata >= 18.6.28
 Requires: smartmet-engine-gis >= 18.4.7
-Requires: smartmet-server >= 18.4.7
+Requires: smartmet-server >= 18.6.6
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -68,6 +68,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Jul 23 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.7.23-1.fmi
+- Repackaged since spine ValueFormatter ABI changed
+
 * Thu May 24 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.5.24-2.fmi
 - Default cache.filesystem_bytes value is now zero, the file cache is rarely needed
 
