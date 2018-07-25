@@ -282,10 +282,9 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
   }
   catch (...)
   {
-    Spine::Exception ex(BCP, "TimeSeries plugin failed to parse query string options!", NULL);
     // The stack traces are useless when the user has made a typo
-    ex.disableStackTrace();
-    throw ex;
+    throw Spine::Exception::Trace(BCP, "TimeSeries plugin failed to parse query string options!")
+        .disableStackTrace();
   }
 }
 
@@ -332,7 +331,7 @@ void Query::parse_producers(const Spine::HTTP::Request& theReq)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -400,7 +399,7 @@ void Query::parse_levels(const Spine::HTTP::Request& theReq)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -432,7 +431,7 @@ void Query::parse_precision(const Spine::HTTP::Request& req, const Config& confi
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -572,7 +571,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 

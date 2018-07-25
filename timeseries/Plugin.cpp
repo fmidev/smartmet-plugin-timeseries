@@ -96,7 +96,7 @@ bool special(const Spine::Parameter& theParam)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -206,7 +206,7 @@ bool parameterIsArithmetic(const Spine::Parameter& theParameter)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -233,7 +233,7 @@ bool is_plain_location_query(const Spine::OptionParsers::ParameterList& theParam
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -274,7 +274,7 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -295,7 +295,7 @@ void make_point_path(NFmiSvgPath& thePath, const std::pair<double, double>& theP
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -330,7 +330,7 @@ void make_rectangle_path(NFmiSvgPath& thePath,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -354,7 +354,7 @@ std::string get_name_base(const std::string& theName)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -388,7 +388,7 @@ const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 
   return ret;
@@ -463,7 +463,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -562,7 +562,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -593,7 +593,7 @@ void erase_redundant_timesteps(ts::TimeSeries& ts,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -613,7 +613,7 @@ ts::TimeSeriesPtr erase_redundant_timesteps(
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -635,7 +635,7 @@ ts::TimeSeriesVectorPtr erase_redundant_timesteps(
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -656,7 +656,7 @@ ts::TimeSeriesGroupPtr erase_redundant_timesteps(
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -686,7 +686,7 @@ T aggregate(const T& raw_data, const Spine::ParameterFunctions& pf)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -718,7 +718,7 @@ void update_latest_timestep(Query& query, const ts::TimeSeriesVectorPtr& tsv)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -744,7 +744,7 @@ void update_latest_timestep(Query& query, const ts::TimeSeries& ts)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -769,7 +769,7 @@ void update_latest_timestep(Query& query, const ts::TimeSeriesGroup& tsg)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -793,7 +793,7 @@ void store_data(ts::TimeSeriesVectorPtr aggregatedData, Query& query, OutputData
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -844,7 +844,7 @@ void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, Outpu
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -913,7 +913,7 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -936,7 +936,7 @@ std::string get_location_id(Spine::LocationPtr loc)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -973,7 +973,7 @@ void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -998,7 +998,7 @@ bool is_location_parameter(const std::string& paramname)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1079,7 +1079,7 @@ std::string location_parameter(const Spine::LocationPtr loc,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1113,7 +1113,7 @@ bool is_time_parameter(const std::string& paramname)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1137,7 +1137,7 @@ std::string format_date(const boost::local_time::local_date_time& ldt,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1376,7 +1376,7 @@ std::string time_parameter(const std::string paramname,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1408,7 +1408,7 @@ std::vector<int> getGeoids(Engine::Observation::Engine* observation,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -1448,7 +1448,7 @@ Spine::LocationPtr getLocation(const Engine::Geonames::Engine* geonames,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1473,7 +1473,7 @@ int get_fmisid_index(const Engine::Observation::Settings& settings)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1506,7 +1506,7 @@ int get_fmisid_value(const ts::Value& value)
     else if (boost::get<double>(&value))
       return boost::get<double>(value);
     else if (boost::get<Spine::TimeSeries::None>(&value))
-      throw Spine::Exception(BCP, "Station with NULL fmisid encountered!");
+      throw Spine::Exception(BCP, "Station with null fmisid encountered!");
     else if (boost::get<Spine::TimeSeries::LonLat>(&value))
       throw Spine::Exception(BCP, "Station with latlon as fmisid encountered!");
     else
@@ -1620,7 +1620,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1949,7 +1949,7 @@ std::size_t Plugin::hash_value(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -2028,7 +2028,7 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -2120,7 +2120,7 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -2159,7 +2159,7 @@ void Plugin::fetchLocationValues(Query& query,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -2613,7 +2613,7 @@ void Plugin::fetchQEngineValues(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -2674,7 +2674,7 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -2730,7 +2730,7 @@ void Plugin::setCommonObsSettings(Engine::Observation::Settings& settings,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -3068,7 +3068,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -3268,7 +3268,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -3620,7 +3620,7 @@ void Plugin::fetchObsEngineValues(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -3703,7 +3703,7 @@ void Plugin::processObsEngineQuery(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -3782,7 +3782,7 @@ void Plugin::processQEngineQuery(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -3879,7 +3879,7 @@ void Plugin::processQuery(const State& state, Spine::Table& table, Query& master
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -4050,7 +4050,7 @@ void Plugin::query(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -4106,14 +4106,14 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
   {
     // Catching all exceptions
 
-    Spine::Exception exception(BCP, "Request processing exception!", NULL);
-    exception.addParameter("URI", theRequest.getURI());
-    exception.printError();
+    Spine::Exception ex(BCP, "Request processing exception!", nullptr);
+    ex.addParameter("URI", theRequest.getURI());
+    ex.printError();
 
     if (isdebug)
     {
       // Delivering the exception information as HTTP content
-      std::string fullMessage = exception.getHtmlStackTrace();
+      std::string fullMessage = ex.getHtmlStackTrace();
       theResponse.setContent(fullMessage);
       theResponse.setStatus(Spine::HTTP::Status::ok);
     }
@@ -4124,7 +4124,7 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
 
     // Adding the first exception information into the response header
 
-    std::string firstMessage = exception.what();
+    std::string firstMessage = ex.what();
     boost::algorithm::replace_all(firstMessage, "\n", " ");
     firstMessage = firstMessage.substr(0, 300);
     theResponse.setHeader("X-TimeSeriesPlugin-Error", firstMessage.c_str());
@@ -4159,7 +4159,7 @@ Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -4183,13 +4183,13 @@ void Plugin::init()
     itsTimeSeriesCache->resize(itsConfig.maxTimeSeriesCacheSize());
 
     /* GeoEngine */
-    auto engine = itsReactor->getSingleton("Geonames", NULL);
+    auto engine = itsReactor->getSingleton("Geonames", nullptr);
     if (!engine)
       throw Spine::Exception(BCP, "Geonames engine unavailable");
     itsGeoEngine = reinterpret_cast<Engine::Geonames::Engine*>(engine);
 
     /* GisEngine */
-    engine = itsReactor->getSingleton("Gis", NULL);
+    engine = itsReactor->getSingleton("Gis", nullptr);
     if (!engine)
       throw Spine::Exception(BCP, "Gis engine unavailable");
     itsGisEngine = reinterpret_cast<Engine::Gis::Engine*>(engine);
@@ -4198,7 +4198,7 @@ void Plugin::init()
     itsGisEngine->populateGeometryStorage(itsConfig.getPostGISIdentifiers(), itsGeometryStorage);
 
     /* QEngine */
-    engine = itsReactor->getSingleton("Querydata", NULL);
+    engine = itsReactor->getSingleton("Querydata", nullptr);
     if (!engine)
       throw Spine::Exception(BCP, "Querydata engine unavailable");
     itsQEngine = reinterpret_cast<Engine::Querydata::Engine*>(engine);
@@ -4207,7 +4207,7 @@ void Plugin::init()
     if (!itsConfig.obsEngineDisabled())
     {
       /* ObsEngine */
-      engine = itsReactor->getSingleton("Observation", NULL);
+      engine = itsReactor->getSingleton("Observation", nullptr);
       if (!engine)
         throw Spine::Exception(BCP, "Observation engine unavailable");
       itsObsEngine = reinterpret_cast<Engine::Observation::Engine*>(engine);
@@ -4236,7 +4236,7 @@ void Plugin::init()
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -4251,12 +4251,12 @@ void Plugin::shutdown()
   try
   {
     std::cout << "  -- Shutdown requested (timeseries)\n";
-    if (itsCache != NULL)
+    if (itsCache != nullptr)
       itsCache->shutdown();
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -4296,7 +4296,7 @@ bool Plugin::queryIsFast(const Spine::HTTP::Request& theRequest) const
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -4310,12 +4310,12 @@ Plugin::~Plugin()
 {
   try
   {
-    if (itsCache != NULL)
+    if (itsCache != nullptr)
       itsCache->shutdown();
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 

@@ -34,7 +34,7 @@ const Engine::Querydata::Engine& State::getQEngine() const
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -52,7 +52,7 @@ const Engine::Geonames::Engine& State::getGeoEngine() const
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -71,7 +71,7 @@ Engine::Observation::Engine* State::getObsEngine() const
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -90,7 +90,7 @@ const Fmi::TimeZones& State::getTimeZones() const
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -145,7 +145,7 @@ Engine::Querydata::Q State::get(const Engine::Querydata::Producer& theProducer) 
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -180,9 +180,8 @@ Engine::Querydata::Q State::get(const Engine::Querydata::Producer& theProducer,
   }
   catch (...)
   {
-    Spine::Exception ex(BCP, "Failed to get querydata for the requested origintime", NULL);
-    ex.disableStackTrace();
-    throw ex;
+    throw Spine::Exception::Trace(BCP, "Failed to get querydata for the requested origintime")
+        .disableStackTrace();
   }
 }
 

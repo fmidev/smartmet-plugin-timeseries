@@ -43,7 +43,7 @@ void Config::add_default_precisions()
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -102,7 +102,7 @@ Spine::FunctionId get_function_id(const string& configName)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -180,7 +180,7 @@ void Config::parse_config_precision(const string& name)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -227,7 +227,7 @@ void Config::parse_config_precisions()
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -245,7 +245,7 @@ string parse_config_key(const char* str1 = 0, const char* str2 = 0, const char* 
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -415,7 +415,7 @@ const Precision& Config::getPrecision(const string& name) const
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
