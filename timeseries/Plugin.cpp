@@ -1550,7 +1550,7 @@ int get_fmisid_value(const ts::TimeSeries& ts)
 #ifndef WITHOUT_OBSERVATION
 
 TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
-                                              const ts::TimeSeriesVectorPtr observation_result,
+                                              const ts::TimeSeriesVectorPtr& observation_result,
                                               const Engine::Observation::Settings& settings,
                                               const Query& query,
                                               int fmisid_index)
@@ -1562,7 +1562,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
 
     if (producer == FLASH_PRODUCER)
     {
-      ret.push_back(make_pair(0, observation_result));
+      ret.emplace_back(make_pair(0, observation_result));
       return ret;
     }
 
@@ -1583,12 +1583,13 @@ TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
       else
       {
         end_index = i;
-        location_indexes.push_back(std::pair<unsigned int, unsigned int>(start_index, end_index));
+        location_indexes.emplace_back(
+            std::pair<unsigned int, unsigned int>(start_index, end_index));
         start_index = end_index = i;
       }
     }
     end_index = fmisid_ts.size();
-    location_indexes.push_back(std::pair<unsigned int, unsigned int>(start_index, end_index));
+    location_indexes.emplace_back(std::pair<unsigned int, unsigned int>(start_index, end_index));
 
     // iterate through locations and do aggregation
     for (unsigned int i = 0; i < location_indexes.size(); i++)
@@ -1599,20 +1600,20 @@ TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
       end_index = location_indexes[i].second;
       for (unsigned int k = 0; k < observation_result->size(); k++)
       {
-        const ts::TimeSeries ts_k = observation_result->at(k);
+        const ts::TimeSeries& ts_k = observation_result->at(k);
         if (ts_k.empty())
           tsv->push_back(ts_k);
         else
         {
           ts::TimeSeries ts_ik(ts_k.begin() + start_index, ts_k.begin() + end_index);
-          tsv->push_back(ts_ik);
+          tsv->emplace_back(ts_ik);
         }
       }
 
       if (fmisid_ts.empty())
         continue;
       int fmisid = get_fmisid_value(fmisid_ts[start_index].value);
-      ret.push_back(make_pair(fmisid, tsv));
+      ret.emplace_back(make_pair(fmisid, tsv));
     }
 
     return ret;
