@@ -3812,8 +3812,7 @@ void Plugin::query(const State& state,
 {
   try
   {
-    using namespace std;
-    using namespace std::chrono;
+    using std::chrono::high_resolution_clock;
 
     Spine::Table data;
 
@@ -3824,7 +3823,7 @@ void Plugin::query(const State& state,
     Query query(state, request, itsConfig);
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
-    string producer_option =
+    std::string producer_option =
         Spine::optional_string(request.getParameter(PRODUCER_PARAM),
                                Spine::optional_string(request.getParameter(STATIONTYPE_PARAM), ""));
     // At least one of location specifiers must be set
@@ -3850,7 +3849,7 @@ void Plugin::query(const State& state,
     // The formatter knows which mimetype to send
     boost::shared_ptr<Spine::TableFormatter> formatter(
         Spine::TableFormatterFactory::create(query.format));
-    string mime = formatter->mimetype() + "; charset=UTF-8";
+    std::string mime = formatter->mimetype() + "; charset=UTF-8";
     response.setHeader("Content-Type", mime.c_str());
 
     // Calculate the hash value for the product. Zero value implies
@@ -3935,7 +3934,7 @@ void Plugin::query(const State& state,
     auto formatter_options = itsConfig.formatterOptions();
     formatter_options.setFormatType(wxml_type);
 
-    ostringstream output;
+    std::ostringstream output;
     formatter->format(output, data, headers, request, formatter_options);
     high_resolution_clock::time_point t5 = high_resolution_clock::now();
     timeheader.append("+").append(
