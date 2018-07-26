@@ -1546,6 +1546,26 @@ TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
 
 #endif
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Set precision of special parameters such as fmisid to zero
+ */
+// ----------------------------------------------------------------------
+
+#ifndef WITHOUT_OBSERVATION
+void fix_precisions(Query& masterquery, const ObsParameters& obsParameters)
+{
+  for (unsigned int i = 0; i < obsParameters.size(); i++)
+  {
+    std::string paramname(obsParameters[i].param.name());
+    if (paramname == WMO_PARAM || paramname == LPNN_PARAM || paramname == FMISID_PARAM ||
+        paramname == RWSID_PARAM || paramname == SENSOR_NO_PARAM || paramname == LEVEL_PARAM ||
+        paramname == GEOID_PARAM)
+      masterquery.precisions[i] = 0;
+  }
+}
+#endif
+
 }  // namespace
 
 // ----------------------------------------------------------------------
@@ -3774,15 +3794,7 @@ void Plugin::processQuery(const State& state, Spine::Table& table, Query& master
     }
 
 #ifndef WITHOUT_OBSERVATION
-    // precision for observation special parameters', e.g. fmisid must be zero
-    for (unsigned int i = 0; i < obsParameters.size(); i++)
-    {
-      std::string paramname(obsParameters[i].param.name());
-      if (paramname == WMO_PARAM || paramname == LPNN_PARAM || paramname == FMISID_PARAM ||
-          paramname == RWSID_PARAM || paramname == SENSOR_NO_PARAM || paramname == LEVEL_PARAM ||
-          paramname == GEOID_PARAM)
-        masterquery.precisions[i] = 0;
-    }
+    fix_precisions(masterquery, obsParameters);
 #endif
 
     // insert data into the table
