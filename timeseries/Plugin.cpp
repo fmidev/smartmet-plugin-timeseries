@@ -883,7 +883,7 @@ void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
       add_data_to_table(query.poptions.parameters(), tf, outputData, "_obs_", startRow);
 
     // iterate locations
-    BOOST_FOREACH (const auto& tloc, query.loptions->locations())
+    for (const auto& tloc : query.loptions->locations())
     {
       std::string locationId = get_location_id(tloc.loc);
 
@@ -1620,9 +1620,9 @@ std::size_t Plugin::hash_value(const State& state,
     // Check here first if any of the producers is an observation.
     // If so, return zero
 
-    BOOST_FOREACH (const AreaProducers& areaproducers, masterquery.timeproducers)
+    for (const AreaProducers& areaproducers : masterquery.timeproducers)
     {
-      BOOST_FOREACH (const auto& areaproducer, areaproducers)
+      for (const auto& areaproducer : areaproducers)
       {
         if (isObsProducer(areaproducer))
           return 0;
@@ -1668,7 +1668,7 @@ std::size_t Plugin::hash_value(const State& state,
     std::size_t producer_group = 0;
     bool firstProducer = true;
 
-    BOOST_FOREACH (const AreaProducers& areaproducers, masterquery.timeproducers)
+    for (const AreaProducers& areaproducers : masterquery.timeproducers)
     {
       Query query = masterquery;
 
@@ -1696,7 +1696,7 @@ std::size_t Plugin::hash_value(const State& state,
         // first timestep is here in utc
         boost::posix_time::ptime first_timestep = query.latestTimestep;
 
-        BOOST_FOREACH (const auto& tloc, query.loptions->locations())
+        for (const auto& tloc : query.loptions->locations())
         {
           Query subquery = query;
           QueryLevelDataCache queryLevelDataCache;
@@ -2059,11 +2059,11 @@ void Plugin::fetchLocationValues(Query& query,
     unsigned int column = column_index;
     unsigned int row = row_index;
 
-    BOOST_FOREACH (const Spine::Parameter& param, query.poptions.parameters())
+    for (const Spine::Parameter& param : query.poptions.parameters())
     {
       row = row_index;
       std::string pname = param.name();
-      BOOST_FOREACH (const auto& tloc, query.loptions->locations())
+      for (const auto& tloc : query.loptions->locations())
       {
         Spine::LocationPtr loc = tloc.loc;
         if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
@@ -2329,7 +2329,7 @@ void Plugin::fetchQEngineValues(const State& state,
       cout << query.toptions;
 
       cout << "generated timesteps: " << endl;
-      BOOST_FOREACH (const local_date_time& ldt, tlist)
+      for (const local_date_time& ldt : tlist)
       {
         cout << ldt << endl;
       }
@@ -2555,16 +2555,15 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
     std::set<std::string> stationTypes = itsObsEngine->getValidStationTypes();
 
     bool done = false;
-    BOOST_FOREACH (const auto& areaproducers, query.timeproducers)
+    for (const auto& areaproducers : query.timeproducers)
     {
-      BOOST_FOREACH (const auto& producer, areaproducers)
+      for (const auto& producer : areaproducers)
       {
         if (stationTypes.find(producer) != stationTypes.end())
         {
           std::map<std::string, unsigned int> parameter_columns;
           unsigned int column_index = 0;
-          BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfuncs,
-                         query.poptions.parameterFunctions())
+          for (const Spine::ParameterAndFunctions& paramfuncs : query.poptions.parameterFunctions())
           {
             Spine::Parameter parameter(paramfuncs.parameter);
 
@@ -3228,7 +3227,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     std::vector<boost::local_time::local_date_time> ts_vector;
     std::set<boost::local_time::local_date_time> ts_set;
     const ts::TimeSeries& ts = observation_result->at(0);
-    BOOST_FOREACH (const ts::TimedValue& tval, ts)
+    for (const ts::TimedValue& tval : ts)
       ts_set.insert(tval.time);
     ts_vector.insert(ts_vector.end(), ts_set.begin(), ts_set.end());
     std::sort(ts_vector.begin(), ts_vector.end());
@@ -3239,10 +3238,10 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     TimeSeriesByLocation tsv_area =
         get_timeseries_by_fmisid(producer, observation_result, settings, query, fmisid_index);
     // make sure that all timeseries have the same timesteps
-    BOOST_FOREACH (FmisidTSVectorPair& val, tsv_area)
+    for (FmisidTSVectorPair& val : tsv_area)
     {
       ts::TimeSeriesVector* tsv = val.second.get();
-      BOOST_FOREACH (ts::TimeSeries& ts, *tsv)
+      for (ts::TimeSeries& ts : *tsv)
       {
         for (unsigned int k = 0; k < ts_vector.size(); k++)
         {
@@ -3260,7 +3259,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
     std::vector<FmisidTSVectorPair> tsv_area_with_added_fields;
     // add data for location- and time-related fields; these fields are added by timeseries plugin
-    BOOST_FOREACH (FmisidTSVectorPair& val, tsv_area)
+    for (FmisidTSVectorPair& val : tsv_area)
     {
       ts::TimeSeriesVector* tsv_observation_result = val.second.get();
 
@@ -3333,7 +3332,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 #ifdef MYDEBUG
     std::cout << "observation_result after locally added fields: " << std::endl;
 
-    BOOST_FOREACH (FmisidTSVectorPair& val, tsv_area_with_added_fields)
+    for (FmisidTSVectorPair& val : tsv_area_with_added_fields)
     {
       ts::TimeSeriesVector* tsv = val.second.get();
       std::cout << "timeseries for fmisid " << val.first << ": " << std::endl << *tsv << std::endl;
@@ -3463,7 +3462,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
             ts::LonLatTimeSeries& llts = tsg->at(0);
             ts::TimeSeries& ts = llts.timeseries;
 
-            BOOST_FOREACH (ts::TimedValue& tv, ts)
+            for (ts::TimedValue& tv : ts)
               tv.value = place;
           }
         }
@@ -3600,7 +3599,7 @@ void Plugin::processObsEngineQuery(const State& state,
     }
     else
     {
-      BOOST_FOREACH (const auto& tloc, query.loptions->locations())
+      for (const auto& tloc : query.loptions->locations())
       {
         // Update settings for this particular location
         setLocationObsSettings(
@@ -3646,7 +3645,7 @@ void Plugin::processQEngineQuery(const State& state,
 
     bool firstProducer = outputData.empty();
 
-    BOOST_FOREACH (const auto& tloc, masterquery.loptions->locations())
+    for (const auto& tloc : masterquery.loptions->locations())
     {
       Query query = masterquery;
       QueryLevelDataCache queryLevelDataCache;
@@ -3672,8 +3671,7 @@ void Plugin::processQEngineQuery(const State& state,
       // Reset for each new location, since fetchQEngineValues modifies it
       auto old_start_time = query.toptions.startTime;
 
-      BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfunc,
-                     query.poptions.parameterFunctions())
+      for (const Spine::ParameterAndFunctions& paramfunc : query.poptions.parameterFunctions())
       {
         // reset to original start time for each new location
         query.toptions.startTime = old_start_time;
@@ -3750,7 +3748,7 @@ void Plugin::processQuery(const State& state, Spine::Table& table, Query& master
     // *after* the first ones if possible.
 
     std::size_t producer_group = 0;
-    BOOST_FOREACH (const AreaProducers& areaproducers, masterquery.timeproducers)
+    for (const AreaProducers& areaproducers : masterquery.timeproducers)
     {
       Query query = masterquery;
 
@@ -3842,7 +3840,7 @@ void Plugin::query(const State& state,
 
 #ifdef MYDEBUG
     std::cout << query.loptions->locations().size() << " locations:" << std::endl;
-    BOOST_FOREACH (const auto& tloc, query.loptions->locations())
+    for (const auto& tloc : query.loptions->locations())
       cout << formatLocation(*(tloc.loc)) << endl;
     std::cout << query.wmos.size() << " wmos:" << std::endl;
     for (const auto& wmo : query.wmos)
@@ -3911,7 +3909,7 @@ void Plugin::query(const State& state,
 
     // The names of the columns
     Spine::TableFormatter::Names headers;
-    BOOST_FOREACH (const Spine::Parameter& p, query.poptions.parameters())
+    for (const Spine::Parameter& p : query.poptions.parameters())
     {
       headers.push_back(p.alias());
     }

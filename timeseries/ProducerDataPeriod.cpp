@@ -78,9 +78,9 @@ void ProducerDataPeriod::getQEngineDataPeriods(const Engine::Querydata::Engine& 
 {
   try
   {
-    BOOST_FOREACH (const auto& areaproducers, producers)
+    for (const auto& areaproducers : producers)
     {
-      BOOST_FOREACH (const auto& producer, areaproducers)
+      for (const auto& producer : areaproducers)
       {
         auto period = querydata.getProducerTimePeriod(producer);
         if (!period.is_null())
@@ -103,9 +103,9 @@ void ProducerDataPeriod::getObsEngineDataPeriods(const Engine::Observation::Engi
   {
     std::set<std::string> obsproducers = observation.getValidStationTypes();
 
-    BOOST_FOREACH (const auto& areaproducers, producers)
+    for (const auto& areaproducers : producers)
     {
-      BOOST_FOREACH (const auto& producer, areaproducers)
+      for (const auto& producer : areaproducers)
       {
         if (obsproducers.find(producer) == obsproducers.end())
           continue;

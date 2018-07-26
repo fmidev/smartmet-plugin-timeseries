@@ -90,7 +90,7 @@ class ProducerDataPeriod
     // Retrieve all keys
     boost::copy(itsDataPeriod | boost::adaptors::map_keys, std::back_inserter(producernames));
 
-    BOOST_FOREACH (const std::string& producer, producernames)
+    for (const std::string& producer : producernames)
     {
       str.append("producer -> period: ")
           .append(producer)

@@ -148,7 +148,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       vector<string> parts;
       boost::algorithm::split(parts, geoidreq, boost::algorithm::is_any_of(","));
 
-      BOOST_FOREACH (const string& sgeoid, parts)
+      for (const string& sgeoid : parts)
       {
         int g = Fmi::stoi(sgeoid);
         this->geoids.push_back(g);
@@ -162,7 +162,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       vector<string> parts;
       boost::algorithm::split(parts, geoidreq, boost::algorithm::is_any_of(","));
 
-      BOOST_FOREACH (const string& sgeoid, parts)
+      for (const string& sgeoid : parts)
       {
         int g = Fmi::stoi(sgeoid);
         this->geoids.push_back(g);
@@ -177,7 +177,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       vector<string> parts;
       boost::algorithm::split(parts, fmisidreq, boost::algorithm::is_any_of(","));
 
-      BOOST_FOREACH (const string& sfmisid, parts)
+      for (const string& sfmisid : parts)
       {
         int f = Fmi::stoi(sfmisid);
         this->fmisids.push_back(f);
@@ -192,7 +192,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       vector<string> parts;
       boost::algorithm::split(parts, sidreq, boost::algorithm::is_any_of(","));
 
-      BOOST_FOREACH (const string& ssid, parts)
+      for (const string& ssid : parts)
       {
         int f = Fmi::stoi(ssid);
         this->fmisids.push_back(f);
@@ -208,7 +208,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       vector<string> parts;
       boost::algorithm::split(parts, wmoreq, boost::algorithm::is_any_of(","));
 
-      BOOST_FOREACH (const string& swmo, parts)
+      for (const string& swmo : parts)
       {
         int w = Fmi::stoi(swmo);
         this->wmos.push_back(w);
@@ -224,7 +224,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       vector<string> parts;
       boost::algorithm::split(parts, lpnnreq, boost::algorithm::is_any_of(","));
 
-      BOOST_FOREACH (const string& slpnn, parts)
+      for (const string& slpnn : parts)
       {
         int l = Fmi::stoi(slpnn);
         this->lpnns.push_back(l);
@@ -273,7 +273,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       vector<string> parts;
       boost::algorithm::split(parts, sweekdays, boost::algorithm::is_any_of(","));
 
-      BOOST_FOREACH (const string& wday, parts)
+      for (const string& wday : parts)
       {
         int h = Fmi::stoi(wday);
         this->weekdays.push_back(h);
@@ -322,7 +322,7 @@ void Query::parse_producers(const Spine::HTTP::Request& theReq)
 
     // Now split into location parts
 
-    BOOST_FOREACH (const auto& tproducers, resultProducers)
+    for (const auto& tproducers : resultProducers)
     {
       AreaProducers producers;
       boost::algorithm::split(producers, tproducers, boost::algorithm::is_any_of(","));
@@ -361,7 +361,7 @@ void Query::parse_levels(const Spine::HTTP::Request& theReq)
     {
       vector<string> parts;
       boost::algorithm::split(parts, opt, boost::algorithm::is_any_of(","));
-      BOOST_FOREACH (const string& tmp, parts)
+      for (const string& tmp : parts)
         levels.insert(Fmi::stoi(tmp));
     }
 
@@ -378,7 +378,7 @@ void Query::parse_levels(const Spine::HTTP::Request& theReq)
     {
       vector<string> parts;
       boost::algorithm::split(parts, opt, boost::algorithm::is_any_of(","));
-      BOOST_FOREACH (const string& tmp, parts)
+      for (const string& tmp : parts)
         pressures.insert(Fmi::stod(tmp));
     }
 
@@ -393,7 +393,7 @@ void Query::parse_levels(const Spine::HTTP::Request& theReq)
     {
       vector<string> parts;
       boost::algorithm::split(parts, opt, boost::algorithm::is_any_of(","));
-      BOOST_FOREACH (const string& tmp, parts)
+      for (const string& tmp : parts)
         heights.insert(Fmi::stod(tmp));
     }
   }
@@ -420,7 +420,7 @@ void Query::parse_precision(const Spine::HTTP::Request& req, const Config& confi
 
     precisions.reserve(poptions.size());
 
-    BOOST_FOREACH (const Spine::OptionParsers::ParameterList::value_type& p, poptions.parameters())
+    for (const Spine::OptionParsers::ParameterList::value_type& p : poptions.parameters())
     {
       Precision::Map::const_iterator it = prec.parameter_precisions.find(p.name());
       if (it == prec.parameter_precisions.end())
@@ -466,12 +466,12 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     if (theObsEngine != nullptr)
     {
       std::set<std::string> obsEngineStationTypes = theObsEngine->getValidStationTypes();
-      BOOST_FOREACH (const auto& areaproducers, timeproducers)
+      for (const auto& areaproducers : timeproducers)
       {
         if (obsProducersExist)
           break;
 
-        BOOST_FOREACH (const auto& producer, areaproducers)
+        for (const auto& producer : areaproducers)
         {
           if (obsEngineStationTypes.find(producer) != obsEngineStationTypes.end())
           {
@@ -484,7 +484,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
 #endif
 
     // Validate and convert
-    BOOST_FOREACH (const string& paramname, names)
+    for (const string& paramname : names)
     {
       Spine::ParameterAndFunctions paramfuncs =
           Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
@@ -512,7 +512,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
       throw Spine::Exception(BCP, "The 'interval' option must be positive!");
 
     // set aggregation interval if it has not been set in parameter parser
-    BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfuncs, poptions.parameterFunctions())
+    for (const Spine::ParameterAndFunctions& paramfuncs : poptions.parameterFunctions())
     {
       if (paramfuncs.functions.innerFunction.getAggregationIntervalBehind() ==
           std::numeric_limits<unsigned int>::max())
@@ -534,7 +534,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     }
 
     // store maximum aggregation intervals per parameter for later use
-    BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfuncs, poptions.parameterFunctions())
+    for (const Spine::ParameterAndFunctions& paramfuncs : poptions.parameterFunctions())
     {
       std::string paramname(paramfuncs.parameter.name());
 
