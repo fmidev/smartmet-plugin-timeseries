@@ -2044,9 +2044,9 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
 // ----------------------------------------------------------------------
 
 void Plugin::fetchStaticLocationValues(Query& query,
-                                 Spine::Table& data,
-                                 unsigned int column_index,
-                                 unsigned int row_index)
+                                       Spine::Table& data,
+                                       unsigned int column_index,
+                                       unsigned int row_index)
 {
   try
   {
@@ -3549,14 +3549,14 @@ void Plugin::processObsEngineQuery(const State& state,
                                    OutputData& outputData,
                                    const AreaProducers& areaproducers,
                                    const ProducerDataPeriod& producerDataPeriod,
-                                   ObsParameters& obsParameters)
+                                   const ObsParameters& obsParameters)
 {
   try
   {
     if (areaproducers.empty())
       throw Spine::Exception(BCP, "BUG: processObsEngineQuery producer list empty");
 
-    std::string producer = *areaproducers.begin();
+    const std::string& producer = *areaproducers.begin();
 
     // in contrast to area query
     bool locationQueryExecuted = false;
@@ -3716,7 +3716,7 @@ void Plugin::processQuery(const State& state, Spine::Table& table, Query& master
 
     ProducerDataPeriod producerDataPeriod;
 
-// producerDataPeriod contains information of data periods of different producers
+    // producerDataPeriod contains information of data periods of different producers
 #ifndef WITHOUT_OBSERVATION
     producerDataPeriod.init(state, *itsQEngine, itsObsEngine, masterquery.timeproducers);
 #else
@@ -3726,17 +3726,17 @@ void Plugin::processQuery(const State& state, Spine::Table& table, Query& master
     // the result data is stored here during the query
     OutputData outputData;
 
-    bool producerMissing = (masterquery.timeproducers.empty());
+    const bool producerMissing = masterquery.timeproducers.empty();
     if (producerMissing)
-    {
       masterquery.timeproducers.push_back(AreaProducers());
-    }
+
 #ifndef WITHOUT_OBSERVATION
-    ObsParameters obsParameters = getObsParameters(masterquery);
+    const ObsParameters obsParameters = getObsParameters(masterquery);
 #endif
 
     boost::posix_time::ptime latestTimestep = masterquery.latestTimestep;
     bool startTimeUTC = masterquery.toptions.startTimeUTC;
+
     // This loop will iterate through the producers, collecting as much
     // data in order as is possible. The later producers patch the data
     // *after* the first ones if possible.
