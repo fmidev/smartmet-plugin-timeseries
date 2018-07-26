@@ -3812,11 +3812,11 @@ void Plugin::query(const State& state,
 {
   try
   {
+    using std::chrono::duration_cast;
     using std::chrono::high_resolution_clock;
+    using std::chrono::microseconds;
 
     Spine::Table data;
-
-    std::string timeheader;
 
     // Options
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -3859,12 +3859,8 @@ void Plugin::query(const State& state,
 
     high_resolution_clock::time_point t3 = high_resolution_clock::now();
 
-    timeheader
-        .append(
-            Fmi::to_string(std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()))
-        .append("+")
-        .append(
-            Fmi::to_string(std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count()));
+    std::string timeheader = Fmi::to_string(duration_cast<microseconds>(t2 - t1).count()) + '+' +
+                             Fmi::to_string(duration_cast<microseconds>(t3 - t2).count());
 
     if (product_hash != 0)
     {
