@@ -70,6 +70,12 @@ namespace ts = SmartMet::Spine::TimeSeries;
 
 namespace SmartMet
 {
+namespace Plugin
+{
+namespace TimeSeries
+{
+namespace
+{
 // Construct the locale for case conversions only once
 std::locale stdlocale = std::locale();
 
@@ -95,12 +101,6 @@ bool special(const Spine::Parameter& theParam)
   }
 }
 
-namespace Plugin
-{
-namespace TimeSeries
-{
-namespace
-{
 // ----------------------------------------------------------------------
 /*!
  * \brief Return true if the parameter if of aggregatable type
