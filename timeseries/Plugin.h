@@ -112,10 +112,10 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                            OutputData& outputData,
                            const AreaProducers& areaproducers,
                            const ProducerDataPeriod& producerDataPeriod);
-  void fetchLocationValues(Query& query,
-                           Spine::Table& data,
-                           unsigned int column_index,
-                           unsigned int row_index);
+  void fetchStaticLocationValues(Query& query,
+                                 Spine::Table& data,
+                                 unsigned int column_index,
+                                 unsigned int row_index);
 
   void fetchQEngineValues(const State& state,
                           const Spine::ParameterAndFunctions& paramfunc,

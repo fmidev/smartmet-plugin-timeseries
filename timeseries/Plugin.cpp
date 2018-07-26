@@ -2043,7 +2043,7 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
  */
 // ----------------------------------------------------------------------
 
-void Plugin::fetchLocationValues(Query& query,
+void Plugin::fetchStaticLocationValues(Query& query,
                                  Spine::Table& data,
                                  unsigned int column_index,
                                  unsigned int row_index)
@@ -3710,7 +3710,7 @@ void Plugin::processQuery(const State& state, Spine::Table& table, Query& master
     // if only location related parameters queried, use shortcut
     if (is_plain_location_query(masterquery.poptions.parameters()))
     {
-      fetchLocationValues(masterquery, table, 0, 0);
+      fetchStaticLocationValues(masterquery, table, 0, 0);
       return;
     }
 
