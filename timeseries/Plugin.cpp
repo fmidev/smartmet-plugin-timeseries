@@ -53,13 +53,15 @@
 #include <numeric>
 #include <stdexcept>
 
-using namespace boost::posix_time;
-using namespace boost::gregorian;
-using namespace boost::local_time;
 using boost::numeric_cast;
+using boost::local_time::local_date_time;
 using boost::numeric::bad_numeric_cast;
 using boost::numeric::negative_overflow;
 using boost::numeric::positive_overflow;
+using boost::posix_time::hours;
+using boost::posix_time::minutes;
+using boost::posix_time::ptime;
+using boost::posix_time::seconds;
 
 // #define MYDEBUG ON
 
