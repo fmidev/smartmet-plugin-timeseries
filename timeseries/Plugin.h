@@ -11,21 +11,17 @@
 #include "ObsParameter.h"
 #include "Query.h"
 #include "QueryLevelDataCache.h"
-
+#include <boost/shared_ptr.hpp>
+#include <boost/utility.hpp>
+#include <engines/gis/GeometryStorage.h>
+#include <macgyver/TimeZones.h>
+#include <newbase/NFmiPoint.h>
+#include <newbase/NFmiSvgPath.h>
 #include <spine/HTTP.h>
 #include <spine/Reactor.h>
 #include <spine/SmartMetCache.h>
 #include <spine/SmartMetPlugin.h>
 #include <spine/TimeSeriesGeneratorCache.h>
-
-#include <newbase/NFmiPoint.h>
-#include <newbase/NFmiSvgPath.h>
-
-#include <engines/gis/GeometryStorage.h>
-#include <macgyver/TimeZones.h>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/utility.hpp>
 #include <map>
 #include <queue>
 #include <string>

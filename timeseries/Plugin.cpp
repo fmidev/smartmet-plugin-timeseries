@@ -9,27 +9,6 @@
 #include "Query.h"
 #include "QueryLevelDataCache.h"
 #include "State.h"
-
-#include <engines/gis/Engine.h>
-#include <engines/gis/MapOptions.h>
-#include <engines/querydata/OriginTime.h>
-#include <spine/Exception.h>
-#include <spine/SmartMet.h>
-
-#include <spine/Convenience.h>
-#include <spine/ParameterFactory.h>
-#include <spine/Table.h>
-#include <spine/TableFeeder.h>
-#include <spine/TableFormatterFactory.h>
-#include <spine/TimeSeriesAggregator.h>
-#include <spine/TimeSeriesOutput.h>
-#include <spine/ValueFormatter.h>
-
-#include <macgyver/Astronomy.h>
-#include <macgyver/CharsetTools.h>
-#include <macgyver/StringConversion.h>
-#include <macgyver/TimeFormatter.h>
-
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
@@ -42,15 +21,29 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/timer/timer.hpp>
 #include <boost/tokenizer.hpp>
-
+#include <engines/gis/Engine.h>
+#include <engines/gis/MapOptions.h>
+#include <engines/querydata/OriginTime.h>
+#include <gis/OGR.h>
+#include <macgyver/Astronomy.h>
+#include <macgyver/CharsetTools.h>
+#include <macgyver/StringConversion.h>
+#include <macgyver/TimeFormatter.h>
 #include <newbase/NFmiIndexMask.h>
 #include <newbase/NFmiIndexMaskTools.h>
 #include <newbase/NFmiMultiQueryInfo.h>
 #include <newbase/NFmiQueryData.h>
 #include <newbase/NFmiSvgTools.h>
-
-#include <gis/OGR.h>
-
+#include <spine/Convenience.h>
+#include <spine/Exception.h>
+#include <spine/ParameterFactory.h>
+#include <spine/SmartMet.h>
+#include <spine/Table.h>
+#include <spine/TableFeeder.h>
+#include <spine/TableFormatterFactory.h>
+#include <spine/TimeSeriesAggregator.h>
+#include <spine/TimeSeriesOutput.h>
+#include <spine/ValueFormatter.h>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -60,7 +53,6 @@
 #include <numeric>
 #include <stdexcept>
 
-using namespace std;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
 using namespace boost::local_time;
@@ -405,14 +397,14 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
 
     if (loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint)
     {
-      std::pair<double, double> thePoint = make_pair(loc->longitude, loc->latitude);
+      std::pair<double, double> thePoint = std::make_pair(loc->longitude, loc->latitude);
       make_point_path(svgPath, thePoint);
     }
     else if (loc->type == Spine::Location::Area)
     {
       if (geometryStorage.isPolygon(place))
       {
-        stringstream svgStringStream(geometryStorage.getSVGPath(place));
+        std::stringstream svgStringStream(geometryStorage.getSVGPath(place));
         svgPath.Read(svgStringStream);
       }
       else if (geometryStorage.isPoint(place))
@@ -431,7 +423,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
       if (place.find(',') != std::string::npos)
       {
         // path given as a query parameter in format "lon,lat,lon,lat,lon,lat,..."
-        std::vector<string> lonLatVector;
+        std::vector<std::string> lonLatVector;
         boost::algorithm::split(lonLatVector, place, boost::algorithm::is_any_of(","));
         for (unsigned int i = 0; i < lonLatVector.size(); i += 2)
         {
@@ -445,7 +437,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
         // path fetched from PostGIS database
         if (geometryStorage.isPolygon(place) || geometryStorage.isLine(place))
         {
-          stringstream svgStringStream(geometryStorage.getSVGPath(place));
+          std::stringstream svgStringStream(geometryStorage.getSVGPath(place));
           svgPath.Read(svgStringStream);
         }
         else if (geometryStorage.isPoint(place))
@@ -929,8 +921,8 @@ std::string get_location_id(Spine::LocationPtr loc)
   {
     std::ostringstream ss;
 
-    ss << loc->name << " " << fixed << setprecision(7) << loc->longitude << " " << loc->latitude
-       << " " << loc->geoid;
+    ss << loc->name << " " << std::fixed << std::setprecision(7) << loc->longitude << " "
+       << loc->latitude << " " << loc->geoid;
 
     return ss.str();
   }
@@ -1820,7 +1812,7 @@ std::size_t Plugin::hash_value(const State& state,
             else if (loc->type == Spine::Location::BoundingBox)
             {
               // find geoinfo for the corner coordinate
-              vector<string> parts;
+              std::vector<std::string> parts;
               boost::algorithm::split(parts, place, boost::algorithm::is_any_of(","));
 
               double lon1 = Fmi::stod(parts[0]);
@@ -2193,7 +2185,7 @@ void Plugin::fetchQEngineValues(const State& state,
     else if (loc->type == Spine::Location::BoundingBox)
     {
       // find geoinfo for the corner coordinate
-      vector<string> parts;
+      std::vector<std::string> parts;
       boost::algorithm::split(parts, place, boost::algorithm::is_any_of(","));
 
       double lon1 = Fmi::stod(parts[0]);
@@ -2296,7 +2288,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
     bool loadDataLevels =
         (!query.levels.empty() || (query.pressures.empty() && query.heights.empty()));
-    string levelType(loadDataLevels ? "data:" : "");
+    std::string levelType(loadDataLevels ? "data:" : "");
     Query::Pressures::const_iterator itPressure = query.pressures.begin();
     Query::Heights::const_iterator itHeight = query.heights.begin();
 
@@ -2529,17 +2521,17 @@ void Plugin::fetchQEngineValues(const State& state,
 
             if (loc->type == Spine::Location::BoundingBox)
             {
-              vector<string> coordinates;
+              std::vector<std::string> coordinates;
               boost::algorithm::split(coordinates, place, boost::algorithm::is_any_of(","));
               if (coordinates.size() != 4)
                 throw Spine::Exception(BCP,
                                        "Invalid bbox parameter " + place +
                                            ", should be in format 'lon,lat,lon,lat[:radius]'!");
 
-              string lonstr1 = coordinates[0];
-              string latstr1 = coordinates[1];
-              string lonstr2 = coordinates[2];
-              string latstr2 = coordinates[3];
+              std::string lonstr1 = coordinates[0];
+              std::string latstr1 = coordinates[1];
+              std::string lonstr2 = coordinates[2];
+              std::string latstr2 = coordinates[3];
 
               if (latstr2.find(':') != std::string::npos)
                 latstr2.erase(latstr2.begin() + latstr2.find(':'), latstr2.end());
