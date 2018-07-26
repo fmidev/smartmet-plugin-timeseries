@@ -25,6 +25,7 @@
 #include <engines/gis/Engine.h>
 #include <engines/gis/MapOptions.h>
 #include <engines/querydata/OriginTime.h>
+#include <fmt/format.h>
 #include <gis/OGR.h>
 #include <macgyver/Astronomy.h>
 #include <macgyver/CharsetTools.h>
@@ -3848,9 +3849,7 @@ void Plugin::query(const State& state,
 
     if (product_hash != 0)
     {
-      std::ostringstream os;
-      os << std::hex << '"' << product_hash << "-timeseries\"";
-      response.setHeader("ETag", os.str());
+      response.setHeader("ETag", fmt::format("\"{:x}-timeseries\"", product_hash));
 
       // If the product is cacheable and etag was requested, respond with etag only
 
