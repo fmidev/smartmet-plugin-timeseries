@@ -1996,13 +1996,6 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
     topt.endTime =
         (query.toptions.endTimeUTC ? timeseriesEndTime.utc_time() : timeseriesEndTime.local_time());
 
-#ifdef MYDEBUG
-    std::cout << "parameter name: " << paramname << std::endl;
-    std::cout << "aggregationIntervalBehind: " << aggregationIntervalBehind << std::endl;
-    std::cout << "aggregationIntervalAhead: " << aggregationIntervalAhead << std::endl;
-    std::cout << topt << std::endl;
-#endif
-
     // generate timelist for aggregation
     tlist = itsTimeSeriesCache->generate(topt, tz);
 
@@ -3836,15 +3829,6 @@ void Plugin::query(const State& state,
     if (query.loptions->locations().size() == 0)
 #endif
       throw Spine::Exception(BCP, "No location option given!");
-
-#ifdef MYDEBUG
-    std::cout << query.loptions->locations().size() << " locations:" << std::endl;
-    for (const auto& tloc : query.loptions->locations())
-      cout << formatLocation(*(tloc.loc)) << endl;
-    std::cout << query.wmos.size() << " wmos:" << std::endl;
-    for (const auto& wmo : query.wmos)
-      std::cout << "\t" << wmo << std::endl;
-#endif
 
     // The formatter knows which mimetype to send
     boost::shared_ptr<Spine::TableFormatter> formatter(
