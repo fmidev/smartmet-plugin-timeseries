@@ -11,21 +11,17 @@
 #include "ObsParameter.h"
 #include "Query.h"
 #include "QueryLevelDataCache.h"
-
+#include <boost/shared_ptr.hpp>
+#include <boost/utility.hpp>
+#include <engines/gis/GeometryStorage.h>
+#include <macgyver/TimeZones.h>
+#include <newbase/NFmiPoint.h>
+#include <newbase/NFmiSvgPath.h>
 #include <spine/HTTP.h>
 #include <spine/Reactor.h>
 #include <spine/SmartMetCache.h>
 #include <spine/SmartMetPlugin.h>
 #include <spine/TimeSeriesGeneratorCache.h>
-
-#include <newbase/NFmiPoint.h>
-#include <newbase/NFmiSvgPath.h>
-
-#include <engines/gis/GeometryStorage.h>
-#include <macgyver/TimeZones.h>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/utility.hpp>
 #include <map>
 #include <queue>
 #include <string>
@@ -116,10 +112,10 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                            OutputData& outputData,
                            const AreaProducers& areaproducers,
                            const ProducerDataPeriod& producerDataPeriod);
-  void fetchLocationValues(Query& query,
-                           Spine::Table& data,
-                           unsigned int column_index,
-                           unsigned int row_index);
+  void fetchStaticLocationValues(Query& query,
+                                 Spine::Table& data,
+                                 unsigned int column_index,
+                                 unsigned int row_index);
 
   void fetchQEngineValues(const State& state,
                           const Spine::ParameterAndFunctions& paramfunc,
@@ -138,7 +134,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                              OutputData& outputData,
                              const AreaProducers& areaproducers,
                              const ProducerDataPeriod& producerDataPeriod,
-                             ObsParameters& obsParameters);
+                             const ObsParameters& obsParameters);
   void fetchObsEngineValuesForArea(const State& state,
                                    const std::string& producer,
                                    const Spine::TaggedLocation& tloc,
