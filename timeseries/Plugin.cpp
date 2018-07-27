@@ -108,7 +108,7 @@ bool special(const Spine::Parameter& theParam)
  */
 // ----------------------------------------------------------------------
 
-bool parameterIsArithmetic(const Spine::Parameter& theParameter)
+bool parameter_is_arithmetic(const Spine::Parameter& theParameter)
 {
   try
   {
@@ -1302,9 +1302,9 @@ std::string time_parameter(const std::string paramname,
 
 #ifndef WITHOUT_OBSERVATION
 
-std::vector<int> getGeoids(Engine::Observation::Engine* observation,
-                           const std::string& producer,
-                           const std::string& wktstring)
+std::vector<int> get_geoids_for_wkt(Engine::Observation::Engine* observation,
+                                    const std::string& producer,
+                                    const std::string& wktstring)
 {
   try
   {
@@ -1333,10 +1333,10 @@ std::vector<int> getGeoids(Engine::Observation::Engine* observation,
  */
 // ----------------------------------------------------------------------
 
-Spine::LocationPtr getLocation(const Engine::Geonames::Engine* geonames,
-                               const int id,
-                               const std::string& idtype,
-                               const std::string& language)
+Spine::LocationPtr get_location(const Engine::Geonames::Engine* geonames,
+                                const int id,
+                                const std::string& idtype,
+                                const std::string& language)
 {
   try
   {
@@ -2435,7 +2435,7 @@ void Plugin::fetchQEngineValues(const State& state,
               // if the value is not dependent on location inside area we just need to have the
               // first
               // one
-              if (!parameterIsArithmetic(paramfunc.parameter))
+              if (!parameter_is_arithmetic(paramfunc.parameter))
               {
                 auto dataIndependentValue = querydata_result->at(0);
                 querydata_result->clear();
@@ -2517,7 +2517,7 @@ void Plugin::fetchQEngineValues(const State& state,
               // if the value is not dependent on location inside area we just need to have the
               // first
               // one
-              if (!parameterIsArithmetic(paramfunc.parameter))
+              if (!parameter_is_arithmetic(paramfunc.parameter))
               {
                 auto dataIndependentValue = querydata_result->at(0);
                 querydata_result->clear();
@@ -2760,7 +2760,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         poly.reset(Fmi::OGR::expandGeometry(pGeo, radius));
 
         std::string wktString = Fmi::OGR::exportToWkt(*poly);
-        settings.area_geoids = getGeoids(itsObsEngine, producer, wktString);
+        settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
 
 #ifdef MYDEBUG
         std::cout << "WKT of buffered area: " << std::endl << wktString << std::endl;
@@ -2784,7 +2784,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
 
         std::string wktString = Fmi::OGR::exportToWkt(*poly);
-        settings.area_geoids = getGeoids(itsObsEngine, producer, wktString);
+        settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
 
 #ifdef MYDEBUG
         std::cout << "WKT of buffered area: " << std::endl << wktString << std::endl;
@@ -2814,7 +2814,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
 
         std::string wktString(Fmi::OGR::exportToWkt(*poly));
-        settings.area_geoids = getGeoids(itsObsEngine, producer, wktString);
+        settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
 
 #ifdef MYDEBUG
         std::cout << "WKT of buffered area: " << std::endl << wktString << std::endl;
@@ -2841,7 +2841,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
 
         std::string wktString = Fmi::OGR::exportToWkt(*poly);
-        settings.area_geoids = getGeoids(itsObsEngine, producer, wktString);
+        settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
         query.maxdistance = 0;
 
 #ifdef MYDEBUG
@@ -2864,7 +2864,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
 
         std::string wktString = Fmi::OGR::exportToWkt(*poly);
-        settings.area_geoids = getGeoids(itsObsEngine, producer, wktString);
+        settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
         query.maxdistance = 0;
 
 #ifdef MYDEBUG
@@ -3060,7 +3060,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       Spine::LocationPtr loc;
       if (producer != FLASH_PRODUCER)
       {
-        loc = getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
+        loc = get_location(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
         if (!loc)
           continue;
       }
@@ -3279,7 +3279,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       // it from the full time timeseries once.
       int fmisid = get_fmisid_value(fmisid_ts);
 
-      Spine::LocationPtr loc = getLocation(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
+      Spine::LocationPtr loc = get_location(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
 
       unsigned int obs_result_field_index = 0;
       for (unsigned int i = 0; i < obsParameters.size(); i++)
