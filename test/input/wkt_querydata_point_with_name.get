@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&wkt=POINT(28.884790+61.867989)+as+Savonlinnan+kauppatori&precision=double&param=time,name,t2m HTTP/1.0

@@ -144,7 +144,6 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                                    OutputData& outputData);
   void fetchObsEngineValuesForPlaces(const State& state,
                                      const std::string& producer,
-                                     const Spine::TaggedLocation& tloc,
                                      const ObsParameters& obsParameters,
                                      Engine::Observation::Settings& settings,
                                      Query& query,

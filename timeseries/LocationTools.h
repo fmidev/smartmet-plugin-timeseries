@@ -28,6 +28,8 @@ std::string get_name_base(const std::string& theName);
 const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
                                     const Engine::Gis::GeometryStorage& geometryStorage);
 
+std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string wktString, double radius = 0.0);
+
 void get_svg_path(const Spine::TaggedLocation& tloc,
                   const Engine::Gis::GeometryStorage& geometryStorage,
                   NFmiSvgPath& svgPath);
@@ -54,6 +56,11 @@ std::vector<int> get_geoids_for_wkt(Engine::Observation::Engine* observation,
 
 int get_fmisid_index(const Engine::Observation::Settings& settings);
 int get_fmisid_value(const Spine::TimeSeries::Value& value);
+
+std::unique_ptr<Spine::Location> get_coordinate_location(double lon,
+                                                         double lat,
+                                                         const std::string& language,
+                                                         const Engine::Geonames::Engine& geoEngine);
 
 #endif
 

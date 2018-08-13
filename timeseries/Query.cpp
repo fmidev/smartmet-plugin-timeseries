@@ -50,6 +50,16 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 
     loptions.reset(new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(req)));
 
+    // Store WKT-geometries
+    BOOST_FOREACH (const auto& tloc, loptions->locations())
+    {
+      if (tloc.loc->type == Spine::Location::Wkt)
+      {
+        WktGeometryPtr wktGeometry(new WktGeometry(tloc.loc, language, state.getGeoEngine()));
+        wktGeometries.addWktGeometry(tloc.loc->name, wktGeometry);
+      }
+    }
+
 #ifdef MYDEBUG
     std::cout << "Time options: " << std::endl << toptions << std::endl;
 #endif

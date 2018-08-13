@@ -10,6 +10,7 @@
 
 #include "AggregationInterval.h"
 #include "Producers.h"
+#include "WktGeometry.h"
 
 #include <engines/geonames/Engine.h>
 
@@ -112,6 +113,8 @@ struct Query
   boost::shared_ptr<Fmi::TimeFormatter> timeformatter;
   MaxAggregationIntervals maxAggregationIntervals;
   bool timeAggregationRequested;
+  // WKT geometries passed in URL are stored here
+  WktGeometries wktGeometries;
 
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
