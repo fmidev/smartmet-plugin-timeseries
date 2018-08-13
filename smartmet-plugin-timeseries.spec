@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.8.13
+Version: 18.8.15
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -20,6 +20,7 @@ BuildRequires: smartmet-library-spine-devel >= 18.8.13
 BuildRequires: smartmet-library-locus-devel >= 18.8.6
 BuildRequires: smartmet-library-macgyver-devel >= 18.8.4
 BuildRequires: smartmet-library-newbase-devel >= 18.8.6
+BuildRequires: smartmet-library-gis-devel >= 18.8.15
 BuildRequires: smartmet-engine-geonames-devel >= 18.8.13
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 18.7.25
@@ -31,6 +32,7 @@ Requires: smartmet-library-locus >= 18.8.6
 Requires: smartmet-library-macgyver >= 18.8.4
 Requires: smartmet-library-newbase >= 18.8.6
 Requires: smartmet-library-spine >= 18.8.13
+Requires: smartmet-library-gis >= 18.8.15
 Requires: smartmet-engine-geonames >= 18.8.13
 Requires: smartmet-engine-querydata >= 18.8.6
 Requires: smartmet-engine-gis >= 18.7.25
