@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.7.27
+Version: 18.8.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -16,11 +16,11 @@ BuildRequires: make
 BuildRequires: boost-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
-BuildRequires: smartmet-library-spine-devel >= 18.7.23
+BuildRequires: smartmet-library-spine-devel >= 18.8.13
 BuildRequires: smartmet-library-locus-devel >= 18.6.14
 BuildRequires: smartmet-library-macgyver-devel >= 18.6.7
 BuildRequires: smartmet-library-newbase-devel >= 18.6.13
-BuildRequires: smartmet-engine-geonames-devel >= 18.6.20
+BuildRequires: smartmet-engine-geonames-devel >= 18.8.13
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 18.7.23
 %endif
@@ -30,8 +30,8 @@ Requires: libconfig
 Requires: smartmet-library-locus >= 18.6.14
 Requires: smartmet-library-macgyver >= 18.6.7
 Requires: smartmet-library-newbase >= 18.6.13
-Requires: smartmet-library-spine >= 18.7.23
-Requires: smartmet-engine-geonames >= 18.6.20
+Requires: smartmet-library-spine >= 18.8.13
+Requires: smartmet-engine-geonames >= 18.8.13
 Requires: smartmet-engine-querydata >= 18.6.28
 Requires: smartmet-engine-gis >= 18.4.7
 Requires: smartmet-server >= 18.6.6
@@ -68,6 +68,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+
+* Mon Aug 13 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.8.13-1.fmi
+- Support for 'wkt' parameter added
+
 * Fri Jul 27 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.7.27-1.fmi
 - Refactored code for easier maintenance
 
