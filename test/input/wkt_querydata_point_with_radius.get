@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&wkt=POINT(24.93545+60.16952):20&precision=double&param=time,min_a(t2m),max_a(t2m),mean_a(t2m) HTTP/1.0

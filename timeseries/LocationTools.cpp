@@ -138,6 +138,49 @@ const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
   return ret;
 }
 
+std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string wktString, double radius /*= 0.0*/)
+{
+  std::unique_ptr<OGRGeometry> ret;
+
+  OGRGeometry* geom = nullptr;
+  std::string wkt = get_name_base(wktString);
+  char* pszWKT(const_cast<char*>(wkt.c_str()));
+  OGRErr err = OGRGeometryFactory::createFromWkt(&pszWKT, NULL, &geom);
+  if (err != OGRERR_NONE)
+  {
+    std::string errStr = "Failed to create OGRGeometry from WKT " + wkt + "";
+    if (err == OGRERR_NOT_ENOUGH_DATA)
+      errStr += " OGRErr: OGRERR_NOT_ENOUGH_DATA";
+    if (err == OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
+      errStr += " OGRErr: OGRERR_UNSUPPORTED_GEOMETRY_TYPE";
+    if (err == OGRERR_CORRUPT_DATA)
+      errStr += " OGRErr: OGRERR_CORRUPT_DATA";
+
+    throw Spine::Exception(BCP, errStr);
+  }
+
+  if (geom)
+  {
+    // If radius given -> expand the geometry by radius
+    /*
+double radius = (wktString.find(":") != std::string::npos
+                     ? Fmi::stod(wktString.substr(wktString.find(":") + 1))
+                     : 0.0);
+    */
+    if (radius > 0.0)
+    {
+      std::unique_ptr<OGRGeometry> poly;
+      poly.reset(Fmi::OGR::expandGeometry(geom, radius * 1000));
+      OGRGeometryFactory::destroyGeometry(geom);
+      geom = poly.release();
+    }
+
+    ret.reset(geom);
+  }
+
+  return ret;
+}
+
 // ----------------------------------------------------------------------
 /*!
  * \brief Fetch geometry as NFmiSvgPath from database
@@ -498,6 +541,36 @@ int get_fmisid_value(const ts::TimeSeries& ts)
     }
   }
   return -1;
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Fetch Location from geoengine for lon-lat coordinate
+ */
+// ----------------------------------------------------------------------
+
+std::unique_ptr<Spine::Location> get_coordinate_location(double lon,
+                                                         double lat,
+                                                         const std::string& language,
+                                                         const Engine::Geonames::Engine& geoEngine)
+
+{
+  Spine::LocationPtr loc = geoEngine.lonlatSearch(lon, lat, language);
+
+  std::unique_ptr<Spine::Location> ret(new Spine::Location(loc->geoid,
+                                                           "",  // tloc.tag,
+                                                           loc->iso2,
+                                                           loc->municipality,
+                                                           loc->area,
+                                                           loc->feature,
+                                                           loc->country,
+                                                           loc->longitude,
+                                                           loc->latitude,
+                                                           loc->timezone,
+                                                           loc->population,
+                                                           loc->elevation));
+
+  return ret;
 }
 
 }  // namespace TimeSeries

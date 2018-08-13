@@ -64,7 +64,7 @@ using boost::posix_time::minutes;
 using boost::posix_time::ptime;
 using boost::posix_time::seconds;
 
-// #define MYDEBUG ON
+//#define MYDEBUG ON
 
 namespace ts = SmartMet::Spine::TimeSeries;
 
@@ -796,7 +796,11 @@ std::size_t Plugin::hash_value(const State& state,
             // Emulate fetchQEngineValues here
             Spine::LocationPtr loc = tloc.loc;
             std::string place = get_name_base(loc->name);
-            if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
+            if (loc->type == Spine::Location::Wkt)
+            {
+              loc = masterquery.wktGeometries.getLocation(tloc.loc->name);
+            }
+            else if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
             {
               NFmiSvgPath svgPath;
               loc = getLocationForArea(tloc, query, &svgPath);
@@ -812,23 +816,13 @@ std::size_t Plugin::hash_value(const State& state,
               double lon2 = Fmi::stod(parts[2]);
               double lat2 = Fmi::stod(parts[3]);
 
-              // get location info for center coordinate
-              std::pair<double, double> lonlatCenter((lon1 + lon2) / 2.0, (lat1 + lat2) / 2.0);
-              Spine::LocationPtr locCenter = itsGeoEngine->lonlatSearch(
-                  lonlatCenter.first, lonlatCenter.second, subquery.language);
+              // get location info for center coordinates
+              double lon = (lon1 + lon2) / 2.0;
+              double lat = (lat1 + lat2) / 2.0;
+              std::unique_ptr<Spine::Location> tmp =
+                  get_coordinate_location(lon, lat, query.language, *itsGeoEngine);
 
-              std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
-                                                                       tloc.tag,
-                                                                       locCenter->iso2,
-                                                                       locCenter->municipality,
-                                                                       locCenter->area,
-                                                                       locCenter->feature,
-                                                                       locCenter->country,
-                                                                       locCenter->longitude,
-                                                                       locCenter->latitude,
-                                                                       locCenter->timezone,
-                                                                       locCenter->population,
-                                                                       locCenter->elevation));
+              tmp->name = tloc.tag;
               tmp->type = tloc.loc->type;
               tmp->radius = tloc.loc->radius;
               loc.reset(tmp.release());
@@ -952,6 +946,7 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
     double bottom = 0.0, top = 0.0, left = 0.0, right = 0.0;
 
     const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
+
     if (geom)
     {
       OGREnvelope envelope;
@@ -987,24 +982,12 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
       }
     }
 
-    std::pair<double, double> lonlatCenter((right + left) / 2.0, (top + bottom) / 2.0);
+    double lon = (right + left) / 2.0;
+    double lat = (top + bottom) / 2.0;
+    std::unique_ptr<Spine::Location> tmp =
+        get_coordinate_location(lon, lat, query.language, *itsGeoEngine);
 
-    Spine::LocationPtr locCenter =
-        itsGeoEngine->lonlatSearch(lonlatCenter.first, lonlatCenter.second, query.language);
-
-    // Spine::LocationPtr contains a const Location, so some trickery is used here
-    std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
-                                                             tloc.tag,
-                                                             locCenter->iso2,
-                                                             locCenter->municipality,
-                                                             locCenter->area,
-                                                             locCenter->feature,
-                                                             locCenter->country,
-                                                             locCenter->longitude,
-                                                             locCenter->latitude,
-                                                             locCenter->timezone,
-                                                             locCenter->population,
-                                                             locCenter->elevation));
+    tmp->name = tloc.tag;
     tmp->type = tloc.loc->type;
     tmp->radius = tloc.loc->radius;
 
@@ -1126,6 +1109,8 @@ void Plugin::fetchStaticLocationValues(Query& query,
         Spine::LocationPtr loc = tloc.loc;
         if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
           loc = getLocationForArea(tloc, query);
+        else if (loc->type == Spine::Location::Wkt)
+          loc = query.wktGeometries.getLocation(tloc.loc->name);
 
         std::string val = location_parameter(
             tloc.loc, pname, query.valueformatter, query.timezone, query.precisions[column]);
@@ -1163,7 +1148,14 @@ void Plugin::fetchQEngineValues(const State& state,
     std::string paramname = paramfunc.parameter.name();
 
     NFmiSvgPath svgPath;
-    if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
+    bool isWkt = false;
+    if (loc->type == Spine::Location::Wkt)
+    {
+      loc = query.wktGeometries.getLocation(tloc.loc->name);
+      svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+      isWkt = true;
+    }
+    else if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
     {
       loc = getLocationForArea(tloc, query, &svgPath);
     }
@@ -1179,22 +1171,12 @@ void Plugin::fetchQEngineValues(const State& state,
       double lat2 = Fmi::stod(parts[3]);
 
       // get location info for center coordinate
-      std::pair<double, double> lonlatCenter((lon1 + lon2) / 2.0, (lat1 + lat2) / 2.0);
-      Spine::LocationPtr locCenter =
-          itsGeoEngine->lonlatSearch(lonlatCenter.first, lonlatCenter.second, query.language);
+      double lon = (lon1 + lon2) / 2.0;
+      double lat = (lat1 + lat2) / 2.0;
+      std::unique_ptr<Spine::Location> tmp =
+          get_coordinate_location(lon, lat, query.language, *itsGeoEngine);
 
-      std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
-                                                               tloc.tag,
-                                                               locCenter->iso2,
-                                                               locCenter->municipality,
-                                                               locCenter->area,
-                                                               locCenter->feature,
-                                                               locCenter->country,
-                                                               locCenter->longitude,
-                                                               locCenter->latitude,
-                                                               locCenter->timezone,
-                                                               locCenter->population,
-                                                               locCenter->elevation));
+      tmp->name = tloc.tag;
       tmp->type = tloc.loc->type;
       tmp->radius = tloc.loc->radius;
       loc.reset(tmp.release());
@@ -1211,7 +1193,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
     if (producer.empty())
     {
-      Spine::Exception ex(BCP, "No data available for " + loc->name);
+      Spine::Exception ex(BCP, "No data available for " + place);
       ex.disableLogging();
       throw ex;
     }
@@ -1376,20 +1358,21 @@ void Plugin::fetchQEngineValues(const State& state,
       ts::Value missing_value = Spine::TimeSeries::None();
 
 #ifdef MYDEBUG
-      cout << endl << "producer: " << producer << endl;
-      cout << "data period start time: "
-           << producerDataPeriod.getLocalStartTime(producer, query.timezone, getTimeZones())
-           << endl;
-      cout << "data period end time: "
-           << producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones()) << endl;
-      cout << "paramname: " << paramname << endl;
-      cout << "query.timezone: " << query.timezone << endl;
-      cout << query.toptions;
+      std::cout << std::endl << "producer: " << producer << std::endl;
+      std::cout << "data period start time: "
+                << producerDataPeriod.getLocalStartTime(producer, query.timezone, getTimeZones())
+                << std::endl;
+      std::cout << "data period end time: "
+                << producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones())
+                << std::endl;
+      std::cout << "paramname: " << paramname << std::endl;
+      std::cout << "query.timezone: " << query.timezone << std::endl;
+      std::cout << query.toptions;
 
-      cout << "generated timesteps: " << endl;
+      std::cout << "generated timesteps: " << std::endl;
       for (const local_date_time& ldt : tlist)
       {
-        cout << ldt << endl;
+        std::cout << ldt << std::endl;
       }
 #endif
 
@@ -1449,8 +1432,38 @@ void Plugin::fetchQEngineValues(const State& state,
         {
           if (loc->type == Spine::Location::Path)
           {
-            Spine::LocationList llist =
-                get_location_list(svgPath, tloc.tag, query.step, *itsGeoEngine);
+            Spine::LocationList llist;
+
+            if (isWkt)
+            {
+              OGRwkbGeometryType geomType =
+                  query.wktGeometries.getGeometry(tloc.loc->name)->getGeometryType();
+              if (geomType == wkbMultiLineString)
+              {
+                // OGRMultiLineString -> handle each LineString separately
+                std::list<NFmiSvgPath> svgList = query.wktGeometries.getSvgPaths(tloc.loc->name);
+                for (auto svg : svgList)
+                {
+                  Spine::LocationList ll =
+                      get_location_list(svg, tloc.tag, query.step, *itsGeoEngine);
+                  if (ll.size() > 0)
+                    llist.insert(llist.end(), ll.begin(), ll.end());
+                }
+              }
+              else if (geomType == wkbMultiPoint)
+              {
+                llist = query.wktGeometries.getLocations(tloc.loc->name);
+              }
+              else if (geomType == wkbLineString)
+              {
+                // For LineString svgPath has been extracted earlier
+                llist = get_location_list(svgPath, tloc.tag, query.step, *itsGeoEngine);
+              }
+            }
+            else
+            {
+              llist = get_location_list(svgPath, tloc.tag, query.step, *itsGeoEngine);
+            }
 
             Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
                                                                 producer,
@@ -1482,9 +1495,8 @@ void Plugin::fetchQEngineValues(const State& state,
                                                     *height);
             if (querydata_result->size() > 0)
             {
-              // if the value is not dependent on location inside area we just need to have the
-              // first
-              // one
+              // if the value is not dependent on location inside area
+              // we just need to have the first one
               if (!parameter_is_arithmetic(paramfunc.parameter))
               {
                 auto dataIndependentValue = querydata_result->at(0);
@@ -1494,8 +1506,6 @@ void Plugin::fetchQEngineValues(const State& state,
 
               queryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(cacheKey, querydata_result));
             }
-
-            queryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(cacheKey, querydata_result));
           }
           else if (qi->isGrid() &&
                    (loc->type == Spine::Location::BoundingBox ||
@@ -1536,7 +1546,8 @@ void Plugin::fetchQEngineValues(const State& state,
             else if (loc->type == Spine::Location::Area || loc->type == Spine::Location::Place ||
                      loc->type == Spine::Location::CoordinatePoint)
             {
-              get_svg_path(tloc, itsGeometryStorage, svgPath);
+              if (!isWkt)  // SVG for WKT has been extracted earlier
+                get_svg_path(tloc, itsGeometryStorage, svgPath);
               mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, loc->radius);
             }
 
@@ -1564,9 +1575,8 @@ void Plugin::fetchQEngineValues(const State& state,
 
             if (querydata_result->size() > 0)
             {
-              // if the value is not dependent on location inside area we just need to have the
-              // first
-              // one
+              // if the value is not dependent on location inside
+              // area we just need to have the first one
               if (!parameter_is_arithmetic(paramfunc.parameter))
               {
                 auto dataIndependentValue = querydata_result->at(0);
@@ -1764,52 +1774,116 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
     std::string loc_name_original = (tloc.loc ? tloc.loc->name : "");
     std::string loc_name = (tloc.loc ? get_name_base(tloc.loc->name) : "");
 
+    Spine::LocationPtr loc = tloc.loc;
+    bool isWkt = (loc && loc->type == Spine::Location::Wkt);
+    if (isWkt)
+      loc = query.wktGeometries.getLocation(loc_name_original);
+
     // Area handling:
     // 1) Get OGRGeometry object, expand it with radius
     // 2) Fetch stations geoids from ObsEngine located inside the area
-    // 3) Fetch location info from GeoEngine. The info will be used in responses to location and
-    // time
-    // related queries
+    // 3) Fetch location info from GeoEngine. The info will be used in
+    // responses to location and time related queries
     // 4) Fetch the observations from ObsEngine using the geoids
-    if (tloc.loc)
+    if (loc)
     {
-      if (tloc.loc->type == Spine::Location::Path)
+      if (loc->type == Spine::Location::Path)
       {
-#ifdef MYDEBUG
-        std::cout << tloc.loc->name << " is a Path" << std::endl;
-#endif
-        std::string pathName = loc_name;
         const OGRGeometry* pGeo = 0;
-        if (pathName.find(',') != std::string::npos)
-        {
-          NFmiSvgPath svgPath;
-          get_svg_path(tloc, itsGeometryStorage, svgPath);
-          Fmi::OGR::CoordinatePoints geoCoordinates;
-          for (NFmiSvgPath::const_iterator iter = svgPath.begin(); iter != svgPath.end(); iter++)
-            geoCoordinates.push_back(std::pair<double, double>(iter->itsX, iter->itsY));
-          pGeo = Fmi::OGR::constructGeometry(geoCoordinates, wkbLineString, 4326);
+        // if no radius has been given use 200 meters
+        double radius = (loc->radius == 0 ? 200 : loc->radius * 1000);
+        std::string wktString;
 
-          if (!pGeo)
-            throw Spine::Exception(
-                BCP,
-                "Invalid path parameter " + tloc.loc->name +
-                    ", should be in format 'lon0,lat0,lon1,lat1,...,lonn,latn[:radius]'!");
+#ifdef MYDEBUG
+        std::cout << loc_name << " is a Path" << std::endl;
+#endif
+
+        if (isWkt)
+        {
+          pGeo = query.wktGeometries.getGeometry(loc_name_original);
+          wktString = Fmi::OGR::exportToWkt(*pGeo);
         }
         else
         {
-          // path is fetched from database
-          pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiLineString);
+          if (loc_name.find(',') != std::string::npos)
+          {
+            std::vector<std::string> parts;
+            boost::algorithm::split(parts, loc_name, boost::algorithm::is_any_of(","));
+            if (parts.size() % 2)
+              throw Spine::Exception(
+                  BCP,
+                  "Path " + loc_name + "is invalid, because it has odd number of coordinates!");
 
-          if (!pGeo)
-            throw Spine::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
+            std::string wkt = "LINESTRING(";
+            for (unsigned int i = 0; i < parts.size(); i += 2)
+            {
+              if (i > 0)
+                wkt += ", ";
+              wkt += parts[i];
+              wkt += " ";
+              wkt += parts[i + 1];
+            }
+            wkt += ")";
+
+            std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+            wktString = Fmi::OGR::exportToWkt(*geom);
+          }
+          else
+          {
+            // path is fetched from database
+            pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiLineString);
+
+            if (!pGeo)
+              throw Spine::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
+
+            std::unique_ptr<OGRGeometry> poly;
+            poly.reset(Fmi::OGR::expandGeometry(pGeo, radius));
+            wktString = Fmi::OGR::exportToWkt(*poly);
+          }
         }
 
-        std::unique_ptr<OGRGeometry> poly;
-        // if no radius has been given use 200 meters
-        double radius = (tloc.loc->radius == 0 ? 200 : tloc.loc->radius * 1000);
-        poly.reset(Fmi::OGR::expandGeometry(pGeo, radius));
+        settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
 
-        std::string wktString = Fmi::OGR::exportToWkt(*poly);
+#ifdef MYDEBUG
+        std::cout << "WKT of buffered area: " << std::endl << wktString << std::endl;
+        std::cout << "#" << settings.area_geoids.size() << " stations found" << std::endl;
+        for (auto g : settings.area_geoids)
+          std::cout << "geoid: " << g << std::endl;
+#endif
+
+        query.maxdistance = 0;
+      }
+      else if (loc->type == Spine::Location::Area)
+      {
+#ifdef MYDEBUG
+        std::cout << loc_name << " is an Area" << std::endl;
+#endif
+
+        const OGRGeometry* pGeo = 0;
+        std::string wktString;
+
+        if (isWkt)
+        {
+          pGeo = query.wktGeometries.getGeometry(loc_name_original);
+
+          if (!pGeo)
+            throw Spine::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
+
+          wktString = Fmi::OGR::exportToWkt(*pGeo);
+        }
+        else
+        {
+          pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
+
+          if (!pGeo)
+            throw Spine::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
+
+          std::unique_ptr<OGRGeometry> poly;
+          poly.reset(Fmi::OGR::expandGeometry(pGeo, loc->radius * 1000));
+
+          wktString = Fmi::OGR::exportToWkt(*poly);
+        }
+
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
 
 #ifdef MYDEBUG
@@ -1819,34 +1893,10 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
         query.maxdistance = 0;
       }
-      else if (tloc.loc->type == Spine::Location::Area)
+      else if (loc->type == Spine::Location::BoundingBox && producer != FLASH_PRODUCER)
       {
 #ifdef MYDEBUG
-        std::cout << tloc.loc->name << " is an Area" << std::endl;
-#endif
-
-        const OGRGeometry* pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
-
-        if (!pGeo)
-          throw Spine::Exception(BCP, "Area " + tloc.loc->name + " not found in PostGIS database!");
-
-        std::unique_ptr<OGRGeometry> poly;
-        poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
-
-        std::string wktString = Fmi::OGR::exportToWkt(*poly);
-        settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
-
-#ifdef MYDEBUG
-        std::cout << "WKT of buffered area: " << std::endl << wktString << std::endl;
-        std::cout << "#" << settings.area_geoids.size() << " stations found" << std::endl;
-#endif
-
-        query.maxdistance = 0;
-      }
-      else if (tloc.loc->type == Spine::Location::BoundingBox && producer != FLASH_PRODUCER)
-      {
-#ifdef MYDEBUG
-        std::cout << tloc.loc->name << " is a BoundingBox" << std::endl;
+        std::cout << loc_name << " is a BoundingBox" << std::endl;
 #endif
 
         Spine::BoundingBox bbox(loc_name);
@@ -1855,15 +1905,22 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         std::pair<double, double> firstCorner(bbox.xMin, bbox.yMin);
         std::pair<double, double> secondCorner(bbox.xMax, bbox.yMax);
         make_rectangle_path(svgPath, firstCorner, secondCorner);
-        Fmi::OGR::CoordinatePoints geoCoordinates;
+        std::string wkt;
         for (NFmiSvgPath::const_iterator iter = svgPath.begin(); iter != svgPath.end(); iter++)
-          geoCoordinates.push_back(std::pair<double, double>(iter->itsX, iter->itsY));
-        const OGRGeometry* pGeo = Fmi::OGR::constructGeometry(geoCoordinates, wkbPolygon, 4326);
+        {
+          if (wkt.empty())
+            wkt += "POLYGON((";
+          else
+            wkt += ", ";
+          wkt += Fmi::to_string(iter->itsX);
+          wkt += " ";
+          wkt += Fmi::to_string(iter->itsY);
+        }
+        if (!wkt.empty())
+          wkt += "))";
 
-        std::unique_ptr<OGRGeometry> poly;
-        poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
-
-        std::string wktString(Fmi::OGR::exportToWkt(*poly));
+        std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+        std::string wktString = Fmi::OGR::exportToWkt(*geom);
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
 
 #ifdef MYDEBUG
@@ -1873,22 +1930,18 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
         query.maxdistance = 0;
       }
-      else if (producer != FLASH_PRODUCER &&
-               (tloc.loc->type == Spine::Location::Place ||
-                tloc.loc->type == Spine::Location::CoordinatePoint) &&
-               tloc.loc->radius > 0)
+      else if (producer != FLASH_PRODUCER && loc->type == Spine::Location::Place && loc->radius > 0)
       {
 #ifdef MYDEBUG
-        std::cout << tloc.loc->name << " is an Area (Place + radius)" << std::endl;
+        std::cout << loc_name << " is an Area (Place + radius)" << std::endl;
 #endif
-
         const OGRGeometry* pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbPoint);
 
         if (!pGeo)
-          throw Spine::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
+          throw Spine::Exception(BCP, "Place " + loc_name + " not found in PostGIS database!");
 
         std::unique_ptr<OGRGeometry> poly;
-        poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
+        poly.reset(Fmi::OGR::expandGeometry(pGeo, loc->radius * 1000));
 
         std::string wktString = Fmi::OGR::exportToWkt(*poly);
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
@@ -1899,30 +1952,47 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         std::cout << "#" << settings.area_geoids.size() << " stations found" << std::endl;
 #endif
       }
-      else if (producer != FLASH_PRODUCER && tloc.loc->type == Spine::Location::CoordinatePoint &&
-               tloc.loc->radius > 0)
+      else if (producer != FLASH_PRODUCER && loc->type == Spine::Location::CoordinatePoint &&
+               loc->radius > 0)
       {
 #ifdef MYDEBUG
-        std::cout << tloc.loc->name << " is an Area (coordinate point + radius)" << std::endl;
+        std::cout << loc_name << " is an Area (coordinate point + radius)" << std::endl;
 #endif
-        Fmi::OGR::CoordinatePoints geoCoordinates;
-        geoCoordinates.push_back(
-            std::pair<double, double>(tloc.loc->longitude, tloc.loc->latitude));
-        const OGRGeometry* pGeo = Fmi::OGR::constructGeometry(geoCoordinates, wkbPoint, 4326);
 
-        std::unique_ptr<OGRGeometry> poly;
-        poly.reset(Fmi::OGR::expandGeometry(pGeo, tloc.loc->radius * 1000));
+        std::string wktString;
 
-        std::string wktString = Fmi::OGR::exportToWkt(*poly);
+        if (isWkt)
+        {
+          const OGRGeometry* pGeo = query.wktGeometries.getGeometry(loc_name_original);
+
+          if (!pGeo)
+            throw Spine::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
+
+          wktString = Fmi::OGR::exportToWkt(*pGeo);
+        }
+        else
+        {
+          std::string wkt = "POINT(";
+          wkt += Fmi::to_string(loc->longitude);
+          wkt += " ";
+          wkt += Fmi::to_string(loc->latitude);
+          wkt += ")";
+
+          std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+          wktString = Fmi::OGR::exportToWkt(*geom);
+        }
+
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
         query.maxdistance = 0;
 
 #ifdef MYDEBUG
         std::cout << "WKT of buffered area: " << std::endl << wktString << std::endl;
         std::cout << "#" << settings.area_geoids.size() << " stations found" << std::endl;
+        for (auto g : settings.area_geoids)
+          std::cout << "geoid: " << g << std::endl;
 #endif
       }
-    }  // if(tloc.loc)
+    }  // if(loc)
 
     // fmisid must be always included in order to get thelocation info from geonames
     if (fmisid_index == -1 && producer != FLASH_PRODUCER)
@@ -2006,9 +2076,9 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
 #ifdef MYDEBUG
     std::cout << "query.toptions.startTimeUTC: " << (query.toptions.startTimeUTC ? "true" : "false")
-              << endl;
+              << std::endl;
     std::cout << "query.toptions.endTimeUTC: " << (query.toptions.endTimeUTC ? "true" : "false")
-              << endl;
+              << std::endl;
     std::cout << "query.toptions.startTime: " << query.toptions.startTime << std::endl;
     std::cout << "query.toptions.endTime: " << query.toptions.endTime << std::endl;
 
@@ -2021,6 +2091,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
     std::cout << "settings.fmisids.size(): " << settings.fmisids.size() << std::endl;
     std::cout << "settings.format: " << settings.format << std::endl;
     std::cout << "settings.geoids.size(): " << settings.geoids.size() << std::endl;
+    std::cout << "settings.area_geoids.size(): " << settings.area_geoids.size() << std::endl;
     std::cout << "settings.hours.size(): " << settings.hours.size() << std::endl;
     std::cout << "settings.language: " << settings.language << std::endl;
     std::cout << "settings.latest: " << settings.latest << std::endl;
@@ -2058,7 +2129,6 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 #ifndef WITHOUT_OBSERVATION
 void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                            const std::string& producer,
-                                           const Spine::TaggedLocation& tloc,
                                            const ObsParameters& obsParameters,
                                            Engine::Observation::Settings& settings,
                                            Query& query,
@@ -2279,7 +2349,6 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       return;
 
     Spine::LocationPtr loc = tloc.loc;
-    std::string place = (loc ? loc->name : "");
 
     // lets find out actual timesteps: different locations may have different timesteps
     std::vector<boost::local_time::local_date_time> ts_vector;
@@ -2517,11 +2586,16 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           // area name is replaced with the name given in URL
           if (loc && obsParameters[i].param.name() == NAME_PARAM)
           {
+            std::string place = (loc ? loc->name : "");
             ts::LonLatTimeSeries& llts = tsg->at(0);
             ts::TimeSeries& ts = llts.timeseries;
-
+            std::string name = place;
+            if (tloc.loc->type == Spine::Location::Wkt)
+              name = query.wktGeometries.getName(place);
+            else if (name.find(" as ") != std::string::npos)
+              name = name.substr(name.find(" as ") + 4);
             for (ts::TimedValue& tv : ts)
-              tv.value = place;
+              tv.value = name;
           }
         }
       }
@@ -2584,8 +2658,7 @@ void Plugin::fetchObsEngineValues(const State& state,
     if (settings.area_geoids.size() == 0 || producer == FLASH_PRODUCER)
     {
       // fetch data for places
-      fetchObsEngineValuesForPlaces(
-          state, producer, tloc, obsParameters, settings, query, outputData);
+      fetchObsEngineValuesForPlaces(state, producer, obsParameters, settings, query, outputData);
     }
     else
     {
