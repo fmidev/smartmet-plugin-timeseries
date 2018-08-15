@@ -27,8 +27,10 @@ BuildRequires: smartmet-engine-observation-devel >= 18.7.25
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 18.8.6
 BuildRequires: smartmet-engine-gis-devel >= 18.7.25
+BuildRequires: smartmet-library-gis-devel >= 18.8.15
 Requires: libconfig
-Requires: smartmet-library-locus >= 18.8.6
+Requires: smartmet-library-gis >= 18.8.15
+Requires: smartmet-library-gis >= 18.8.15Requires: smartmet-library-locus >= 18.8.6
 Requires: smartmet-library-macgyver >= 18.8.4
 Requires: smartmet-library-newbase >= 18.8.6
 Requires: smartmet-library-spine >= 18.8.13
@@ -70,6 +72,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Aug 15 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.8.15-1.fmi
+- Remove duplicate code, start using Fmi::OGR::createFromWkt-function
 
 * Mon Aug 13 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.8.13-1.fmi
 - Support for 'wkt' parameter added
