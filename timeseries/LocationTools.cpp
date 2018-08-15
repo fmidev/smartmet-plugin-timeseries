@@ -142,31 +142,12 @@ std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string wktString, doubl
 {
   std::unique_ptr<OGRGeometry> ret;
 
-  OGRGeometry* geom = nullptr;
   std::string wkt = get_name_base(wktString);
-  char* pszWKT(const_cast<char*>(wkt.c_str()));
-  OGRErr err = OGRGeometryFactory::createFromWkt(&pszWKT, NULL, &geom);
-  if (err != OGRERR_NONE)
-  {
-    std::string errStr = "Failed to create OGRGeometry from WKT " + wkt + "";
-    if (err == OGRERR_NOT_ENOUGH_DATA)
-      errStr += " OGRErr: OGRERR_NOT_ENOUGH_DATA";
-    if (err == OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
-      errStr += " OGRErr: OGRERR_UNSUPPORTED_GEOMETRY_TYPE";
-    if (err == OGRERR_CORRUPT_DATA)
-      errStr += " OGRErr: OGRERR_CORRUPT_DATA";
 
-    throw Spine::Exception(BCP, errStr);
-  }
+  OGRGeometry* geom = Fmi::OGR::createFromWkt(wkt, 4326);
 
   if (geom)
   {
-    // If radius given -> expand the geometry by radius
-    /*
-double radius = (wktString.find(":") != std::string::npos
-                     ? Fmi::stod(wktString.substr(wktString.find(":") + 1))
-                     : 0.0);
-    */
     if (radius > 0.0)
     {
       std::unique_ptr<OGRGeometry> poly;
