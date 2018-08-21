@@ -14,6 +14,7 @@ BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: boost-devel
+BuildRequires: fmt-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: smartmet-library-spine-devel >= 18.8.15
