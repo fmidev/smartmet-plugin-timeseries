@@ -17,6 +17,7 @@ BuildRequires: boost-devel
 BuildRequires: fmt-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
+BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 18.8.15
 BuildRequires: smartmet-library-locus-devel >= 18.8.6
 BuildRequires: smartmet-library-macgyver-devel >= 18.8.4
