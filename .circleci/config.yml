@@ -4,6 +4,8 @@ jobs:
     docker:
       - image: fmidev/rpmbuild:el7
         entrypoint: bash
+        environment:
+          RPM_BUILD_NCPUS: 2
     steps:
       - checkout
       - run:
