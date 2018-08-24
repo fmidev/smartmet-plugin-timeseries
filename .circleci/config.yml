@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: fmidev/rpmbuild:el7
+        entrypoint: bash
+        environment:
+          RPM_BUILD_NCPUS: 2
+    steps:
+      - checkout
+      - run:
+          name: Create local repo
+          command: createrepo /home/rpmbuild/rpmbuild/RPMS/x86_64
+      - run:
+          name: Install dependencies
+          command: sudo yum-builddep --disableexcludes=smartmet-open -y *.spec 
+      - run:
+          name: make rpm
+          command: make rpm
+      - run:
+          name: Move artifacts
+          command: sudo cp -av /home/rpmbuild/rpmbuild/RPMS /
+      - store_artifacts:
+          path: /RPMS
+          
