@@ -18,28 +18,28 @@ BuildRequires: fmt-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 18.8.15
-BuildRequires: smartmet-library-locus-devel >= 18.8.6
-BuildRequires: smartmet-library-macgyver-devel >= 18.8.4
-BuildRequires: smartmet-library-newbase-devel >= 18.8.6
+BuildRequires: smartmet-library-spine-devel >= 18.8.30
+BuildRequires: smartmet-library-locus-devel >= 18.8.21
+BuildRequires: smartmet-library-macgyver-devel >= 18.8.20
+BuildRequires: smartmet-library-newbase-devel >= 18.8.28
 BuildRequires: smartmet-library-gis-devel >= 18.8.15
-BuildRequires: smartmet-engine-geonames-devel >= 18.8.13
+BuildRequires: smartmet-engine-geonames-devel >= 18.8.26
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 18.8.13
+BuildRequires: smartmet-engine-observation-devel >= 18.8.29
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 18.8.13
+BuildRequires: smartmet-engine-querydata-devel >= 18.8.20
 BuildRequires: smartmet-engine-gis-devel >= 18.7.25
 Requires: libconfig
 Requires: smartmet-library-gis >= 18.8.15
-Requires: smartmet-library-locus >= 18.8.6
-Requires: smartmet-library-macgyver >= 18.8.4
-Requires: smartmet-library-newbase >= 18.8.6
-Requires: smartmet-library-spine >= 18.8.15
+Requires: smartmet-library-locus >= 18.8.21
+Requires: smartmet-library-macgyver >= 18.8.20
+Requires: smartmet-library-newbase >= 18.8.28
+Requires: smartmet-library-spine >= 18.8.30
 Requires: smartmet-library-gis >= 18.8.15
-Requires: smartmet-engine-geonames >= 18.8.13
-Requires: smartmet-engine-querydata >= 18.8.13
+Requires: smartmet-engine-geonames >= 18.8.26
+Requires: smartmet-engine-querydata >= 18.8.20
 Requires: smartmet-engine-gis >= 18.7.25
-Requires: smartmet-server >= 18.8.8
+Requires: smartmet-server >= 18.8.22
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -73,7 +73,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
-* Wed Aug 28 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.8.28-1.fmi
+* Tue Aug 28 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.8.28-1.fmi
 - Oracle parameter names in test/cnf/observation.conf file made uppercase (BRAINSTORM-1156)
 
 * Wed Aug 15 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.8.15-1.fmi
