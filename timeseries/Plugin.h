@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Config.h"
+#include "DataFunctions.h"
 #include "LonLatDistance.h"
 #include "ObsParameter.h"
 #include "Query.h"
@@ -50,20 +51,6 @@ namespace TimeSeries
 {
 class State;
 class PluginImpl;
-
-typedef boost::variant<Spine::TimeSeries::TimeSeriesPtr,
-                       Spine::TimeSeries::TimeSeriesVectorPtr,
-                       Spine::TimeSeries::TimeSeriesGroupPtr>
-    TimeSeriesData;
-typedef std::vector<std::pair<std::string, std::vector<TimeSeriesData> > > OutputData;
-typedef std::pair<int, std::string> PressureLevelParameterPair;
-typedef std::map<PressureLevelParameterPair, Spine::TimeSeries::TimeSeriesPtr>
-    ParameterTimeSeriesMap;
-typedef std::map<PressureLevelParameterPair, Spine::TimeSeries::TimeSeriesGroupPtr>
-    ParameterTimeSeriesGroupMap;
-typedef std::vector<ObsParameter> ObsParameters;
-typedef std::pair<int, Spine::TimeSeries::TimeSeriesVectorPtr> FmisidTSVectorPair;
-typedef std::vector<FmisidTSVectorPair> TimeSeriesByLocation;
 
 class Plugin : public SmartMetPlugin, private boost::noncopyable
 {
