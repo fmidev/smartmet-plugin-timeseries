@@ -18,25 +18,25 @@ BuildRequires: fmt-devel
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 18.8.30
+BuildRequires: smartmet-library-spine-devel >= 18.9.5
 BuildRequires: smartmet-library-locus-devel >= 18.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 18.8.20
-BuildRequires: smartmet-library-newbase-devel >= 18.8.28
+BuildRequires: smartmet-library-macgyver-devel >= 18.9.5
+BuildRequires: smartmet-library-newbase-devel >= 18.9.6
 BuildRequires: smartmet-library-gis-devel >= 18.8.15
-BuildRequires: smartmet-engine-geonames-devel >= 18.8.26
+BuildRequires: smartmet-engine-geonames-devel >= 18.8.30
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 18.8.29
+BuildRequires: smartmet-engine-observation-devel >= 18.9.3
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 18.8.20
 BuildRequires: smartmet-engine-gis-devel >= 18.7.25
 Requires: libconfig
 Requires: smartmet-library-gis >= 18.8.15
 Requires: smartmet-library-locus >= 18.8.21
-Requires: smartmet-library-macgyver >= 18.8.20
-Requires: smartmet-library-newbase >= 18.8.28
-Requires: smartmet-library-spine >= 18.8.30
+Requires: smartmet-library-macgyver >= 18.9.5
+Requires: smartmet-library-newbase >= 18.9.6
+Requires: smartmet-library-spine >= 18.9.5
 Requires: smartmet-library-gis >= 18.8.15
-Requires: smartmet-engine-geonames >= 18.8.26
+Requires: smartmet-engine-geonames >= 18.8.30
 Requires: smartmet-engine-querydata >= 18.8.20
 Requires: smartmet-engine-gis >= 18.7.25
 Requires: smartmet-server >= 18.8.22
