@@ -44,7 +44,11 @@ for step in $* ; do
 	    insudo yum install -y deltarpm
 	    # Update on filesystem package fails on CircleCI containers and on some else as well
 	    # Enable workaround
+<<<<<<< 44f6f0212292aa62a21aa4a48df3516321bb5a38
 	    insudo sed -i -e '$a%_netsharedpath /sys:/proc' /etc/rpm/macros.dist
+=======
+	    insudo sed -i -e '$a%_netsharedpath /sys:/proc' /etc/rpm/macros.dist 
+>>>>>>> Enable local building and tests
 	    insudo yum update -y
 	    ;;
 	fmiprep)
@@ -92,7 +96,7 @@ for step in $* ; do
 	    make -j "$jobs" rpm
 	    mkdir -p $HOME/dist
 	    for d in /root/rpmbuild $HOME/rpmbuild ; do
-				test ! -d "$d" || find "$d" -name \*.rpm -exec mv -v {} $DISTDIR \; 
+			test ! -d "$d" || find "$d" -name \*.rpm -exec mv -v {} $DISTDIR \; 
 	    done
 	    set +x
 	    echo "Distribution files are in $DISTDIR:"
