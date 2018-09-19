@@ -211,7 +211,10 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
         {
           double longitude = Fmi::stod(lonLatVector[i]);
           double latitude = Fmi::stod(lonLatVector[i + 1]);
-          svgPath.push_back(NFmiSvgPath::Element(NFmiSvgPath::kElementMoveto, longitude, latitude));
+          svgPath.push_back(NFmiSvgPath::Element(
+              (i == 0 ? NFmiSvgPath::kElementMoveto : NFmiSvgPath::kElementLineto),
+              longitude,
+              latitude));
         }
       }
       else
@@ -291,6 +294,18 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
       }
       else
       {
+        // Each path-element is handled separately
+        if (it->itsType == NFmiSvgPath::kElementMoveto &&
+            distance_in_kilometers(from, to) > stepInKm)
+        {
+          // Start the new leg
+          locationList.push_back(Spine::LocationPtr(
+              new Spine::Location(to.first, to.second, thePathName, theTimezone)));
+          from = to;
+          leftoverDistanceKmFromPreviousLeg = 0.0;
+          continue;
+        }
+
         double intermediateDistance = distance_in_kilometers(from, to);
         if ((intermediateDistance + leftoverDistanceKmFromPreviousLeg) <= stepInKm)
         {
@@ -318,7 +333,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
       from = to;
     }
 
-    // last leg is not full
+    // Last leg is not full
     if (leftoverDistanceKmFromPreviousLeg > 0.001)
     {
       locationList.push_back(

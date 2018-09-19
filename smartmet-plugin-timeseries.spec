@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.9.4
+Version: 18.9.19
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Sep 19 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.19-1.fmi
+- Improved handling-algorithm of NFmiSvgPath object
+
 * Tue Sep 9 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.4-1.fmi
 - Refactoring: data-functions moved to separate file
 
