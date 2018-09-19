@@ -60,6 +60,16 @@ for step in $* ; do
 	    # This will speedup future steps and there seems to be
 	    # wrong URLs in these in some cases
 	    insudo rm -f /etc/yum.repos.d/CentOS-Vault.repo /etc/yum.repos.d/CentOS-Sources.repo
+	    # Enable shared C Cache if enabled by surrounding environment(i.e. localbuild)
+	    test ! -d "/ccache/." || (
+	    	echo cache_dir=/ccache > /etc/ccache.conf
+	    	echo umask=006 >> /etc/ccache.conf
+	    	ln -s /usr/bin/ccache /usr/local/bin/c++ && \
+    		ln -s /usr/bin/ccache /usr/local/bin/g++ && \
+   			ln -s /usr/bin/ccache /usr/local/bin/gcc && \
+	    	ln -s /usr/bin/ccache /usr/local/bin/cc
+	    )
+	    ccache -s
 	    ;;
 	cache)
 	    insudo yum clean all
