@@ -46,6 +46,21 @@ Requires: boost-iostreams
 Requires: boost-regex
 Requires: boost-system
 Requires: boost-thread
+#TestRequires: boost-devel
+#TestRequires: libconfig-devel
+#TestRequires: gcc-c++
+#TestRequires: make
+#TestRequires: gdal-devel
+#TestRequires: smartmet-library-gis-devel >= 18.8.15
+#TestRequires: smartmet-library-newbase-devel >= 18.9.6
+#TestRequires: smartmet-library-spine-devel >= 18.9.5
+#TestRequires: smartmet-engine-geonames-devel >= 18.8.30
+#TestRequires: smartmet-engine-querydata-devel >= 18.8.20
+#TestRequires: smartmet-engine-observation-devel >= 18.9.3
+#TestRequires: smartmet-engine-gis-devel >= 18.7.25
+#TestRequires: smartmet-test-data
+#TestRequires: bzip2-devel
+#TestRequires: zlib-devel
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
