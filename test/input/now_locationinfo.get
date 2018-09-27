@@ -1,1 +1,0 @@
-GET /timeseries?now=200808050900&places=Helsinki,Kumpula,Tukholma&timesteps=1&param=name,time,Temperature,geoid,elevation,dem,covertype,population,region,country HTTP/1.0
