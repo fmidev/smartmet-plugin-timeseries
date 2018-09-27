@@ -1,0 +1,1 @@
+GET /timeseries?starttime=201308051200&endtime=201308052200&latlon=60.978,25.6148&param=geoid,stationname,fmisid,time,RoadTemperature,longitude,latitude,stationlatitude,stationlongitude&stationtype=road HTTP/1.0
