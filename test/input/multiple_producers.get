@@ -1,1 +1,0 @@
-GET /timeseries?param=name,utctime,localtime,t2m,min_t(t2m:2h),mean_t(t2m:2h:2h),max_t(t2m:2h),model&producer=hirlam;pal2&maxdistance=15000&places=Helsinki&precision=double&timestep=data&tz=Europe/Helsinki&starttime=201303180600&endtime=201303310000 HTTP/1.0
