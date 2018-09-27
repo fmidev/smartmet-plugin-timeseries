@@ -51,6 +51,6 @@ while (( "$#" )) ; do
 		IMAGE=`grep "image: " < .circleci/config.yml | head -n 1 | sed -e 's/^.*image: //'`
 		echo "Using image $IMAGE for shell"
 		docker run $ENVSTR -v $HOST_YCACHE:/var/cache/yum -v $HOST_CCACHE:/ccache -v ${PWD}/dist:/root/dist -v ${PWD}/dist:/dist -v ${PWD}:/work -w /work -ti "$IMAGE" /bin/bash
-	fi    
+	fi
     shift
 done
