@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.9.29
+Version: 18.10.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 18.9.29
+BuildRequires: smartmet-library-spine-devel >= 18.10.18
 BuildRequires: smartmet-library-locus-devel >= 18.8.21
 BuildRequires: smartmet-library-macgyver-devel >= 18.9.29
 BuildRequires: smartmet-library-newbase-devel >= 18.9.29
@@ -35,7 +35,7 @@ Requires: smartmet-library-gis >= 18.9.29
 Requires: smartmet-library-locus >= 18.8.21
 Requires: smartmet-library-macgyver >= 18.9.29
 Requires: smartmet-library-newbase >= 18.9.29
-Requires: smartmet-library-spine >= 18.9.29
+Requires: smartmet-library-spine >= 18.10.18
 Requires: smartmet-library-gis >= 18.9.29
 Requires: smartmet-engine-geonames >= 18.9.29
 Requires: smartmet-engine-querydata >= 18.9.11
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Oct 18 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.10.18-1.fmi
+- Support for data_source-field added (BRAINSTORM-1233)
+
 * Sat Sep 29 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.9.29-1.fmi
 - Upgraded to latest fmt
 
