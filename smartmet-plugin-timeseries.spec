@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.9.19
+Version: 18.9.29
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -14,32 +14,33 @@ BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: boost-devel
-BuildRequires: fmt-devel
+BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 18.9.5
+BuildRequires: smartmet-library-spine-devel >= 18.9.29
 BuildRequires: smartmet-library-locus-devel >= 18.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 18.9.5
-BuildRequires: smartmet-library-newbase-devel >= 18.9.6
-BuildRequires: smartmet-library-gis-devel >= 18.8.15
-BuildRequires: smartmet-engine-geonames-devel >= 18.8.30
+BuildRequires: smartmet-library-macgyver-devel >= 18.9.29
+BuildRequires: smartmet-library-newbase-devel >= 18.9.29
+BuildRequires: smartmet-library-gis-devel >= 18.9.29
+BuildRequires: smartmet-engine-geonames-devel >= 18.9.29
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 18.9.3
+BuildRequires: smartmet-engine-observation-devel >= 18.9.29
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 18.8.20
-BuildRequires: smartmet-engine-gis-devel >= 18.7.25
+BuildRequires: smartmet-engine-querydata-devel >= 18.9.11
+BuildRequires: smartmet-engine-gis-devel >= 18.9.19
+Requires: fmt >= 5.2.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 18.8.15
+Requires: smartmet-library-gis >= 18.9.29
 Requires: smartmet-library-locus >= 18.8.21
-Requires: smartmet-library-macgyver >= 18.9.5
-Requires: smartmet-library-newbase >= 18.9.6
-Requires: smartmet-library-spine >= 18.9.5
-Requires: smartmet-library-gis >= 18.8.15
-Requires: smartmet-engine-geonames >= 18.8.30
-Requires: smartmet-engine-querydata >= 18.8.20
-Requires: smartmet-engine-gis >= 18.7.25
-Requires: smartmet-server >= 18.8.22
+Requires: smartmet-library-macgyver >= 18.9.29
+Requires: smartmet-library-newbase >= 18.9.29
+Requires: smartmet-library-spine >= 18.9.29
+Requires: smartmet-library-gis >= 18.9.29
+Requires: smartmet-engine-geonames >= 18.9.29
+Requires: smartmet-engine-querydata >= 18.9.11
+Requires: smartmet-engine-gis >= 18.9.19
+Requires: smartmet-server >= 18.9.29
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -73,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Sat Sep 29 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.9.29-1.fmi
+- Upgraded to latest fmt
+
 * Wed Sep 19 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.19-1.fmi
 - Improved handling-algorithm of NFmiSvgPath object
 

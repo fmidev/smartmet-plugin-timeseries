@@ -1,0 +1,1 @@
+GET /timeseries?producer=fmi&stationtype=fmi&starttime=200001011200&endtime=200001012200&place=Kaisaniemi&param=time,Temperature&timestep=60 HTTP/1.0

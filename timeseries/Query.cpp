@@ -8,22 +8,20 @@
 #include "Config.h"
 #include "Hash.h"
 #include "State.h"
-
 #include <engines/geonames/Engine.h>
-#include <spine/Convenience.h>
-#include <spine/Exception.h>
-#include <spine/ParameterFactory.h>
 #ifndef WITHOUT_OBSERVATION
 #include <engines/observation/Engine.h>
 #endif
-
-#include <macgyver/StringConversion.h>
-#include <macgyver/TimeParser.h>
-#include <newbase/NFmiPoint.h>
-
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
+#include <macgyver/StringConversion.h>
+#include <macgyver/TimeParser.h>
+#include <newbase/NFmiPoint.h>
+#include <spine/Convenience.h>
+#include <spine/Exception.h>
+#include <spine/ParameterFactory.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -322,7 +320,7 @@ void Query::parse_producers(const Spine::HTTP::Request& theReq)
     if (opt.empty() && opt2.empty())
       opt2 = Spine::optional_string(theReq.getParameter("stationtype"), "");
 
-    std::list<std::string> firstProducers, secondProducers, resultProducers;
+    std::list<std::string> resultProducers;
 
     // Handle time separation:: either 'model' or 'producer' keyword used
     if (!opt.empty())
@@ -336,6 +334,11 @@ void Query::parse_producers(const Spine::HTTP::Request& theReq)
     {
       AreaProducers producers;
       boost::algorithm::split(producers, tproducers, boost::algorithm::is_any_of(","));
+
+      // FMI producer is deprecated, use OPENDATA instead
+      // std::replace(producers.begin(), producers.end(), std::string("fmi"),
+      // std::string("opendata"));
+
       timeproducers.push_back(producers);
     }
   }
