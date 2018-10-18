@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&places=Helsinki,Kumpula,Tukholma&timesteps=1&param=name,time,Temperature,geoid,elevation,dem,covertype,population,region,country HTTP/1.0
