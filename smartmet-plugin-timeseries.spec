@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.10.18
+Version: 18.10.25
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Oct 25 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.10.25-1.fmi
+- Fixed handling of comma-separated observation producers (BRAINSTORM-667)
+
 * Thu Oct 18 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.10.18-1.fmi
 - Support for data_source-field added (BRAINSTORM-1233)
 

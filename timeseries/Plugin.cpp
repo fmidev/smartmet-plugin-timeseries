@@ -2411,60 +2411,57 @@ void Plugin::processObsEngineQuery(const State& state,
     if (areaproducers.empty())
       throw Spine::Exception(BCP, "BUG: processObsEngineQuery producer list empty");
 
-    const std::string& producer = *areaproducers.begin();
-
-    // in contrast to area query
-    bool locationQueryExecuted = false;
-
-    // Settings which are the same for all locations
-
-    Engine::Observation::Settings settings;
-    setCommonObsSettings(
-        settings, producer, producerDataPeriod, state.getTime(), obsParameters, query);
-
-    if (query.loptions->locations().empty())
+    for (const auto producer : areaproducers)
     {
-      // This is not beautiful
-      Spine::LocationPtr loc;
-      Spine::TaggedLocation tloc("", loc);
+      if (!isObsProducer(producer))
+        continue;
+      // in contrast to area query
+      bool locationQueryExecuted = false;
 
-      // Update settings for this particular location
-      setLocationObsSettings(
-          settings, producer, producerDataPeriod, state.getTime(), tloc, obsParameters, query);
+      // Settings which are the same for all locations
+      Engine::Observation::Settings settings;
+      setCommonObsSettings(
+          settings, producer, producerDataPeriod, state.getTime(), obsParameters, query);
 
-      // single locations are fetched all at once
-      // area locations are fetched area by area
-      if (locationQueryExecuted && settings.area_geoids.size() == 0)
+      if (query.loptions->locations().empty())
       {
-      }
-      else
-      {
-        std::vector<TimeSeriesData> tsdatavector;
-        outputData.push_back(make_pair("_obs_", tsdatavector));
-        fetchObsEngineValues(state, producer, tloc, obsParameters, settings, query, outputData);
-        // if(settings.area_geoids.size() == 0)
-        // locationQueryExecuted = true;
-      }
-    }
-    else
-    {
-      for (const auto& tloc : query.loptions->locations())
-      {
+        // This is not beautiful
+        Spine::LocationPtr loc;
+        Spine::TaggedLocation tloc("", loc);
+
         // Update settings for this particular location
         setLocationObsSettings(
             settings, producer, producerDataPeriod, state.getTime(), tloc, obsParameters, query);
 
-        // single locations are fetched all at once
-        // area locations are fetched area by area
+        // Single locations are fetched all at once
+        // Area locations are fetched area by area
         if (locationQueryExecuted && settings.area_geoids.size() == 0)
           continue;
 
         std::vector<TimeSeriesData> tsdatavector;
         outputData.push_back(make_pair("_obs_", tsdatavector));
         fetchObsEngineValues(state, producer, tloc, obsParameters, settings, query, outputData);
+      }
+      else
+      {
+        for (const auto& tloc : query.loptions->locations())
+        {
+          // Update settings for this particular location
+          setLocationObsSettings(
+              settings, producer, producerDataPeriod, state.getTime(), tloc, obsParameters, query);
 
-        if (settings.area_geoids.size() == 0)
-          locationQueryExecuted = true;
+          // Single locations are fetched all at once
+          // Area locations are fetched area by area
+          if (locationQueryExecuted && settings.area_geoids.size() == 0)
+            continue;
+
+          std::vector<TimeSeriesData> tsdatavector;
+          outputData.push_back(make_pair("_obs_", tsdatavector));
+          fetchObsEngineValues(state, producer, tloc, obsParameters, settings, query, outputData);
+
+          if (settings.area_geoids.size() == 0)
+            locationQueryExecuted = true;
+        }
       }
     }
   }
