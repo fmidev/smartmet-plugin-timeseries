@@ -3050,15 +3050,8 @@ bool Plugin::queryIsFast(const Spine::HTTP::Request& theRequest) const
 
 Plugin::~Plugin()
 {
-  try
-  {
-    if (itsCache != nullptr)
-      itsCache->shutdown();
-  }
-  catch (...)
-  {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
-  }
+  if (itsCache != nullptr)
+    itsCache->shutdown();
 }
 
 // ----------------------------------------------------------------------
