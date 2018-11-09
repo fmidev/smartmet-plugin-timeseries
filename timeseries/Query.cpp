@@ -437,9 +437,13 @@ void Query::parse_precision(const Spine::HTTP::Request& req, const Config& confi
     {
       Precision::Map::const_iterator it = prec.parameter_precisions.find(p.name());
       if (it == prec.parameter_precisions.end())
+      {
         precisions.push_back(prec.default_precision);  // unknown gets default
+      }
       else
+      {
         precisions.push_back(it->second);  // known gets configured value
+      }
     }
   }
   catch (...)
@@ -504,6 +508,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
 
       poptions.add(paramfuncs.parameter, paramfuncs.functions);
     }
+    poptions.expandParameter("data_source");
 
     std::string aggregationIntervalStringBehind =
         Spine::optional_string(theReq.getParameter("interval"), "0m");

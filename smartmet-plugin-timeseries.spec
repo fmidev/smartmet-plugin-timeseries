@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.11.8
+Version: 18.11.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 18.9.29
+BuildRequires: smartmet-library-spine-devel >= 18.10.18
 BuildRequires: smartmet-library-locus-devel >= 18.8.21
 BuildRequires: smartmet-library-macgyver-devel >= 18.9.29
 BuildRequires: smartmet-library-newbase-devel >= 18.9.29
@@ -35,7 +35,7 @@ Requires: smartmet-library-gis >= 18.9.29
 Requires: smartmet-library-locus >= 18.8.21
 Requires: smartmet-library-macgyver >= 18.9.29
 Requires: smartmet-library-newbase >= 18.9.29
-Requires: smartmet-library-spine >= 18.9.29
+Requires: smartmet-library-spine >= 18.10.18
 Requires: smartmet-library-gis >= 18.9.29
 Requires: smartmet-engine-geonames >= 18.9.29
 Requires: smartmet-engine-querydata >= 18.9.11
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Fri Nov  9 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.11.9-1.fmi
+- Support for data_source-field added (BRAINSTORM-1233)
+
 * Thu Nov  8 2018 Mika Heiskanen <mika.heiskanen@fmi.fi> - 18.11.8-1.fmi
 - Do not throw in destructors in C++11
 

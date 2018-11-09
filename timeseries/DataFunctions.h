@@ -49,6 +49,8 @@ void store_data(Spine::TimeSeries::TimeSeriesVectorPtr aggregatedData,
                 OutputData& outputData);
 void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, OutputData& outputData);
 
+std::ostream& operator<<(std::ostream& os, const TimeSeriesData& tsdata);
+
 template <typename T>
 T aggregate(const T& raw_data, const Spine::ParameterFunctions& pf)
 {
