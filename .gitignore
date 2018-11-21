@@ -11,3 +11,11 @@ obj/
 *.c2t
 compile_commands.json
 .gdb_history
+
+# CI build results
+dist/
+
+# Eclipse may create these
+.cproject
+.project
+.settings/
