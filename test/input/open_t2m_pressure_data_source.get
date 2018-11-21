@@ -1,0 +1,1 @@
+GET /timeseries?producer=opendata&param=stationname,time,localtime,utctime,lat,lon,t2m,pressure,data_source&starttime=2013-05-09T06:00:00Z&endtime=2013-05-09T18:00:00Z&timestep=1h&fmisid=101004&stationtype=opendata&format=ascii HTTP/1.0

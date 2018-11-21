@@ -15,6 +15,31 @@ namespace TimeSeries
  */
 // ----------------------------------------------------------------------
 
+std::ostream& operator<<(std::ostream& os, const TimeSeriesData& tsdata)
+{
+  try
+  {
+    if (boost::get<Spine::TimeSeries::TimeSeriesPtr>(&tsdata) != nullptr)
+      os << **(boost::get<Spine::TimeSeries::TimeSeriesPtr>(&tsdata));
+    else if (boost::get<Spine::TimeSeries::TimeSeriesVectorPtr>(&tsdata) != nullptr)
+      os << **(boost::get<Spine::TimeSeries::TimeSeriesVectorPtr>(&tsdata));
+    else if (boost::get<Spine::TimeSeries::TimeSeriesGroupPtr>(&tsdata) != nullptr)
+      os << **(boost::get<Spine::TimeSeries::TimeSeriesGroupPtr>(&tsdata));
+
+    return os;
+  }
+  catch (...)
+  {
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief
+ */
+// ----------------------------------------------------------------------
+
 void erase_redundant_timesteps(Spine::TimeSeries::TimeSeries& ts,
                                const Spine::TimeSeriesGenerator::LocalTimeList& timesteps)
 {
