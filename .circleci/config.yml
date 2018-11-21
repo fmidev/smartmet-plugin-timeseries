@@ -2,46 +2,34 @@ version: 2
 jobs:
   build:
     docker:
-      - image: centos:latest
+      - image: fmidev/smartmet-cibase:latest
     steps:
       - checkout
       - run:
-          name: Update
-          command: .circleci/build.sh update
-      - run:
-          name: Install base tools and FMI repositories
-          command: .circleci/build.sh fmiprep
-      - run:
           name: Install build dependencies
-          command: .circleci/build.sh deps
+          command: ci-build deps
       - run:
           name: Build RPM
-          command: .circleci/build.sh rpm
+          command: ci-build rpm
       - persist_to_workspace:
           root: /dist
           paths: ./*.rpm
   test:
     docker:
-      - image: centos:latest
+      - image: fmidev/smartmet-cibase:latest
     steps:
       - checkout
-      - run:
-          name: Update
-          command: .circleci/build.sh update
-      - run:
-          name: Install base tools and FMI repositories
-          command: .circleci/build.sh fmiprep
       - attach_workspace:
           at: /dist
       - run:
           name: Installation test
-          command: yum install -y /dist/*.rpm
+          command: sudo yum install -y /dist/*.rpm
       - run:
           name: Test prepare
-          command: .circleci/build.sh testprep
+          command: ci-build testprep
       - run:
           name: Test
-          command: .circleci/build.sh test
+          command: ci-build test
       - store_artifacts:
           path: /dist
           destination: dist/
