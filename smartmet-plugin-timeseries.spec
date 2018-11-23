@@ -60,6 +60,8 @@ Requires: boost-thread
 #TestRequires: smartmet-engine-observation-devel >= 18.9.3
 #TestRequires: smartmet-engine-gis-devel >= 18.7.25
 #TestRequires: smartmet-test-data
+#TestRequires: smartmet-test-data-gis
+#TestRequires: smartmet-test-db
 #TestRequires: bzip2-devel
 #TestRequires: zlib-devel
 Provides: %{SPECNAME}
