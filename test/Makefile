@@ -38,7 +38,11 @@ all: $(PROG)
 clean:
 	rm -f $(PROG) *~
 
-test: $(PROG)
+.ciprep:
+	test "$$CI" != "true" || ( /usr/share/smartmet/test/db/init-and-start.sh && \
+		/usr/share/smartmet/test/db/install-test-db.sh drop && rm -f $(PROG) && touch .ciprep )
+
+test: .ciprep $(PROG)
 	@mkdir -p failures
 	@rm -f failures/*
 	@echo Running tests:
