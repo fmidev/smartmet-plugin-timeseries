@@ -28,5 +28,9 @@ int main()
   options.defaultlogging = false;
   options.configfile = "cnf/reactor.conf";
 
+  // Set output unbuffered - otherwise, output is lost in crash (like segfault)
+  cout.setf(ios::unitbuf);
+  cerr.setf(ios::unitbuf);
+
   return SmartMet::Spine::PluginTest::test(options, prelude);
 }
