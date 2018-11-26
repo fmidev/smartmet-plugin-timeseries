@@ -4,13 +4,13 @@
 Dependencies*
 *.so
 obj/
-*Test
 .sconsign.dblite
 *.pb.h
 *.pb.cpp
 *.c2t
 compile_commands.json
 .gdb_history
+PluginTest
 
 # CI build results
 dist/
