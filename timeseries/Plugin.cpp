@@ -2661,6 +2661,8 @@ void Plugin::query(const State& state,
     Query query(state, request, itsConfig);
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
+    data.setPaging(query.startrow, query.maxresults);
+
     std::string producer_option =
         Spine::optional_string(request.getParameter(PRODUCER_PARAM),
                                Spine::optional_string(request.getParameter(STATIONTYPE_PARAM), ""));
