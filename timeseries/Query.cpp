@@ -287,6 +287,9 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
         this->weekdays.push_back(h);
       }
     }
+
+    startrow = Spine::optional_size(req.getParameter("startrow"), 0);
+    maxresults = Spine::optional_size(req.getParameter("maxresults"), 0);
   }
   catch (...)
   {
