@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.11.9
+Version: 18.12.4
 Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,28 +18,28 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 18.11.9
-BuildRequires: smartmet-library-locus-devel >= 18.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 18.9.29
-BuildRequires: smartmet-library-newbase-devel >= 18.10.23
+BuildRequires: smartmet-library-spine-devel >= 18.12.4
+BuildRequires: smartmet-library-locus-devel >= 18.11.16
+BuildRequires: smartmet-library-macgyver-devel >= 18.11.24
+BuildRequires: smartmet-library-newbase-devel >= 18.12.4
 BuildRequires: smartmet-library-gis-devel >= 18.9.29
-BuildRequires: smartmet-engine-geonames-devel >= 18.9.29
+BuildRequires: smartmet-engine-geonames-devel >= 18.12.4
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 18.11.9
+BuildRequires: smartmet-engine-observation-devel >= 18.12.4
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 18.10.19
-BuildRequires: smartmet-engine-gis-devel >= 18.10.1
+BuildRequires: smartmet-engine-querydata-devel >= 18.12.4
+BuildRequires: smartmet-engine-gis-devel >= 18.11.22
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 18.9.29
-Requires: smartmet-library-locus >= 18.8.21
-Requires: smartmet-library-macgyver >= 18.9.29
-Requires: smartmet-library-newbase >= 18.10.23
-Requires: smartmet-library-spine >= 18.11.9
+Requires: smartmet-library-locus >= 18.11.16
+Requires: smartmet-library-macgyver >= 18.11.24
+Requires: smartmet-library-newbase >= 18.12.4
+Requires: smartmet-library-spine >= 18.12.4
 Requires: smartmet-library-gis >= 18.9.29
-Requires: smartmet-engine-geonames >= 18.9.29
-Requires: smartmet-engine-querydata >= 18.10.19
-Requires: smartmet-engine-gis >= 18.10.1
+Requires: smartmet-engine-geonames >= 18.12.4
+Requires: smartmet-engine-querydata >= 18.12.4
+Requires: smartmet-engine-gis >= 18.11.22
 Requires: smartmet-server >= 18.11.8
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Tue Dec  4 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.12.4-1.fmi
+- Added paging (BS-1430)
+
 * Fri Nov  9 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.11.9-2.fmi
 - Fixed handling of comma-separated observation producers (BRAINSTORM-667)
 
