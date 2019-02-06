@@ -1,0 +1,1 @@
+GET /timeseries?starttime=20180101T0000&endtime=20180130T0000&format=ascii&geoids=-16000063&lang=fi&param=utctime,astepaivaluku,time,name&precision=double&producer=lammitystarve&timestep=data HTTP/1.0
