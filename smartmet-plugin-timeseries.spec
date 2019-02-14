@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 18.12.4
-Release: 2%{?dist}.fmi
+Version: 19.2.14
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -18,29 +18,29 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 18.12.4
+BuildRequires: smartmet-library-spine-devel >= 18.12.13
 BuildRequires: smartmet-library-locus-devel >= 18.11.16
 BuildRequires: smartmet-library-macgyver-devel >= 18.11.24
-BuildRequires: smartmet-library-newbase-devel >= 18.12.4
-BuildRequires: smartmet-library-gis-devel >= 18.9.29
-BuildRequires: smartmet-engine-geonames-devel >= 18.12.4
+BuildRequires: smartmet-library-newbase-devel >= 19.2.14
+BuildRequires: smartmet-library-gis-devel >= 18.12.10
+BuildRequires: smartmet-engine-geonames-devel >= 19.1.28
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 18.12.4
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 18.12.4
+BuildRequires: smartmet-engine-querydata-devel >= 19.2.8
 BuildRequires: smartmet-engine-gis-devel >= 18.11.22
 Requires: fmt >= 5.2.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 18.9.29
+Requires: smartmet-library-gis >= 18.12.10
 Requires: smartmet-library-locus >= 18.11.16
 Requires: smartmet-library-macgyver >= 18.11.24
-Requires: smartmet-library-newbase >= 18.12.4
-Requires: smartmet-library-spine >= 18.12.4
-Requires: smartmet-library-gis >= 18.9.29
-Requires: smartmet-engine-geonames >= 18.12.4
-Requires: smartmet-engine-querydata >= 18.12.4
+Requires: smartmet-library-newbase >= 19.2.14
+Requires: smartmet-library-spine >= 18.12.13
+Requires: smartmet-library-gis >= 18.12.10
+Requires: smartmet-engine-geonames >= 19.1.28
+Requires: smartmet-engine-querydata >= 19.2.8
 Requires: smartmet-engine-gis >= 18.11.22
-Requires: smartmet-server >= 18.11.8
+Requires: smartmet-server >= 18.12.14
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Feb 14 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.2.14-1.fmi
+- Added client IP to exception reports
+
 * Tue Dec  4 2018 Pertti Kinnia <pertti.kinnia@fmi.fi> - 18.12.4-1.fmi
 - Added paging (BS-1430)
 

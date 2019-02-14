@@ -2849,6 +2849,7 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
 
     Spine::Exception ex(BCP, "Request processing exception!", nullptr);
     ex.addParameter("URI", theRequest.getURI());
+    ex.addParameter("ClientIP", theRequest.getClientIP());
     ex.printError();
 
     if (isdebug)
