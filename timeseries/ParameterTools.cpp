@@ -1,5 +1,6 @@
 #include "ParameterTools.h"
-#include "Keywords.h"
+#include <engines/observation/Keywords.h>
+#include <engines/observation/Utils.h>
 #include <macgyver/Astronomy.h>
 #include <macgyver/CharsetTools.h>
 #include <macgyver/StringConversion.h>
@@ -219,40 +220,6 @@ bool is_location_parameter(const std::string& paramname)
  */
 // ----------------------------------------------------------------------
 
-bool is_time_parameter(const std::string& paramname)
-{
-  try
-  {
-    return (
-        paramname == TIME_PARAM || paramname == ISOTIME_PARAM || paramname == XMLTIME_PARAM ||
-        paramname == ORIGINTIME_PARAM || paramname == LOCALTIME_PARAM ||
-        paramname == UTCTIME_PARAM || paramname == EPOCHTIME_PARAM ||
-        paramname == SUNELEVATION_PARAM || paramname == SUNDECLINATION_PARAM ||
-        paramname == SUNATZIMUTH_PARAM || paramname == DARK_PARAM || paramname == MOONPHASE_PARAM ||
-        paramname == MOONRISE_PARAM || paramname == MOONRISE2_PARAM || paramname == MOONSET_PARAM ||
-        paramname == MOONSET2_PARAM || paramname == MOONRISETODAY_PARAM ||
-        paramname == MOONRISE2TODAY_PARAM || paramname == MOONSETTODAY_PARAM ||
-        paramname == MOONSET2TODAY_PARAM || paramname == MOONUP24H_PARAM ||
-        paramname == MOONDOWN24H_PARAM || paramname == SUNRISE_PARAM || paramname == SUNSET_PARAM ||
-        paramname == NOON_PARAM || paramname == SUNRISETODAY_PARAM ||
-        paramname == SUNSETTODAY_PARAM || paramname == DAYLENGTH_PARAM ||
-        paramname == TIMESTRING_PARAM || paramname == WDAY_PARAM || paramname == WEEKDAY_PARAM ||
-        paramname == MON_PARAM || paramname == MONTH_PARAM || paramname == HOUR_PARAM ||
-        paramname == TZ_PARAM || paramname == ORIGINTIME_PARAM ||
-        (paramname.substr(0, 5) == "date(" && paramname[paramname.size() - 1] == ')'));
-  }
-  catch (...)
-  {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
-  }
-}
-
-// ----------------------------------------------------------------------
-/*!
- * \brief
- */
-// ----------------------------------------------------------------------
-
 std::string time_parameter(const std::string paramname,
                            const boost::local_time::local_date_time& ldt,
                            const boost::posix_time::ptime now,
@@ -323,7 +290,7 @@ std::string time_parameter(const std::string paramname,
       return Fmi::to_string(sp.declination);
     }
 
-    if (paramname == SUNATZIMUTH_PARAM)
+    if (paramname == SUNAZIMUTH_PARAM)
     {
       Fmi::Astronomy::solar_position_t sp =
           Fmi::Astronomy::solar_position(ldt, loc.longitude, loc.latitude);
@@ -369,7 +336,7 @@ std::string time_parameter(const std::string paramname,
       if (lt.moonset2_today())
         return Fmi::to_iso_string(lt.moonset2.local_time());
     }
-    return std::string("");
+
     if (paramname == MOONRISETODAY_PARAM)
     {
       Fmi::Astronomy::lunar_time_t lt =
@@ -459,7 +426,9 @@ std::string time_parameter(const std::string paramname,
       return format_date(ldt, outlocale, "%b");
 
     if (paramname == MONTH_PARAM)
+    {
       return format_date(ldt, outlocale, "%B");
+    }
 
     if (paramname == HOUR_PARAM)
       return Fmi::to_string(ldt.local_time().time_of_day().hours());

@@ -1,6 +1,6 @@
 #include "LocationTools.h"
-#include "Keywords.h"
 #include "LonLatDistance.h"
+#include <engines/observation/Keywords.h>
 
 namespace ts = SmartMet::Spine::TimeSeries;
 
