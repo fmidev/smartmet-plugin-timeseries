@@ -1,0 +1,1 @@
+GET /timeseries?producer=monthly&endtime=2017-12-01T00:00:00&&starttime=2017-01-01T00:00:00&place=Kumpula&param=time,tmon,rrmon HTTP/1.0
