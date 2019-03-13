@@ -1477,7 +1477,8 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
       // max_t(temperature))
       // location parameters are handled in timeseries plugin
       if (obsParameters[i].duplicate ||
-          (is_location_parameter(obsParameters[i].param.name()) && producer != FLASH_PRODUCER))
+          (is_location_parameter(obsParameters[i].param.name()) && producer != FLASH_PRODUCER) ||
+          SmartMet::Engine::Observation::is_time_parameter(obsParameters[i].param.name()))
         continue;
 
       // fmisid must be always included (except for flash) in queries in order to get location info
