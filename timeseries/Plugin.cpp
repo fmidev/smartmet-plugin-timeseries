@@ -1358,6 +1358,7 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
             {
               ret.push_back(ObsParameter(
                   parameter, paramfuncs.functions, parameter_columns.at(parameter.name()), true));
+              column_index++;
             }
             else
             {
