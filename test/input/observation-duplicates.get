@@ -1,0 +1,1 @@
+GET /timeseries?producer=opendata&place=Tampere&param=fmisid,utctime,utctime,temperature&tz=UTC&timesteps=1&starttime=2017-03-13T20:00&format=ascii HTTP/1.0
