@@ -19,7 +19,6 @@ namespace TimeSeries
 bool special(const Spine::Parameter& theParam);
 bool parameter_is_arithmetic(const Spine::Parameter& theParameter);
 bool is_plain_location_query(const Spine::OptionParsers::ParameterList& theParams);
-bool is_time_parameter(const std::string& paramname);
 bool is_location_parameter(const std::string& paramname);
 
 std::string location_parameter(const Spine::LocationPtr loc,

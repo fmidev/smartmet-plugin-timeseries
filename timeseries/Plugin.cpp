@@ -6,7 +6,6 @@
 
 #include "Plugin.h"
 #include "Hash.h"
-#include "Keywords.h"
 #include "LocationTools.h"
 #include "ParameterTools.h"
 #include "Query.h"
@@ -25,6 +24,8 @@
 #include <boost/tokenizer.hpp>
 #include <engines/gis/Engine.h>
 #include <engines/gis/MapOptions.h>
+#include <engines/observation/Keywords.h>
+#include <engines/observation/Utils.h>
 #include <engines/querydata/OriginTime.h>
 #include <fmt/format.h>
 #include <gis/OGR.h>
@@ -1357,6 +1358,7 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
             {
               ret.push_back(ObsParameter(
                   parameter, paramfuncs.functions, parameter_columns.at(parameter.name()), true));
+              column_index++;
             }
             else
             {
@@ -1477,7 +1479,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
       // location parameters are handled in timeseries plugin
       if (obsParameters[i].duplicate ||
           (is_location_parameter(obsParameters[i].param.name()) && producer != FLASH_PRODUCER) ||
-          is_time_parameter(obsParameters[i].param.name()))
+          SmartMet::Engine::Observation::is_time_parameter(obsParameters[i].param.name()))
         continue;
 
       // fmisid must be always included (except for flash) in queries in order to get location info
@@ -1940,7 +1942,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
           observationResult2->push_back(timeseries);
         }
-        else if (is_time_parameter(paramname))
+        else if (SmartMet::Engine::Observation::is_time_parameter(paramname))
         {
           // add data for time fields
           Spine::Location location(0, 0, "", query.timezone);
@@ -1956,7 +1958,6 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                                query.outlocale,
                                                *query.timeformatter,
                                                query.timestring);
-
             timeseries.push_back(ts::TimedValue(timestep_vector[j], value));
           }
           observationResult2->push_back(timeseries);
@@ -2140,7 +2141,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           }
           observation_result_with_added_fields->push_back(location_ts);
         }
-        else if (is_time_parameter(paramname))
+        else if (SmartMet::Engine::Observation::is_time_parameter(paramname))
         {
           // add data for time fields
           Spine::Location dummyloc(0, 0, "", query.timezone);
