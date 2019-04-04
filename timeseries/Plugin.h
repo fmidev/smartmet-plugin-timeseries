@@ -158,6 +158,8 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                               Query& query) const;
 
   std::vector<ObsParameter> getObsParameters(const Query& query) const;
+  void setMobileAndExternalDataSettings(Engine::Observation::Settings& settings,
+                                        Query& query) const;
 #endif
 
   Spine::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(

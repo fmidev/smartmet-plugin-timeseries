@@ -273,6 +273,15 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
         boundingBox["maxy"] = Fmi::stod(lat2);
       }
     }
+    // Mobile and external data filtering options
+    auto stations = name = req.getParameter("station_id");
+    if (stations)
+    {
+      vector<string> parts;
+      boost::algorithm::split(parts, *stations, boost::algorithm::is_any_of(","));
+      mobileAndExternalDataFilter.insert(std::make_pair("station_id", parts));
+    }
+
 #endif
 
     if (!!req.getParameter("weekday"))
@@ -330,6 +339,9 @@ void Query::parse_producers(const Spine::HTTP::Request& theReq)
       boost::algorithm::split(resultProducers, opt, boost::algorithm::is_any_of(";"));
     else if (!opt2.empty())
       boost::algorithm::split(resultProducers, opt2, boost::algorithm::is_any_of(";"));
+
+    for (auto& p : resultProducers)
+      boost::algorithm::to_lower(p);
 
     // Now split into location parts
 

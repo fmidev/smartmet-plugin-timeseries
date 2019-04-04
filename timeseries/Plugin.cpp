@@ -77,6 +77,23 @@ namespace TimeSeries
 {
 namespace
 {
+bool is_mobile_producer(const std::string& producer)
+{
+  return (producer == SmartMet::Engine::Observation::ROADCLOUD_PRODUCER ||
+          producer == SmartMet::Engine::Observation::TECONER_PRODUCER ||
+          producer == SmartMet::Engine::Observation::NETATMO_PRODUCER);
+}
+
+bool is_flash_producer(const std::string& producer)
+{
+  return (producer == FLASH_PRODUCER);
+}
+
+bool is_flash_or_mobile_producer(const std::string& producer)
+{
+  return (is_flash_producer(producer) || is_mobile_producer(producer));
+}
+
 // ----------------------------------------------------------------------
 /*!
  * \brief Find producer data with matching coordinates
@@ -243,7 +260,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
   {
     TimeSeriesByLocation ret;
 
-    if (producer == FLASH_PRODUCER)
+    if (is_flash_or_mobile_producer(producer))
     {
       ret.emplace_back(make_pair(0, observation_result));
       return ret;
@@ -1478,13 +1495,14 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
       // max_t(temperature))
       // location parameters are handled in timeseries plugin
       if (obsParameters[i].duplicate ||
-          (is_location_parameter(obsParameters[i].param.name()) && producer != FLASH_PRODUCER) ||
+          (is_location_parameter(obsParameters[i].param.name()) &&
+           !is_flash_or_mobile_producer(producer)) ||
           SmartMet::Engine::Observation::is_time_parameter(obsParameters[i].param.name()))
         continue;
 
       // fmisid must be always included (except for flash) in queries in order to get location info
       // from geonames
-      if (param.name() == FMISID_PARAM && producer != FLASH_PRODUCER)
+      if (param.name() == FMISID_PARAM && !is_flash_or_mobile_producer(producer))
         fmisid_index = settings.parameters.size();
 
       // all parameters are fetched at once
@@ -1562,6 +1580,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
           }
         }
 
+        settings.wktArea = wktString;
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
 
 #ifdef MYDEBUG
@@ -1604,6 +1623,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
           wktString = Fmi::OGR::exportToWkt(*poly);
         }
 
+        settings.wktArea = wktString;
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
 
 #ifdef MYDEBUG
@@ -1613,7 +1633,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
         query.maxdistance = 0;
       }
-      else if (loc->type == Spine::Location::BoundingBox && producer != FLASH_PRODUCER)
+      else if (loc->type == Spine::Location::BoundingBox && !is_flash_producer(producer))
       {
 #ifdef MYDEBUG
         std::cout << loc_name << " is a BoundingBox" << std::endl;
@@ -1641,6 +1661,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
         std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
         std::string wktString = Fmi::OGR::exportToWkt(*geom);
+        settings.wktArea = wktString;
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
 
 #ifdef MYDEBUG
@@ -1650,7 +1671,8 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
         query.maxdistance = 0;
       }
-      else if (producer != FLASH_PRODUCER && loc->type == Spine::Location::Place && loc->radius > 0)
+      else if (!is_flash_producer(producer) && loc->type == Spine::Location::Place &&
+               loc->radius > 0)
       {
 #ifdef MYDEBUG
         std::cout << loc_name << " is an Area (Place + radius)" << std::endl;
@@ -1664,6 +1686,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         poly.reset(Fmi::OGR::expandGeometry(pGeo, loc->radius * 1000));
 
         std::string wktString = Fmi::OGR::exportToWkt(*poly);
+        settings.wktArea = wktString;
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
         query.maxdistance = 0;
 
@@ -1672,7 +1695,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         std::cout << "#" << settings.area_geoids.size() << " stations found" << std::endl;
 #endif
       }
-      else if (producer != FLASH_PRODUCER && loc->type == Spine::Location::CoordinatePoint &&
+      else if (!is_flash_producer(producer) && loc->type == Spine::Location::CoordinatePoint &&
                loc->radius > 0)
       {
 #ifdef MYDEBUG
@@ -1702,6 +1725,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
           wktString = Fmi::OGR::exportToWkt(*geom);
         }
 
+        settings.wktArea = wktString;
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
         query.maxdistance = 0;
 
@@ -1715,7 +1739,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
     }  // if(loc)
 
     // fmisid must be always included in order to get thelocation info from geonames
-    if (fmisid_index == -1 && producer != FLASH_PRODUCER)
+    if (fmisid_index == -1 && !is_flash_or_mobile_producer(producer))
     {
       Spine::Parameter fmisidParam =
           Spine::Parameter(FMISID_PARAM, Spine::Parameter::Type::DataIndependent);
@@ -1831,6 +1855,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
     std::cout << "settings.timezone: " << settings.timezone << std::endl;
     std::cout << "settings.weekdays.size(): " << settings.weekdays.size() << std::endl;
     std::cout << "settings.wmos.size(): " << settings.wmos.size() << std::endl;
+    std::cout << "settings.wktArea: " << settings.wktArea << std::endl;
 #endif
   }
   catch (...)
@@ -1838,6 +1863,20 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
     throw Spine::Exception::Trace(BCP, "Operation failed!");
   }
 }
+
+void Plugin::setMobileAndExternalDataSettings(Engine::Observation::Settings& settings,
+                                              Query& query) const
+{
+  try
+  {
+    settings.mobileAndExternalDataFilter = query.mobileAndExternalDataFilter;
+  }
+  catch (...)
+  {
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
 #endif
 
 // ----------------------------------------------------------------------
@@ -1898,7 +1937,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
       // get location
       Spine::LocationPtr loc;
-      if (producer != FLASH_PRODUCER)
+      if (!is_flash_or_mobile_producer(producer))
       {
         loc = get_location(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
         if (!loc)
@@ -1925,7 +1964,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
         std::string paramname(obsParam.param.name());
 
-        if (is_location_parameter(paramname) && producer != FLASH_PRODUCER)
+        if (is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
         {
           // add data for location field
           ts::TimeSeries timeseries;
@@ -2014,7 +2053,8 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 #endif
 
       // if producer is syke or flash accept all timesteps
-      if (query.toptions.all() || producer == FLASH_PRODUCER || producer == SYKE_PRODUCER)
+      if (query.toptions.all() || is_flash_or_mobile_producer(producer) ||
+          producer == SYKE_PRODUCER)
       {
         Spine::TimeSeriesGenerator::LocalTimeList aggtimes;
         for (const ts::TimedValue& tv : aggregated_observation_result->at(0))
@@ -2125,7 +2165,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         std::string paramname = obsParameters[i].param.name();
 
         // add data for location fields
-        if (is_location_parameter(paramname) && producer != FLASH_PRODUCER)
+        if (is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
         {
           ts::TimeSeries location_ts;
 
@@ -2330,7 +2370,8 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       std::vector<TimeSeriesData> aggregatedData;
 
       // If all timesteps are requested or producer is syke or flash accept all timesteps
-      if (query.toptions.all() || producer == FLASH_PRODUCER || producer == SYKE_PRODUCER)
+      if (query.toptions.all() || is_flash_or_mobile_producer(producer) ||
+          producer == SYKE_PRODUCER)
       {
         Spine::TimeSeriesGenerator::LocalTimeList aggtimes;
         ts::TimeSeries ts = aggregated_tsg->at(0).timeseries;
@@ -2374,7 +2415,7 @@ void Plugin::fetchObsEngineValues(const State& state,
 {
   try
   {
-    if (settings.area_geoids.size() == 0 || producer == FLASH_PRODUCER)
+    if (settings.area_geoids.size() == 0 || is_flash_or_mobile_producer(producer))
     {
       // fetch data for places
       fetchObsEngineValuesForPlaces(state, producer, obsParameters, settings, query, outputData);
@@ -2424,6 +2465,9 @@ void Plugin::processObsEngineQuery(const State& state,
       setCommonObsSettings(
           settings, producer, producerDataPeriod, state.getTime(), obsParameters, query);
 
+      // Set settings for mobile and external data
+      setMobileAndExternalDataSettings(settings, query);
+
       if (query.loptions->locations().empty())
       {
         // This is not beautiful
@@ -2441,6 +2485,7 @@ void Plugin::processObsEngineQuery(const State& state,
 
         std::vector<TimeSeriesData> tsdatavector;
         outputData.push_back(make_pair("_obs_", tsdatavector));
+
         fetchObsEngineValues(state, producer, tloc, obsParameters, settings, query, outputData);
       }
       else
@@ -2672,7 +2717,7 @@ void Plugin::query(const State& state,
 #ifndef WITHOUT_OBSERVATION
     if (query.geoids.size() == 0 && query.fmisids.size() == 0 && query.lpnns.size() == 0 &&
         query.wmos.size() == 0 && query.boundingBox.size() == 0 &&
-        producer_option != FLASH_PRODUCER && query.loptions->locations().size() == 0)
+        !is_flash_or_mobile_producer(producer_option) && query.loptions->locations().size() == 0)
 #else
     if (query.loptions->locations().size() == 0)
 #endif
