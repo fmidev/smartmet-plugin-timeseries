@@ -67,8 +67,8 @@ struct Query
   bool maxdistanceOptionGiven;
   bool findnearestvalidpoint;
 
-  std::size_t startrow;   // Paging; first (0-) row to return; default 0
-  std::size_t maxresults; //         max rows to return (page length); default 0 (all)
+  std::size_t startrow;    // Paging; first (0-) row to return; default 0
+  std::size_t maxresults;  //         max rows to return (page length); default 0 (all)
 
   std::string wmo;
   std::string fmisid;
@@ -93,6 +93,7 @@ struct Query
   int numberofstations;
   bool allplaces;
   bool latestObservation;
+  std::map<std::string, std::vector<std::string>> mobileAndExternalDataFilter;
 #endif
 
   bool starttimeOptionGiven;
