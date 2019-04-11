@@ -2712,6 +2712,7 @@ void Plugin::query(const State& state,
     std::string producer_option =
         Spine::optional_string(request.getParameter(PRODUCER_PARAM),
                                Spine::optional_string(request.getParameter(STATIONTYPE_PARAM), ""));
+    boost::algorithm::to_lower(producer_option);
     // At least one of location specifiers must be set
 
 #ifndef WITHOUT_OBSERVATION

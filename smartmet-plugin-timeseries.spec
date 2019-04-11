@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.4.4
+Version: 19.4.11
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -74,6 +74,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Apr 11 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.4.11-1.fmi
+- Producer name check made case insensitive
+- Test cases for new mobile producers (NetAtmo, RoadCloud)
+
 * Thu Apr 4 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.4.4-1.fmi
 - Support for mobile and external producers
 
