@@ -1,0 +1,1 @@
+GET /timeseries?format=ascii&param=localtime,longitude,latitude,altitude,station_id,temperature,humidity,pressure,wind,wind_angle,wind_gust,gust_angle&producer=netatmo&starttime=20190325110000&endtime=20190325110100&area=Uusimaa HTTP/1.0

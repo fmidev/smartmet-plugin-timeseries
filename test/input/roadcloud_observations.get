@@ -1,0 +1,1 @@
+GET /timeseries?format=ascii&param=localtime,longitude,latitude,altitude,station_id,x_acceleration,y_acceleration,z_acceleration,emergency_light,windshield_wiper,fog_light,speed,friction,road_state,yaw_rate,dry_time,ambient_temperature&producer=RoadCloud&precision=double&starttime=20190325110000&endtime=20190325110001 HTTP/1.0
