@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.4.11
+Version: 19.4.23
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,29 +18,29 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.3.14
-BuildRequires: smartmet-library-locus-devel >= 18.11.16
-BuildRequires: smartmet-library-macgyver-devel >= 18.11.24
-BuildRequires: smartmet-library-newbase-devel >= 19.3.14
+BuildRequires: smartmet-library-spine-devel >= 19.4.23
+BuildRequires: smartmet-library-locus-devel >= 19.3.21
+BuildRequires: smartmet-library-macgyver-devel >= 19.4.23
+BuildRequires: smartmet-library-newbase-devel >= 19.4.23
 BuildRequires: smartmet-library-gis-devel >= 19.3.14
-BuildRequires: smartmet-engine-geonames-devel >= 19.2.26
+BuildRequires: smartmet-engine-geonames-devel >= 19.3.22
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.3.18
+BuildRequires: smartmet-engine-observation-devel >= 19.4.23
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 19.2.8
+BuildRequires: smartmet-engine-querydata-devel >= 19.3.21
 BuildRequires: smartmet-engine-gis-devel >= 18.11.22
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 19.3.14
-Requires: smartmet-library-locus >= 18.11.16
-Requires: smartmet-library-macgyver >= 18.11.24
-Requires: smartmet-library-newbase >= 19.3.14
-Requires: smartmet-library-spine >= 19.3.14
+Requires: smartmet-library-locus >= 19.3.21
+Requires: smartmet-library-macgyver >= 19.4.23
+Requires: smartmet-library-newbase >= 19.4.23
+Requires: smartmet-library-spine >= 19.4.23
 Requires: smartmet-library-gis >= 19.3.14
-Requires: smartmet-engine-geonames >= 19.2.26
-Requires: smartmet-engine-querydata >= 19.2.8
+Requires: smartmet-engine-geonames >= 19.3.22
+Requires: smartmet-engine-querydata >= 19.3.21
 Requires: smartmet-engine-gis >= 18.11.22
-Requires: smartmet-server >= 18.12.14
+Requires: smartmet-server >= 19.3.19
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -74,12 +74,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
-* Thu Apr 11 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.4.11-1.fmi
+* Tue Apr 23 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.4.23-1.fmi
+- Support for mobile and external producers
 - Producer name check made case insensitive
 - Test cases for new mobile producers (NetAtmo, RoadCloud)
-
-* Thu Apr 4 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.4.4-1.fmi
-- Support for mobile and external producers
 
 * Mon Mar 18 2019 Santeri Oksman <santeri.oksman@fmi.fi> - 19.3.18-1.fmi
 - Add support to data independent parameters in observation queries
