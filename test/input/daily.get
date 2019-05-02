@@ -1,1 +1,1 @@
-GET /timeseries?starttime=20180101T0000&endtime=20180102T0000&format=ascii&keyword=synop_fi&lang=fi&param=utctime,tmin18,stationname&precision=double&producer=daily&tz=utc HTTP/1.0
+GET /timeseries?producer=daily&endtime=2017-11-30T22:00:00&fmisid=101118&starttime=2017-10-31T22:00:00&place=Kumpula&param=time,tday,rrday,tmin,tmax HTTP/1.0
