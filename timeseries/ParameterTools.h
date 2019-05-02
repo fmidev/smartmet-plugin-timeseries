@@ -7,6 +7,7 @@
 #include <spine/Location.h>
 #include <spine/OptionParsers.h>
 #include <spine/Parameter.h>
+#include <spine/TimeSeries.h>
 #include <spine/ValueFormatter.h>
 #include <string>
 
@@ -27,15 +28,15 @@ std::string location_parameter(const Spine::LocationPtr loc,
                                const std::string& timezone,
                                int precision);
 
-std::string time_parameter(const std::string paramname,
-                           const boost::local_time::local_date_time& ldt,
-                           const boost::posix_time::ptime now,
-                           const Spine::Location& loc,
-                           const std::string& timezone,
-                           const Fmi::TimeZones& timezones,
-                           const std::locale& outlocale,
-                           const Fmi::TimeFormatter& timeformatter,
-                           const std::string& timestring);
+Spine::TimeSeries::Value time_parameter(const std::string paramname,
+                                        const boost::local_time::local_date_time& ldt,
+                                        const boost::posix_time::ptime now,
+                                        const Spine::Location& loc,
+                                        const std::string& timezone,
+                                        const Fmi::TimeZones& timezones,
+                                        const std::locale& outlocale,
+                                        const Fmi::TimeFormatter& timeformatter,
+                                        const std::string& timestring);
 
 }  // namespace TimeSeries
 }  // namespace Plugin
