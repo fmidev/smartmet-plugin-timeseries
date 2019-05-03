@@ -1,0 +1,1 @@
+GET /timeseries?producer=opendata&place=Tampere&param=fmisid,utctime,temperature,latitude,longitude,daylength,mean_t(daylength:2h),sunelevation,mean_t(sunelevation:30m),sundeclination,mean_t(sundeclination:90m),sunazimuth,mean_t(sunazimuth:30m)&tz=UTC&timesteps=10&starttime=2017-03-13T20:00&format=ascii HTTP/1.0

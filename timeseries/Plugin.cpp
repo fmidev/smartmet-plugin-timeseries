@@ -1375,12 +1375,10 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
             {
               ret.push_back(ObsParameter(
                   parameter, paramfuncs.functions, parameter_columns.at(parameter.name()), true));
-              column_index++;
             }
             else
             {
               ret.push_back(ObsParameter(parameter, paramfuncs.functions, column_index, false));
-
               parameter_columns.insert(make_pair(parameter.name(), column_index));
               column_index++;
             }
@@ -1888,7 +1886,7 @@ void Plugin::setMobileAndExternalDataSettings(Engine::Observation::Settings& set
 #ifndef WITHOUT_OBSERVATION
 void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                            const std::string& producer,
-                                           const ObsParameters& obsParameters,
+                                           const ObsParameters& obsParameterss,
                                            Engine::Observation::Settings& settings,
                                            Query& query,
                                            OutputData& outputData)
@@ -1896,6 +1894,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
   try
   {
     ts::TimeSeriesVectorPtr observation_result;
+    ObsParameters obsParameters = obsParameterss;
 
     // Quick query if there is no aggregation
     if (!query.timeAggregationRequested)
@@ -1957,10 +1956,12 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
       unsigned int obs_result_field_index = 0;
       ts::TimeSeriesVectorPtr observationResult2(new ts::TimeSeriesVector());
-      // iterate parameters
+      std::map<std::string, unsigned int> parameterResultIndexes;
+      // Iterate parameters and store values for all parameters
+      // into observationResult2 data structure
       for (unsigned int i = 0; i < obsParameters.size(); i++)
       {
-        const ObsParameter& obsParam(obsParameters[i]);
+        ObsParameter& obsParam = obsParameters.at(i);
 
         std::string paramname(obsParam.param.name());
 
@@ -1980,6 +1981,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           }
 
           observationResult2->push_back(timeseries);
+          parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
         }
         else if (SmartMet::Engine::Observation::is_time_parameter(paramname))
         {
@@ -1988,18 +1990,19 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           ts::TimeSeries timeseries;
           for (unsigned int j = 0; j < timestep_vector.size(); j++)
           {
-            std::string value = time_parameter(paramname,
-                                               timestep_vector[j],
-                                               state.getTime(),
-                                               *loc,
-                                               query.timezone,
-                                               getTimeZones(),
-                                               query.outlocale,
-                                               *query.timeformatter,
-                                               query.timestring);
+            ts::Value value = time_parameter(paramname,
+                                             timestep_vector[j],
+                                             state.getTime(),
+                                             *loc,
+                                             query.timezone,
+                                             getTimeZones(),
+                                             query.outlocale,
+                                             *query.timeformatter,
+                                             query.timestring);
             timeseries.push_back(ts::TimedValue(timestep_vector[j], value));
           }
           observationResult2->push_back(timeseries);
+          parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
         }
         else if (!obsParameters[i].duplicate)
         {
@@ -2010,14 +2013,13 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
             continue;
           }
           auto result_at_index = result[obs_result_field_index];
-          // observationResult2->push_back((*observation_result)[obs_result_field_index]);
           observationResult2->push_back(result_at_index);
+          parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
           obs_result_field_index++;
         }
       }
 
-      // TODO: Can we do a fast exit here if query.timeAggregationRequested == false???
-
+      // Finally do aggregation if requested and remove reduntant timesteps
       observation_result = observationResult2;
 
       ts::Value missing_value = Spine::TimeSeries::None();
@@ -2026,18 +2028,24 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       // iterate parameters and do aggregation
       for (unsigned int i = 0; i < obsParameters.size(); i++)
       {
-        unsigned int data_column = obsParameters[i].data_column;
-        Spine::ParameterFunctions pfunc = obsParameters[i].functions;
-
-        if (data_column >= observation_result->size())
-          continue;
-
-        ts::TimeSeries ts = (*observation_result)[data_column];
-        ts::TimeSeriesPtr tsptr = ts::aggregate(ts, pfunc);
-        if (tsptr->size() == 0)
-          continue;
-
-        aggregated_observation_result->push_back(*ts::aggregate(ts, pfunc));
+        const ObsParameter& obsParam = obsParameters[i];
+        unsigned int resultIndex = parameterResultIndexes.at(obsParam.param.name());
+        ts::TimeSeries ts = (*observation_result)[resultIndex];
+        Spine::ParameterFunctions pfunc = obsParam.functions;
+        ts::TimeSeriesPtr tsptr;
+        // If inner function exists aggregation happens
+        if (pfunc.innerFunction.exists())
+        {
+          tsptr = ts::aggregate(ts, pfunc);
+          if (tsptr->size() == 0)
+            continue;
+        }
+        else
+        {
+          tsptr = boost::make_shared<ts::TimeSeries>();
+          *tsptr = ts;
+        }
+        aggregated_observation_result->push_back(*tsptr);
       }
 
       if (aggregated_observation_result->size() == 0)
@@ -2065,7 +2073,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       }
       else
       {
-        // Else accept only the original generated timesteps
+        // Else accept only the originally generated timesteps
         store_data(
             erase_redundant_timesteps(aggregated_observation_result, *tlist), query, outputData);
       }
@@ -2190,17 +2198,17 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           ts::TimeSeries time_ts;
           for (unsigned int j = 0; j < ts_vector.size(); j++)
           {
-            std::string paramvalue = time_parameter(paramname,
-                                                    ts_vector[j],
-                                                    state.getTime(),
-                                                    (loc ? *loc : dummyloc),
-                                                    query.timezone,
-                                                    getTimeZones(),
-                                                    query.outlocale,
-                                                    *query.timeformatter,
-                                                    query.timestring);
+            ts::Value value = time_parameter(paramname,
+                                             ts_vector[j],
+                                             state.getTime(),
+                                             (loc ? *loc : dummyloc),
+                                             query.timezone,
+                                             getTimeZones(),
+                                             query.outlocale,
+                                             *query.timeformatter,
+                                             query.timestring);
 
-            time_ts.push_back(ts::TimedValue(ts_vector[j], paramvalue));
+            time_ts.push_back(ts::TimedValue(ts_vector[j], value));
           }
           observation_result_with_added_fields->push_back(time_ts);
         }
@@ -2360,8 +2368,12 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       }
 
       Spine::ParameterFunctions pfunc = obsParameters[i].functions;
-      // do the aggregation
-      ts::TimeSeriesGroupPtr aggregated_tsg = ts::aggregate(*tsg, pfunc);
+      // Do the aggregation if requasted
+      ts::TimeSeriesGroupPtr aggregated_tsg;
+      if (pfunc.innerFunction.exists())
+        aggregated_tsg = ts::aggregate(*tsg, pfunc);
+      else
+        aggregated_tsg = tsg;
 
 #ifdef MYDEBUG
       std::cout << "aggregated group#" << i << ": " << std::endl << *aggregated_tsg << std::endl;

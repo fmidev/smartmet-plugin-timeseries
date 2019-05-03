@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.4.23
+Version: 19.5.2
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,14 +18,14 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.4.23
+BuildRequires: smartmet-library-spine-devel >= 19.4.29
 BuildRequires: smartmet-library-locus-devel >= 19.3.21
 BuildRequires: smartmet-library-macgyver-devel >= 19.4.23
 BuildRequires: smartmet-library-newbase-devel >= 19.4.23
 BuildRequires: smartmet-library-gis-devel >= 19.3.14
 BuildRequires: smartmet-engine-geonames-devel >= 19.3.22
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.4.23
+BuildRequires: smartmet-engine-observation-devel >= 19.5.2
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.3.21
 BuildRequires: smartmet-engine-gis-devel >= 18.11.22
@@ -35,7 +35,7 @@ Requires: smartmet-library-gis >= 19.3.14
 Requires: smartmet-library-locus >= 19.3.21
 Requires: smartmet-library-macgyver >= 19.4.23
 Requires: smartmet-library-newbase >= 19.4.23
-Requires: smartmet-library-spine >= 19.4.23
+Requires: smartmet-library-spine >= 19.4.29
 Requires: smartmet-library-gis >= 19.3.14
 Requires: smartmet-engine-geonames >= 19.3.22
 Requires: smartmet-engine-querydata >= 19.3.21
@@ -74,6 +74,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu May 2 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.5.2-1.fmi
+- Return missing-values for unknown observation parameters (BRAINSTORM-1520)
+- Enable aggregation of the following metaparameters: sundeclination,
+sunelevation,sunazimuth,daylength (BRAINSTORM-1581)
+
 * Tue Apr 23 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.4.23-1.fmi
 - Support for mobile and external producers
 - Producer name check made case insensitive

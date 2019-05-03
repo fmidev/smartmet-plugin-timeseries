@@ -1,372 +1,60 @@
-20180101T000000 3.0 Jomala Maarianhamina lentoasema
-20180102T000000 1.6 Jomala Maarianhamina lentoasema
-20180101T000000 2.9 Parainen Utö
-20180102T000000 2.8 Parainen Utö
-20180101T000000 3.4 Lemland Nyhamn
-20180102T000000 1.8 Lemland Nyhamn
-20180101T000000 2.6 Jomala Jomalaby
-20180102T000000 1.5 Jomala Jomalaby
-20180101T000000 2.4 Lumparland Långnäs satama
-20180102T000000 1.7 Lumparland Långnäs satama
-20180101T000000 2.6 Hammarland Märket
-20180102T000000 1.2 Hammarland Märket
-20180101T000000 3.4 Kökar Bogskär
-20180102T000000 2.7 Kökar Bogskär
-20180101T000000 2.5 Parainen Fagerholm
-20180102T000000 2.5 Parainen Fagerholm
-20180101T000000 2.1 Kumlinge kirkonkylä
-20180102T000000 1.7 Kumlinge kirkonkylä
-20180101T000000 3.0 Maarianhamina Länsisatama
-20180102T000000 1.7 Maarianhamina Länsisatama
-20180101T000000 2.1 Hanko Russarö
-20180102T000000 3.2 Hanko Russarö
-20180101T000000 0.4 Kaarina Yltöinen
-20180102T000000 2.1 Kaarina Yltöinen
-20180101T000000 2.4 Kemiönsaari Vänö
-20180102T000000 3.1 Kemiönsaari Vänö
-20180101T000000 2.2 Hanko Tulliniemi
-20180102T000000 3.1 Hanko Tulliniemi
-20180101T000000 0.9 Turku Rajakari
-20180102T000000 2.4 Turku Rajakari
-20180101T000000 0.3 Turku Artukainen
-20180102T000000 2.1 Turku Artukainen
-20180101T000000 0.4 Kemiönsaari Kemiö
-20180102T000000 2.5 Kemiönsaari Kemiö
-20180101T000000 1.9 Hanko Tvärminne
-20180102T000000 2.9 Hanko Tvärminne
-20180101T000000 0.3 Salo Kärkkä
-20180102T000000 2.1 Salo Kärkkä
-20180101T000000 1.5 Raasepori Jussarö
-20180102T000000 3.1 Raasepori Jussarö
-20180101T000000 -0.7 Salo Kiikala lentokenttä
-20180102T000000 1.1 Salo Kiikala lentokenttä
-20180101T000000 -0.1 Vantaa Helsinki-Vantaan lentoasema
-20180102T000000 2.3 Vantaa Helsinki-Vantaan lentoasema
-20180101T000000 1.2 Inkoo Bågaskär
-20180102T000000 2.7 Inkoo Bågaskär
-20180101T000000 0.9 Helsinki Kaisaniemi
-20180102T000000 3.3 Helsinki Kaisaniemi
-20180101T000000 -0.1 Lohja Porla
-20180102T000000 2.3 Lohja Porla
-20180101T000000 0.0 Vihti Maasoja
-20180102T000000 1.4 Vihti Maasoja
-20180101T000000 1.3 Helsinki Harmaja
-20180102T000000 3.2 Helsinki Harmaja
-20180101T000000 1.2 Kirkkonummi Mäkiluoto
-20180102T000000 3.2 Kirkkonummi Mäkiluoto
-20180101T000000 1.0 Helsinki Helsingin majakka
-20180102T000000 3.4 Helsinki Helsingin majakka
-20180101T000000 0.8 Helsinki Kumpula
-20180102T000000 3.5 Helsinki Kumpula
-20180101T000000 0.6 Espoo Tapiola
-20180102T000000 3.1 Espoo Tapiola
-20180101T000000 -0.3 Espoo Nuuksio
-20180102T000000 1.4 Espoo Nuuksio
-20180101T000000 1.2 Helsinki Vuosaari satama
-20180102T000000 3.1 Helsinki Vuosaari satama
-20180101T000000 0.9 Porvoo Kalbådagrund
-20180102T000000 3.4 Porvoo Kalbådagrund
-20180101T000000 0.8 Porvoo Emäsalo
-20180102T000000 2.9 Porvoo Emäsalo
-20180101T000000 0.1 Porvoo Harabacka
-20180102T000000 2.5 Porvoo Harabacka
-20180101T000000 0.7 Porvoo Kilpilahti satama
-20180102T000000 3.1 Porvoo Kilpilahti satama
-20180101T000000 0.5 Kotka Rankki
-20180102T000000 3.1 Kotka Rankki
-20180101T000000 1.1 Loviisa Orrengrund
-20180102T000000 3.1 Loviisa Orrengrund
-20180101T000000 0.7 Kotka Haapasaari
-20180102T000000 3.4 Kotka Haapasaari
-20180101T000000 0.5 Kustavi Isokari
-20180102T000000 2.3 Kustavi Isokari
-20180101T000000 0.1 Rauma Kylmäpihlaja
-20180102T000000 1.7 Rauma Kylmäpihlaja
-20180101T000000 -0.9 Pori rautatieasema
-20180102T000000 -0.1 Pori rautatieasema
-20180101T000000 -1.1 Kokemäki Tulkkila
-20180102T000000 0.2 Kokemäki Tulkkila
-20180101T000000 -1.1 Jokioinen Ilmala
-20180102T000000 0.6 Jokioinen Ilmala
-20180101T000000 -1.7 Pirkkala Tampere-Pirkkala lentoasema
-20180102T000000 0.1 Pirkkala Tampere-Pirkkala lentoasema
-20180101T000000 -1.5 Tampere Härmälä
-20180102T000000 0.4 Tampere Härmälä
-20180101T000000 -1.3 Somero Salkola
-20180102T000000 0.3 Somero Salkola
-20180101T000000 -0.6 Hyvinkää Hyvinkäänkylä
-20180102T000000 1.4 Hyvinkää Hyvinkäänkylä
-20180101T000000 -0.6 Nurmijärvi Röykkä
-20180102T000000 1.2 Nurmijärvi Röykkä
-20180101T000000 -0.9 Hämeenlinna Katinen
-20180102T000000 1.0 Hämeenlinna Katinen
-20180101T000000 -1.2 Hattula Lepaa
-20180102T000000 0.4 Hattula Lepaa
-20180101T000000 -0.7 Lahti Laune
-20180102T000000 1.0 Lahti Laune
-20180101T000000 -1.2 Hämeenlinna Lammi Pappila
-20180102T000000 0.6 Hämeenlinna Lammi Pappila
-20180101T000000 -0.6 Asikkala Pulkkilanharju
-20180102T000000 0.6 Asikkala Pulkkilanharju
-20180101T000000 -1.5 Hämeenlinna Lammi Evo
-20180102T000000 0.0 Hämeenlinna Lammi Evo
-20180101T000000 -0.5 Mäntsälä Hirvihaara
-20180102T000000 1.3 Mäntsälä Hirvihaara
-20180101T000000 -1.0 Kouvola Utti lentoasema
-20180102T000000 1.1 Kouvola Utti lentoasema
-20180101T000000 0.2 Kouvola Anjala
-20180102T000000 2.0 Kouvola Anjala
-20180101T000000 -1.1 Heinola Asemantaus
-20180102T000000 0.6 Heinola Asemantaus
-20180101T000000 -1.0 Kouvola Utti Lentoportintie
-20180102T000000 1.1 Kouvola Utti Lentoportintie
-20180101T000000 -0.1 Virolahti Koivuniemi
-20180102T000000 3.0 Virolahti Koivuniemi
-20180101T000000 -1.6 Lappeenranta lentoasema
-20180102T000000 1.4 Lappeenranta lentoasema
-20180101T000000 -1.4 Lappeenranta Konnunsuo
-20180102T000000 1.4 Lappeenranta Konnunsuo
-20180101T000000 -1.6 Lappeenranta Lepola
-20180102T000000 1.3 Lappeenranta Lepola
-20180101T000000 -1.2 Lappeenranta Hiekkapakka
-20180102T000000 1.4 Lappeenranta Hiekkapakka
-20180101T000000 -1.6 Parikkala Koitsanlahti
-20180102T000000 1.1 Parikkala Koitsanlahti
-20180101T000000 -0.7 Kaskinen Sälgrund
-20180102T000000 -3.2 Kaskinen Sälgrund
-20180101T000000 -0.4 Pori Tahkoluoto satama
-20180102T000000 0.6 Pori Tahkoluoto satama
-20180101T000000 -0.6 Kristiinankaupunki Majakka
-20180102T000000 -2.6 Kristiinankaupunki Majakka
-20180101T000000 -2.5 Karvia Alkkia
-20180102T000000 -2.4 Karvia Alkkia
-20180101T000000 -1.8 Kauhajoki Kuja-Kokko
-20180102T000000 -2.9 Kauhajoki Kuja-Kokko
-20180101T000000 -2.2 Kankaanpää Niinisalo lentokenttä
-20180102T000000 -2.3 Kankaanpää Niinisalo lentokenttä
-20180101T000000 -2.4 Virrat Äijänneva
-20180102T000000 -3.2 Virrat Äijänneva
-20180101T000000 -1.4 Tampere Siilinkari
-20180102T000000 0.3 Tampere Siilinkari
-20180101T000000 -1.4 Tampere Tampella
-20180102T000000 0.4 Tampere Tampella
-20180101T000000 -1.7 Jämsä Halli lentoasema
-20180102T000000 -0.3 Jämsä Halli lentoasema
-20180101T000000 -2.3 Juupajoki Hyytiälä
-20180102T000000 -0.8 Juupajoki Hyytiälä
-20180101T000000 -1.6 Jämsä Halli Lentoasemantie
-20180102T000000 -0.2 Jämsä Halli Lentoasemantie
-20180101T000000 -2.1 Jyväskylä lentoasema
-20180102T000000 -1.2 Jyväskylä lentoasema
-20180101T000000 -1.0 Luhanka Judinsalo
-20180102T000000 0.5 Luhanka Judinsalo
-20180101T000000 -2.1 Joutsa Savenaho
-20180102T000000 -0.2 Joutsa Savenaho
-20180101T000000 -1.5 Mikkeli lentoasema
-20180102T000000 0.1 Mikkeli lentoasema
-20180101T000000 -2.0 Juva Partala
-20180102T000000 -0.1 Juva Partala
-20180101T000000 -1.9 Varkaus Kosulanniemi
-20180102T000000 0.4 Varkaus Kosulanniemi
-20180101T000000 -1.5 Puumala kirkonkylä
-20180102T000000 0.8 Puumala kirkonkylä
-20180101T000000 -2.3 Savonlinna lentoasema
-20180102T000000 0.3 Savonlinna lentoasema
-20180101T000000 -1.5 Rantasalmi Rukkasluoto
-20180102T000000 0.4 Rantasalmi Rukkasluoto
-20180101T000000 -1.7 Savonlinna Punkaharju Laukansaari
-20180102T000000 0.6 Savonlinna Punkaharju Laukansaari
-20180101T000000 -1.3 Tohmajärvi Kemie
-20180102T000000 0.9 Tohmajärvi Kemie
-20180101T000000 -1.1 Korsnäs Bredskäret
-20180102T000000 -2.8 Korsnäs Bredskäret
-20180101T000000 -0.2 Maalahti Strömmingsbådan
-20180102T000000 -0.7 Maalahti Strömmingsbådan
-20180101T000000 -1.4 Vaasa Klemettilä
-20180102T000000 -5.0 Vaasa Klemettilä
-20180101T000000 -1.7 Seinäjoki Pelmaa
-20180102T000000 -4.5 Seinäjoki Pelmaa
-20180101T000000 -1.8 Kauhava lentokenttä
-20180102T000000 -5.3 Kauhava lentokenttä
-20180101T000000 -2.5 Ähtäri Myllymäki
-20180102T000000 -2.6 Ähtäri Myllymäki
-20180101T000000 -2.6 Halsua Purola
-20180102T000000 -4.2 Halsua Purola
-20180101T000000 -2.7 Alajärvi Möksy
-20180102T000000 -5.1 Alajärvi Möksy
-20180101T000000 -3.0 Multia Karhila
-20180102T000000 -2.5 Multia Karhila
-20180101T000000 -2.3 Viitasaari Haapaniemi
-20180102T000000 -2.6 Viitasaari Haapaniemi
-20180101T000000 -2.5 Vesanto Sonkari
-20180102T000000 -2.2 Vesanto Sonkari
-20180101T000000 -2.0 Siilinjärvi Kuopio lentoasema
-20180102T000000 -1.3 Siilinjärvi Kuopio lentoasema
-20180101T000000 -2.1 Kuopio Maaninka
-20180102T000000 -1.7 Kuopio Maaninka
-20180101T000000 -1.7 Kuopio Ritoniemi
-20180102T000000 -0.4 Kuopio Ritoniemi
-20180101T000000 -1.6 Kuopio Savilahti
-20180102T000000 -0.9 Kuopio Savilahti
-20180101T000000 -1.9 Rautavaara Ylä-Luosta
-20180102T000000 -1.4 Rautavaara Ylä-Luosta
-20180101T000000 -1.5 Liperi Joensuu lentoasema
-20180102T000000 0.1 Liperi Joensuu lentoasema
-20180101T000000 -1.9 Juuka Niemelä
-20180102T000000 -0.4 Juuka Niemelä
-20180101T000000 -1.1 Liperi Tuiskavanluoto
-20180102T000000 0.5 Liperi Tuiskavanluoto
-20180101T000000 -1.2 Joensuu Linnunlahti
-20180102T000000 0.1 Joensuu Linnunlahti
-20180101T000000 -1.5 Lieksa Lampela
-20180102T000000 0.0 Lieksa Lampela
-20180101T000000 -2.9 Ilomantsi Pötsönvaara
-20180102T000000 -0.9 Ilomantsi Pötsönvaara
-20180101T000000 -1.7 Ilomantsi Mekrijärvi
-20180102T000000 0.9 Ilomantsi Mekrijärvi
-20180101T000000 -1.4 Pietarsaari Kallan
-20180102T000000 -2.2 Pietarsaari Kallan
-20180101T000000 -1.3 Kokkola Tankar
-20180102T000000 -1.5 Kokkola Tankar
-20180101T000000 -1.7 Kruunupyy Kokkola-Pietarsaari lentoasema
-20180102T000000 -6.4 Kruunupyy Kokkola-Pietarsaari lentoasema
-20180101T000000 -1.0 Kalajoki Ulkokalla
-20180102T000000 -0.2 Kalajoki Ulkokalla
-20180101T000000 -1.5 Kokkola Hollihaka
-20180102T000000 -3.2 Kokkola Hollihaka
-20180101T000000 -2.0 Toholampi Laitala
-20180102T000000 -5.2 Toholampi Laitala
-20180101T000000 -2.6 Ylivieska lentokenttä
-20180102T000000 -5.7 Ylivieska lentokenttä
-20180101T000000 -2.6 Haapavesi Mustikkamäki
-20180102T000000 -2.7 Haapavesi Mustikkamäki
-20180101T000000 -2.6 Pyhäjärvi Ojakylä
-20180102T000000 -4.5 Pyhäjärvi Ojakylä
-20180101T000000 -2.9 Kajaani lentoasema
-20180102T000000 -3.9 Kajaani lentoasema
-20180101T000000 -3.3 Vieremä Kaarakkala
-20180102T000000 -3.3 Vieremä Kaarakkala
-20180101T000000 -2.9 Kajaani Petäisenniska
-20180102T000000 -2.9 Kajaani Petäisenniska
-20180101T000000 -1.8 Valtimo kirkonkylä
-20180102T000000 -1.3 Valtimo kirkonkylä
-20180101T000000 -2.7 Sotkamo Kuolaniemi
-20180102T000000 -3.4 Sotkamo Kuolaniemi
-20180101T000000 -2.8 Kuhmo Kalliojoki
-20180102T000000 -2.6 Kuhmo Kalliojoki
-20180101T000000 -1.2 Raahe Nahkiainen
-20180102T000000 -0.7 Raahe Nahkiainen
-20180101T000000 -2.4 Hailuoto Keskikylä
-20180102T000000 -2.5 Hailuoto Keskikylä
-20180101T000000 -1.3 Kemi I majakka
-20180102T000000 -1.7 Kemi I majakka
-20180101T000000 -2.1 Hailuoto Marjaniemi
-20180102T000000 -1.4 Hailuoto Marjaniemi
-20180101T000000 -1.8 Raahe Lapaluoto satama
-20180102T000000 -1.4 Raahe Lapaluoto satama
-20180101T000000 -2.2 Siikajoki Ruukki
-20180102T000000 -2.6 Siikajoki Ruukki
-20180101T000000 -1.6 Oulu Vihreäsaari satama
-20180102T000000 -1.8 Oulu Vihreäsaari satama
-20180101T000000 -2.0 Oulu Oulunsalo Pellonpää
-20180102T000000 -2.6 Oulu Oulunsalo Pellonpää
-20180101T000000 -3.5 Pudasjärvi lentokenttä
-20180102T000000 -10.6 Pudasjärvi lentokenttä
-20180101T000000 -3.4 Suomussalmi Pesiö
-20180102T000000 -3.8 Suomussalmi Pesiö
-20180101T000000 -4.2 Puolanka Paljakka
-20180102T000000 -4.3 Puolanka Paljakka
-20180101T000000 -2.5 Kemi Kemi-Tornio lentoasema
-20180102T000000 -4.2 Kemi Kemi-Tornio lentoasema
-20180101T000000 -2.0 Kemi Ajos
-20180102T000000 -5.2 Kemi Ajos
-20180101T000000 -2.6 Tornio Torppi
-20180102T000000 -3.1 Tornio Torppi
-20180101T000000 -3.8 Ranua lentokenttä
-20180102T000000 -10.6 Ranua lentokenttä
-20180101T000000 -3.5 Taivalkoski kirkonkylä
-20180102T000000 -6.3 Taivalkoski kirkonkylä
-20180101T000000 -4.3 Kuusamo lentoasema
-20180102T000000 -7.6 Kuusamo lentoasema
-20180101T000000 -6.5 Kuusamo Kiutaköngäs
-20180102T000000 -8.7 Kuusamo Kiutaköngäs
-20180101T000000 -5.6 Kuusamo Rukatunturi
-20180102T000000 -7.2 Kuusamo Rukatunturi
-20180101T000000 -4.9 Kuusamo Juuma
-20180102T000000 -6.9 Kuusamo Juuma
-20180101T000000 -4.2 Kuusamo Ruka Talvijärvi
-20180102T000000 -7.5 Kuusamo Ruka Talvijärvi
-20180101T000000 -3.5 Ylitornio Meltosjärvi
-20180102T000000 -3.4 Ylitornio Meltosjärvi
-20180101T000000 -3.6 Pello kirkonkylä
-20180102T000000 -3.4 Pello kirkonkylä
-20180101T000000 -3.1 Rovaniemi rautatieasema
-20180102T000000 -3.3 Rovaniemi rautatieasema
-20180101T000000 -4.2 Sodankylä Tähtelä
-20180102T000000 -4.8 Sodankylä Tähtelä
-20180101T000000 -3.5 Rovaniemi Apukka
-20180102T000000 -4.9 Rovaniemi Apukka
-20180101T000000 -4.3 Kemijärvi lentokenttä
-20180102T000000 -7.0 Kemijärvi lentokenttä
-20180101T000000 -4.9 Savukoski kirkonkylä
-20180102T000000 -5.1 Savukoski kirkonkylä
-20180101T000000 -6.0 Pelkosenniemi Pyhätunturi
-20180102T000000 -5.9 Pelkosenniemi Pyhätunturi
-20180101T000000 -6.3 Salla kirkonkylä
-20180102T000000 -9.2 Salla kirkonkylä
-20180101T000000 -7.2 Salla Naruska
-20180102T000000 -6.4 Salla Naruska
-20180101T000000 -4.9 Kittilä Lompolonvuoma
-20180102T000000 -6.2 Kittilä Lompolonvuoma
-20180101T000000 -9.2 Muonio Laukukero
-20180102T000000 -7.8 Muonio Laukukero
-20180101T000000 -6.9 Muonio Sammaltunturi
-20180102T000000 -7.0 Muonio Sammaltunturi
-20180101T000000 -5.5 Kittilä Matorova
-20180102T000000 -6.3 Kittilä Matorova
-20180101T000000 -4.2 Kittilä lentoasema
-20180102T000000 -4.9 Kittilä lentoasema
-20180101T000000 -5.6 Kittilä Kenttärova
-20180102T000000 -6.1 Kittilä Kenttärova
-20180101T000000 -4.0 Kittilä kirkonkylä
-20180102T000000 -4.8 Kittilä kirkonkylä
-20180101T000000 -4.7 Kittilä Pokka
-20180102T000000 -5.9 Kittilä Pokka
-20180101T000000 -4.8 Sodankylä Lokka
-20180102T000000 -7.3 Sodankylä Lokka
-20180101T000000 -4.6 Sodankylä Vuotso
-20180102T000000 -5.6 Sodankylä Vuotso
-20180101T000000 -4.9 Inari Saariselkä matkailukeskus
-20180102T000000 -6.4 Inari Saariselkä matkailukeskus
-20180101T000000 -5.9 Inari Saariselkä Kaunispää
-20180102T000000 -6.6 Inari Saariselkä Kaunispää
-20180101T000000 -4.9 Inari Raja-Jooseppi
-20180102T000000 -6.4 Inari Raja-Jooseppi
-20180101T000000 -5.9 Salla Värriötunturi
-20180102T000000 -6.0 Salla Värriötunturi
-20180101T000000 -15.1 Enontekiö Kilpisjärvi kyläkeskus
-20180102T000000 -6.8 Enontekiö Kilpisjärvi kyläkeskus
-20180101T000000 -12.9 Enontekiö Kilpisjärvi Saana
-20180102T000000 -10.2 Enontekiö Kilpisjärvi Saana
-20180101T000000 -6.9 Enontekiö Näkkälä
-20180102T000000 -7.0 Enontekiö Näkkälä
-20180101T000000 -5.1 Inari Angeli Lintupuoliselkä
-20180102T000000 -6.9 Inari Angeli Lintupuoliselkä
-20180101T000000 -3.3 Inari Ivalo lentoasema
-20180102T000000 -6.3 Inari Ivalo lentoasema
-20180101T000000 -10.1 Utsjoki Kevo
-20180102T000000 -8.0 Utsjoki Kevo
-20180101T000000 -4.0 Utsjoki Nuorgam
-20180102T000000 -8.7 Utsjoki Nuorgam
-20180101T000000 -4.1 Inari Väylä
-20180102T000000 -7.3 Inari Väylä
-20180101T000000 -4.1 Inari Kaamanen
-20180102T000000 -7.0 Inari Kaamanen
-20180101T000000 -4.0 Inari Seitalaassa
-20180102T000000 -7.6 Inari Seitalaassa
-20180101T000000 -10.8 Utsjoki Kevo Kevojärvi
-20180102T000000 -9.9 Utsjoki Kevo Kevojärvi
-20180101T000000 -3.6 Inari Nellim
-20180102T000000 -9.0 Inari Nellim
-20180101T000000 -3.6 Inari Kirakkajärvi
-20180102T000000 -10.8 Inari Kirakkajärvi
+20171101T020000 0 -1 -3 3
+20171102T020000 0 0 -4 4
+20171103T020000 3 0 -1 6
+20171104T020000 8 1 4 10
+20171105T020000 8 0 7 9
+20171106T020000 8 2 6 8
+20171107T020000 4 -1 1 7
+20171108T020000 6 0 4 8
+20171109T020000 7 9 5 8
+20171110T020000 7 4 6 9
+20171111T020000 6 17 5 7
+20171112T020000 3 2 2 6
+20171113T020000 2 -1 2 3
+20171114T020000 2 2 -0 4
+20171115T020000 3 1 0 5
+20171116T020000 4 2 2 6
+20171117T020000 6 2 2 8
+20171118T020000 6 11 4 7
+20171119T020000 4 10 3 7
+20171120T020000 1 4 0 3
+20171121T020000 1 2 0 2
+20171122T020000 1 2 0 2
+20171123T020000 2 6 0 3
+20171124T020000 6 9 2 8
+20171125T020000 4 8 3 7
+20171126T020000 2 6 1 4
+20171127T020000 5 5 2 5
+20171128T020000 4 8 2 6
+20171129T020000 3 2 1 4
+20171130T020000 3 3 2 4
+20171101T020000 -2 nan -6 0
+20171102T020000 -2 nan -5 1
+20171103T020000 1 nan -3 4
+20171104T020000 5 nan 2 6
+20171105T020000 7 nan 5 8
+20171106T020000 6 nan 4 8
+20171107T020000 2 nan -1 4
+20171108T020000 4 nan 2 6
+20171109T020000 5 nan 3 6
+20171110T020000 4 nan 2 6
+20171111T020000 3 nan 2 4
+20171112T020000 2 nan 1 3
+20171113T020000 1 nan 0 2
+20171114T020000 1 nan 0 2
+20171115T020000 0 nan -1 1
+20171116T020000 2 nan 0 2
+20171117T020000 3 nan 0 6
+20171118T020000 3 nan 1 4
+20171119T020000 2 nan 1 4
+20171120T020000 0 nan -0 2
+20171121T020000 -1 nan -1 -0
+20171122T020000 -1 nan -2 -0
+20171123T020000 -1 nan -2 1
+20171124T020000 4 nan 1 6
+20171125T020000 2 nan -0 5
+20171126T020000 1 nan -0 1
+20171127T020000 3 nan 0 4
+20171128T020000 2 nan 0 4
+20171129T020000 1 nan 0 1
+20171130T020000 1 nan 0 2

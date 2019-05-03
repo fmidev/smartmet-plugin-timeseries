@@ -1,1 +1,1 @@
-GET /timeseries?starttime=20180101T0000&endtime=20180103T0000&format=ascii&geoids=-16000167&param=utctime,GLOB_S,name&producer=solar&timestep=60 HTTP/1.0
+GET /timeseries?starttime=20180101T0000&endtime=20180103T0000&format=ascii&geoids=-16000167&param=utctime,GLOB_U,name&producer=solar&timestep=60 HTTP/1.0
