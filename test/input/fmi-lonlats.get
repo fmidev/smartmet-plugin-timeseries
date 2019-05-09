@@ -1,1 +1,1 @@
-GET /timeseries?producer=fmi&starttime=200808051200&endtime=200808052200&lonlats=25,60,26,61&param=stationname,time,Temperature,longitude,latitude,stationlatitude,stationlongitude HTTP/1.0
+GET /timeseries?producer=fmi&starttime=200808051200&endtime=200808052200&lonlats=25,60,25.63,60.96&param=stationname,time,Temperature,longitude,latitude,stationlatitude,stationlongitude HTTP/1.0
