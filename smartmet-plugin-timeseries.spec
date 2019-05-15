@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.5.2
+Version: 19.5.15
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed May 15 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.5.15-1.fmi
+- Fixed error in result set handling of observations fetched from cache (stroke_time)
+
 * Thu May 2 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.5.2-1.fmi
 - Return missing-values for unknown observation parameters (BRAINSTORM-1520)
 - Enable aggregation of the following metaparameters: sundeclination,

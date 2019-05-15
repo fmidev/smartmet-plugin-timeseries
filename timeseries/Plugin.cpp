@@ -2029,7 +2029,10 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       for (unsigned int i = 0; i < obsParameters.size(); i++)
       {
         const ObsParameter& obsParam = obsParameters[i];
-        unsigned int resultIndex = parameterResultIndexes.at(obsParam.param.name());
+        const std::string paramname = obsParam.param.name();
+        if (parameterResultIndexes.find(paramname) == parameterResultIndexes.end())
+          continue;
+        unsigned int resultIndex = parameterResultIndexes.at(paramname);
         ts::TimeSeries ts = (*observation_result)[resultIndex];
         Spine::ParameterFunctions pfunc = obsParam.functions;
         ts::TimeSeriesPtr tsptr;
