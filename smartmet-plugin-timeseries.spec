@@ -18,14 +18,14 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.4.23
+BuildRequires: smartmet-library-spine-devel >= 19.4.29
 BuildRequires: smartmet-library-locus-devel >= 19.3.21
 BuildRequires: smartmet-library-macgyver-devel >= 19.4.23
 BuildRequires: smartmet-library-newbase-devel >= 19.4.23
 BuildRequires: smartmet-library-gis-devel >= 19.3.14
 BuildRequires: smartmet-engine-geonames-devel >= 19.3.22
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.4.23
+BuildRequires: smartmet-engine-observation-devel >= 19.5.2
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.3.21
 BuildRequires: smartmet-engine-gis-devel >= 18.11.22
@@ -35,7 +35,7 @@ Requires: smartmet-library-gis >= 19.3.14
 Requires: smartmet-library-locus >= 19.3.21
 Requires: smartmet-library-macgyver >= 19.4.23
 Requires: smartmet-library-newbase >= 19.4.23
-Requires: smartmet-library-spine >= 19.4.23
+Requires: smartmet-library-spine >= 19.4.29
 Requires: smartmet-library-gis >= 19.3.14
 Requires: smartmet-engine-geonames >= 19.3.22
 Requires: smartmet-engine-querydata >= 19.3.21
