@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.5.15
+Version: 19.5.23
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -25,7 +25,7 @@ BuildRequires: smartmet-library-newbase-devel >= 19.4.23
 BuildRequires: smartmet-library-gis-devel >= 19.3.14
 BuildRequires: smartmet-engine-geonames-devel >= 19.3.22
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.5.2
+BuildRequires: smartmet-engine-observation-devel >= 19.5.23
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.3.21
 BuildRequires: smartmet-engine-gis-devel >= 18.11.22
@@ -74,6 +74,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu May 23 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.5.23-1.fmi
+- Bugfix: precision-option applied to latitude parameter
+- Name of mobileAndExternalDataFilter data member changed to dataFilter since it is used also in sounding-query
+- Adding sounding_type to query options (related to BRAINSTORM-1359)
+- Enabled observation-engine parameter useDataCache. When this option is set false data is fetched from original database instead of cache
+
 * Wed May 15 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.5.15-1.fmi
 - Fixed error in result set handling of observations fetched from cache (stroke_time)
 

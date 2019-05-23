@@ -33,6 +33,24 @@ namespace TimeSeries
 {
 static const char* default_timezone = "localtime";
 
+namespace
+{
+void add_data_filter(const Spine::HTTP::Request& req,
+                     const std::string& param_name,
+                     std::map<std::string, std::vector<std::string>>& dataFilter)
+{
+  auto param = req.getParameter(param_name);
+
+  if (param)
+  {
+    vector<string> parts;
+    boost::algorithm::split(parts, *param, boost::algorithm::is_any_of(","));
+    dataFilter.insert(std::make_pair(param_name, parts));
+  }
+}
+
+}  // namespace
+
 // ----------------------------------------------------------------------
 /*!
  * \brief The constructor parses the query string
@@ -274,13 +292,13 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       }
     }
     // Mobile and external data filtering options
-    auto stations = name = req.getParameter("station_id");
-    if (stations)
-    {
-      vector<string> parts;
-      boost::algorithm::split(parts, *stations, boost::algorithm::is_any_of(","));
-      mobileAndExternalDataFilter.insert(std::make_pair("station_id", parts));
-    }
+    add_data_filter(req, "station_id", dataFilter);
+    // Sounding filtering options
+    add_data_filter(req, "sounding_type", dataFilter);
+    add_data_filter(req, "significance", dataFilter);
+
+    std::string dataCache = Spine::optional_string(req.getParameter("useDataCache"), "true");
+    useDataCache = (dataCache == "true" || dataCache == "1");
 
 #endif
 

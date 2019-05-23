@@ -1448,6 +1448,7 @@ void Plugin::setCommonObsSettings(Engine::Observation::Settings& settings,
     settings.localename = query.localename;
     settings.numberofstations = query.numberofstations;
     settings.latest = query.latestObservation;
+    settings.useDataCache = query.useDataCache;
   }
   catch (...)
   {
@@ -1867,7 +1868,7 @@ void Plugin::setMobileAndExternalDataSettings(Engine::Observation::Settings& set
 {
   try
   {
-    settings.mobileAndExternalDataFilter = query.mobileAndExternalDataFilter;
+    settings.dataFilter = query.dataFilter;
   }
   catch (...)
   {
