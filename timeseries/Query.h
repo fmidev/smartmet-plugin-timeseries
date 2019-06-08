@@ -93,7 +93,8 @@ struct Query
   int numberofstations;
   bool allplaces;
   bool latestObservation;
-  std::map<std::string, std::vector<std::string>> mobileAndExternalDataFilter;
+  std::map<std::string, std::vector<std::string>> dataFilter;
+  bool useDataCache;
 #endif
 
   bool starttimeOptionGiven;

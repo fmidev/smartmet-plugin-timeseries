@@ -167,7 +167,7 @@ std::string location_parameter(const Spine::LocationPtr loc,
     if (paramName == TZ_PARAM)
       return (timezone == "localtime" ? loc->timezone : timezone);
     if (paramName == LATITUDE_PARAM || paramName == LAT_PARAM)
-      return Fmi::to_string(loc->latitude);
+      return valueformatter.format(loc->latitude, precision);
     if (paramName == LONGITUDE_PARAM || paramName == LON_PARAM)
       return valueformatter.format(loc->longitude, precision);
     if (paramName == LATLON_PARAM)

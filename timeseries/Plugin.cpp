@@ -147,7 +147,7 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
     // iterate different locations
     for (unsigned int i = 0; i < outputData.size(); i++)
     {
-      std::string locationName = outputData[i].first;
+      const auto& locationName = outputData[i].first;
       if (locationName != location_name)
         continue;
 
@@ -161,7 +161,7 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
         tf.setCurrentRow(startRow);
         tf.setCurrentColumn(j);
 
-        std::string paramName = paramlist[j % numberOfParameters].name();
+        const auto& paramName = paramlist[j % numberOfParameters].name();
         if (paramName == LATLON_PARAM || paramName == NEARLATLON_PARAM)
         {
           tf << Spine::TimeSeries::LonLatFormat::LATLON;
@@ -1448,6 +1448,7 @@ void Plugin::setCommonObsSettings(Engine::Observation::Settings& settings,
     settings.localename = query.localename;
     settings.numberofstations = query.numberofstations;
     settings.latest = query.latestObservation;
+    settings.useDataCache = query.useDataCache;
   }
   catch (...)
   {
@@ -1867,7 +1868,7 @@ void Plugin::setMobileAndExternalDataSettings(Engine::Observation::Settings& set
 {
   try
   {
-    settings.mobileAndExternalDataFilter = query.mobileAndExternalDataFilter;
+    settings.dataFilter = query.dataFilter;
   }
   catch (...)
   {
@@ -2029,7 +2030,10 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       for (unsigned int i = 0; i < obsParameters.size(); i++)
       {
         const ObsParameter& obsParam = obsParameters[i];
-        unsigned int resultIndex = parameterResultIndexes.at(obsParam.param.name());
+        const std::string paramname = obsParam.param.name();
+        if (parameterResultIndexes.find(paramname) == parameterResultIndexes.end())
+          continue;
+        unsigned int resultIndex = parameterResultIndexes.at(paramname);
         ts::TimeSeries ts = (*observation_result)[resultIndex];
         Spine::ParameterFunctions pfunc = obsParam.functions;
         ts::TimeSeriesPtr tsptr;
