@@ -14,6 +14,9 @@
 
 #include <engines/geonames/Engine.h>
 
+#include <grid-content/queryServer/definition/AliasFileCollection.h>
+#include <grid-files/common/AdditionalParameters.h>
+#include <grid-files/common/AttributeList.h>
 #include <spine/HTTP.h>
 #include <spine/Location.h>
 #include <spine/OptionParsers.h>
@@ -120,6 +123,8 @@ struct Query
   bool timeAggregationRequested;
   // WKT geometries passed in URL are stored here
   WktGeometries wktGeometries;
+  std::string forecastSource;
+  T::AttributeList attributeList;
 
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
@@ -141,6 +146,7 @@ struct Query
 #else
   void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq);
 #endif
+  QueryServer::AliasFileCollection* itsAliasFileCollectionPtr;
 };
 
 }  // namespace TimeSeries

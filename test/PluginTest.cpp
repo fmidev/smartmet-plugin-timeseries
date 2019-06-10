@@ -21,12 +21,20 @@ void prelude(SmartMet::Spine::Reactor& reactor)
   cout << endl << "Testing timeseries plugin" << endl << "=========================" << endl;
 }
 
-int main()
+int main(int argc,char *argv[])
 {
+  if (argc != 2)
+  {
+    fprintf(stderr,"USAGE: PluginTest <configFile>");
+    return -1;
+  }
+
   SmartMet::Spine::Options options;
   options.quiet = true;
   options.defaultlogging = false;
-  options.configfile = "cnf/reactor.conf";
+  options.configfile = argv[1];
 
-  return SmartMet::Spine::PluginTest::test(options, prelude);
+  SmartMet::Spine::PluginTest::test(options, prelude);
+
+  return 0;
 }

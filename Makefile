@@ -91,6 +91,7 @@ LIBS = -L$(libdir) \
 	-lsmartmet-newbase \
 	-lsmartmet-locus \
 	-lsmartmet-macgyver \
+	-lsmartmet-grid-content \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_iostreams \
