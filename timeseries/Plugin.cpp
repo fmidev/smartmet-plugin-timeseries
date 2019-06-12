@@ -2715,6 +2715,14 @@ void Plugin::processGridEngineQuery(const State& state,
 
       switch (loc->type)
       {
+        case Spine::Location::Wkt:
+        {
+          NFmiSvgPath svgPath;
+          loc = query.wktGeometries.getLocation(tloc.loc->name);
+          svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+          convertSvgPathToPolygonPath(svgPath, polygonPath);
+        }
+        break;
         case Spine::Location::Area:
         {
           NFmiSvgPath svgPath;

@@ -65,17 +65,21 @@ test:
 qd-test: $(PROG) $(CONFIG_FILES)
 	@mkdir -p failures
 	@rm -f failures/*
+	@rm -rf failures-qd
 	@echo 
 	@echo "*************************************************************"
 	@echo "*********** Running timeseries querydata tests **************"
 	@echo "*************************************************************"
 	@echo 
 	@./PluginTest cnf/reactor.conf
+	@mv failures failures-qd
 
 grid-test: $(PROG) $(CONFIG_FILES)
 	@mkdir -p failures
 	@rm -f failures/*
 	@rm -rf failures-grid
+	@mv output output-qd
+	@mv output-grid output
 	@echo 
 	@echo "*************************************************************"
 	@echo "*********** Running timeseries grid tests *******************"
@@ -93,6 +97,8 @@ grid-test: $(PROG) $(CONFIG_FILES)
 	@rm -f cnf/grid/redis/redis-server.pid
 	@rm -f cnf/grid/redis/redis-server.log
 	@mv failures failures-grid
+	@mv output output-grid
+	@mv output-qd output
 
 
 config: $(CONFIG_FILES)
