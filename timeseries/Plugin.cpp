@@ -837,7 +837,7 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
 
     // If we are going to do aggregation, we get all timesteps between starttime and endtime from
     // query data file. After aggregation only the requested timesteps are shown to user
-    std::set<boost::local_time::local_date_time> qdtimesteps;
+    std::set<boost::local_time::local_date_time> qdtimesteps(tlist->begin(), tlist->end());
 
     // time frame is extended by aggregation interval
     boost::local_time::local_date_time timeseriesStartTime = *(tlist->begin());
@@ -854,7 +854,6 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
 
     // generate timelist for aggregation
     tlist = itsTimeSeriesCache->generate(topt, tz);
-
     qdtimesteps.insert(tlist->begin(), tlist->end());
 
     // for aggregation generate timesteps also between fixed times
@@ -1111,6 +1110,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
       auto tz = getTimeZones().time_zone_from_string(query.timezone);
       auto tlist = *itsTimeSeriesCache->generate(query.toptions, tz);
+
 #ifdef MYDEBUG
       std::cout << "Generated timesteps:" << std::endl;
       for (const auto& t : tlist)

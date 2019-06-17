@@ -669,10 +669,53 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     // Validate and convert
     for (const string& paramname : names)
     {
-      Spine::ParameterAndFunctions paramfuncs =
-          Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
+      try
+      {
+        std::string nn = paramname;
+        std::string alias;
 
-      poptions.add(paramfuncs.parameter, paramfuncs.functions);
+        if (paramname.substr(0, 1) == "[")
+        {
+          auto n = paramname.find("]", 1);
+          if (n > 0)
+          {
+            alias = paramname.substr(1, n - 1);
+            nn = paramname.substr(n + 1);
+          }
+        }
+
+        Spine::ParameterAndFunctions paramfuncs =
+            Spine::ParameterFactory::instance().parseNameAndFunctions(nn, true);
+
+        if (alias.length() > 0)
+          paramfuncs.parameter.setAlias(alias);
+
+        poptions.add(paramfuncs.parameter, paramfuncs.functions);
+      }
+      catch (...)
+      {
+        Spine::Exception exception(BCP, "Operation failed!", NULL);
+        if (strcasecmp(forecastSource.c_str(), "querydata") == 0)
+          throw exception;
+
+        // exception.printError();
+
+        Spine::ParameterFunction innerFunction;
+        Spine::ParameterFunction outerFunction;
+
+        Spine::Parameter parameter = Spine::ParameterFactory::instance().parse(paramname, true);
+
+        Spine::ParameterAndFunctions paramfuncs(
+            parameter, Spine::ParameterFunctions(innerFunction, outerFunction));
+        poptions.add(paramfuncs.parameter, paramfuncs.functions);
+      }
+
+      /*
+  Spine::ParameterAndFunctions paramfuncs =
+      Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
+
+  poptions.add(paramfuncs.parameter, paramfuncs.functions);
+      */
     }
     poptions.expandParameter("data_source");
 
