@@ -372,6 +372,10 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
         "origintime", "modtime", "mtime", "level", "lat", "lon", "latlon", "lonlat", "@", nullptr};
     int level = C_INT(origLevel);
 
+    bool info = false;
+    if (strcasecmp(masterquery.format.c_str(), "INFO") == 0)
+      info = true;
+
     std::shared_ptr<SmartMet::ContentServer::ServiceInterface> contentServer =
         itsGridEngine->getContentServer_sptr();
 
@@ -644,6 +648,9 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
       QueryServer::QueryParameter qParam;
 
+      if (info)
+        qParam.mFlags = QueryServer::QueryParameter::Flags::NoReturnValues;
+
       if (loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint)
       {
         if (loc->radius == 0)
@@ -793,12 +800,12 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
           {
             // Grib uses Pa and querydata hPa, so we have to convert the value.
             qParam.mParameterLevel = C_INT(qLevel * 100);
-            qParam.mFlags = qParam.mFlags | QueryServer::QPF_PRESSURE_LEVEL_INTERPOLATION_ENABLED;
+            qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::PressureLevelInterpolation;
           }
           break;
 
         case 1:
-          qParam.mFlags = qParam.mFlags | QueryServer::QPF_PRESSURE_LEVEL_INTERPOLATION_ENABLED;
+          qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::PressureLevelInterpolation;
           qParam.mParameterLevelId = 2;
           // Grib uses Pa and querydata hPa, so we have to convert the value.
           qParam.mParameterLevel = C_INT(qLevel * 100);
@@ -807,7 +814,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
         case 2:
           qParam.mParameterLevelId = 0;
           qParam.mParameterLevel = C_INT(qLevel);
-          qParam.mFlags = qParam.mFlags | QueryServer::QPF_HEIGHT_LEVEL_INTERPOLATION_ENABLED;
+          qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::HeightLevelInterpolation;
           break;
       }
 
@@ -1129,7 +1136,7 @@ void GridInterface::processGridQuery(const State& state,
           for (uint x = 0; x < xLen; x++)
           {
             if ((gridQuery.mQueryParameterList[p].mValueList[x].mFlags &
-                 QueryServer::QPF_AGGREGATION_VALUE) != 0)
+                 QueryServer::ParameterValues::Flags::AggregationValue) != 0)
             {
               // This value is added for aggregation. We should remove it later.
 
@@ -1258,6 +1265,7 @@ void GridInterface::processGridQuery(const State& state,
                 else
                 {
                   // The parameter value is missing
+
                   Spine::TimeSeries::TimedValue tsValue(queryTime, missing_value);
                   if (vLen == 1)
                   {
@@ -1765,8 +1773,8 @@ void GridInterface::processGridQuery(const State& state,
 
                   char tmp[1000];
 
-                  gridQuery.mQueryParameterList[idx].mValueList[t].mGenerationId;
-                  gridQuery.mQueryParameterList[idx].mValueList[t].mGeometryId;
+                  //gridQuery.mQueryParameterList[idx].mValueList[t].mGenerationId;
+                  //gridQuery.mQueryParameterList[idx].mValueList[t].mGeometryId;
 
                   sprintf(tmp,
                           "%s:%s:%u:%d:%d:%d:%d",
@@ -1781,6 +1789,33 @@ void GridInterface::processGridQuery(const State& state,
                   Spine::TimeSeries::TimedValue tsValue(queryTime, std::string(tmp));
                   tsForNonGridParam->push_back(tsValue);
                 }
+              }
+              else if ((gridQuery.mQueryParameterList[p].mFlags & QueryServer::QueryParameter::Flags::NoReturnValues) != 0  &&
+                  (gridQuery.mQueryParameterList[p].mValueList[t].mFlags & QueryServer::ParameterValues::Flags::DataAvailable) != 0)
+              {
+                std::string producerName;
+                T::ProducerInfo* producer = itsProducerInfoList.getProducerInfoById(gridQuery.mQueryParameterList[p].mValueList[t].mProducerId);
+                if (producer != nullptr)
+                  producerName = producer->mName;
+
+                // gridQuery.mQueryParameterList[p].mValueList[t].print(std::cout,0,0);
+
+                char tmp[1000];
+                sprintf(tmp,"%s:%s:%u:%d:%d:%d:%d %s flags:%d",
+                          gridQuery.mQueryParameterList[p].mValueList[t].mParameterKey.c_str(),
+                          producerName.c_str(),
+                          gridQuery.mQueryParameterList[p].mValueList[t].mGeometryId,
+                          C_INT(gridQuery.mQueryParameterList[p].mValueList[t].mParameterLevelId),
+                          C_INT(gridQuery.mQueryParameterList[p].mValueList[t].mParameterLevel),
+                          C_INT(gridQuery.mQueryParameterList[p].mValueList[t].mForecastType),
+                          C_INT(gridQuery.mQueryParameterList[p].mValueList[t].mForecastNumber),
+                          gridQuery.mQueryParameterList[p].mValueList[t].mAnalysisTime.c_str(),
+                          C_INT(gridQuery.mQueryParameterList[p].mValueList[t].mFlags));
+
+                Spine::TimeSeries::TimedValue tsValue(queryTime, std::string(tmp));
+                //tsForNonGridParam->push_back(tsValue);
+                tsForParameter->push_back(tsValue);
+
               }
               else if (gridQuery.mQueryParameterList[p].mParam.substr(0, 4) == "@GM-")
               {

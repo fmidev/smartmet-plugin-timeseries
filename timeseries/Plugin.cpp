@@ -3041,6 +3041,8 @@ void Plugin::query(const State& state,
       QueryServer::QueryStreamer* qStreamer = new QueryServer::QueryStreamer();
       queryStreamer.reset(qStreamer);
     }
+    else if (strcasecmp(query.format.c_str(), "INFO") == 0)
+      fmt = Spine::TableFormatterFactory::create("debug");
     else
       fmt = Spine::TableFormatterFactory::create(query.format);
 
