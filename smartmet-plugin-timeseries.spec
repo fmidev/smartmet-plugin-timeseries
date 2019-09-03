@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.8.28
+Version: 19.9.3
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Tue Sep 3 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.9.3-1.fmi
+- Test cases updated due to NatAtmo parameter name change (SOL-8557)
+
 * Wed Aug 28 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.8.28-1.fmi
 - Repackaged since Spine::Location ABI changed
 - Keywords now work even for stations with duplicate coordinates
