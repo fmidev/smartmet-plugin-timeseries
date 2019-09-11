@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.9.3
+Version: 19.9.11
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -25,7 +25,7 @@ BuildRequires: smartmet-library-newbase-devel >= 19.8.12
 BuildRequires: smartmet-library-gis-devel >= 19.3.14
 BuildRequires: smartmet-engine-geonames-devel >= 19.8.28
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.8.28
+BuildRequires: smartmet-engine-observation-devel >= 19.9.11
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.8.28
 BuildRequires: smartmet-engine-gis-devel >= 19.5.29
@@ -74,6 +74,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Sep 11 2019  Anssi Reponen <anssi.reponen@fmi.fi> - 19.9.11-1.fmi
+- NetAtmo, RoadCloud test cases updated because result set row order has 
+change, content remains unchanged. Related to BRAINSTORM-1673.
+
 * Tue Sep 3 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.9.3-1.fmi
 - Test cases updated due to NatAtmo parameter name change (SOL-8557)
 
