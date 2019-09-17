@@ -76,6 +76,9 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue Sep 17 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.9.17-1.fmi
 - Test cases updated due to NatAtmo parameter name change (SOL-8557)
+- NetAtmo, RoadCloud test cases updated because result set row order has 
+change, content remains unchanged. Related to BRAINSTORM-1673.
+- Test cases updated due to NatAtmo parameter name change (SOL-8557)
 
 * Thu Sep  5 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.8.5-1.fmi
 - Fixed error messages to use the same latlon order as the input parameters
