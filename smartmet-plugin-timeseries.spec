@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.8.28
+BuildRequires: smartmet-library-spine-devel >= 19.9.17
 BuildRequires: smartmet-library-locus-devel >= 19.8.28
 BuildRequires: smartmet-library-macgyver-devel >= 19.8.2
 BuildRequires: smartmet-library-newbase-devel >= 19.8.12
@@ -28,19 +28,19 @@ BuildRequires: smartmet-engine-geonames-devel >= 19.8.28
 BuildRequires: smartmet-engine-observation-devel >= 19.9.17
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.8.28
-BuildRequires: smartmet-engine-gis-devel >= 19.5.29
+BuildRequires: smartmet-engine-gis-devel >= 19.9.13
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 19.3.14
 Requires: smartmet-library-locus >= 19.8.28
 Requires: smartmet-library-macgyver >= 19.8.2
 Requires: smartmet-library-newbase >= 19.8.12
-Requires: smartmet-library-spine >= 19.8.28
+Requires: smartmet-library-spine >= 19.9.17
 Requires: smartmet-library-gis >= 19.3.14
 Requires: smartmet-engine-geonames >= 19.8.28
 Requires: smartmet-engine-querydata >= 19.8.28
-Requires: smartmet-engine-gis >= 19.5.29
-Requires: smartmet-server >= 19.8.9
+Requires: smartmet-engine-gis >= 19.9.13
+Requires: smartmet-server >= 19.9.17
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
