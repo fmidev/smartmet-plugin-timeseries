@@ -572,7 +572,7 @@ std::size_t Plugin::hash_value(const State& state,
 
             if (producer.empty())
             {
-              Spine::Exception ex(BCP, "No data available for '" + loc->name + "'!");
+              Spine::Exception ex(BCP, "No data available for '" + tloc.tag + "'!");
               ex.disableLogging();
               throw ex;
             }
