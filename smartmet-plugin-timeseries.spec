@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.9.17
+Version: 19.9.23
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -74,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Sep 23 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.9.23-1.fmi
+- Fixed not to link grid-libraries
+
 * Tue Sep 17 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.9.17-1.fmi
 - Test cases updated due to NatAtmo parameter name change (SOL-8557)
 - NetAtmo, RoadCloud test cases updated because result set row order has 
