@@ -1,1 +1,1 @@
-GET /timeseries?format=ascii&param=localtime,longitude,latitude,altitude,station_id,temperature,humidity,pressure&producer=netatmo&starttime=20190325110000&endtime=20190325110500&station_id=25872,2377,39161,912 HTTP/1.0
+GET /timeseries?format=ascii&param=localtime,longitude,latitude,altitude,stationid,temperature,humidity,pressure&producer=netatmo&starttime=20190325110000&endtime=20190325110500&station_id=25872,2377,39161,912 HTTP/1.0
