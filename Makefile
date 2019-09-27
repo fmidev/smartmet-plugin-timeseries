@@ -28,6 +28,9 @@ objdir = obj
 
 DEFINES = -DUNIX -D_REENTRANT
 
+-include $(HOME)/.smartmet.mk
+GCC_DIAG_COLOR ?= always
+
 ifeq ($(CXX), clang++)
 
  // TODO: Enable sign conversion warnings
@@ -49,8 +52,7 @@ INCLUDES = \
 
 else
 
- FLAGS = -std=c++11 -fPIC -MD -Wall -W -Wno-unused-parameter -fno-omit-frame-pointer -Wno-unknown-pragmas -fdiagnostics-color=always -Wnon-virtual-dtor
-
+ FLAGS = -std=c++11 -fPIC -MD -Wall -W -Wno-unused-parameter -fno-omit-frame-pointer -Wno-unknown-pragmas -fdiagnostics-color=$(GCC_DIAG_COLOR) -Wnon-virtual-dtor
 
  FLAGS_DEBUG = \
 	-Wcast-align \
@@ -74,6 +76,15 @@ else
 	-I$(includedir)/oracle/11.2/client64
 
 endif
+
+
+ifeq ($(TSAN), yes)
+  FLAGS += -fsanitize=thread
+endif
+ifeq ($(ASAN), yes)
+  FLAGS += -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize-address-use-after-scope
+endif
+
 
 # Compile options in detault, debug and profile modes
 

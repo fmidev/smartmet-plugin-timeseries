@@ -1,6 +1,6 @@
 PROG = $(patsubst %.cpp,%,$(wildcard *Test.cpp))
 
-MAINFLAGS = -std=c++0x -Wall -W -Wno-unused-parameter
+FLAGS = -std=c++11 -Wall -W -Wno-unused-parameter
 
 EXTRAFLAGS = -Werror -pedantic -Wpointer-arith -Wcast-qual \
 	-Wcast-align -Wwrite-strings -Wconversion -Winline \
@@ -10,8 +10,15 @@ EXTRAFLAGS = -Werror -pedantic -Wpointer-arith -Wcast-qual \
 
 DIFFICULTFLAGS = -Weffc++ -Wunreachable-code -Wredundant-decls
 
+ifeq ($(TSAN), yes)
+  FLAGS += -fsanitize=thread
+endif
+ifeq ($(ASAN), yes)
+  FLAGS += -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize-address-use-after-scope
+endif
+
 CC = g++
-CFLAGS = -DUNIX -O0 -g $(MAINFLAGS) -Wno-unknown-pragmas
+CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
 
 # Unfortunately otlv4.h forces us to define the full oracle include path
 INCLUDES = \
@@ -29,7 +36,6 @@ LIBS =  -lsmartmet-spine  \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_filesystem \
-	-lboost_regex \
 	-lboost_iostreams \
 	-lboost_system \
 	-lgdal \
