@@ -1,5 +1,5 @@
 SUBNAME = timeseries
-SPEC = smartmet-plugin-$(SUBNAME)
+SPEC = smartmet-plugin-grib$(SUBNAME)
 INCDIR = smartmet/plugins/$(SUBNAME)
 
 # Installation directories

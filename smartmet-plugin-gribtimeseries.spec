@@ -1,5 +1,5 @@
 %bcond_without observation
-%define DIRNAME timeseries
+%define DIRNAME gribtimeseries
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
@@ -71,7 +71,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(0775,root,root,0775)
-%{_datadir}/smartmet/plugins/%{DIRNAME}.so
+%{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
 * Tue Oct  1 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.1-1.fmi
@@ -126,7 +126,7 @@ sunelevation,sunazimuth,daylength (BRAINSTORM-1581)
 * Wed Sep 19 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.19-1.fmi
 - Improved handling-algorithm of NFmiSvgPath object
 
-* Tue Sep 9 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.4-1.fmi
+* Tue Sep 4 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.4-1.fmi
 - Refactoring: data-functions moved to separate file
 
 * Tue Aug 28 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.8.28-1.fmi
