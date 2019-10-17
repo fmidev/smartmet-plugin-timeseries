@@ -579,6 +579,29 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       }
     }
 
+
+    bool sameQueryAnalysisTime = false;
+    bool sameParamAnalysisTime = false;
+
+    T::Attribute *attr = masterquery.attributeList.getAttribute("query.analysisTime");
+    if (attr != nullptr)
+    {
+      if (strcasecmp(attr->mValue.c_str(),"same") == 0)
+      {
+        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::SameAnalysisTime;
+        sameQueryAnalysisTime = true;
+      }
+    }
+
+    attr = masterquery.attributeList.getAttribute("param.analysisTime");
+    if (attr != nullptr)
+    {
+      if (strcasecmp(attr->mValue.c_str(),"same") == 0)
+      {
+        sameParamAnalysisTime = true;
+      }
+    }
+
     gridQuery.mRadius = loc->radius;
 
     int geometryId = -1;
@@ -817,6 +840,9 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
           qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::HeightLevelInterpolation;
           break;
       }
+
+      if (sameParamAnalysisTime)
+        qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::SameAnalysisTime;
 
       qParam.mPrecision = masterquery.precisions[idx];
 
