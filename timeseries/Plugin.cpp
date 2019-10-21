@@ -1941,7 +1941,11 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       {
         loc = get_location(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
         if (!loc)
-          continue;
+        {
+          Spine::Exception ex(BCP,
+                              "Station fmisid=" + Fmi::to_string(fmisid) + " in not available!");
+          throw ex;
+        }
       }
       else
       {
