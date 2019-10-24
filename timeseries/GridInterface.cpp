@@ -103,6 +103,7 @@ bool GridInterface::isGridProducer(const std::string& producer)
 
 bool GridInterface::containsGridProducer(const Query& masterquery)
 {
+  FUNCTION_TRACE
   try
   {
     for (auto areaproducers = masterquery.timeproducers.begin();
@@ -127,6 +128,7 @@ bool GridInterface::containsGridProducer(const Query& masterquery)
 
 bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
 {
+  FUNCTION_TRACE
   try
   {
     const char removeChar[] = {'(', ')', '{', '}', '[', ']', ';', ' ', '\0'};
@@ -185,6 +187,7 @@ bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
 
 T::ParamLevelId GridInterface::getLevelId(const char* producerName, const Query& masterquery)
 {
+  FUNCTION_TRACE
   try
   {
     T::ParamLevelId cnt[20] = {0};
@@ -274,6 +277,7 @@ void GridInterface::getDataTimes(const AreaProducers& areaproducers,
 void GridInterface::insertFileQueries(QueryServer::Query& query,
                                       QueryServer::QueryStreamer_sptr queryStreamer)
 {
+  FUNCTION_TRACE
   try
   {
     // Adding queries into the QueryStreamer. These queries fetch actual GRIB1/GRIB2 files accoding
