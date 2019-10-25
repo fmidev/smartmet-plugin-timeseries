@@ -119,7 +119,7 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
     // iterate different locations
     for (unsigned int i = 0; i < outputData.size(); i++)
     {
-      std::string locationName = outputData[i].first;
+      const auto& locationName = outputData[i].first;
       if (locationName != location_name)
         continue;
 
@@ -133,7 +133,7 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
         tf.setCurrentRow(startRow);
         tf.setCurrentColumn(j);
 
-        std::string paramName = paramlist[j % numberOfParameters].name();
+        const auto& paramName = paramlist[j % numberOfParameters].name();
         if (paramName == LATLON_PARAM || paramName == NEARLATLON_PARAM)
         {
           tf << Spine::TimeSeries::LonLatFormat::LATLON;
@@ -544,7 +544,7 @@ std::size_t Plugin::hash_value(const State& state,
 
             if (producer.empty())
             {
-              Spine::Exception ex(BCP, "No data available for '" + loc->name + "'!");
+              Spine::Exception ex(BCP, "No data available for '" + tloc.tag + "'!");
               ex.disableLogging();
               throw ex;
             }
@@ -2013,7 +2013,11 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       {
         loc = get_location(itsGeoEngine, fmisid, FMISID_PARAM, query.language);
         if (!loc)
-          continue;
+        {
+          Spine::Exception ex(BCP,
+                              "Station fmisid=" + Fmi::to_string(fmisid) + " in not available!");
+          throw ex;
+        }
       }
       else
       {
