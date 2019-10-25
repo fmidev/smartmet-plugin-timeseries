@@ -18,14 +18,14 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.9.27
+BuildRequires: smartmet-library-spine-devel >= 19.10.8
 BuildRequires: smartmet-library-locus-devel >= 19.9.26
 BuildRequires: smartmet-library-macgyver-devel >= 19.9.26
 BuildRequires: smartmet-library-newbase-devel >= 19.9.26
 BuildRequires: smartmet-library-gis-devel >= 19.9.26
-BuildRequires: smartmet-engine-geonames-devel >= 19.9.26
+BuildRequires: smartmet-engine-geonames-devel >= 19.10.25
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.9.26
+BuildRequires: smartmet-engine-observation-devel >= 19.10.21
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.9.26
 BuildRequires: smartmet-engine-gis-devel >= 19.9.26
@@ -37,7 +37,7 @@ Requires: smartmet-library-macgyver >= 19.9.26
 Requires: smartmet-library-newbase >= 19.9.26
 Requires: smartmet-library-spine >= 19.10.8
 Requires: smartmet-library-gis >= 19.9.26
-Requires: smartmet-engine-geonames >= 19.9.26
+Requires: smartmet-engine-geonames >= 19.10.25
 Requires: smartmet-engine-querydata >= 19.9.26
 Requires: smartmet-engine-gis >= 19.9.26
 Requires: smartmet-server >= 19.10.1
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri Oct 25 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.25-1.fmi
+- Full repackaging of GRIB server components
+
 * Mon Oct 21 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.10.21-1.fmi
 - Throw an exception if the requested station is not available in database (BRAINSTORM-1702)
 
