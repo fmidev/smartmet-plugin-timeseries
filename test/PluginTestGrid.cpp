@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 {
   if (argc != 2)
   {
-    fprintf(stderr, "USAGE: PluginTestQD <configFile>");
+    fprintf(stderr, "USAGE: PluginTestGrid <configFile>");
     return -1;
   }
 
@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
   options.configfile = argv[1];
 
   SmartMet::Spine::PluginTest tests;
-  tests.setOutputDir("output");
-  tests.setFailDir("failures");
+  tests.setOutputDir("output-grid");
+  tests.setFailDir("failures-grid");
   tests.setNumberOfThreads(10);
   tests.run(options, prelude);
 }

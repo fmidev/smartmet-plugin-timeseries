@@ -37,8 +37,8 @@ INCLUDES = \
 	-I ../timeseries \
 	-I /usr/include/mysql \
 	-I /usr/include/smartmet \
-  -I /usr/include/smartmet/grid-files \
-  -I /usr/include/smartmet/grid-content \
+	-I /usr/include/smartmet/grid-files \
+	-I /usr/include/smartmet/grid-content \
 	-I /usr/include/soci \
 	-I/usr/include/oracle/11.2/client64 \
 	`pkg-config --cflags libconfig++`
@@ -71,21 +71,16 @@ test:
 qd-test: $(PROG) $(CONFIG_FILES)
 	@mkdir -p failures
 	@rm -f failures/*
-	@rm -rf failures-qd
 	@echo 
 	@echo "*************************************************************"
 	@echo "*********** Running timeseries querydata tests **************"
 	@echo "*************************************************************"
 	@echo 
 	@./PluginTest cnf/reactor.conf
-	@mv failures failures-qd
 
 grid-test: $(PROG) $(CONFIG_FILES)
-	@mkdir -p failures
-	@rm -f failures/*
-	@rm -rf failures-grid
-	@mv output output-qd
-	@mv output-grid output
+	@mkdir -p failures-grid
+	@rm -f failures-grid/*
 	@echo 
 	@echo "*************************************************************"
 	@echo "*********** Running timeseries grid tests *******************"
@@ -95,17 +90,13 @@ grid-test: $(PROG) $(CONFIG_FILES)
 	@redis-server cnf/redis.conf
 	@echo "*** Executing plugin tests."
 	@echo 
-	@./PluginTest cnf/reactor-grid.conf
+	@./PluginTestGrid cnf/reactor-grid.conf
 	@echo 
 	@echo "*** Shutting down the Redis database and removing useless files." 
 	@echo 
 	@cat cnf/grid/redis/redis-server.pid | xargs kill -9
 	@rm -f cnf/grid/redis/redis-server.pid
 	@rm -f cnf/grid/redis/redis-server.log
-	@mv failures failures-grid
-	@mv output output-grid
-	@mv output-qd output
-
 
 config: $(CONFIG_FILES)
 
