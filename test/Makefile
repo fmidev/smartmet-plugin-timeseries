@@ -1,6 +1,6 @@
 PROG = $(patsubst %.cpp,%,$(wildcard *Test*.cpp))
 
-MAINFLAGS = -std=c++0x -Wall -W -Wno-unused-parameter
+FLAGS = -std=c++11 -Wall -W -Wno-unused-parameter
 
 ENV_FILE = cnf/smartmet-test-env.cfg
 
@@ -22,16 +22,23 @@ EXTRAFLAGS = -Werror -pedantic -Wpointer-arith -Wcast-qual \
 
 DIFFICULTFLAGS = -Weffc++ -Wunreachable-code -Wredundant-decls
 
+ifeq ($(TSAN), yes)
+  FLAGS += -fsanitize=thread
+endif
+ifeq ($(ASAN), yes)
+  FLAGS += -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize-address-use-after-scope
+endif
+
 CC = g++
-CFLAGS = -DUNIX -O0 -g $(MAINFLAGS) -Wno-unknown-pragmas
+CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
 
 # Unfortunately otlv4.h forces us to define the full oracle include path
 INCLUDES = \
 	-I ../timeseries \
 	-I /usr/include/mysql \
 	-I /usr/include/smartmet \
-  -I /usr/include/smartmet/grid-files \
-  -I /usr/include/smartmet/grid-content \
+	-I /usr/include/smartmet/grid-files \
+	-I /usr/include/smartmet/grid-content \
 	-I /usr/include/soci \
 	-I/usr/include/oracle/11.2/client64 \
 	`pkg-config --cflags libconfig++`
@@ -45,7 +52,6 @@ LIBS =  -lsmartmet-spine  \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_filesystem \
-	-lboost_regex \
 	-lboost_iostreams \
 	-lboost_system \
 	-lbz2 -lz -lpthread -ldl
@@ -65,21 +71,16 @@ test:
 qd-test: $(PROG) $(CONFIG_FILES)
 	@mkdir -p failures
 	@rm -f failures/*
-	@rm -rf failures-qd
 	@echo 
 	@echo "*************************************************************"
 	@echo "*********** Running timeseries querydata tests **************"
 	@echo "*************************************************************"
 	@echo 
 	@./PluginTest cnf/reactor.conf
-	@mv failures failures-qd
 
 grid-test: $(PROG) $(CONFIG_FILES)
-	@mkdir -p failures
-	@rm -f failures/*
-	@rm -rf failures-grid
-	@mv output output-qd
-	@mv output-grid output
+	@mkdir -p failures-grid
+	@rm -f failures-grid/*
 	@echo 
 	@echo "*************************************************************"
 	@echo "*********** Running timeseries grid tests *******************"
@@ -89,17 +90,13 @@ grid-test: $(PROG) $(CONFIG_FILES)
 	@redis-server cnf/redis.conf
 	@echo "*** Executing plugin tests."
 	@echo 
-	@./PluginTest cnf/reactor-grid.conf
+	@./PluginTestGrid cnf/reactor-grid.conf
 	@echo 
 	@echo "*** Shutting down the Redis database and removing useless files." 
 	@echo 
 	@cat cnf/grid/redis/redis-server.pid | xargs kill -9
 	@rm -f cnf/grid/redis/redis-server.pid
 	@rm -f cnf/grid/redis/redis-server.log
-	@mv failures failures-grid
-	@mv output output-grid
-	@mv output-qd output
-
 
 config: $(CONFIG_FILES)
 

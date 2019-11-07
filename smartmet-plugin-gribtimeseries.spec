@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.10.1
+Version: 19.10.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,14 +18,14 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.9.27
+BuildRequires: smartmet-library-spine-devel >= 19.10.8
 BuildRequires: smartmet-library-locus-devel >= 19.9.26
 BuildRequires: smartmet-library-macgyver-devel >= 19.9.26
 BuildRequires: smartmet-library-newbase-devel >= 19.9.26
 BuildRequires: smartmet-library-gis-devel >= 19.9.26
-BuildRequires: smartmet-engine-geonames-devel >= 19.9.26
+BuildRequires: smartmet-engine-geonames-devel >= 19.10.25
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.9.26
+BuildRequires: smartmet-engine-observation-devel >= 19.10.21
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.9.26
 BuildRequires: smartmet-engine-gis-devel >= 19.9.26
@@ -35,16 +35,15 @@ Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-library-locus >= 19.9.26
 Requires: smartmet-library-macgyver >= 19.9.26
 Requires: smartmet-library-newbase >= 19.9.26
-Requires: smartmet-library-spine >= 19.9.26
+Requires: smartmet-library-spine >= 19.10.8
 Requires: smartmet-library-gis >= 19.9.26
-Requires: smartmet-engine-geonames >= 19.9.26
+Requires: smartmet-engine-geonames >= 19.10.25
 Requires: smartmet-engine-querydata >= 19.9.26
 Requires: smartmet-engine-gis >= 19.9.26
-Requires: smartmet-server >= 19.9.26
+Requires: smartmet-server >= 19.10.1
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
-Requires: boost-regex
 Requires: boost-system
 Requires: boost-thread
 Provides: %{SPECNAME}
@@ -74,14 +73,43 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Oct 30 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.30-1.fmi
+- Full repackaging of GRIB server components
+
+* Mon Oct 21 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.10.21-1.fmi
+- Throw an exception if the requested station is not available in database (BRAINSTORM-1702)
+
 * Tue Oct  1 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.1-1.fmi
 - Repackaged due to SmartMet library ABI changes
+
+* Thu Sep 26 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.9.26-1.fmi
+- Added support for ASAN & TSAN builds
+
+* Mon Sep 23 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.9.23-1.fmi
+- Fixed not to link grid-libraries
 
 * Fri Sep 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.9.20-1.fmi
 - Repackaged all with -fno-omit-frame-pointer for better profiling
 
 * Thu Sep 19 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.9.19-1.fmi
 - New release version
+
+* Tue Sep 17 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.9.17-1.fmi
+- Test cases updated due to NatAtmo parameter name change (SOL-8557)
+- NetAtmo, RoadCloud test cases updated because result set row order has 
+change, content remains unchanged. Related to BRAINSTORM-1673.
+- Test cases updated due to NatAtmo parameter name change (SOL-8557)
+
+* Thu Sep  5 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.8.5-1.fmi
+- Fixed error messages to use the same latlon order as the input parameters
+
+* Wed Aug 28 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.8.28-1.fmi
+- Repackaged since Spine::Location ABI changed
+- Keywords now work even for stations with duplicate coordinates
+
+* Sat Jun  8 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.6.8-1.fmi
+- Avoid unnecessary string copies for speed
+>>>>>>> master:smartmet-plugin-timeseries.spec
 
 * Thu May 23 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.5.23-1.fmi
 - Bugfix: precision-option applied to latitude parameter
