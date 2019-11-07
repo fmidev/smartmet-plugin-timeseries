@@ -125,8 +125,8 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     {
       // Using coordinate that is inside the GRIB1 grid
 
-      double latitude = atof(lat->mValue.c_str()) / 1000;
-      double longitude = atof(lon->mValue.c_str()) / 1000;
+      double latitude = toDouble(lat->mValue.c_str()) / 1000;
+      double longitude = toDouble(lon->mValue.c_str()) / 1000;
 
       std::string val = std::to_string(latitude) + "," + std::to_string(longitude);
       Spine::HTTP::Request tmpReq;
@@ -138,8 +138,8 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     {
       // Using coordinate that is inside the GRIB2 grid
 
-      double latitude = atof(lat->mValue.c_str()) / 1000000;
-      double longitude = atof(lon->mValue.c_str()) / 1000000;
+      double latitude = toDouble(lat->mValue.c_str()) / 1000000;
+      double longitude = toDouble(lon->mValue.c_str()) / 1000000;
 
       std::string val = std::to_string(latitude) + "," + std::to_string(longitude);
       Spine::HTTP::Request tmpReq;
