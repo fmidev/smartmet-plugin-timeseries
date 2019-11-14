@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.10.31
+Version: 19.11.14
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,9 +21,9 @@ BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 19.10.31
 BuildRequires: smartmet-library-locus-devel >= 19.9.26
 BuildRequires: smartmet-library-macgyver-devel >= 19.9.26
-BuildRequires: smartmet-library-newbase-devel >= 19.10.31
+BuildRequires: smartmet-library-newbase-devel >= 19.11.14
 BuildRequires: smartmet-library-gis-devel >= 19.9.26
-BuildRequires: smartmet-engine-geonames-devel >= 19.10.25
+BuildRequires: smartmet-engine-geonames-devel >= 19.11.14
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 19.10.31
 %endif
@@ -34,10 +34,10 @@ Requires: libconfig
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-library-locus >= 19.9.26
 Requires: smartmet-library-macgyver >= 19.9.26
-Requires: smartmet-library-newbase >= 19.10.31
+Requires: smartmet-library-newbase >= 19.11.14
 Requires: smartmet-library-spine >= 19.10.31
 Requires: smartmet-library-gis >= 19.9.26
-Requires: smartmet-engine-geonames >= 19.10.25
+Requires: smartmet-engine-geonames >= 19.11.14
 Requires: smartmet-engine-querydata >= 19.10.31
 Requires: smartmet-engine-gis >= 19.10.31
 Requires: smartmet-server >= 19.10.1
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Nov 14 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.14-1.fmi
+- Refactoring code because textgenplugin must also support bbox and wkt parameters (BRAINSTORM-1720)
+
 * Thu Oct 31 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.31-1.fmi
 - Rebuild due to newbase API/ABI changes
 
