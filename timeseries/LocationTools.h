@@ -17,12 +17,6 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-void make_point_path(NFmiSvgPath& thePath, const std::pair<double, double>& thePoint);
-
-void make_rectangle_path(NFmiSvgPath& thePath,
-                         const std::pair<double, double>& theFirstCorner,
-                         const std::pair<double, double>& theSecondCorner);
-
 std::string get_name_base(const std::string& theName);
 
 const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
