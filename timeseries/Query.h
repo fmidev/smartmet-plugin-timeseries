@@ -10,9 +10,9 @@
 
 #include "AggregationInterval.h"
 #include "Producers.h"
-#include "WktGeometry.h"
 
 #include <engines/geonames/Engine.h>
+#include <engines/geonames/WktGeometry.h>
 
 #include <spine/HTTP.h>
 #include <spine/Location.h>
@@ -119,7 +119,7 @@ struct Query
   MaxAggregationIntervals maxAggregationIntervals;
   bool timeAggregationRequested;
   // WKT geometries passed in URL are stored here
-  WktGeometries wktGeometries;
+  Engine::Geonames::WktGeometries wktGeometries;
 
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 

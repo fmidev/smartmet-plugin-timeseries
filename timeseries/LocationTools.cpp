@@ -1,6 +1,7 @@
 #include "LocationTools.h"
 #include "LonLatDistance.h"
 #include <engines/observation/Keywords.h>
+#include <newbase/NFmiSvgTools.h>
 
 namespace ts = SmartMet::Spine::TimeSeries;
 
@@ -15,62 +16,6 @@ namespace
 // Construct the locale for case conversions only once
 std::locale stdlocale = std::locale();
 }  // namespace
-
-// ----------------------------------------------------------------------
-/*!
- * \brief
- */
-// ----------------------------------------------------------------------
-
-void make_point_path(NFmiSvgPath& thePath, const std::pair<double, double>& thePoint)
-{
-  try
-  {
-    NFmiSvgPath::Element element1(NFmiSvgPath::kElementMoveto, thePoint.first, thePoint.second);
-    NFmiSvgPath::Element element2(NFmiSvgPath::kElementClosePath, 0, 0);
-    thePath.push_back(element1);
-    thePath.push_back(element2);
-  }
-  catch (...)
-  {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
-  }
-}
-
-// ----------------------------------------------------------------------
-/*!
- * \brief
- */
-// ----------------------------------------------------------------------
-
-// for bounding box
-void make_rectangle_path(NFmiSvgPath& thePath,
-                         const std::pair<double, double>& theFirstCorner,
-                         const std::pair<double, double>& theSecondCorner)
-{
-  try
-  {
-    std::pair<double, double> point1(theFirstCorner);
-    std::pair<double, double> point2(theFirstCorner.first, theSecondCorner.second);
-    std::pair<double, double> point3(theSecondCorner);
-    std::pair<double, double> point4(theSecondCorner.first, theFirstCorner.second);
-
-    NFmiSvgPath::Element element1(NFmiSvgPath::kElementMoveto, point1.first, point1.second);
-    NFmiSvgPath::Element element2(NFmiSvgPath::kElementLineto, point2.first, point2.second);
-    NFmiSvgPath::Element element3(NFmiSvgPath::kElementLineto, point3.first, point3.second);
-    NFmiSvgPath::Element element4(NFmiSvgPath::kElementLineto, point4.first, point4.second);
-    NFmiSvgPath::Element element5(NFmiSvgPath::kElementClosePath, point1.first, point1.second);
-    thePath.push_back(element1);
-    thePath.push_back(element2);
-    thePath.push_back(element3);
-    thePath.push_back(element4);
-    thePath.push_back(element5);
-  }
-  catch (...)
-  {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
-  }
-}
 
 // ----------------------------------------------------------------------
 /*!
@@ -179,8 +124,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
 
     if (loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint)
     {
-      std::pair<double, double> thePoint = std::make_pair(loc->longitude, loc->latitude);
-      make_point_path(svgPath, thePoint);
+      NFmiSvgTools::PointToSvgPath(svgPath, loc->longitude, loc->latitude);
     }
     else if (loc->type == Spine::Location::Area)
     {
@@ -191,9 +135,8 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
       }
       else if (geometryStorage.isPoint(place))
       {
-        std::pair<double, double> thePoint(geometryStorage.getPoint(place).first,
-                                           geometryStorage.getPoint(place).second);
-        make_point_path(svgPath, thePoint);
+        std::pair<double, double> thePoint = geometryStorage.getPoint(place);
+        NFmiSvgTools::PointToSvgPath(svgPath, thePoint.first, thePoint.second);
       }
       else
       {
@@ -227,9 +170,8 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
         }
         else if (geometryStorage.isPoint(place))
         {
-          std::pair<double, double> thePoint(geometryStorage.getPoint(place).first,
-                                             geometryStorage.getPoint(place).second);
-          make_point_path(svgPath, thePoint);
+          std::pair<double, double> thePoint = geometryStorage.getPoint(place);
+          NFmiSvgTools::PointToSvgPath(svgPath, thePoint.first, thePoint.second);
         }
         else
         {
