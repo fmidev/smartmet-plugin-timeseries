@@ -34,7 +34,7 @@ Requires: libconfig
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-library-locus >= 19.9.26
 Requires: smartmet-library-macgyver >= 19.9.26
-Requires: smartmet-library-newbase >= 19.14.11
+Requires: smartmet-library-newbase >= 19.11.14
 Requires: smartmet-library-spine >= 19.10.31
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-engine-geonames >= 19.11.14
