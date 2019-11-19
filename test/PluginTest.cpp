@@ -33,10 +33,5 @@ int main(int argc, char* argv[])
   options.quiet = true;
   options.defaultlogging = false;
   options.configfile = argv[1];
-
-  SmartMet::Spine::PluginTest tests;
-  tests.setOutputDir("output");
-  tests.setFailDir("failures");
-  tests.setNumberOfThreads(10);
-  tests.run(options, prelude);
+  return SmartMet::Spine::PluginTest::test(options, prelude, false, 10);
 }

@@ -154,14 +154,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     }
 
     // Store WKT-geometries
-    BOOST_FOREACH (const auto& tloc, loptions->locations())
-    {
-      if (tloc.loc->type == Spine::Location::Wkt)
-      {
-        WktGeometryPtr wktGeometry(new WktGeometry(tloc.loc, language, state.getGeoEngine()));
-        wktGeometries.addWktGeometry(tloc.loc->name, wktGeometry);
-      }
-    }
+    wktGeometries = state.getGeoEngine().getWktGeometries(*loptions, language);
 
     toptions = Spine::OptionParsers::parseTimes(req);
 
@@ -671,24 +664,21 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     {
       try
       {
-        std::string nn = paramname;
-        std::string alias;
+        std::string plain_paramname = paramname;
+        std::string alias_paramname;
 
-        if (paramname.substr(0, 1) == "[")
+        size_t alias_pos = paramname.find(" as ");
+        if (alias_pos != std::string::npos)
         {
-          auto n = paramname.find("]", 1);
-          if (n > 0)
-          {
-            alias = paramname.substr(1, n - 1);
-            nn = paramname.substr(n + 1);
-          }
+          plain_paramname = paramname.substr(0, alias_pos);
+          alias_paramname = paramname.substr(alias_pos + 4);
         }
 
         Spine::ParameterAndFunctions paramfuncs =
-            Spine::ParameterFactory::instance().parseNameAndFunctions(nn, true);
+            Spine::ParameterFactory::instance().parseNameAndFunctions(plain_paramname, true);
 
-        if (alias.length() > 0)
-          paramfuncs.parameter.setAlias(alias);
+        if (alias_paramname.length() > 0)
+          paramfuncs.parameter.setAlias(alias_paramname);
 
         poptions.add(paramfuncs.parameter, paramfuncs.functions);
       }
@@ -709,13 +699,6 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
             parameter, Spine::ParameterFunctions(innerFunction, outerFunction));
         poptions.add(paramfuncs.parameter, paramfuncs.functions);
       }
-
-      /*
-  Spine::ParameterAndFunctions paramfuncs =
-      Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
-
-  poptions.add(paramfuncs.parameter, paramfuncs.functions);
-      */
     }
     poptions.expandParameter("data_source");
 

@@ -20,6 +20,7 @@
 #include <grid-files/common/GraphFunctions.h>
 #include <grid-files/common/ShowFunction.h>
 #include <newbase/NFmiIndexMaskTools.h>
+#include <newbase/NFmiSvgTools.h>
 #include <spine/Convenience.h>
 #include <spine/Exception.h>
 #include <spine/SmartMet.h>
@@ -544,7 +545,7 @@ std::size_t Plugin::hash_value(const State& state,
 
             if (producer.empty())
             {
-              Spine::Exception ex(BCP, "No data available for '" + tloc.tag + "'!");
+              Spine::Exception ex(BCP, "No data available for '" + loc->name + "'!");
               ex.disableLogging();
               throw ex;
             }
@@ -920,7 +921,7 @@ void Plugin::fetchStaticLocationValues(Query& query,
           loc = query.wktGeometries.getLocation(tloc.loc->name);
 
         std::string val = location_parameter(
-            tloc.loc, pname, query.valueformatter, query.timezone, query.precisions[column]);
+            loc, pname, query.valueformatter, query.timezone, query.precisions[column]);
         data.set(column, row++, val);
       }
       column++;
@@ -1345,10 +1346,7 @@ void Plugin::fetchQEngineValues(const State& state,
               double lat2 = Fmi::stod(latstr2);
 
               NFmiSvgPath boundingBoxPath;
-              std::pair<double, double> firstCorner(lon1, lat1);
-              std::pair<double, double> secondCorner(lon2, lat2);
-              make_rectangle_path(boundingBoxPath, firstCorner, secondCorner);
-
+              NFmiSvgTools::BBoxToSvgPath(boundingBoxPath, lon1, lat1, lon2, lat2);
               mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), boundingBoxPath, loc->radius);
             }
             else if (loc->type == Spine::Location::Area || loc->type == Spine::Location::Place ||
@@ -1713,9 +1711,8 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
         Spine::BoundingBox bbox(loc_name);
 
         NFmiSvgPath svgPath;
-        std::pair<double, double> firstCorner(bbox.xMin, bbox.yMin);
-        std::pair<double, double> secondCorner(bbox.xMax, bbox.yMax);
-        make_rectangle_path(svgPath, firstCorner, secondCorner);
+        NFmiSvgTools::BBoxToSvgPath(svgPath, bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
+
         std::string wkt;
         for (NFmiSvgPath::const_iterator iter = svgPath.begin(); iter != svgPath.end(); iter++)
         {
@@ -2015,7 +2012,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         if (!loc)
         {
           Spine::Exception ex(BCP,
-                              "Station fmisid=" + Fmi::to_string(fmisid) + " in not available!");
+                              "Station fmisid=" + Fmi::to_string(fmisid) + " is not available!");
           throw ex;
         }
       }
