@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.11.14
+Version: 19.11.20
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,28 +18,28 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.10.31
+BuildRequires: smartmet-library-spine-devel >= 19.11.20
 BuildRequires: smartmet-library-locus-devel >= 19.9.26
 BuildRequires: smartmet-library-macgyver-devel >= 19.9.26
-BuildRequires: smartmet-library-newbase-devel >= 19.11.14
+BuildRequires: smartmet-library-newbase-devel >= 19.11.20
 BuildRequires: smartmet-library-gis-devel >= 19.9.26
 BuildRequires: smartmet-engine-geonames-devel >= 19.11.14
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 19.10.31
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 19.10.31
-BuildRequires: smartmet-engine-gis-devel >= 19.10.31
+BuildRequires: smartmet-engine-querydata-devel >= 19.11.20
+BuildRequires: smartmet-engine-gis-devel >= 19.11.20
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-library-locus >= 19.9.26
 Requires: smartmet-library-macgyver >= 19.9.26
-Requires: smartmet-library-newbase >= 19.11.14
-Requires: smartmet-library-spine >= 19.10.31
+Requires: smartmet-library-newbase >= 19.11.20
+Requires: smartmet-library-spine >= 19.11.20
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-engine-geonames >= 19.11.14
-Requires: smartmet-engine-querydata >= 19.10.31
-Requires: smartmet-engine-gis >= 19.10.31
+Requires: smartmet-engine-querydata >= 19.11.20
+Requires: smartmet-engine-gis >= 19.11.20
 Requires: smartmet-server >= 19.10.1
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.fmi
+- Rebuilt due to newbase API changes
+
 * Thu Nov 14 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.14-1.fmi
 - Refactoring code because textgenplugin must also support bbox and wkt parameters (BRAINSTORM-1720)
 
