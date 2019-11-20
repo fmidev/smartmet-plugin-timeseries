@@ -702,8 +702,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       if (geometryId > 0)
         qParam.mGeometryId = geometryId;
 
-      // std::cout << "PARAM [" << param.name() << "][" << param.alias() << "]\n";
-      std::string tmp = param.name();
+      std::string tmp = param.originalName();
 
       std::vector<std::string> partList;
 
@@ -748,10 +747,10 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       }
       else
       {
-        qParam.mParam = param.name();
+        qParam.mParam = param.originalName();
       }
 
-      qParam.mOrigParam = param.name();
+      qParam.mOrigParam = param.originalName();
       qParam.mSymbolicName = qParam.mParam;
       qParam.mParameterKey = qParam.mParam;
 
