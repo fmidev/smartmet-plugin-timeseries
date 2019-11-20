@@ -664,40 +664,15 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     {
       try
       {
-        std::string plain_paramname = paramname;
-        std::string alias_paramname;
-
-        size_t alias_pos = paramname.find(" as ");
-        if (alias_pos != std::string::npos)
-        {
-          plain_paramname = paramname.substr(0, alias_pos);
-          alias_paramname = paramname.substr(alias_pos + 4);
-        }
-
         Spine::ParameterAndFunctions paramfuncs =
-            Spine::ParameterFactory::instance().parseNameAndFunctions(plain_paramname, true);
-
-        if (alias_paramname.length() > 0)
-          paramfuncs.parameter.setAlias(alias_paramname);
+            Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
 
         poptions.add(paramfuncs.parameter, paramfuncs.functions);
       }
       catch (...)
       {
-        Spine::Exception exception(BCP, "Operation failed!", NULL);
-        if (strcasecmp(forecastSource.c_str(), "querydata") == 0)
-          throw exception;
-
-        // exception.printError();
-
-        Spine::ParameterFunction innerFunction;
-        Spine::ParameterFunction outerFunction;
-
-        Spine::Parameter parameter = Spine::ParameterFactory::instance().parse(paramname, true);
-
-        Spine::ParameterAndFunctions paramfuncs(
-            parameter, Spine::ParameterFunctions(innerFunction, outerFunction));
-        poptions.add(paramfuncs.parameter, paramfuncs.functions);
+        Spine::Exception exception(BCP, "Parameter parsing failed for '" + paramname + "'!", NULL);
+        throw exception;
       }
     }
     poptions.expandParameter("data_source");

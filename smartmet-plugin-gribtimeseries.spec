@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.11.19
+Version: 19.11.20
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.10.8
+BuildRequires: smartmet-library-spine-devel >= 19.11.20
 BuildRequires: smartmet-library-locus-devel >= 19.9.26
 BuildRequires: smartmet-library-macgyver-devel >= 19.9.26
 BuildRequires: smartmet-library-newbase-devel >= 19.11.14
@@ -35,7 +35,7 @@ Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-library-locus >= 19.9.26
 Requires: smartmet-library-macgyver >= 19.9.26
 Requires: smartmet-library-newbase >= 19.11.14
-Requires: smartmet-library-spine >= 19.10.8
+Requires: smartmet-library-spine >= 19.11.20
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-engine-geonames >= 19.11.14
 Requires: smartmet-engine-querydata >= 19.9.26
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Nov 20 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.20-1.fmi
+- More fixes for grid-parameter alias name bug (BRAINSTORM-1726)
+
 * Tue Nov 19 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.19-1.fmi
 - Changes from qd-timeseries imported. Fixed grid-parameter alias name bug (BRAINSTORM-1726)
 
@@ -115,7 +118,6 @@ change, content remains unchanged. Related to BRAINSTORM-1673.
 
 * Sat Jun  8 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.6.8-1.fmi
 - Avoid unnecessary string copies for speed
->>>>>>> master:smartmet-plugin-timeseries.spec
 
 * Thu May 23 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.5.23-1.fmi
 - Bugfix: precision-option applied to latitude parameter
