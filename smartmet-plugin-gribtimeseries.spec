@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.11.20
+Version: 19.11.22
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,7 +21,7 @@ BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 19.11.20
 BuildRequires: smartmet-library-locus-devel >= 19.9.26
 BuildRequires: smartmet-library-macgyver-devel >= 19.9.26
-BuildRequires: smartmet-library-newbase-devel >= 19.11.20
+BuildRequires: smartmet-library-newbase-devel >= 19.11.21
 BuildRequires: smartmet-library-gis-devel >= 19.9.26
 BuildRequires: smartmet-engine-geonames-devel >= 19.11.14
 %if %{with observation}
@@ -29,14 +29,18 @@ BuildRequires: smartmet-engine-observation-devel >= 19.11.20
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.11.20
 BuildRequires: smartmet-engine-gis-devel >= 19.11.20
+BuildRequires: smartmet-library-grid-content-devel >= 19.11.22
+BuildRequires: smartmet-library-grid-files-devel >= 19.11.20
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-library-locus >= 19.9.26
 Requires: smartmet-library-macgyver >= 19.9.26
-Requires: smartmet-library-newbase >= 19.11.20
+Requires: smartmet-library-newbase >= 19.11.21
 Requires: smartmet-library-spine >= 19.11.20
 Requires: smartmet-library-gis >= 19.9.26
+Requires: smartmet-library-grid-content >= 19.11.22
+Requires: smartmet-library-grid-files >= 19.11.20
 Requires: smartmet-engine-geonames >= 19.11.14
 Requires: smartmet-engine-querydata >= 19.11.20
 Requires: smartmet-engine-gis >= 19.11.20
@@ -73,7 +77,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
-* Tue Nov 20 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.20-1.fmi
+* Fri Nov 22 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.22-1.fmi
+- Repackaged due to API changes in grid-content library
+
+* Wed Nov 20 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.20-1.fmi
 - More fixes for grid-parameter alias name bug (BRAINSTORM-1726)
 
 * Tue Nov 19 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.19-1.fmi
