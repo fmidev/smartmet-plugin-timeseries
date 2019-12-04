@@ -1411,7 +1411,7 @@ void GridInterface::processGridQuery(const State& state,
                   int width = atoi(gridQuery.mAttributeList.getAttributeValue("grid.width"));
                   int height = atoi(gridQuery.mAttributeList.getAttributeValue("grid.height"));
                   bool rotate = (bool)atoi(
-                      gridQuery.mAttributeList.getAttributeValue("grid.reverseYDirection"));
+                      gridQuery.mAttributeList.getAttributeValue("grid.original.reverseYDirection"));
 
                   if (width > 0 && height > 0)
                   {
