@@ -750,6 +750,13 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
         qParam.mParam = param.originalName();
       }
 
+      auto pos = qParam.mParam.find(".raw");
+      if (pos != std::string::npos)
+      {
+        qParam.mAreaInterpolationMethod = T::AreaInterpolationMethod::Linear;
+        qParam.mParam.erase(pos,4);
+      }
+
       qParam.mOrigParam = param.originalName();
       qParam.mSymbolicName = qParam.mParam;
       qParam.mParameterKey = qParam.mParam;
