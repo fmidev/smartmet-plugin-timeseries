@@ -22,11 +22,12 @@ CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
 
 # Unfortunately otlv4.h forces us to define the full oracle include path
 INCLUDES = \
-	-I ../timeseries \
-	-I /usr/include/mysql \
-	-I /usr/include/smartmet \
-	-I /usr/include/soci \
+	-I../timeseries \
+	-I/usr/include/mysql \
+	-I/usr/include/smartmet \
+	-I/usr/include/soci \
 	-I/usr/include/oracle/11.2/client64 \
+	-I/usr/gdal30/include \
 	`pkg-config --cflags libconfig++`
 
 LIBS =  -lsmartmet-spine  \
@@ -38,7 +39,7 @@ LIBS =  -lsmartmet-spine  \
 	-lboost_filesystem \
 	-lboost_iostreams \
 	-lboost_system \
-	-lgdal \
+	-L/usr/gdal30/lib -lgdal \
 	-lbz2 -lz -lpthread -ldl
 
 all: $(PROG)

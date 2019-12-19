@@ -48,7 +48,8 @@ INCLUDES = \
 	-isystem $(includedir)/smartmet \
 	-isystem $(includedir)/mysql \
 	-isystem $(includedir)/soci \
-	-isystem $(includedir)/oracle/11.2/client64
+	-isystem $(includedir)/oracle/11.2/client64 \
+	-isystem $(PREFIX)/gdal30/include
 
 else
 
@@ -72,8 +73,9 @@ else
 	-I$(includedir) \
 	-I$(includedir)/smartmet \
 	-I$(includedir)/mysql \
-	-isystem $(includedir)/soci \
-	-I$(includedir)/oracle/11.2/client64
+	-I$(includedir)/soci \
+	-I$(includedir)/oracle/11.2/client64 \
+	-I$(PREFIX)/gdal30/include
 
 endif
 
