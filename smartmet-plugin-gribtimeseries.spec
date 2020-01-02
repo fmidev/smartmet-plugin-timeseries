@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.12.4
+Version: 19.12.11
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -29,8 +29,8 @@ BuildRequires: smartmet-engine-observation-devel >= 19.11.20
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.11.20
 BuildRequires: smartmet-engine-gis-devel >= 19.11.20
-BuildRequires: smartmet-library-grid-content-devel >= 19.11.22
-BuildRequires: smartmet-library-grid-files-devel >= 19.11.20
+BuildRequires: smartmet-library-grid-content-devel >= 19.12.11
+BuildRequires: smartmet-library-grid-files-devel >= 19.12.11
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 19.9.26
@@ -39,8 +39,8 @@ Requires: smartmet-library-macgyver >= 19.9.26
 Requires: smartmet-library-newbase >= 19.11.21
 Requires: smartmet-library-spine >= 19.11.20
 Requires: smartmet-library-gis >= 19.9.26
-Requires: smartmet-library-grid-content >= 19.11.22
-Requires: smartmet-library-grid-files >= 19.11.20
+Requires: smartmet-library-grid-content >= 19.12.11
+Requires: smartmet-library-grid-files >= 19.12.11
 Requires: smartmet-engine-geonames >= 19.11.14
 Requires: smartmet-engine-querydata >= 19.11.20
 Requires: smartmet-engine-gis >= 19.11.20
