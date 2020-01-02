@@ -955,7 +955,7 @@ void GridInterface::processGridQuery(const State& state,
 
     Spine::TimeSeries::Value missing_value = Spine::TimeSeries::None();
 
-    if (itsProducerInfoList.getLength() == 0)
+    if (itsProducerInfoList.getLength() == 0 || (time(nullptr) - itsProducerInfoList_updateTime) > 300)
     {
       contentServer->getProducerInfoList(0, itsProducerInfoList);
       itsProducerInfoList_updateTime = time(nullptr);
