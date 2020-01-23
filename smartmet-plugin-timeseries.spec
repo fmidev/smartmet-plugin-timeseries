@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 19.11.20
+Version: 20.1.23
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -28,7 +28,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 19.11.14
 BuildRequires: smartmet-engine-observation-devel >= 19.10.31
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.11.20
-BuildRequires: smartmet-engine-gis-devel >= 19.11.20
+BuildRequires: smartmet-engine-gis-devel >= 20.1.23
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 19.9.26
@@ -39,7 +39,7 @@ Requires: smartmet-library-spine >= 19.11.20
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-engine-geonames >= 19.11.14
 Requires: smartmet-engine-querydata >= 19.11.20
-Requires: smartmet-engine-gis >= 19.11.20
+Requires: smartmet-engine-gis >= 20.1.23
 Requires: smartmet-server >= 19.10.1
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -73,6 +73,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Jan 23 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.1.23-2.fmi
+- Configuration file structure and reading changed bacause of gis-engine
+interface changed (BRAINSTORM-1746)
+
 * Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.fmi
 - Rebuilt due to newbase API changes
 

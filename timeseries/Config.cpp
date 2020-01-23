@@ -15,7 +15,7 @@ using namespace std;
 
 static const char* default_url = "/timeseries";
 static const char* default_timeformat = "iso";
-static const char* default_postgis_client_encoding = "latin1";
+// static const char* default_postgis_client_encoding = "latin1";
 
 static double default_maxdistance = 60.0;  // km
 
@@ -305,80 +305,55 @@ Config::Config(const string& configfile)
     parse_config_precisions();
 
     // PostGIS
-    if (!itsConfig.exists("postgis"))
-      itsDisabled = true;
-    else
-      itsConfig.lookupValue("postgis.disabled", itsDisabled);
-
-    if (!itsDisabled)
+    if (itsConfig.exists("geometry_tables"))
     {
-      if (!itsConfig.exists("postgis.default"))
+      Engine::Gis::postgis_identifier default_postgis_id;
+      std::string default_server;
+      std::string default_schema;
+      std::string default_table;
+      std::string default_field;
+      itsConfig.lookupValue("geometry_tables.server", default_server);
+      itsConfig.lookupValue("geometry_tables.schema", default_schema);
+      itsConfig.lookupValue("geometry_tables.table", default_table);
+      itsConfig.lookupValue("geometry_tables.field", default_field);
+      if (!default_schema.empty() && !default_table.empty() && !default_field.empty())
       {
-        throw Spine::Exception(BCP,
-                               "PostGIS configuration error: postgis.default-section missing!");
+        default_postgis_id.pgname = default_server;
+        default_postgis_id.schema = default_schema;
+        default_postgis_id.table = default_table;
+        default_postgis_id.field = default_field;
+        postgis_identifiers.insert(make_pair(default_postgis_id.key(), default_postgis_id));
       }
 
-      Engine::Gis::postgis_identifier postgis_default_identifier;
-      postgis_default_identifier.encoding = default_postgis_client_encoding;
-      itsConfig.lookupValue("postgis.default.host", postgis_default_identifier.host);
-      itsConfig.lookupValue("postgis.default.port", postgis_default_identifier.port);
-      itsConfig.lookupValue("postgis.default.database", postgis_default_identifier.database);
-      itsConfig.lookupValue("postgis.default.username", postgis_default_identifier.username);
-      itsConfig.lookupValue("postgis.default.password", postgis_default_identifier.password);
-      itsConfig.lookupValue("postgis.default.client_encoding", postgis_default_identifier.encoding);
-      itsConfig.lookupValue("postgis.default.schema", postgis_default_identifier.schema);
-      itsConfig.lookupValue("postgis.default.table", postgis_default_identifier.table);
-      itsConfig.lookupValue("postgis.default.field", postgis_default_identifier.field);
-      std::string postgis_identifier_key(postgis_default_identifier.key());
-      itsDefaultPostGISIdentifierKey = postgis_identifier_key;
-      postgis_identifiers.insert(make_pair(postgis_identifier_key, postgis_default_identifier));
-
-      if (itsConfig.exists("postgis.config_items"))
+      if (itsConfig.exists("geometry_tables.additional_tables"))
       {
-        libconfig::Setting& config_items = itsConfig.lookup("postgis.config_items");
+        libconfig::Setting& additionalTables =
+            itsConfig.lookup("geometry_tables.additional_tables");
 
-        if (!config_items.isArray())
+        for (int i = 0; i < additionalTables.getLength(); i++)
         {
-          throw Spine::Exception(
-              BCP,
-              "postgis.config_items not an array in areaforecastplugin configuration file line " +
-                  Fmi::to_string(config_items.getSourceLine()));
-          ;
-        }
+          libconfig::Setting& tableConfig = additionalTables[i];
+          std::string server = (default_server.empty() ? "" : default_server);
+          std::string schema = (default_schema.empty() ? "" : default_schema);
+          std::string table = (default_table.empty() ? "" : default_table);
+          std::string field = (default_field.empty() ? "" : default_field);
+          tableConfig.lookupValue("server", server);
+          tableConfig.lookupValue("schema", schema);
+          tableConfig.lookupValue("table", table);
+          tableConfig.lookupValue("field", field);
 
-        for (int i = 0; i < config_items.getLength(); ++i)
-        {
-          if (!itsConfig.exists(parse_config_key("postgis.", config_items[i])))
+          Engine::Gis::postgis_identifier postgis_id;
+          postgis_id.pgname = server;
+          postgis_id.schema = schema;
+          postgis_id.table = table;
+          postgis_id.field = field;
+
+          if (schema.empty() || table.empty() || field.empty())
             throw Spine::Exception(BCP,
-                                   parse_config_key("postgis.", config_items[i]) +
-                                       " -section does not exists in configuration file");
+                                   "Configuration file error. Some of the following fields "
+                                   "missing: server, schema, table, field!");
 
-          Engine::Gis::postgis_identifier postgis_id(
-              postgis_identifiers[itsDefaultPostGISIdentifierKey]);
-
-          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".host").c_str(),
-                                postgis_id.host);
-          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".port").c_str(),
-                                postgis_id.port);
-          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".database").c_str(),
-                                postgis_id.database);
-          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".username").c_str(),
-                                postgis_id.username);
-          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".password").c_str(),
-                                postgis_id.password);
-          itsConfig.lookupValue(
-              parse_config_key("postgis.", config_items[i], ".client_encoding").c_str(),
-              postgis_id.encoding);
-          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".schema").c_str(),
-                                postgis_id.schema);
-          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".table").c_str(),
-                                postgis_id.table);
-          itsConfig.lookupValue(parse_config_key("postgis.", config_items[i], ".field").c_str(),
-                                postgis_id.field);
-
-          std::string key(postgis_id.key());
-          if (postgis_identifiers.find(key) == postgis_identifiers.end())
-            postgis_identifiers.insert(make_pair(postgis_id.key(), postgis_id));
+          postgis_identifiers.insert(std::make_pair(postgis_id.key(), postgis_id));
         }
       }
     }
