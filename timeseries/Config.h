@@ -46,6 +46,8 @@ class Config : private boost::noncopyable
     return itsFormatterOptions.defaultWxmlTimeString();
   }
 
+  const std::vector<uint>& defaultGridGeometries() {return itsDefaultGridGeometries;}
+
   const std::string& defaultWxmlVersion() const { return itsFormatterOptions.defaultWxmlVersion(); }
   const std::string& wxmlSchema() const { return itsFormatterOptions.wxmlSchema(); }
   const SmartMet::Spine::TableFormatterOptions& formatterOptions() const
@@ -81,6 +83,7 @@ class Config : private boost::noncopyable
   double itsDefaultMaxDistance;
   unsigned int itsExpirationTime;
   std::vector<std::string> itsParameterAliasFiles;
+  std::vector<uint> itsDefaultGridGeometries;
 
   SmartMet::Spine::TableFormatterOptions itsFormatterOptions;
   Precisions itsPrecisions;

@@ -358,6 +358,44 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
   }
 }
 
+
+bool GridInterface::isValidDefaultRequest(const std::vector<uint>& defaultGeometries,std::vector<std::vector<T::Coordinate>>& polygonPath,T::GeometryId_set& geometryIdList)
+{
+  try
+  {
+    if (defaultGeometries.size() == 0)
+      return true;
+
+    for (auto geom = defaultGeometries.begin(); geom != defaultGeometries.end(); ++geom)
+    {
+      bool match = true;
+      for (auto cList = polygonPath.begin(); cList != polygonPath.end(); ++cList)
+      {
+        for (auto coordinate = cList->begin(); coordinate != cList->end(); ++coordinate)
+        {
+          double grid_i = ParamValueMissing;
+          double grid_j = ParamValueMissing;
+          if (!Identification::gridDef.getGridPointByGeometryIdAndLatLonCoordinates(*geom,coordinate->y(), coordinate->x(),grid_i,grid_j))
+            match = false;
+        }
+      }
+
+      if (match)
+        geometryIdList.insert(*geom);
+    }
+
+    if (geometryIdList.size() > 0)
+      return true;
+
+    return false;
+  }
+  catch (...)
+  {
+    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+  }
+}
+
+
 void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
                                      AdditionalParameters& additionalParameters,
                                      const Query& masterquery,
@@ -367,6 +405,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
                                      const AreaProducers& areaproducers,
                                      const Spine::TaggedLocation& tloc,
                                      const Spine::LocationPtr loc,
+                                     T::GeometryId_set& geometryIdList,
                                      std::vector<std::vector<T::Coordinate>>& polygonPath)
 {
   FUNCTION_TRACE
@@ -403,6 +442,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
     gridQuery.mStartTime = startTime;
     gridQuery.mEndTime = endTime;
+    gridQuery.mGeometryIdList = geometryIdList;
 
     if (!std::isnan(loc->dem))
       gridQuery.mAttributeList.setAttribute("dem", std::to_string(loc->dem));
@@ -945,6 +985,7 @@ void GridInterface::processGridQuery(const State& state,
                                      const Spine::TaggedLocation& tloc,
                                      const Spine::LocationPtr loc,
                                      std::string country,
+                                     T::GeometryId_set& geometryIdList,
                                      std::vector<std::vector<T::Coordinate>>& polygonPath)
 {
   FUNCTION_TRACE
@@ -1140,6 +1181,7 @@ void GridInterface::processGridQuery(const State& state,
                          areaproducers,
                          tloc,
                          loc,
+                         geometryIdList,
                          polygonPath);
 
         std::vector<TimeSeriesData> tsdatavector;

@@ -46,10 +46,17 @@ class GridInterface
                                 const Spine::TaggedLocation& tloc,
                                 const Spine::LocationPtr loc,
                                 std::string country,
+                                T::GeometryId_set& geometryIdList,
                                 std::vector<std::vector<T::Coordinate>>& polygonPath);
 
     bool                    isGridProducer(const std::string& producer);
+
+    bool                    isValidDefaultRequest(const std::vector<uint>& defaultGeometries,
+                              std::vector<std::vector<T::Coordinate>>& polygonPath,
+                              T::GeometryId_set& geometryIdList);
+
     bool                    containsGridProducer(const Query& masterquery);
+
     bool                    containsParameterWithGridProducer(const Query& masterquery);
 
  private:
@@ -64,6 +71,7 @@ class GridInterface
                                 const AreaProducers& areaproducers,
                                 const Spine::TaggedLocation& tloc,
                                 const Spine::LocationPtr loc,
+                                T::GeometryId_set& geometryIdList,
                                 std::vector<std::vector<T::Coordinate>>& polygonPath);
 
     void                    insertFileQueries(QueryServer::Query& query,QueryServer::QueryStreamer_sptr queryStreamer);

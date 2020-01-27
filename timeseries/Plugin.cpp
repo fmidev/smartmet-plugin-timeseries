@@ -2689,7 +2689,7 @@ void Plugin::processQEngineQuery(const State& state,
   }
 }
 
-void Plugin::processGridEngineQuery(const State& state,
+bool Plugin::processGridEngineQuery(const State& state,
                                     Query& query,
                                     OutputData& outputData,
                                     QueryServer::QueryStreamer_sptr queryStreamer,
@@ -2700,7 +2700,7 @@ void Plugin::processGridEngineQuery(const State& state,
   try
   {
     if (itsConfig.gridEngineDisabled())
-      return;
+      return false;
 
     boost::posix_time::ptime latestTimestep = query.latestTimestep;
 
@@ -2852,6 +2852,11 @@ void Plugin::processGridEngineQuery(const State& state,
         break;
       }
 
+
+      T::GeometryId_set geometryIdList;
+      if (areaproducers.empty() &&  !itsGridInterface->isValidDefaultRequest(itsConfig.defaultGridGeometries(),polygonPath,geometryIdList))
+        return false;
+
       std::string country = itsGeoEngine->countryName(loc->iso2, query.language);
       // std::cout << formatLocation(*loc) << endl;
       // std::cout << formatLocation(*(tloc.loc)) << endl;
@@ -2865,8 +2870,10 @@ void Plugin::processGridEngineQuery(const State& state,
                                          tloc,
                                          loc,
                                          country,
+                                         geometryIdList,
                                          polygonPath);
     }
+    return false;
   }
   catch (...)
   {
@@ -2958,12 +2965,15 @@ void Plugin::processQuery(const State& state,
                (masterquery.forecastSource == "" &&
                 (((!areaproducers.empty() &&
                    itsGridInterface->containsGridProducer(masterquery))) ||
-                 (itsGridInterface->containsParameterWithGridProducer(masterquery)) ||
+                 (itsGridInterface->containsParameterWithGridProducer(masterquery))  ||
                  (areaproducers.empty() &&
                   strcasecmp(itsConfig.primaryForecastSource().c_str(), "grid") == 0)))))
       {
-        processGridEngineQuery(
-            state, query, outputData, queryStreamer, areaproducers, producerDataPeriod);
+        bool processed = processGridEngineQuery(state, query, outputData, queryStreamer, areaproducers, producerDataPeriod);
+
+        // If the query was not processed then we should call the QEngine instead.
+        if (!processed)
+          processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
       }
       else
       {

@@ -393,6 +393,16 @@ Config::Config(const string& configfile)
     itsLastAliasCheck = time(nullptr);
     try
     {
+      const libconfig::Setting& gridGeometries = itsConfig.lookup("defaultGridGeometries");
+      if (!gridGeometries.isArray())
+        throw Spine::Exception(BCP, "Configured value of 'defaultGridGeometries' must be an array");
+
+      for (int i = 0; i < gridGeometries.getLength(); ++i)
+      {
+        uint geomId = gridGeometries[i];
+        itsDefaultGridGeometries.push_back(geomId);
+      }
+
       const libconfig::Setting& aliasFiles = itsConfig.lookup("parameterAliasFiles");
 
       if (!aliasFiles.isArray())

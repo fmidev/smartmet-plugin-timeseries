@@ -122,7 +122,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                           QueryLevelDataCache& queryLevelDataCache,
                           OutputData& outputData);
 
-  void processGridEngineQuery(const State& state,
+  bool processGridEngineQuery(const State& state,
                               Query& masterquery,
                               OutputData& outputData,
                               QueryServer::QueryStreamer_sptr queryStreamer,
