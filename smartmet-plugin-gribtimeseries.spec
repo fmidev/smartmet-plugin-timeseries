@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.1.21
+Version: 20.1.29
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -29,8 +29,8 @@ BuildRequires: smartmet-engine-observation-devel >= 19.11.20
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 19.11.20
 BuildRequires: smartmet-engine-gis-devel >= 19.11.20
-BuildRequires: smartmet-library-grid-content-devel >= 20.1.21
-BuildRequires: smartmet-library-grid-files-devel >= 20.1.16
+BuildRequires: smartmet-library-grid-content-devel >= 20.1.29
+BuildRequires: smartmet-library-grid-files-devel >= 20.1.29
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 19.9.26
@@ -39,8 +39,8 @@ Requires: smartmet-library-macgyver >= 19.9.26
 Requires: smartmet-library-newbase >= 19.11.21
 Requires: smartmet-library-spine >= 19.11.20
 Requires: smartmet-library-gis >= 19.9.26
-Requires: smartmet-library-grid-content >= 20.1.21
-Requires: smartmet-library-grid-files >= 20.1.16
+Requires: smartmet-library-grid-content >= 20.1.29
+Requires: smartmet-library-grid-files >= 20.1.29
 Requires: smartmet-engine-geonames >= 19.11.14
 Requires: smartmet-engine-querydata >= 19.11.20
 Requires: smartmet-engine-gis >= 19.11.20
@@ -77,6 +77,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Jan 29 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.29-1.fmi
+- Added a possibility to restrict grid requests without producer information
+- Ensuring that newbase producers with alias names are accepted as grid producers
+
 * Tue Jan 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.21-1.fmi
 - Repackaged due to grid-content and grid-engine API changes
 
