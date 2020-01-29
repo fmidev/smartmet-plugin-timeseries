@@ -81,6 +81,10 @@ rm -rf $RPM_BUILD_ROOT
 - Added a possibility to restrict grid requests without producer information
 - Ensuring that newbase producers with alias names are accepted as grid producers
 
+* Thu Jan 23 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.1.23-2.fmi
+- Configuration file structure and reading changed bacause of gis-engine
+interface changed (BRAINSTORM-1746)
+
 * Tue Jan 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.21-1.fmi
 - Repackaged due to grid-content and grid-engine API changes
 
@@ -99,8 +103,14 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Nov 19 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.19-1.fmi
 - Changes from qd-timeseries imported. Fixed grid-parameter alias name bug (BRAINSTORM-1726)
 
+* Thu Nov 14 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.14-1.fmi
+- Refactoring code because textgenplugin must also support bbox and wkt parameters (BRAINSTORM-1720)
+
 * Thu Nov  7 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.7-1.fmi
 - Support for alternative query parameters
+
+* Thu Oct 31 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.31-1.fmi
+- Rebuild due to newbase API/ABI changes
 
 * Wed Oct 30 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.10.30-1.fmi
 - Full repackaging of GRIB server components

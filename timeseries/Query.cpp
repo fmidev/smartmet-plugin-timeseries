@@ -113,6 +113,9 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       }
     }
 
+    // Store WKT-geometries
+    wktGeometries = state.getGeoEngine().getWktGeometries(*loptions, language);
+
     // attributeList.print(std::cout,0,0);
 
     T::Attribute* v1 = attributeList.getAttributeByNameEnd("Grib1.IndicatorSection.EditionNumber");

@@ -13,6 +13,7 @@
 #include <engines/geonames/WktGeometry.h>
 
 #include <engines/geonames/Engine.h>
+#include <engines/geonames/WktGeometry.h>
 
 #include <grid-content/queryServer/definition/AliasFileCollection.h>
 #include <grid-files/common/AdditionalParameters.h>
