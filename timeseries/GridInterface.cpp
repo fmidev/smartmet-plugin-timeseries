@@ -82,8 +82,9 @@ bool GridInterface::isGridProducer(const std::string& producer)
       itsGridEngine->getProducerList(itsProducerList);
     }
 
+    std::string name = itsGridEngine->getProducerName(producer);
     std::vector<std::string> nameList;
-    itsGridEngine->getProducerNameList(producer, nameList);
+    itsGridEngine->getProducerNameList(name, nameList);
     for (auto it = nameList.begin(); it != nameList.end(); ++it)
     {
       for (auto itm = itsProducerList.begin(); itm != itsProducerList.end(); ++itm)
@@ -848,6 +849,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       for (auto it = areaproducers.begin(); it != areaproducers.end(); ++it)
       {
         std::string producerName = *it;
+        producerName = itsGridEngine->getProducerName(producerName);
         producerName = itsGridEngine->getProducerAlias(producerName, levelId);
 
         std::string key = producerName + ";" + qParam.mParam;

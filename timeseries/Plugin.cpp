@@ -2854,7 +2854,7 @@ bool Plugin::processGridEngineQuery(const State& state,
 
 
       T::GeometryId_set geometryIdList;
-      if (areaproducers.empty() &&  !itsGridInterface->isValidDefaultRequest(itsConfig.defaultGridGeometries(),polygonPath,geometryIdList))
+      if (areaproducers.empty() &&  !itsGridInterface->containsParameterWithGridProducer(query) &&  !itsGridInterface->isValidDefaultRequest(itsConfig.defaultGridGeometries(),polygonPath,geometryIdList))
         return false;
 
       std::string country = itsGeoEngine->countryName(loc->iso2, query.language);
@@ -2873,7 +2873,7 @@ bool Plugin::processGridEngineQuery(const State& state,
                                          geometryIdList,
                                          polygonPath);
     }
-    return false;
+    return true;
   }
   catch (...)
   {
@@ -2973,10 +2973,14 @@ void Plugin::processQuery(const State& state,
 
         // If the query was not processed then we should call the QEngine instead.
         if (!processed)
+        {
+          printf("########### NOT PROCESSED ###############\n");
           processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
+        }
       }
       else
       {
+        printf("########### QUERYDATA ###############\n");
         processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
       }
 
