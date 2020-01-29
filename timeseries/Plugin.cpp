@@ -2974,13 +2974,11 @@ void Plugin::processQuery(const State& state,
         // If the query was not processed then we should call the QEngine instead.
         if (!processed)
         {
-          printf("########### NOT PROCESSED ###############\n");
           processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
         }
       }
       else
       {
-        printf("########### QUERYDATA ###############\n");
         processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
       }
 
