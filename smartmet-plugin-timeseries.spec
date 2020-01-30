@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.1.23
+Version: 20.1.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Jan 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.30-1.fmi
+- Check given producer names are valid
+
 * Thu Jan 23 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.1.23-2.fmi
 - Configuration file structure and reading changed bacause of gis-engine
 interface changed (BRAINSTORM-1746)
