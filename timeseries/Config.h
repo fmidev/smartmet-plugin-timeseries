@@ -65,7 +65,6 @@ class Config : private boost::noncopyable
 
  private:
   libconfig::Config itsConfig;
-  bool itsDisabled = false;
   std::string itsDefaultPrecision;
   std::string itsDefaultLanguage;
   std::string itsDefaultLocaleName;

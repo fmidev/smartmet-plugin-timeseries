@@ -122,7 +122,11 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
         origintime = Fmi::TimeParser::parse(*tmp);
     }
 
-    Query::parse_producers(req);
+#ifndef WITHOUT_OBSERVARION
+    Query::parse_producers(req, state.getQEngine(), state.getObsEngine());
+#else
+    Query::parse_producers(req, state.getQEngine());
+#endif
 
 #ifndef WITHOUT_OBSERVATION
     Query::parse_parameters(req, state.getObsEngine());
@@ -325,7 +329,14 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
  */
 // ----------------------------------------------------------------------
 
-void Query::parse_producers(const Spine::HTTP::Request& theReq)
+#ifndef WITHOUT_OBSERVATION
+void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
+                            const SmartMet::Engine::Querydata::Engine& theQEngine,
+                            const SmartMet::Engine::Observation::Engine* theObsEngine)
+#else
+void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
+                            const SmartMet::Engine::Querydata::Engine& theQEngine)
+#endif
 {
   try
   {
@@ -353,6 +364,23 @@ void Query::parse_producers(const Spine::HTTP::Request& theReq)
 
     for (auto& p : resultProducers)
       boost::algorithm::to_lower(p);
+
+      // Verify the producer names are valid
+
+#ifndef WITHOUT_OBSERVATION
+    const auto observations = theObsEngine->getValidStationTypes();
+#endif
+
+    for (const auto& p : resultProducers)
+    {
+      bool ok = theQEngine.hasProducer(p);
+#ifndef WITHOUT_OBSERVATION
+      if (!ok)
+        ok = (observations.find(p) != observations.end());
+#endif
+      if (!ok)
+        throw Spine::Exception(BCP, "Unknown producer name '" + p + "'");
+    }
 
     // Now split into location parts
 
