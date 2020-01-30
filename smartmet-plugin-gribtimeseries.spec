@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.1.29
+Version: 20.1.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Jan 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.30-1.fmi
+- Fixed initialization of WKT geometries bug which caused a crash
+
 * Wed Jan 29 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.29-1.fmi
 - Added a possibility to restrict grid requests without producer information
 - Ensuring that newbase producers with alias names are accepted as grid producers
