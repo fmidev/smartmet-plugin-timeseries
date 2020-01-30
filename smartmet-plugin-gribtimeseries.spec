@@ -79,6 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Thu Jan 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.30-1.fmi
 - Fixed initialization of WKT geometries bug which caused a crash
+- Check given producer names are valid
 
 * Wed Jan 29 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.29-1.fmi
 - Added a possibility to restrict grid requests without producer information
