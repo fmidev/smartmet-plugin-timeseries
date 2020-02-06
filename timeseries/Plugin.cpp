@@ -1372,12 +1372,15 @@ void Plugin::fetchQEngineValues(const State& state,
                                                                 query.lastpoint);
 
             // indexmask (indexed locations on the area), list of local times
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
             querydata_result =
                 loadDataLevels
                     ? qi->values(querydata_param, mask, querydata_tlist)
                     : pressure
                           ? qi->valuesAtPressure(querydata_param, mask, querydata_tlist, *pressure)
                           : qi->valuesAtHeight(querydata_param, mask, querydata_tlist, *height);
+#pragma GCC diagnostic pop
 
             if (querydata_result->size() > 0)
             {
@@ -2852,9 +2855,10 @@ bool Plugin::processGridEngineQuery(const State& state,
         break;
       }
 
-
       T::GeometryId_set geometryIdList;
-      if (areaproducers.empty() &&  !itsGridInterface->containsParameterWithGridProducer(query) &&  !itsGridInterface->isValidDefaultRequest(itsConfig.defaultGridGeometries(),polygonPath,geometryIdList))
+      if (areaproducers.empty() && !itsGridInterface->containsParameterWithGridProducer(query) &&
+          !itsGridInterface->isValidDefaultRequest(
+              itsConfig.defaultGridGeometries(), polygonPath, geometryIdList))
         return false;
 
       std::string country = itsGeoEngine->countryName(loc->iso2, query.language);
@@ -2965,11 +2969,12 @@ void Plugin::processQuery(const State& state,
                (masterquery.forecastSource == "" &&
                 (((!areaproducers.empty() &&
                    itsGridInterface->containsGridProducer(masterquery))) ||
-                 (itsGridInterface->containsParameterWithGridProducer(masterquery))  ||
+                 (itsGridInterface->containsParameterWithGridProducer(masterquery)) ||
                  (areaproducers.empty() &&
                   strcasecmp(itsConfig.primaryForecastSource().c_str(), "grid") == 0)))))
       {
-        bool processed = processGridEngineQuery(state, query, outputData, queryStreamer, areaproducers, producerDataPeriod);
+        bool processed = processGridEngineQuery(
+            state, query, outputData, queryStreamer, areaproducers, producerDataPeriod);
 
         // If the query was not processed then we should call the QEngine instead.
         if (!processed)
