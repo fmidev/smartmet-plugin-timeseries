@@ -249,11 +249,45 @@ void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
 
 #ifndef WITHOUT_OBSERVATION
 
-TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
-                                              const ts::TimeSeriesVectorPtr& observation_result,
-                                              const Engine::Observation::Settings& settings,
-                                              const Query& query,
-                                              int fmisid_index)
+void add_missing_timesteps(ts::TimeSeries& ts,
+                           const Spine::TimeSeriesGeneratorCache::TimeList& tlist)
+{
+  if (!tlist)
+    return;
+
+  ts::TimeSeries ts2;
+  boost::optional<boost::local_time::local_date_time> previous_timestep = boost::none;
+  for (auto value : ts)
+  {
+    if (ts2.empty())
+    {
+      ts2.push_back(value);
+    }
+    else
+    {
+      // Add missing timestep
+      for (auto t : *tlist)
+      {
+        if (t > previous_timestep && t < value.time)
+        {
+          ts2.push_back(ts::TimedValue(t, ts::None()));
+          break;
+        }
+      }
+      ts2.push_back(value);
+    }
+    previous_timestep = value.time;
+  }
+  ts = ts2;
+}
+
+TimeSeriesByLocation get_timeseries_by_fmisid(
+    const std::string& producer,
+    const ts::TimeSeriesVectorPtr& observation_result,
+    const Engine::Observation::Settings& settings,
+    const Query& query,
+    const Spine::TimeSeriesGeneratorCache::TimeList& tlist,
+    int fmisid_index)
 
 {
   try
@@ -291,7 +325,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
     end_index = fmisid_ts.size();
     location_indexes.emplace_back(std::pair<unsigned int, unsigned int>(start_index, end_index));
 
-    // iterate through locations and do aggregation
+    // Iterate through locations
     for (unsigned int i = 0; i < location_indexes.size(); i++)
     {
       ts::TimeSeriesVectorPtr tsv(new ts::TimeSeriesVector());
@@ -306,6 +340,8 @@ TimeSeriesByLocation get_timeseries_by_fmisid(const std::string& producer,
         else
         {
           ts::TimeSeries ts_ik(ts_k.begin() + start_index, ts_k.begin() + end_index);
+          // Add missing timesteps
+          add_missing_timesteps(ts_ik, tlist);
           tsv->emplace_back(ts_ik);
         }
       }
@@ -1745,41 +1781,54 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
     // instance.
 
     boost::local_time::time_zone_ptr tz = getTimeZones().time_zone_from_string(query.timezone);
-    local_date_time ldt_now(now, tz);
+    boost::local_time::local_date_time ldt_now(now, tz);
+    boost::posix_time::ptime ptime_now =
+        (query.toptions.startTimeUTC ? ldt_now.utc_time() : ldt_now.local_time());
 
     if (query.toptions.startTimeData)
     {
-      query.toptions.startTime = ldt_now.local_time() - hours(24);
+      query.toptions.startTime = ptime_now - hours(24);
       query.toptions.startTimeData = false;
     }
     if (query.toptions.endTimeData)
     {
-      query.toptions.endTime = ldt_now.local_time();
+      query.toptions.endTime = ptime_now;
       query.toptions.endTimeData = false;
     }
 
-    if (query.toptions.startTime > ldt_now.local_time())
-      query.toptions.startTime = ldt_now.local_time();
-    if (query.toptions.endTime > ldt_now.local_time())
-      query.toptions.endTime = ldt_now.local_time();
+    if (query.toptions.startTime > ptime_now)
+      query.toptions.startTime = ptime_now;
+    if (query.toptions.endTime > ptime_now)
+      query.toptions.endTime = ptime_now;
 
     if (!query.starttimeOptionGiven && !query.endtimeOptionGiven)
     {
-      query.toptions.startTime =
-          producerDataPeriod.getLocalStartTime(producer, query.timezone, getTimeZones())
-              .local_time();
-      query.toptions.endTime =
-          producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones()).local_time();
+      if (query.toptions.startTimeUTC)
+        query.toptions.startTime =
+            producerDataPeriod.getLocalStartTime(producer, query.timezone, getTimeZones())
+                .utc_time();
+      else
+        query.toptions.startTime =
+            producerDataPeriod.getLocalStartTime(producer, query.timezone, getTimeZones())
+                .local_time();
+      if (query.toptions.startTimeUTC)
+        query.toptions.endTime =
+            producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones()).utc_time();
+      else
+        query.toptions.endTime =
+            producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones())
+                .local_time();
     }
 
     if (query.starttimeOptionGiven && !query.endtimeOptionGiven)
     {
-      query.toptions.endTime = ldt_now.local_time();
+      query.toptions.endTime = ptime_now;
     }
 
     if (!query.starttimeOptionGiven && query.endtimeOptionGiven)
     {
       query.toptions.startTime = query.toptions.endTime - hours(24);
+      query.toptions.startTimeUTC = query.toptions.endTimeUTC;
     }
 
     // observation requires the times to be in UTC. The correct way to do it
@@ -1820,6 +1869,17 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
               << std::endl;
     std::cout << "query.toptions.startTime: " << query.toptions.startTime << std::endl;
     std::cout << "query.toptions.endTime: " << query.toptions.endTime << std::endl;
+    std::cout << "query.toptions.all(): " << query.toptions.all() << std::endl;
+    if (query.toptions.timeSteps)
+      std::cout << "query.toptions.timeSteps: " << *query.toptions.timeSteps << std::endl;
+    if (query.toptions.timeStep)
+      std::cout << "query.toptions.timeStep: " << *query.toptions.timeStep << std::endl;
+    if (query.toptions.timeList.size() > 0)
+    {
+      std::cout << "query.toptions.timeList: " << std::endl;
+      for (auto t : query.toptions.timeList)
+        std::cout << t << std::endl;
+    }
 
     std::cout << "settings.allplaces: " << settings.allplaces << std::endl;
     std::cout << "settings.boundingBox.size(): " << settings.boundingBox.size() << std::endl;
@@ -1917,13 +1977,13 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
     int fmisid_index = get_fmisid_index(settings);
 
-    TimeSeriesByLocation observation_result_by_location =
-        get_timeseries_by_fmisid(producer, observation_result, settings, query, fmisid_index);
-
     Spine::TimeSeriesGeneratorCache::TimeList tlist;
     auto tz = getTimeZones().time_zone_from_string(query.timezone);
     if (!query.toptions.all())
       tlist = itsTimeSeriesCache->generate(query.toptions, tz);
+
+    TimeSeriesByLocation observation_result_by_location = get_timeseries_by_fmisid(
+        producer, observation_result, settings, query, tlist, fmisid_index);
 
     // iterate locations
     for (unsigned int i = 0; i < observation_result_by_location.size(); i++)
@@ -2068,9 +2128,28 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       if (query.toptions.all() || is_flash_or_mobile_producer(producer) ||
           producer == SYKE_PRODUCER)
       {
+        boost::posix_time::ptime startTimeAsUTC = query.toptions.startTime;
+        boost::posix_time::ptime endTimeAsUTC = query.toptions.endTime;
+        if (!query.toptions.startTimeUTC)
+        {
+          boost::local_time::local_date_time ldt = Fmi::TimeParser::make_time(
+              query.toptions.startTime.date(), query.toptions.startTime.time_of_day(), tz);
+          startTimeAsUTC = ldt.utc_time();
+        }
+        if (query.toptions.endTimeUTC == false)
+        {
+          boost::local_time::local_date_time ldt = Fmi::TimeParser::make_time(
+              query.toptions.endTime.date(), query.toptions.endTime.time_of_day(), tz);
+          endTimeAsUTC = ldt.utc_time();
+        }
+
         Spine::TimeSeriesGenerator::LocalTimeList aggtimes;
         for (const ts::TimedValue& tv : aggregated_observation_result->at(0))
-          aggtimes.push_back(tv.time);
+        {
+          // Do not show timesteps beyond starttime/endtime
+          if (tv.time.utc_time() >= startTimeAsUTC && tv.time.utc_time() <= endTimeAsUTC)
+            aggtimes.push_back(tv.time);
+        }
         // store observation data
         store_data(
             erase_redundant_timesteps(aggregated_observation_result, aggtimes), query, outputData);
@@ -2132,9 +2211,15 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
     int fmisid_index = get_fmisid_index(settings);
 
+    // first generate timesteps
+    Spine::TimeSeriesGeneratorCache::TimeList tlist;
+    auto tz = getTimeZones().time_zone_from_string(query.timezone);
+    if (!query.toptions.all())
+      tlist = itsTimeSeriesCache->generate(query.toptions, tz);
+
     // separate timeseries of different locations to their own data structures
-    TimeSeriesByLocation tsv_area =
-        get_timeseries_by_fmisid(producer, observation_result, settings, query, fmisid_index);
+    TimeSeriesByLocation tsv_area = get_timeseries_by_fmisid(
+        producer, observation_result, settings, query, tlist, fmisid_index);
     // make sure that all timeseries have the same timesteps
     for (FmisidTSVectorPair& val : tsv_area)
     {
@@ -2286,12 +2371,6 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     }
 #endif
 
-    // first generate timesteps
-    Spine::TimeSeriesGeneratorCache::TimeList tlist;
-    auto tz = getTimeZones().time_zone_from_string(query.timezone);
-    if (!query.toptions.all())
-      tlist = itsTimeSeriesCache->generate(query.toptions, tz);
-
     ts::Value missing_value = Spine::TimeSeries::None();
     // iterate parameters, aggregate, and store aggregated result
     for (unsigned int i = 0; i < obsParameters.size(); i++)
@@ -2373,14 +2452,20 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
       Spine::ParameterFunctions pfunc = obsParameters[i].functions;
       // Do the aggregation if requasted
-      ts::TimeSeriesGroupPtr aggregated_tsg;
+      ts::TimeSeriesGroupPtr aggregated_tsg(new ts::TimeSeriesGroup);
       if (pfunc.innerFunction.exists())
-        aggregated_tsg = ts::aggregate(*tsg, pfunc);
+      {
+        *aggregated_tsg = *(ts::aggregate(*tsg, pfunc));
+      }
       else
-        aggregated_tsg = tsg;
+      {
+        *aggregated_tsg = *tsg;
+      }
 
 #ifdef MYDEBUG
-      std::cout << "aggregated group#" << i << ": " << std::endl << *aggregated_tsg << std::endl;
+      std::cout << boost::posix_time::second_clock::universal_time() << " - aggregated group#" << i
+                << ": " << std::endl
+                << *aggregated_tsg << std::endl;
 #endif
 
       std::vector<TimeSeriesData> aggregatedData;
