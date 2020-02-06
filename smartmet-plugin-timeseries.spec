@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.1.30
+Version: 20.2.5
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,9 +18,9 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.11.20
+BuildRequires: smartmet-library-spine-devel >= 20.2.5
 BuildRequires: smartmet-library-locus-devel >= 19.9.26
-BuildRequires: smartmet-library-macgyver-devel >= 19.9.26
+BuildRequires: smartmet-library-macgyver-devel >= 20.2.5
 BuildRequires: smartmet-library-newbase-devel >= 19.11.20
 BuildRequires: smartmet-library-gis-devel >= 19.9.26
 BuildRequires: smartmet-engine-geonames-devel >= 19.11.14
@@ -33,9 +33,9 @@ Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-library-locus >= 19.9.26
-Requires: smartmet-library-macgyver >= 19.9.26
+Requires: smartmet-library-macgyver >= 20.2.5
 Requires: smartmet-library-newbase >= 19.11.20
-Requires: smartmet-library-spine >= 19.11.20
+Requires: smartmet-library-spine >= 20.2.5
 Requires: smartmet-library-gis >= 19.9.26
 Requires: smartmet-engine-geonames >= 19.11.14
 Requires: smartmet-engine-querydata >= 19.11.20
@@ -73,6 +73,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Feb 5 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.5-1.fmi
+- Interpolate- and nearest-functions added (BRAINSTORM-1504)
+- Aggregation-related bugs fixed (BRAINSTORM-1755)
+- Additional timesteps with NaN values in observation query resultset fixed (BRAINSTORM-1750)
+
 * Thu Jan 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.30-1.fmi
 - Check given producer names are valid
 
