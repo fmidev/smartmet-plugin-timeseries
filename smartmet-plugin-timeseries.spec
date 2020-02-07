@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.2.5
+Version: 20.2.7
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,14 +18,14 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.2.5
+BuildRequires: smartmet-library-spine-devel >= 20.2.7
 BuildRequires: smartmet-library-locus-devel >= 19.12.4
 BuildRequires: smartmet-library-macgyver-devel >= 20.2.5
-BuildRequires: smartmet-library-newbase-devel >= 20.1.29
+BuildRequires: smartmet-library-newbase-devel >= 20.2.6
 BuildRequires: smartmet-library-gis-devel >= 20.2.5
 BuildRequires: smartmet-engine-geonames-devel >= 19.12.5
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.12.19
+BuildRequires: smartmet-engine-observation-devel >= 20.2.7
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.1.30
 BuildRequires: smartmet-engine-gis-devel >= 20.1.23
@@ -34,8 +34,8 @@ Requires: libconfig
 Requires: smartmet-library-gis >= 20.2.5
 Requires: smartmet-library-locus >= 19.12.4
 Requires: smartmet-library-macgyver >= 20.2.5
-Requires: smartmet-library-newbase >= 20.1.29
-Requires: smartmet-library-spine >= 20.2.5
+Requires: smartmet-library-newbase >= 20.2.6
+Requires: smartmet-library-spine >= 20.2.7
 Requires: smartmet-library-gis >= 20.2.5
 Requires: smartmet-engine-geonames >= 19.12.5
 Requires: smartmet-engine-querydata >= 20.1.30
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Fri Feb  7 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.7-1.fmi
+- Repackaged since Spine::Station default construction changed
+
 * Wed Feb 5 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.5-1.fmi
 - Interpolate- and nearest-functions added (BRAINSTORM-1504)
 - Aggregation-related bugs fixed (BRAINSTORM-1755)
