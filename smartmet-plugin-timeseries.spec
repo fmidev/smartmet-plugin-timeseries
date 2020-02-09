@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.2.7
+Version: 20.2.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -25,7 +25,7 @@ BuildRequires: smartmet-library-newbase-devel >= 20.2.6
 BuildRequires: smartmet-library-gis-devel >= 20.2.5
 BuildRequires: smartmet-engine-geonames-devel >= 19.12.5
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.2.7
+BuildRequires: smartmet-engine-observation-devel >= 20.2.9
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.1.30
 BuildRequires: smartmet-engine-gis-devel >= 20.1.23
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Sun Feb  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.9-1.fmi
+- Repackaged due to delfoi/obsengine changes
+
 * Fri Feb  7 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.7-1.fmi
 - Repackaged since Spine::Station default construction changed
 
