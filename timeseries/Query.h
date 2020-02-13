@@ -135,8 +135,6 @@ struct Query
  private:
   Query();
 
-  void parse_producers(const SmartMet::Spine::HTTP::Request& theReq);
-
   void parse_levels(const SmartMet::Spine::HTTP::Request& theReq);
 
   void parse_precision(const SmartMet::Spine::HTTP::Request& theReq, const Config& config);
@@ -144,8 +142,14 @@ struct Query
 #ifndef WITHOUT_OBSERVATION
   void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
                         const SmartMet::Engine::Observation::Engine* theObsEngine);
+  void parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
+                       const SmartMet::Engine::Querydata::Engine& theQEngine,
+                       const SmartMet::Engine::Observation::Engine* theObsEngine);
 #else
   void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq);
+  void parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
+                       const SmartMet::Engine::Querydata::Engine& theQEngine);
+
 #endif
   QueryServer::AliasFileCollection* itsAliasFileCollectionPtr;
 };

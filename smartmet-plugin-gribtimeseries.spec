@@ -18,33 +18,33 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 19.11.20
-BuildRequires: smartmet-library-locus-devel >= 19.9.26
-BuildRequires: smartmet-library-macgyver-devel >= 19.9.26
-BuildRequires: smartmet-library-newbase-devel >= 19.11.21
-BuildRequires: smartmet-library-gis-devel >= 19.9.26
-BuildRequires: smartmet-engine-geonames-devel >= 19.11.14
+BuildRequires: smartmet-library-spine-devel >= 20.2.5
+BuildRequires: smartmet-library-locus-devel >= 19.12.4
+BuildRequires: smartmet-library-macgyver-devel >= 20.2.5
+BuildRequires: smartmet-library-newbase-devel >= 20.1.29
+BuildRequires: smartmet-library-gis-devel >= 20.2.5
+BuildRequires: smartmet-engine-geonames-devel >= 19.12.5
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.11.20
+BuildRequires: smartmet-engine-observation-devel >= 19.12.19
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 19.11.20
-BuildRequires: smartmet-engine-gis-devel >= 19.11.20
+BuildRequires: smartmet-engine-querydata-devel >= 20.1.30
+BuildRequires: smartmet-engine-gis-devel >= 20.1.23
 BuildRequires: smartmet-library-grid-content-devel >= 20.1.29
 BuildRequires: smartmet-library-grid-files-devel >= 20.1.29
 Requires: fmt >= 5.2.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 19.9.26
-Requires: smartmet-library-locus >= 19.9.26
-Requires: smartmet-library-macgyver >= 19.9.26
-Requires: smartmet-library-newbase >= 19.11.21
-Requires: smartmet-library-spine >= 19.11.20
-Requires: smartmet-library-gis >= 19.9.26
+Requires: smartmet-library-gis >= 20.2.5
+Requires: smartmet-library-locus >= 19.12.4
+Requires: smartmet-library-macgyver >= 20.2.5
+Requires: smartmet-library-newbase >= 20.1.29
+Requires: smartmet-library-spine >= 20.2.5
+Requires: smartmet-library-gis >= 20.2.5
 Requires: smartmet-library-grid-content >= 20.1.29
 Requires: smartmet-library-grid-files >= 20.1.29
-Requires: smartmet-engine-geonames >= 19.11.14
-Requires: smartmet-engine-querydata >= 19.11.20
-Requires: smartmet-engine-gis >= 19.11.20
-Requires: smartmet-server >= 19.10.1
+Requires: smartmet-engine-geonames >= 19.12.5
+Requires: smartmet-engine-querydata >= 20.1.30
+Requires: smartmet-engine-gis >= 20.1.23
+Requires: smartmet-server >= 20.1.15
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -79,6 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Thu Jan 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.30-1.fmi
 - Fixed initialization of WKT geometries bug which caused a crash
+- Check given producer names are valid
 
 * Wed Jan 29 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.29-1.fmi
 - Added a possibility to restrict grid requests without producer information
