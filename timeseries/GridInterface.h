@@ -52,6 +52,7 @@ class GridInterface
     bool                    isGridProducer(const std::string& producer);
 
     bool                    isValidDefaultRequest(const std::vector<uint>& defaultGeometries,
+                              bool ignoreGridGeometriesWhenPreloadReady,
                               std::vector<std::vector<T::Coordinate>>& polygonPath,
                               T::GeometryId_set& geometryIdList);
 

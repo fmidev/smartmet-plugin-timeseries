@@ -274,7 +274,8 @@ Config::Config(const string& configfile)
       ,
       itsMaxFilesystemCacheSize(0)  // off by default
       ,
-      itsMaxTimeSeriesCacheSize(10000)
+      itsMaxTimeSeriesCacheSize(10000),
+      itsIgnoreGridGeometriesWhenPreloadReady(true)
 {
   try
   {
@@ -378,6 +379,9 @@ Config::Config(const string& configfile)
         uint geomId = gridGeometries[i];
         itsDefaultGridGeometries.push_back(geomId);
       }
+
+      itsConfig.lookupValue("ignoreGridGeometriesWhenPreloadReady", itsIgnoreGridGeometriesWhenPreloadReady);
+
 
       const libconfig::Setting& aliasFiles = itsConfig.lookup("parameterAliasFiles");
 
