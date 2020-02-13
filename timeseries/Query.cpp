@@ -22,6 +22,7 @@
 #include <spine/Exception.h>
 #include <spine/ParameterFactory.h>
 #include <algorithm>
+#include <ogr_geometry.h>
 
 using namespace std;
 

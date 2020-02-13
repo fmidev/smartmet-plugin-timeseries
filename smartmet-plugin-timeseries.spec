@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.2.9
+Version: 20.2.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,29 +18,29 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.2.7
-BuildRequires: smartmet-library-locus-devel >= 19.12.4
+BuildRequires: smartmet-library-spine-devel >= 20.2.13
+BuildRequires: smartmet-library-locus-devel >= 19.8.28
 BuildRequires: smartmet-library-macgyver-devel >= 20.2.5
-BuildRequires: smartmet-library-newbase-devel >= 20.2.6
-BuildRequires: smartmet-library-gis-devel >= 20.2.5
-BuildRequires: smartmet-engine-geonames-devel >= 19.12.5
+BuildRequires: smartmet-library-newbase-devel >= 20.2.13
+BuildRequires: smartmet-library-gis-devel >= 20.2.13
+BuildRequires: smartmet-engine-geonames-devel >= 20.2.7
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.2.9
+BuildRequires: smartmet-engine-observation-devel >= 20.2.10
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 20.1.30
-BuildRequires: smartmet-engine-gis-devel >= 20.1.23
+BuildRequires: smartmet-engine-querydata-devel >= 20.2.13
+BuildRequires: smartmet-engine-gis-devel >= 20.2.7
 Requires: fmt >= 5.2.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 20.2.5
-Requires: smartmet-library-locus >= 19.12.4
+Requires: smartmet-library-gis >= 20.2.13
+Requires: smartmet-library-locus >= 19.8.28
 Requires: smartmet-library-macgyver >= 20.2.5
-Requires: smartmet-library-newbase >= 20.2.6
-Requires: smartmet-library-spine >= 20.2.7
-Requires: smartmet-library-gis >= 20.2.5
-Requires: smartmet-engine-geonames >= 19.12.5
-Requires: smartmet-engine-querydata >= 20.1.30
-Requires: smartmet-engine-gis >= 20.1.23
-Requires: smartmet-server >= 20.1.15
+Requires: smartmet-library-newbase >= 20.2.13
+Requires: smartmet-library-spine >= 20.2.13
+Requires: smartmet-library-gis >= 20.2.13
+Requires: smartmet-engine-geonames >= 20.2.7
+Requires: smartmet-engine-querydata >= 20.2.13
+Requires: smartmet-engine-gis >= 20.2.7
+Requires: smartmet-server >= 20.2.13
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Feb 13 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.13-1.fmi
+- Repackaged due to ABI changes
+
 * Sun Feb  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.9-1.fmi
 - Repackaged due to delfoi/obsengine changes
 

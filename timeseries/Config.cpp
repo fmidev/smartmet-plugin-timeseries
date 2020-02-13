@@ -9,6 +9,7 @@
 #include <boost/foreach.hpp>
 #include <macgyver/StringConversion.h>
 #include <spine/Exception.h>
+#include <ogr_geometry.h>
 #include <stdexcept>
 
 using namespace std;

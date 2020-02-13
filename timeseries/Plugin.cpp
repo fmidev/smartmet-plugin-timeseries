@@ -53,6 +53,7 @@
 #include <iostream>
 #include <limits>
 #include <numeric>
+#include <ogr_geometry.h>
 #include <stdexcept>
 
 using boost::numeric_cast;

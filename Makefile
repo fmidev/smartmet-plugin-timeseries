@@ -44,12 +44,12 @@ ifeq ($(CXX), clang++)
 	-Wno-sign-conversion
 
 INCLUDES = \
+	-isystem $(PREFIX)/gdal30/include \
 	-isystem $(includedir) \
 	-isystem $(includedir)/smartmet \
 	-isystem $(includedir)/mysql \
 	-isystem $(includedir)/soci \
-	-isystem $(includedir)/oracle/11.2/client64 \
-	-isystem $(PREFIX)/gdal30/include
+	-isystem $(includedir)/oracle/11.2/client64
 
 else
 
@@ -70,12 +70,12 @@ else
  FLAGS_RELEASE = -Wuninitialized -Wno-unknown-pragmas
 
  INCLUDES = \
+	-I$(PREFIX)/gdal30/include \
 	-I$(includedir) \
 	-I$(includedir)/smartmet \
 	-I$(includedir)/mysql \
 	-I$(includedir)/soci \
-	-I$(includedir)/oracle/11.2/client64 \
-	-I$(PREFIX)/gdal30/include
+	-I$(includedir)/oracle/11.2/client64
 
 endif
 
