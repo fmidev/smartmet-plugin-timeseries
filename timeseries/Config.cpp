@@ -274,11 +274,12 @@ Config::Config(const string& configfile)
       ,
       itsMaxFilesystemCacheSize(0)  // off by default
       ,
-      itsMaxTimeSeriesCacheSize(10000),
-      itsIgnoreGridGeometriesWhenPreloadReady(true)
+      itsMaxTimeSeriesCacheSize(10000)
 {
   try
   {
+    itsIgnoreGridGeometriesWhenPreloadReady = true;
+
     if (configfile.empty())
       throw Spine::Exception(BCP, "TimeSeries configuration file cannot be empty");
 
