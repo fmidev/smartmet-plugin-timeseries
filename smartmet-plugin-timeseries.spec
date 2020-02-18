@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.2.14
+Version: 20.2.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -22,24 +22,23 @@ BuildRequires: smartmet-library-spine-devel >= 20.2.13
 BuildRequires: smartmet-library-locus-devel >= 19.12.4
 BuildRequires: smartmet-library-macgyver-devel >= 20.2.5
 BuildRequires: smartmet-library-newbase-devel >= 20.2.13
-BuildRequires: smartmet-library-gis-devel >= 20.2.5
+BuildRequires: smartmet-library-gis-devel >= 20.2.18
 BuildRequires: smartmet-engine-geonames-devel >= 19.12.5
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 20.2.10
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.1.30
-BuildRequires: smartmet-engine-gis-devel >= 20.1.23
+BuildRequires: smartmet-engine-gis-devel >= 20.2.18
 Requires: fmt >= 5.2.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 20.2.5
+Requires: smartmet-library-gis >= 20.2.18
 Requires: smartmet-library-locus >= 19.12.4
 Requires: smartmet-library-macgyver >= 20.2.5
 Requires: smartmet-library-newbase >= 20.2.13
 Requires: smartmet-library-spine >= 20.2.13
-Requires: smartmet-library-gis >= 20.2.5
 Requires: smartmet-engine-geonames >= 19.12.5
 Requires: smartmet-engine-querydata >= 20.1.30
-Requires: smartmet-engine-gis >= 20.1.23
+Requires: smartmet-engine-gis >= 20.2.18
 Requires: smartmet-server >= 20.2.13
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -73,6 +72,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Tue Feb 18 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.18-1.fmi
+- Use coordinates from geonames database (instead of geometry database) when place-option is used (BRAINSTORM-1757)
+
 * Fri Feb 14 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.14-1.fmi
 - Added a check for missing ObsEngine when validating producer names
 
