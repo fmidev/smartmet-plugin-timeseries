@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.2.14
+Version: 20.2.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Tue Feb 18 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.18-1.fmi
+- Use coordinates from geonames database (instead of geometry database) when place-option is used (BRAINSTORM-1757)
+
 * Fri Feb 14 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.14-1.fmi
 - Added a check for missing ObsEngine when validating producer names
 

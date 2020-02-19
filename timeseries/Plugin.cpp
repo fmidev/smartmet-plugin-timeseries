@@ -8,62 +8,15 @@
 #include "Hash.h"
 #include "LocationTools.h"
 #include "ParameterTools.h"
-#include "Query.h"
-#include "QueryLevelDataCache.h"
 #include "State.h"
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/bind.hpp>
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/math/constants/constants.hpp>
-#include <boost/timer/timer.hpp>
-#include <boost/tokenizer.hpp>
 #include <engines/gis/Engine.h>
-#include <engines/gis/MapOptions.h>
 #include <engines/observation/Keywords.h>
-#include <engines/observation/Utils.h>
-#include <engines/querydata/OriginTime.h>
 #include <fmt/format.h>
-#include <gis/OGR.h>
-#include <macgyver/StringConversion.h>
-#include <macgyver/TimeFormatter.h>
-#include <newbase/NFmiIndexMask.h>
+#include <macgyver/TimeParser.h>
 #include <newbase/NFmiIndexMaskTools.h>
-#include <newbase/NFmiMultiQueryInfo.h>
-#include <newbase/NFmiQueryData.h>
 #include <newbase/NFmiSvgTools.h>
 #include <spine/Convenience.h>
-#include <spine/Exception.h>
-#include <spine/ParameterFactory.h>
-#include <spine/SmartMet.h>
-#include <spine/Table.h>
-#include <spine/TableFeeder.h>
 #include <spine/TableFormatterFactory.h>
-#include <spine/TimeSeriesAggregator.h>
-#include <spine/TimeSeriesOutput.h>
-#include <spine/ValueFormatter.h>
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <functional>
-#include <iostream>
-#include <limits>
-#include <numeric>
-#include <stdexcept>
-
-using boost::numeric_cast;
-using boost::local_time::local_date_time;
-using boost::numeric::bad_numeric_cast;
-using boost::numeric::negative_overflow;
-using boost::numeric::positive_overflow;
-using boost::posix_time::hours;
-using boost::posix_time::minutes;
-using boost::posix_time::ptime;
-using boost::posix_time::seconds;
 
 //#define MYDEBUG ON
 
@@ -544,7 +497,7 @@ std::size_t Plugin::hash_value(const State& state,
           subquery.toptions.startTime = first_timestep;
 
           if (!firstProducer)
-            subquery.toptions.startTime += minutes(1);  // WHY???????
+            subquery.toptions.startTime += boost::posix_time::minutes(1);  // WHY???????
           firstProducer = false;
 
           // producer can be alias, get actual producer
@@ -1142,7 +1095,7 @@ void Plugin::fetchQEngineValues(const State& state,
       std::cout << query.toptions;
 
       std::cout << "generated timesteps: " << std::endl;
-      for (const local_date_time& ldt : tlist)
+      for (const boost::local_time::local_date_time& ldt : tlist)
       {
         std::cout << ldt << std::endl;
       }
@@ -1455,7 +1408,17 @@ void Plugin::setCommonObsSettings(Engine::Observation::Settings& settings,
     settings.lpnns = query.lpnns;
     settings.wmos = query.wmos;
     settings.boundingBox = query.boundingBox;
-    settings.taggedLocations = query.loptions->locations();
+
+    for (auto tloc : query.loptions->locations())
+    {
+      Spine::Location loc = *tloc.loc;
+      if (loc.type == Spine::Location::Place && loc.radius > 0)
+      {
+        loc.type = Spine::Location::CoordinatePoint;
+        tloc.loc.reset(new Spine::Location(loc));
+      }
+      settings.taggedLocations.push_back(tloc);
+    }
 
     // Below are listed optional settings, defaults are set while constructing an ObsEngine::Oracle
     // instance.
@@ -1708,15 +1671,15 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 #ifdef MYDEBUG
         std::cout << loc_name << " is an Area (Place + radius)" << std::endl;
 #endif
-        const OGRGeometry* pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbPoint);
 
-        if (!pGeo)
-          throw Spine::Exception(BCP, "Place " + loc_name + " not found in PostGIS database!");
+        std::string wkt = "POINT(";
+        wkt += Fmi::to_string(loc->longitude);
+        wkt += " ";
+        wkt += Fmi::to_string(loc->latitude);
+        wkt += ")";
 
-        std::unique_ptr<OGRGeometry> poly;
-        poly.reset(Fmi::OGR::expandGeometry(pGeo, loc->radius * 1000));
-
-        std::string wktString = Fmi::OGR::exportToWkt(*poly);
+        std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+        std::string wktString = Fmi::OGR::exportToWkt(*geom);
         settings.wktArea = wktString;
         settings.area_geoids = get_geoids_for_wkt(itsObsEngine, producer, wktString);
         query.maxdistance = 0;
@@ -1787,7 +1750,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
     if (query.toptions.startTimeData)
     {
-      query.toptions.startTime = ptime_now - hours(24);
+      query.toptions.startTime = ptime_now - boost::posix_time::hours(24);
       query.toptions.startTimeData = false;
     }
     if (query.toptions.endTimeData)
@@ -1827,7 +1790,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
     if (!query.starttimeOptionGiven && query.endtimeOptionGiven)
     {
-      query.toptions.startTime = query.toptions.endTime - hours(24);
+      query.toptions.startTime = query.toptions.endTime - boost::posix_time::hours(24);
       query.toptions.startTimeUTC = query.toptions.endTimeUTC;
     }
 
@@ -1850,8 +1813,8 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
 
     // Adjust to accommodate aggregation
 
-    settings.starttime = settings.starttime - minutes(aggregationIntervalBehind);
-    settings.endtime = settings.endtime + minutes(aggregationIntervalAhead);
+    settings.starttime = settings.starttime - boost::posix_time::minutes(aggregationIntervalBehind);
+    settings.endtime = settings.endtime + boost::posix_time::minutes(aggregationIntervalAhead);
 
     // observations up till now
     if (settings.endtime > now)
@@ -2651,7 +2614,7 @@ void Plugin::processQEngineQuery(const State& state,
 
       query.toptions.startTime = first_timestep;
       if (!firstProducer)
-        query.toptions.startTime += minutes(1);
+        query.toptions.startTime += boost::posix_time::minutes(1);
 
       // producer can be alias, get actual producer
       std::string producer(select_producer(*itsQEngine, *(tloc.loc), query, areaproducers));
@@ -2983,7 +2946,8 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
       std::string cachecontrol = "public, max-age=" + Fmi::to_string(expires_seconds);
       theResponse.setHeader("Cache-Control", cachecontrol.c_str());
 
-      ptime t_expires = state.getTime() + seconds(expires_seconds);
+      boost::posix_time::ptime t_expires =
+          state.getTime() + boost::posix_time::seconds(expires_seconds);
       std::string expiration = tformat->format(t_expires);
       theResponse.setHeader("Expires", expiration.c_str());
     }
