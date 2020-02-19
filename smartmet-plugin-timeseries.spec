@@ -22,24 +22,24 @@ BuildRequires: smartmet-library-spine-devel >= 20.2.13
 BuildRequires: smartmet-library-locus-devel >= 19.12.4
 BuildRequires: smartmet-library-macgyver-devel >= 20.2.5
 BuildRequires: smartmet-library-newbase-devel >= 20.2.13
-BuildRequires: smartmet-library-gis-devel >= 20.2.5
+BuildRequires: smartmet-library-gis-devel >= 20.2.18
 BuildRequires: smartmet-engine-geonames-devel >= 19.12.5
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 20.2.10
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.1.30
-BuildRequires: smartmet-engine-gis-devel >= 20.1.23
+BuildRequires: smartmet-engine-gis-devel >= 20.2.18
 Requires: fmt >= 5.2.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 20.2.5
+Requires: smartmet-library-gis >= 20.2.18
 Requires: smartmet-library-locus >= 19.12.4
 Requires: smartmet-library-macgyver >= 20.2.5
 Requires: smartmet-library-newbase >= 20.2.13
 Requires: smartmet-library-spine >= 20.2.13
-Requires: smartmet-library-gis >= 20.2.5
+Requires: smartmet-library-gis >= 20.2.18
 Requires: smartmet-engine-geonames >= 19.12.5
 Requires: smartmet-engine-querydata >= 20.1.30
-Requires: smartmet-engine-gis >= 20.1.23
+Requires: smartmet-engine-gis >= 20.2.18
 Requires: smartmet-server >= 20.2.13
 Requires: boost-date-time
 Requires: boost-filesystem
