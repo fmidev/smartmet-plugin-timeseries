@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.1.30
+Version: 20.2.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,33 +18,33 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.2.5
+BuildRequires: smartmet-library-spine-devel >= 20.2.13
 BuildRequires: smartmet-library-locus-devel >= 19.12.4
 BuildRequires: smartmet-library-macgyver-devel >= 20.2.5
-BuildRequires: smartmet-library-newbase-devel >= 20.1.29
-BuildRequires: smartmet-library-gis-devel >= 20.2.5
+BuildRequires: smartmet-library-newbase-devel >= 20.2.13
+BuildRequires: smartmet-library-gis-devel >= 20.2.18
 BuildRequires: smartmet-engine-geonames-devel >= 19.12.5
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 19.12.19
+BuildRequires: smartmet-engine-observation-devel >= 20.2.10
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.1.30
-BuildRequires: smartmet-engine-gis-devel >= 20.1.23
-BuildRequires: smartmet-library-grid-content-devel >= 20.1.29
-BuildRequires: smartmet-library-grid-files-devel >= 20.1.29
+BuildRequires: smartmet-engine-gis-devel >= 20.2.18
+BuildRequires: smartmet-library-grid-content-devel >= 20.2.19
+BuildRequires: smartmet-library-grid-files-devel >= 20.2.19
 Requires: fmt >= 5.2.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 20.2.5
+Requires: smartmet-library-gis >= 20.2.18
 Requires: smartmet-library-locus >= 19.12.4
 Requires: smartmet-library-macgyver >= 20.2.5
-Requires: smartmet-library-newbase >= 20.1.29
-Requires: smartmet-library-spine >= 20.2.5
-Requires: smartmet-library-gis >= 20.2.5
-Requires: smartmet-library-grid-content >= 20.1.29
-Requires: smartmet-library-grid-files >= 20.1.29
+Requires: smartmet-library-newbase >= 20.2.13
+Requires: smartmet-library-spine >= 20.2.13
+Requires: smartmet-library-gis >= 20.2.18
+Requires: smartmet-library-grid-content >= 20.2.19
+Requires: smartmet-library-grid-files >= 20.2.19
 Requires: smartmet-engine-geonames >= 19.12.5
 Requires: smartmet-engine-querydata >= 20.1.30
-Requires: smartmet-engine-gis >= 20.1.23
-Requires: smartmet-server >= 20.1.15
+Requires: smartmet-engine-gis >= 20.2.18
+Requires: smartmet-server >= 20.2.13
 Requires: boost-date-time
 Requires: boost-filesystem
 Requires: boost-iostreams
@@ -77,6 +77,26 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Feb 18 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.18-1.fmi
+- Use coordinates from geonames database (instead of geometry database) when place-option is used (BRAINSTORM-1757)
+
+* Fri Feb 14 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.14-1.fmi
+- Added a check for missing ObsEngine when validating producer names
+
+* Thu Feb 13 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.13-1.fmi
+- Use a system installed observation database in the tests
+
+* Sun Feb  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.9-1.fmi
+- Repackaged due to delfoi/obsengine changes
+
+* Fri Feb  7 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.7-1.fmi
+- Repackaged since Spine::Station default construction changed
+
+* Wed Feb 5 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.5-1.fmi
+- Interpolate- and nearest-functions added (BRAINSTORM-1504)
+- Aggregation-related bugs fixed (BRAINSTORM-1755)
+- Additional timesteps with NaN values in observation query resultset fixed (BRAINSTORM-1750)
+
 * Thu Jan 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.30-1.fmi
 - Fixed initialization of WKT geometries bug which caused a crash
 - Check given producer names are valid
