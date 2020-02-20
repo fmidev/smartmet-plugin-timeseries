@@ -1942,8 +1942,8 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
     if (settings.endtime > now)
       settings.endtime = now;
 
-    if (!query.toptions.timeStep || *query.toptions.timeStep == 0)
-      settings.timestep = 1;
+    if (!query.toptions.timeStep)
+      settings.timestep = 0;
     else
       settings.timestep = *query.toptions.timeStep;
 
