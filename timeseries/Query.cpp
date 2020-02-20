@@ -369,7 +369,9 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
       // Verify the producer names are valid
 
 #ifndef WITHOUT_OBSERVATION
-    const auto observations = theObsEngine->getValidStationTypes();
+    std::set<std::string> observations;
+    if (theObsEngine != nullptr)
+      observations = theObsEngine->getValidStationTypes();
 #endif
 
     for (const auto& p : resultProducers)

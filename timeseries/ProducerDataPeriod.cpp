@@ -188,7 +188,7 @@ void ProducerDataPeriod::init(const State& state,
     itsDataPeriod.clear();
     getQEngineDataPeriods(querydata, producers);
 #ifndef WITHOUT_OBSERVATION
-    if (observation)
+    if (observation != nullptr)
       getObsEngineDataPeriods(*observation, producers, state.getTime());
 #endif
   }
