@@ -12,6 +12,7 @@
 #include "Producers.h"
 #include <engines/geonames/WktGeometry.h>
 
+#include <engines/grid/Engine.h>
 #include <engines/geonames/Engine.h>
 #include <engines/geonames/WktGeometry.h>
 
@@ -144,11 +145,13 @@ struct Query
                         const SmartMet::Engine::Observation::Engine* theObsEngine);
   void parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
                        const SmartMet::Engine::Querydata::Engine& theQEngine,
+                       const SmartMet::Engine::Grid::Engine& theGridEngine,
                        const SmartMet::Engine::Observation::Engine* theObsEngine);
 #else
   void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq);
   void parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
-                       const SmartMet::Engine::Querydata::Engine& theQEngine);
+                       const SmartMet::Engine::Querydata::Engine& theQEngine,
+                       const SmartMet::Engine::Grid::Engine& theGridEngine);
 
 #endif
   QueryServer::AliasFileCollection* itsAliasFileCollectionPtr;

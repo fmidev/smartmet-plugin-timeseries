@@ -12,6 +12,7 @@
 #include "ObsParameter.h"
 #include "Query.h"
 #include "QueryLevelDataCache.h"
+#include <engines/grid/Engine.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <engines/gis/GeometryStorage.h>
@@ -75,6 +76,8 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   // Get the engines
   const Engine::Querydata::Engine& getQEngine() const { return *itsQEngine; }
   const Engine::Geonames::Engine& getGeoEngine() const { return *itsGeoEngine; }
+  const Engine::Grid::Engine& getGridEngine() const { return *itsGridEngine; }
+
 #ifndef WITHOUT_OBSERVATION
   // May return null
   Engine::Observation::Engine* getObsEngine() const { return itsObsEngine; }
@@ -198,6 +201,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   Engine::Querydata::Engine* itsQEngine = nullptr;
   Engine::Geonames::Engine* itsGeoEngine = nullptr;
   Engine::Gis::Engine* itsGisEngine = nullptr;
+  Engine::Grid::Engine* itsGridEngine = nullptr;
   std::unique_ptr<GridInterface> itsGridInterface;
 #ifndef WITHOUT_OBSERVATION
   Engine::Observation::Engine* itsObsEngine = nullptr;

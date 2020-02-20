@@ -212,9 +212,9 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     }
 
 #ifndef WITHOUT_OBSERVARION
-    Query::parse_producers(req, state.getQEngine(), state.getObsEngine());
+    Query::parse_producers(req, state.getQEngine(), state.getGridEngine(), state.getObsEngine());
 #else
-    Query::parse_producers(req, state.getQEngine());
+    Query::parse_producers(req, state.getQEngine(), state.getGridEngine());
 #endif
 
 #ifndef WITHOUT_OBSERVATION
@@ -421,10 +421,12 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 #ifndef WITHOUT_OBSERVATION
 void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
                             const SmartMet::Engine::Querydata::Engine& theQEngine,
+                            const SmartMet::Engine::Grid::Engine& theGridEngine,
                             const SmartMet::Engine::Observation::Engine* theObsEngine)
 #else
 void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
-                            const SmartMet::Engine::Querydata::Engine& theQEngine)
+                            const SmartMet::Engine::Querydata::Engine& theQEngine,
+                            const SmartMet::Engine::Grid::Engine& theGridEngine)
 #endif
 {
   try
@@ -469,6 +471,9 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
       if (!ok)
         ok = (observations.find(p) != observations.end());
 #endif
+      if (!ok)
+        ok = theGridEngine.isGridProducer(p);
+
       if (!ok)
         throw Spine::Exception(BCP, "Unknown producer name '" + p + "'");
     }

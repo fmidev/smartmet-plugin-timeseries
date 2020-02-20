@@ -38,6 +38,22 @@ const Engine::Querydata::Engine& State::getQEngine() const
   }
 }
 
+
+
+
+const Engine::Grid::Engine& State::getGridEngine() const
+{
+  try
+  {
+    return itsPlugin.getGridEngine();
+  }
+  catch (...)
+  {
+    throw Spine::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+
 // ----------------------------------------------------------------------
 /*!
  * \brief Get the GEO engine

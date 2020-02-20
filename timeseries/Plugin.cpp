@@ -3479,10 +3479,10 @@ void Plugin::init()
       if (!engine)
         throw Spine::Exception(BCP, "The 'grid-engine' unavailable!");
 
-      Engine::Grid::Engine* gridEngine = reinterpret_cast<Engine::Grid::Engine*>(engine);
-      gridEngine->setDem(itsGeoEngine->dem());
+      itsGridEngine = reinterpret_cast<Engine::Grid::Engine*>(engine);
+      itsGridEngine->setDem(itsGeoEngine->dem());
 
-      itsGridInterface.reset(new GridInterface(gridEngine, itsGeoEngine->getTimeZones()));
+      itsGridInterface.reset(new GridInterface(itsGridEngine, itsGeoEngine->getTimeZones()));
     }
 
 #ifndef WITHOUT_OBSERVATION
