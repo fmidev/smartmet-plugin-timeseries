@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.2.18
-Release: 1%{?dist}.fmi
+Version: 20.2.25
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -25,12 +25,12 @@ BuildRequires: smartmet-library-newbase-devel >= 20.2.13
 BuildRequires: smartmet-library-gis-devel >= 20.2.18
 BuildRequires: smartmet-engine-geonames-devel >= 19.12.5
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.2.10
+BuildRequires: smartmet-engine-observation-devel >= 20.2.20
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.1.30
 BuildRequires: smartmet-engine-gis-devel >= 20.2.18
-BuildRequires: smartmet-library-grid-content-devel >= 20.2.19
-BuildRequires: smartmet-library-grid-files-devel >= 20.2.19
+BuildRequires: smartmet-library-grid-content-devel >= 20.2.25
+BuildRequires: smartmet-library-grid-files-devel >= 20.2.25
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.2.18
@@ -39,8 +39,8 @@ Requires: smartmet-library-macgyver >= 20.2.5
 Requires: smartmet-library-newbase >= 20.2.13
 Requires: smartmet-library-spine >= 20.2.13
 Requires: smartmet-library-gis >= 20.2.18
-Requires: smartmet-library-grid-content >= 20.2.19
-Requires: smartmet-library-grid-files >= 20.2.19
+Requires: smartmet-library-grid-content >= 20.2.25
+Requires: smartmet-library-grid-files >= 20.2.25
 Requires: smartmet-engine-geonames >= 19.12.5
 Requires: smartmet-engine-querydata >= 20.1.30
 Requires: smartmet-engine-gis >= 20.2.18
@@ -77,6 +77,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Feb 25 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.25-2.fmi
+- Repackaged due to base library API changes
+
+* Thu Feb 20 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.20-2.fmi
+- Fixed producer parser to check if the producer is known to GRIB-engine
+
+* Thu Feb 20 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.20-1.fmi
+- Fixed the 1-minute timestep (BRAINSTORM-1767)
+
 * Tue Feb 18 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.18-1.fmi
 - Use coordinates from geonames database (instead of geometry database) when place-option is used (BRAINSTORM-1757)
 
