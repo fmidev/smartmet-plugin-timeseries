@@ -3481,6 +3481,7 @@ void Plugin::init()
 
       itsGridEngine = reinterpret_cast<Engine::Grid::Engine*>(engine);
       itsGridEngine->setDem(itsGeoEngine->dem());
+      itsGridEngine->setLandCover(itsGeoEngine->landCover());
 
       itsGridInterface.reset(new GridInterface(itsGridEngine, itsGeoEngine->getTimeZones()));
     }

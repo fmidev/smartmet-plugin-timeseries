@@ -457,10 +457,15 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
     gridQuery.mEndTime = endTime;
     gridQuery.mGeometryIdList = geometryIdList;
 
+    /*
+
+    // The QueryServer should be able to find this information by itself.
+
     if (!std::isnan(loc->dem))
       gridQuery.mAttributeList.setAttribute("dem", std::to_string(loc->dem));
 
     gridQuery.mAttributeList.setAttribute("coverType", std::to_string(loc->covertype));
+    */
 
     std::string timezoneName = loc->timezone;
     boost::local_time::time_zone_ptr localtz = itsTimezones.time_zone_from_string(loc->timezone);
