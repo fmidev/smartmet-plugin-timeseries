@@ -7,7 +7,6 @@
 #include "Plugin.h"
 #include "Hash.h"
 #include "LocationTools.h"
-#include "ParameterTools.h"
 #include "State.h"
 #include <engines/gis/Engine.h>
 #include <engines/observation/Keywords.h>
@@ -16,6 +15,7 @@
 #include <newbase/NFmiIndexMaskTools.h>
 #include <newbase/NFmiSvgTools.h>
 #include <spine/Convenience.h>
+#include <spine/ParameterTools.h>
 #include <spine/TableFormatterFactory.h>
 
 //#define MYDEBUG ON
@@ -1490,7 +1490,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
       // max_t(temperature))
       // location parameters are handled in timeseries plugin
       if (obsParameters[i].duplicate ||
-          (is_location_parameter(obsParameters[i].param.name()) &&
+          (SmartMet::Spine::is_location_parameter(obsParameters[i].param.name()) &&
            !is_flash_or_mobile_producer(producer)) ||
           SmartMet::Engine::Observation::is_time_parameter(obsParameters[i].param.name()))
         continue;
@@ -1989,7 +1989,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
         std::string paramname(obsParam.param.name());
 
-        if (is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
+        if (SmartMet::Spine::is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
         {
           // add data for location field
           ts::TimeSeries timeseries;
@@ -2225,7 +2225,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         std::string paramname = obsParameters[i].param.name();
 
         // add data for location fields
-        if (is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
+        if (SmartMet::Spine::is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
         {
           ts::TimeSeries location_ts;
 
