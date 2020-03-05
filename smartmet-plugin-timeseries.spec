@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.2.21
+Version: 20.3.5
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -35,7 +35,7 @@ Requires: smartmet-library-gis >= 20.2.18
 Requires: smartmet-library-locus >= 20.2.14
 Requires: smartmet-library-macgyver >= 20.2.14
 Requires: smartmet-library-newbase >= 20.2.13
-Requires: smartmet-library-spine >= 20.2.13
+Requires: smartmet-library-spine >= 20.3.5
 Requires: smartmet-library-gis >= 20.2.18
 Requires: smartmet-engine-geonames >= 20.2.14
 Requires: smartmet-engine-querydata >= 20.2.13
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Mar  5 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.3.5-1.fmi
+- Use parameter tools from smartmet-library-spine and remove local version
+
 * Fri Feb 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.21-1.fmi
 - Upgrade to GDAL 3.0
 
