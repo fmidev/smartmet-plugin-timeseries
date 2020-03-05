@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.2.20
+Version: 20.3.5
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.2.13
+BuildRequires: smartmet-library-spine-devel >= 20.3.5
 BuildRequires: smartmet-library-locus-devel >= 19.12.4
 BuildRequires: smartmet-library-macgyver-devel >= 20.2.5
 BuildRequires: smartmet-library-newbase-devel >= 20.2.13
@@ -35,7 +35,7 @@ Requires: smartmet-library-gis >= 20.2.18
 Requires: smartmet-library-locus >= 19.12.4
 Requires: smartmet-library-macgyver >= 20.2.5
 Requires: smartmet-library-newbase >= 20.2.13
-Requires: smartmet-library-spine >= 20.2.13
+Requires: smartmet-library-spine >= 20.3.5
 Requires: smartmet-library-gis >= 20.2.18
 Requires: smartmet-engine-geonames >= 19.12.5
 Requires: smartmet-engine-querydata >= 20.1.30
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Thu Mar  5 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.3.5-1.fmi
+- Use parameter tools from smartmet-library-spine and remove local version
+
 * Thu Feb 20 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.20-1.fmi
 - Fixed the 1-minute timestep (BRAINSTORM-1767)
 
