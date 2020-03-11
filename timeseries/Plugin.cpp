@@ -1614,7 +1614,7 @@ void Plugin::setLocationObsSettings(Engine::Observation::Settings& settings,
       if (obsParameters[i].duplicate ||
           (SmartMet::Spine::is_location_parameter(obsParameters[i].param.name()) &&
            !is_flash_or_mobile_producer(producer)) ||
-          SmartMet::Engine::Observation::is_time_parameter(obsParameters[i].param.name()))
+          SmartMet::Spine::is_time_parameter(obsParameters[i].param.name()))
         continue;
 
       // fmisid must be always included (except for flash) in queries in order to get location info
@@ -2130,7 +2130,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           observationResult2->push_back(timeseries);
           parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
         }
-        else if (SmartMet::Engine::Observation::is_time_parameter(paramname))
+        else if (SmartMet::Spine::is_time_parameter(paramname))
         {
           // add data for time fields
           Spine::Location location(0, 0, "", query.timezone);
@@ -2369,7 +2369,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           }
           observation_result_with_added_fields->push_back(location_ts);
         }
-        else if (SmartMet::Engine::Observation::is_time_parameter(paramname))
+        else if (SmartMet::Spine::is_time_parameter(paramname))
         {
           // add data for time fields
           Spine::Location dummyloc(0, 0, "", query.timezone);
