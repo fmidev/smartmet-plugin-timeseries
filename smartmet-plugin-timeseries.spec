@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.3.10
+Version: 20.3.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -19,27 +19,27 @@ BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 20.3.9
-BuildRequires: smartmet-library-locus-devel >= 20.2.14
+BuildRequires: smartmet-library-locus-devel >= 20.3.26
 BuildRequires: smartmet-library-macgyver-devel >= 20.3.5
-BuildRequires: smartmet-library-newbase-devel >= 20.2.13
-BuildRequires: smartmet-library-gis-devel >= 20.2.28
-BuildRequires: smartmet-engine-geonames-devel >= 20.2.14
+BuildRequires: smartmet-library-newbase-devel >= 20.3.30
+BuildRequires: smartmet-library-gis-devel >= 20.3.26
+BuildRequires: smartmet-engine-geonames-devel >= 20.3.30
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.3.9
+BuildRequires: smartmet-engine-observation-devel >= 20.3.30
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 20.2.13
-BuildRequires: smartmet-engine-gis-devel >= 20.2.18
+BuildRequires: smartmet-engine-querydata-devel >= 20.3.30
+BuildRequires: smartmet-engine-gis-devel >= 20.3.30
 Requires: fmt >= 5.2.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 20.2.28
-Requires: smartmet-library-locus >= 20.2.14
+Requires: smartmet-library-gis >= 20.3.26
+Requires: smartmet-library-locus >= 20.3.26
 Requires: smartmet-library-macgyver >= 20.3.5
-Requires: smartmet-library-newbase >= 20.2.13
+Requires: smartmet-library-newbase >= 20.3.30
 Requires: smartmet-library-spine >= 20.3.9
-Requires: smartmet-library-gis >= 20.2.28
-Requires: smartmet-engine-geonames >= 20.2.14
-Requires: smartmet-engine-querydata >= 20.2.13
-Requires: smartmet-engine-gis >= 20.2.18
+Requires: smartmet-library-gis >= 20.3.26
+Requires: smartmet-engine-geonames >= 20.3.30
+Requires: smartmet-engine-querydata >= 20.3.30
+Requires: smartmet-engine-gis >= 20.3.30
 Requires: smartmet-server >= 20.2.13
 Requires: boost-date-time
 Requires: boost-filesystem
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Mar 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.3.30-1.fmi
+- Full repackaging of the server
+
 * Tue Mar 10 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.3.10-1.fmi
 - Update using parameter tools from smartmet-library-spine (is_time_parameter)
 
