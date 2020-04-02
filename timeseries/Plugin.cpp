@@ -205,31 +205,32 @@ void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
 void add_missing_timesteps(ts::TimeSeries& ts,
                            const Spine::TimeSeriesGeneratorCache::TimeList& tlist)
 {
-  if (!tlist)
+  if (!tlist || tlist->size() == 0)
     return;
 
   ts::TimeSeries ts2;
-  boost::optional<boost::local_time::local_date_time> previous_timestep = boost::none;
-  for (auto value : ts)
+
+  SmartMet::Spine::TimeSeriesGenerator::LocalTimeList::const_iterator it = tlist->begin();
+
+  for (const auto& value : ts)
   {
-    if (ts2.empty())
+    // Add missing timesteps
+    while (it != tlist->end() && *it < value.time)
     {
-      ts2.push_back(value);
+      ts2.push_back(ts::TimedValue(*it, ts::None()));
+      ++it;
     }
-    else
-    {
-      // Add missing timestep
-      for (auto t : *tlist)
-      {
-        if (t > previous_timestep && t < value.time)
-        {
-          ts2.push_back(ts::TimedValue(t, ts::None()));
-          break;
-        }
-      }
-      ts2.push_back(value);
-    }
-    previous_timestep = value.time;
+    ts2.emplace_back(value);
+    // If list has been iterated to the end and
+    // iteration time is same as observed timestep, go to next step
+    if (it != tlist->end() && *it == value.time)
+      ++it;
+  }
+  // If there are requested timesteps after last value, add them
+  while (it != tlist->end())
+  {
+    ts2.push_back(ts::TimedValue(*it, ts::None()));
+    ++it;
   }
   ts = ts2;
 }
@@ -1989,7 +1990,8 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
         std::string paramname(obsParam.param.name());
 
-        if (SmartMet::Spine::is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
+        if (SmartMet::Spine::is_location_parameter(paramname) &&
+            !is_flash_or_mobile_producer(producer))
         {
           // add data for location field
           ts::TimeSeries timeseries;
@@ -2225,7 +2227,8 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         std::string paramname = obsParameters[i].param.name();
 
         // add data for location fields
-        if (SmartMet::Spine::is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
+        if (SmartMet::Spine::is_location_parameter(paramname) &&
+            !is_flash_or_mobile_producer(producer))
         {
           ts::TimeSeries location_ts;
 
