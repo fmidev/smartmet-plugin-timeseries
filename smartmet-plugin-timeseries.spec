@@ -190,7 +190,7 @@ sunelevation,sunazimuth,daylength (BRAINSTORM-1581)
 * Wed Sep 19 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.19-1.fmi
 - Improved handling-algorithm of NFmiSvgPath object
 
-* Tue Sep 9 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.4-1.fmi
+* Tue Sep 4 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.4-1.fmi
 - Refactoring: data-functions moved to separate file
 
 * Tue Aug 28 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.8.28-1.fmi
