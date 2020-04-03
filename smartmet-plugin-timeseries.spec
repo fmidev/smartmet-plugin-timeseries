@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.3.30
+Version: 20.4.2
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -73,8 +73,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+<<<<<<< HEAD
 * Mon Mar 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.3.30-1.fmi
 - Full repackaging of the server
+
+* Thu Apr 2 2020  Anssi Reponen <anssi.reponen@fmi.fi> - 20.4.2-1.fmi
+- Using faster algorithm to add missing timesteps to time series (BRAINSTORM-1800)
+- You can now use data_quality field as URL-parameter for NetAtmo producer (BRAINSTORM-1799)
 
 * Tue Mar 10 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.3.10-1.fmi
 - Update using parameter tools from smartmet-library-spine (is_time_parameter)
@@ -196,7 +201,7 @@ sunelevation,sunazimuth,daylength (BRAINSTORM-1581)
 * Wed Sep 19 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.19-1.fmi
 - Improved handling-algorithm of NFmiSvgPath object
 
-* Tue Sep 9 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.4-1.fmi
+* Tue Sep 4 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.9.4-1.fmi
 - Refactoring: data-functions moved to separate file
 
 * Tue Aug 28 2018 Anssi Reponen <anssi.reponen@fmi.fi> - 18.8.28-1.fmi
