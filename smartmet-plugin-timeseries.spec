@@ -25,9 +25,9 @@ BuildRequires: smartmet-library-newbase-devel >= 20.2.13
 BuildRequires: smartmet-library-gis-devel >= 20.2.18
 BuildRequires: smartmet-engine-geonames-devel >= 19.12.5
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.3.9
+BuildRequires: smartmet-engine-observation-devel >= 20.3.18
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 20.1.30
+BuildRequires: smartmet-engine-querydata-devel >= 20.3.19
 BuildRequires: smartmet-engine-gis-devel >= 20.2.25
 Requires: fmt >= 5.2.0
 Requires: libconfig
@@ -38,7 +38,7 @@ Requires: smartmet-library-newbase >= 20.2.13
 Requires: smartmet-library-spine >= 20.3.9
 Requires: smartmet-library-gis >= 20.2.18
 Requires: smartmet-engine-geonames >= 19.12.5
-Requires: smartmet-engine-querydata >= 20.1.30
+Requires: smartmet-engine-querydata >= 20.3.19
 Requires: smartmet-engine-gis >= 20.2.25
 Requires: smartmet-server >= 20.2.13
 Requires: boost-date-time
