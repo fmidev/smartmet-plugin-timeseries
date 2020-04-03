@@ -379,6 +379,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     }
     // Mobile and external data filtering options
     add_data_filter(req, "station_id", dataFilter);
+    add_data_filter(req, "data_quality", dataFilter);
     // Sounding filtering options
     add_data_filter(req, "sounding_type", dataFilter);
     add_data_filter(req, "significance", dataFilter);
