@@ -20,17 +20,23 @@ endif
 CC = g++
 CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
 
-# Unfortunately otlv4.h forces us to define the full oracle include path
-INCLUDES = \
-	-I../timeseries \
-	-I/usr/include/mysql \
-	-I/usr/include/smartmet \
-	-I/usr/include/soci \
+# Boost 1.69
+
+ifneq "$(wildcard /usr/include/boost169)" ""
+  INCLUDES += -I/usr/include/boost169
+  LIBS += -L/usr/lib64/boost169
+endif
+
+INCLUDES += \
+	-I ../timeseries \
+	-I /usr/include/mysql \
+	-I /usr/include/smartmet \
+	-I /usr/include/soci \
 	-I/usr/include/oracle/11.2/client64 \
 	-I/usr/gdal30/include \
 	`pkg-config --cflags libconfig++`
 
-LIBS =  -lsmartmet-spine  \
+LIBS +=  -lsmartmet-spine  \
 	-lsmartmet-macgyver \
 	-lsmartmet-newbase \
 	`pkg-config --libs libconfig++` \
