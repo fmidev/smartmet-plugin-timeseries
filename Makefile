@@ -31,6 +31,13 @@ DEFINES = -DUNIX -D_REENTRANT
 -include $(HOME)/.smartmet.mk
 GCC_DIAG_COLOR ?= always
 
+# Boost 1.69
+
+ifneq "$(wildcard /usr/include/boost169)" ""
+  INCLUDES += -I/usr/include/boost169
+  LIBS += -L/usr/lib64/boost169
+endif
+
 ifeq ($(CXX), clang++)
 
  // TODO: Enable sign conversion warnings
@@ -43,7 +50,7 @@ ifeq ($(CXX), clang++)
 	-Wno-missing-prototypes \
 	-Wno-sign-conversion
 
-INCLUDES = \
+ INCLUDES += \
 	-isystem $(includedir) \
 	-isystem $(includedir)/smartmet \
 	-isystem $(includedir)/mysql \
@@ -52,7 +59,7 @@ INCLUDES = \
 
 else
 
- FLAGS = -std=c++11 -fPIC -MD -Wall -W -Wno-unused-parameter -fno-omit-frame-pointer -Wno-unknown-pragmas -fdiagnostics-color=$(GCC_DIAG_COLOR) -Wnon-virtual-dtor
+ FLAGS = -std=c++11 -fPIC -MD -Wall -W -Wno-unused-parameter -fno-omit-frame-pointer -Wno-unknown-pragmas -fdiagnostics-color=$(GCC_DIAG_COLOR)
 
  FLAGS_DEBUG = \
 	-Wcast-align \
@@ -60,15 +67,13 @@ else
 	-Winline \
 	-Wno-multichar \
 	-Wno-pmf-conversions \
-	-Woverloaded-virtual  \
 	-Wpointer-arith \
-	-Wredundant-decls \
 	-Wwrite-strings \
 	-DDEBUG
 
  FLAGS_RELEASE = -Wuninitialized -Wno-unknown-pragmas
 
- INCLUDES = \
+ INCLUDES += \
 	-I$(includedir) \
 	-I$(includedir)/smartmet \
 	-I$(includedir)/mysql \
@@ -97,7 +102,7 @@ else
   override CFLAGS += $(CFLAGS_RELEASE)
 endif
 
-LIBS = -L$(libdir) \
+LIBS += -L$(libdir) \
 	-lsmartmet-spine \
 	-lsmartmet-newbase \
 	-lsmartmet-locus \

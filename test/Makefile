@@ -32,8 +32,15 @@ endif
 CC = g++
 CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
 
+# Boost 1.69
+
+ifneq "$(wildcard /usr/include/boost169)" ""
+  INCLUDES += -I/usr/include/boost169
+  LIBS += -L/usr/lib64/boost169
+endif
+
 # Unfortunately otlv4.h forces us to define the full oracle include path
-INCLUDES = \
+INCLUDES += \
 	-I ../timeseries \
 	-I /usr/include/mysql \
 	-I /usr/include/smartmet \
@@ -43,7 +50,7 @@ INCLUDES = \
 	-I/usr/include/oracle/11.2/client64 \
 	`pkg-config --cflags libconfig++`
 
-LIBS =  -lsmartmet-spine  \
+LIBS +=  -lsmartmet-spine  \
 	-lsmartmet-macgyver \
 	-lsmartmet-newbase \
 	-lsmartmet-grid-files \
