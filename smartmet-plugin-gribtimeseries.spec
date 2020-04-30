@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.4.18
+Version: 20.4.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,9 +27,9 @@ BuildRequires: smartmet-engine-geonames-devel >= 20.4.18
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 20.4.18
 %endif
-BuildRequires: smartmet-library-grid-content-devel >= 20.4.3
-BuildRequires: smartmet-library-grid-files-devel >= 20.4.3
-BuildRequires: smartmet-engine-querydata-devel >= 20.4.18
+BuildRequires: smartmet-library-grid-content-devel >= 20.4.30
+BuildRequires: smartmet-library-grid-files-devel >= 20.4.30
+BuildRequires: smartmet-engine-querydata-devel >= 20.4.20
 BuildRequires: smartmet-engine-gis-devel >= 20.4.18
 Requires: fmt >= 5.2.0
 Requires: libconfig
@@ -40,7 +40,7 @@ Requires: smartmet-library-newbase >= 20.4.18
 Requires: smartmet-library-spine >= 20.4.18
 Requires: smartmet-library-gis >= 20.4.18
 Requires: smartmet-engine-geonames >= 20.4.18
-Requires: smartmet-engine-querydata >= 20.4.18
+Requires: smartmet-engine-querydata >= 20.4.20
 Requires: smartmet-engine-gis >= 20.4.18
 Requires: smartmet-server >= 20.4.18
 Requires: boost169-date-time
@@ -75,6 +75,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Apr 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.30-1.fmi
+- Repackaged due to base library API changes
+
 * Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.fmi
 - Upgraded to Boost 1.69
 
