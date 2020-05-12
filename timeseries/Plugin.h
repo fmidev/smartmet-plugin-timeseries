@@ -52,6 +52,18 @@ namespace TimeSeries
 class State;
 class PluginImpl;
 
+struct SettingsInfo
+{
+  Engine::Observation::Settings settings;
+  bool is_area{false};
+  std::string area_name{""};
+
+  SettingsInfo(const Engine::Observation::Settings& s, bool isa, const std::string& an)
+      : settings(s), is_area(isa), area_name(an)
+  {
+  }
+};
+
 class Plugin : public SmartMetPlugin, private boost::noncopyable
 {
  public:
@@ -124,8 +136,8 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                              const ObsParameters& obsParameters);
   void fetchObsEngineValuesForArea(const State& state,
                                    const std::string& producer,
-                                   const Spine::TaggedLocation& tloc,
                                    const ObsParameters& obsParameters,
+                                   const std::string& areaName,
                                    Engine::Observation::Settings& settings,
                                    Query& query,
                                    OutputData& outputData);
@@ -135,31 +147,39 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                                      Engine::Observation::Settings& settings,
                                      Query& query,
                                      OutputData& outputData);
-  void fetchObsEngineValues(const State& state,
-                            const std::string& producer,
-                            const Spine::TaggedLocation& tloc,
-                            const ObsParameters& obsParameters,
-                            Engine::Observation::Settings& settings,
-                            Query& query,
-                            OutputData& outputData);
 
-  void setCommonObsSettings(Engine::Observation::Settings& settings,
+  void getCommonObsSettings(Engine::Observation::Settings& settings,
                             const std::string& producer,
                             const ProducerDataPeriod& producerDataPeriod,
                             const boost::posix_time::ptime& now,
                             const ObsParameters& obsParameters,
                             Query& query) const;
-  void setLocationObsSettings(Engine::Observation::Settings& settings,
-                              const std::string& producer,
-                              const ProducerDataPeriod& producerDataPeriod,
-                              const boost::posix_time::ptime& now,
-                              const Spine::TaggedLocation& tloc,
-                              const ObsParameters& obsParameters,
-                              Query& query) const;
+  void getObsSettings(std::vector<SettingsInfo>& settingsVector,
+                      const std::string& producer,
+                      const ProducerDataPeriod& producerDataPeriod,
+                      const boost::posix_time::ptime& now,
+                      const ObsParameters& obsParameters,
+                      Query& query) const;
 
+  bool resolveAreaStations(Spine::LocationPtr location,
+                           const std::string& producer,
+                           Query& query,
+                           Engine::Observation::Settings& settings,
+                           std::string& name) const;
+  void resolveParameterSettings(const ObsParameters& obsParameters,
+                                const Query& query,
+                                const std::string& producer,
+                                Engine::Observation::Settings& settings,
+                                unsigned int& aggregationIntervalBehind,
+                                unsigned int& aggregationIntervalAhead) const;
+  void resolveTimeSettings(const std::string& producer,
+                           const ProducerDataPeriod& producerDataPeriod,
+                           const boost::posix_time::ptime& now,
+                           Query& query,
+                           unsigned int aggregationIntervalBehind,
+                           unsigned int aggregationIntervalAhead,
+                           Engine::Observation::Settings& settings) const;
   std::vector<ObsParameter> getObsParameters(const Query& query) const;
-  void setMobileAndExternalDataSettings(Engine::Observation::Settings& settings,
-                                        Query& query) const;
 #endif
 
   Spine::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(

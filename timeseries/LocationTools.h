@@ -31,11 +31,11 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
 Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
                                       const std::string& thePathName,
                                       const double& stepInKm,
-                                      Engine::Geonames::Engine& geonames);
+                                      const Engine::Geonames::Engine& geonames);
 
 std::string get_location_id(Spine::LocationPtr loc);
 
-Spine::LocationPtr get_location(const Engine::Geonames::Engine* geonames,
+Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
                                 const int id,
                                 const std::string& idtype,
                                 const std::string& language);
@@ -44,9 +44,11 @@ int get_fmisid_value(const Spine::TimeSeries::TimeSeries& ts);
 
 #ifndef WITHOUT_OBSERVATION
 
-std::vector<int> get_geoids_for_wkt(Engine::Observation::Engine* observation,
-                                    const std::string& producer,
-                                    const std::string& wktstring);
+std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
+                                     const std::string& producer,
+                                     const boost::posix_time::ptime& starttime,
+                                     const boost::posix_time::ptime& endtime,
+                                     const std::string& wktstring);
 
 int get_fmisid_index(const Engine::Observation::Settings& settings);
 int get_fmisid_value(const Spine::TimeSeries::Value& value);
