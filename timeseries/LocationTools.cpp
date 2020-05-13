@@ -195,7 +195,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
 Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
                                       const std::string& thePathName,
                                       const double& stepInKm,
-                                      Engine::Geonames::Engine& geonames)
+                                      const Engine::Geonames::Engine& geonames)
 {
   try
   {
@@ -327,24 +327,23 @@ std::string get_location_id(Spine::LocationPtr loc)
 // ----------------------------------------------------------------------
 
 #ifndef WITHOUT_OBSERVATION
-
-std::vector<int> get_geoids_for_wkt(Engine::Observation::Engine* observation,
-                                    const std::string& producer,
-                                    const std::string& wktstring)
+std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
+                                     const std::string& producer,
+                                     const boost::posix_time::ptime& starttime,
+                                     const boost::posix_time::ptime& endtime,
+                                     const std::string& wktstring)
 {
   try
   {
-    std::vector<int> geoids;
+    std::vector<int> fmisids;
 
     Spine::Stations stations;
-    Engine::Observation::Settings mysettings;
-    mysettings.stationtype = producer;
 
-    stations = observation->getStationsByArea(mysettings, wktstring);
+    observation->getStationsByArea(stations, producer, starttime, endtime, wktstring);
     for (unsigned int i = 0; i < stations.size(); i++)
-      geoids.push_back(stations[i].geoid);
+      fmisids.push_back(stations[i].fmisid);
 
-    return geoids;
+    return fmisids;
   }
   catch (...)
   {
@@ -359,7 +358,7 @@ std::vector<int> get_geoids_for_wkt(Engine::Observation::Engine* observation,
  */
 // ----------------------------------------------------------------------
 
-Spine::LocationPtr get_location(const Engine::Geonames::Engine* geonames,
+Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
                                 const int id,
                                 const std::string& idtype,
                                 const std::string& language)
@@ -367,7 +366,7 @@ Spine::LocationPtr get_location(const Engine::Geonames::Engine* geonames,
   try
   {
     if (idtype == GEOID_PARAM)
-      return geonames->idSearch(id, language);
+      return geonames.idSearch(id, language);
 
     Locus::QueryOptions opts;
     opts.SetCountries("all");
@@ -376,13 +375,13 @@ Spine::LocationPtr get_location(const Engine::Geonames::Engine* geonames,
     opts.SetResultLimit(1);
     opts.SetFeatures({"SYNOP", "FINAVIA", "STUK"});
 
-    Spine::LocationList ll = geonames->nameSearch(opts, Fmi::to_string(id));
+    Spine::LocationList ll = geonames.nameSearch(opts, Fmi::to_string(id));
 
     Spine::LocationPtr loc;
 
     // lets just take the first one
     if (ll.size() > 0)
-      loc = geonames->idSearch((*ll.begin())->geoid, language);
+      loc = geonames.idSearch((*ll.begin())->geoid, language);
 
     return loc;
   }

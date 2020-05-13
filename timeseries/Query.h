@@ -98,7 +98,7 @@ struct Query
   int numberofstations;
   bool allplaces;
   bool latestObservation;
-  std::map<std::string, std::vector<std::string>> dataFilter;
+  Engine::Observation::SQLDataFilter sqlDataFilter;
   bool useDataCache;
 #endif
 

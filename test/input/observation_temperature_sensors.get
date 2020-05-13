@@ -1,0 +1,1 @@
+GET /timeseries?param=time,name,t2m(:1),t2m(:11)&fmisid=101004&producer=opendata&format=ascii&timeformat=sql&timestep=data&precision=double&starttime=202002200800&endtime=202002200810 HTTP/1.0
