@@ -3287,7 +3287,7 @@ void Plugin::query(const State& state,
     response.setHeader("X-TimeSeries-Cache", "no");
 
     // No cached result available - generate the result
-    processQuery(state, data, query);
+    processQuery(state, data, query, queryStreamer);
 
     high_resolution_clock::time_point t4 = high_resolution_clock::now();
     timeheader.append("+").append(
@@ -3302,6 +3302,9 @@ void Plugin::query(const State& state,
       std::string header_name = p.alias();
       std::vector<std::string> partList;
       splitString(header_name, ':', partList);
+      // There was a merge conflict in here at one time. GRIB branch processed
+      // these two special cases, while master added the sensor part below. This
+      // may be incorrect.
       if (partList.size() > 2 && (partList[0] == "ISOBANDS" || partList[0] == "ISOLINES"))
       {
         const char* p = header_name.c_str() + partList[0].size() + partList[1].size() + 2;
