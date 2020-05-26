@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.5.12
+Version: 20.5.26
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.5.12
+BuildRequires: smartmet-library-spine-devel >= 20.5.26
 BuildRequires: smartmet-library-locus-devel >= 20.4.18
 BuildRequires: smartmet-library-macgyver-devel >= 20.4.18
 BuildRequires: smartmet-library-newbase-devel >= 20.4.18
@@ -35,7 +35,7 @@ Requires: smartmet-library-gis >= 20.4.18
 Requires: smartmet-library-locus >= 20.4.18
 Requires: smartmet-library-macgyver >= 20.4.18
 Requires: smartmet-library-newbase >= 20.4.18
-Requires: smartmet-library-spine >= 20.5.12
+Requires: smartmet-library-spine >= 20.5.26
 Requires: smartmet-library-gis >= 20.4.18
 Requires: smartmet-engine-geonames >= 20.4.18
 Requires: smartmet-engine-querydata >= 20.4.18
@@ -73,6 +73,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Tue May 26 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
+- Test case added for different interval separator characters in time aggregation function (BRAINSTORM-1828)
+- In addition to ':'-character also '/'- and ';'-characters are now supported
+
 * Tue May 12 2020  Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.12-1.fmi
 - Observation-engine API changed (BRAINSTORM-1678)
 - Added support for data_quality option (BRAINSTORM-1706)
