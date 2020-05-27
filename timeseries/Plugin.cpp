@@ -1924,11 +1924,14 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
       if ((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
           loc->radius == 0)
       {
-        stationSettings.nearest_station_settings.emplace_back(loc->longitude,
-                                                              loc->latitude,
-                                                              settings.maxdistance,
-                                                              settings.numberofstations,
-                                                              tloc.tag);
+        if (!is_flash_or_mobile_producer(producer))
+        {
+          stationSettings.nearest_station_settings.emplace_back(loc->longitude,
+                                                                loc->latitude,
+                                                                settings.maxdistance,
+                                                                settings.numberofstations,
+                                                                tloc.tag);
+        }
       }
       else
       {
@@ -1970,8 +1973,11 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
       stationSettings.bounding_box_settings["maxy"] = query.boundingBox.at("maxy");
     }
 
-    settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
-        settings.starttime, settings.endtime, producer, stationSettings);
+    if (!is_flash_or_mobile_producer(producer))
+    {
+      settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
+          settings.starttime, settings.endtime, producer, stationSettings);
+    }
 
     if (settings.taggedFMISIDs.size() > 0 || settings.boundingBox.size() > 0 ||
         settings.taggedLocations.size() > 0)
@@ -2700,7 +2706,6 @@ void Plugin::processQEngineQuery(const State& state,
         {
           query.toptions.endTime = data_period_endtime.local_time();
         }
-
         fetchQEngineValues(state,
                            paramfunc,
                            tloc,
