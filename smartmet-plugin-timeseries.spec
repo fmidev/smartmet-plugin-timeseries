@@ -18,27 +18,27 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.5.26
-BuildRequires: smartmet-library-locus-devel >= 20.4.18
+BuildRequires: smartmet-library-spine-devel >= 20.5.27
+BuildRequires: smartmet-library-locus-devel >= 20.5.20
 BuildRequires: smartmet-library-macgyver-devel >= 20.4.18
 BuildRequires: smartmet-library-newbase-devel >= 20.4.18
 BuildRequires: smartmet-library-gis-devel >= 20.4.18
 BuildRequires: smartmet-engine-geonames-devel >= 20.4.18
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.5.12
+BuildRequires: smartmet-engine-observation-devel >= 20.5.27
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 20.5.5
+BuildRequires: smartmet-engine-querydata-devel >= 20.5.13
 BuildRequires: smartmet-engine-gis-devel >= 20.5.7
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.4.18
-Requires: smartmet-library-locus >= 20.4.18
+Requires: smartmet-library-locus >= 20.5.20
 Requires: smartmet-library-macgyver >= 20.4.18
 Requires: smartmet-library-newbase >= 20.4.18
-Requires: smartmet-library-spine >= 20.5.26
+Requires: smartmet-library-spine >= 20.5.27
 Requires: smartmet-library-gis >= 20.4.18
 Requires: smartmet-engine-geonames >= 20.4.18
-Requires: smartmet-engine-querydata >= 20.5.5
+Requires: smartmet-engine-querydata >= 20.5.13
 Requires: smartmet-engine-gis >= 20.5.7
 Requires: smartmet-server >= 20.4.18
 Requires: boost169-date-time
