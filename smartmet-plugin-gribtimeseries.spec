@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.5.15
+Version: 20.5.27
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,8 +18,8 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.5.12
-BuildRequires: smartmet-library-locus-devel >= 20.4.18
+BuildRequires: smartmet-library-spine-devel >= 20.5.27
+BuildRequires: smartmet-library-locus-devel >= 20.5.20
 BuildRequires: smartmet-library-macgyver-devel >= 20.4.18
 BuildRequires: smartmet-library-newbase-devel >= 20.4.18
 BuildRequires: smartmet-library-gis-devel >= 20.4.18
@@ -29,15 +29,17 @@ BuildRequires: smartmet-engine-observation-devel >= 20.5.13
 %endif
 BuildRequires: smartmet-library-grid-content-devel >= 20.5.15
 BuildRequires: smartmet-library-grid-files-devel >= 20.5.15
+%endif
+>>>>>>> master:smartmet-plugin-timeseries.spec
 BuildRequires: smartmet-engine-querydata-devel >= 20.5.13
 BuildRequires: smartmet-engine-gis-devel >= 20.5.7
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.4.18
-Requires: smartmet-library-locus >= 20.4.18
+Requires: smartmet-library-locus >= 20.5.20
 Requires: smartmet-library-macgyver >= 20.4.18
 Requires: smartmet-library-newbase >= 20.4.18
-Requires: smartmet-library-spine >= 20.5.12
+Requires: smartmet-library-spine >= 20.5.27
 Requires: smartmet-library-gis >= 20.4.18
 Requires: smartmet-engine-geonames >= 20.4.18
 Requires: smartmet-engine-querydata >= 20.5.13
@@ -75,6 +77,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue May 27 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
+- Modified test cases to include percentage-function in order to test parameter parsing
+- Fixed bug in settings handling
+
+* Tue May 26 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
+- Test case added for different interval separator characters in time aggregation function (BRAINSTORM-1828)
+- In addition to ':'-character also '/'- and ';'-characters are now supported
+
 * Fri May 15 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.5.15-1.fmi
 - Repackaged due to base library changes
 
