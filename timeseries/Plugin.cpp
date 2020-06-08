@@ -79,6 +79,7 @@ bool is_mobile_producer(const std::string& producer)
 {
   return (producer == SmartMet::Engine::Observation::ROADCLOUD_PRODUCER ||
           producer == SmartMet::Engine::Observation::TECONER_PRODUCER ||
+          producer == SmartMet::Engine::Observation::ITMF_PRODUCER ||
           producer == SmartMet::Engine::Observation::NETATMO_PRODUCER);
 }
 

@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.5.27
+Version: 20.6.8
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -25,7 +25,7 @@ BuildRequires: smartmet-library-newbase-devel >= 20.4.18
 BuildRequires: smartmet-library-gis-devel >= 20.4.18
 BuildRequires: smartmet-engine-geonames-devel >= 20.4.18
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.5.12
+BuildRequires: smartmet-engine-observation-devel >= 20.6.8
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.5.5
 BuildRequires: smartmet-engine-gis-devel >= 20.5.7
@@ -73,6 +73,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Jun 8 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.6.8-1.fmi
+- Support for itmf-producer (INSPIRE-909)
+- Support for PostgresSQL-driver in observation engine: configuration file structure changed (BRAINSTORM-1783)
+
 * Tue May 27 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
 - Modified test cases to include percentage-function in order to test parameter parsing
 - Fixed bug in settings handling
