@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.5.27
+Version: 20.6.8
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -25,12 +25,10 @@ BuildRequires: smartmet-library-newbase-devel >= 20.4.18
 BuildRequires: smartmet-library-gis-devel >= 20.4.18
 BuildRequires: smartmet-engine-geonames-devel >= 20.4.18
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.5.13
+BuildRequires: smartmet-engine-observation-devel >= 20.5.27
 %endif
-BuildRequires: smartmet-library-grid-content-devel >= 20.5.15
-BuildRequires: smartmet-library-grid-files-devel >= 20.5.15
-%endif
->>>>>>> master:smartmet-plugin-timeseries.spec
+BuildRequires: smartmet-library-grid-content-devel >= 20.6.8
+BuildRequires: smartmet-library-grid-files-devel >= 20.6.8
 BuildRequires: smartmet-engine-querydata-devel >= 20.5.13
 BuildRequires: smartmet-engine-gis-devel >= 20.5.7
 Requires: fmt >= 5.2.0
@@ -77,6 +75,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon Jun  8 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.8-1.fmi
+- Repackaged due to base library changes
+
 * Tue May 27 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
 - Modified test cases to include percentage-function in order to test parameter parsing
 - Fixed bug in settings handling
