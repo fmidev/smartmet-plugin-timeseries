@@ -1948,11 +1948,19 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
       {
         if (!is_flash_or_mobile_producer(producer))
         {
-          stationSettings.nearest_station_settings.emplace_back(loc->longitude,
-                                                                loc->latitude,
-                                                                settings.maxdistance,
-                                                                settings.numberofstations,
-                                                                tloc.tag);
+          if (!loc->fmisid)
+          {
+            stationSettings.nearest_station_settings.emplace_back(loc->longitude,
+                                                                  loc->latitude,
+                                                                  settings.maxdistance,
+                                                                  settings.numberofstations,
+                                                                  tloc.tag);
+          }
+          else
+          {
+            // No need to search if the geoid has a known fmisid too
+            stationSettings.fmisids.push_back(*loc->fmisid);
+          }
         }
       }
       else
