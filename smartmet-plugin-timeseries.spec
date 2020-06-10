@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.6.9
+Version: 20.6.10
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -25,10 +25,14 @@ BuildRequires: smartmet-library-newbase-devel >= 20.4.18
 BuildRequires: smartmet-library-gis-devel >= 20.4.18
 BuildRequires: smartmet-engine-geonames-devel >= 20.4.18
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.5.27
+BuildRequires: smartmet-engine-observation-devel >= 20.6.10
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.5.13
 BuildRequires: smartmet-engine-gis-devel >= 20.5.7
+# obsengine can be disabled in configuration: not included intentionally
+#%if %{with observation}
+#Requires: smartmet-engine-observation >= 20.6.10
+#%endif
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.4.18
@@ -73,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Jun 10 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.6.10-1.fmi
+- Rebuilt due to obsengine API change
+
 * Tue Jun  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.9-1.fmi
 - Do not do a coordinate search for locations which already have a known fmisid
 
