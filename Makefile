@@ -115,7 +115,7 @@ LIBS += -L$(libdir) \
 
 # What to install
 
-LIBFILE = $(SUBNAME).so
+LIBFILE = grib$(SUBNAME).so
 
 # How to install
 
