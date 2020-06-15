@@ -88,7 +88,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   // Get the engines
   const Engine::Querydata::Engine& getQEngine() const { return *itsQEngine; }
   const Engine::Geonames::Engine& getGeoEngine() const { return *itsGeoEngine; }
-  const Engine::Grid::Engine& getGridEngine() const { return *itsGridEngine; }
+  const Engine::Grid::Engine* getGridEngine() const { return itsGridEngine; }
 
 #ifndef WITHOUT_OBSERVATION
   // May return null

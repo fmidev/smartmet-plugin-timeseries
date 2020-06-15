@@ -145,7 +145,7 @@ struct Query
                         const SmartMet::Engine::Observation::Engine* theObsEngine);
   void parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
                        const SmartMet::Engine::Querydata::Engine& theQEngine,
-                       const SmartMet::Engine::Grid::Engine& theGridEngine,
+                       const SmartMet::Engine::Grid::Engine* theGridEngine,
                        const SmartMet::Engine::Observation::Engine* theObsEngine);
 #else
   void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq);
