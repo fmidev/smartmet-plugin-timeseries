@@ -41,7 +41,7 @@ const Engine::Querydata::Engine& State::getQEngine() const
 
 
 
-const Engine::Grid::Engine& State::getGridEngine() const
+const Engine::Grid::Engine* State::getGridEngine() const
 {
   try
   {

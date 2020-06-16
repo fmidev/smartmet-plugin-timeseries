@@ -69,7 +69,7 @@ class State
   // Access engines
   const SmartMet::Engine::Querydata::Engine& getQEngine() const;
   const SmartMet::Engine::Geonames::Engine& getGeoEngine() const;
-  const SmartMet::Engine::Grid::Engine& getGridEngine() const;
+  const SmartMet::Engine::Grid::Engine* getGridEngine() const;
 #ifndef WITHOUT_OBSERVATION
   SmartMet::Engine::Observation::Engine* getObsEngine() const;
 #endif
