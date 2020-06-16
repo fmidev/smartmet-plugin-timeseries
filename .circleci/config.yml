@@ -41,7 +41,7 @@ workflows:
       - build:
           filters:
             branches:
-              only: master
+              only: master_grid_support
       - test:
           requires:
             - build
