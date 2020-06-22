@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.6.10
+Version: 20.6.22
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,14 +18,14 @@ BuildRequires: fmt-devel >= 5.2.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.5.27
-BuildRequires: smartmet-library-locus-devel >= 20.5.20
-BuildRequires: smartmet-library-macgyver-devel >= 20.4.18
-BuildRequires: smartmet-library-newbase-devel >= 20.4.18
+BuildRequires: smartmet-library-spine-devel >= 20.6.8
+BuildRequires: smartmet-library-locus-devel >= 20.6.8
+BuildRequires: smartmet-library-macgyver-devel >= 20.6.8
+BuildRequires: smartmet-library-newbase-devel >= 20.6.16
 BuildRequires: smartmet-library-gis-devel >= 20.4.18
-BuildRequires: smartmet-engine-geonames-devel >= 20.4.18
+BuildRequires: smartmet-engine-geonames-devel >= 20.6.8
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.6.10
+BuildRequires: smartmet-engine-observation-devel >= 20.6.17
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.5.13
 BuildRequires: smartmet-engine-gis-devel >= 20.5.7
@@ -36,12 +36,12 @@ BuildRequires: smartmet-engine-gis-devel >= 20.5.7
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.4.18
-Requires: smartmet-library-locus >= 20.5.20
-Requires: smartmet-library-macgyver >= 20.4.18
-Requires: smartmet-library-newbase >= 20.4.18
-Requires: smartmet-library-spine >= 20.5.27
+Requires: smartmet-library-locus >= 20.6.8
+Requires: smartmet-library-macgyver >= 20.6.8
+Requires: smartmet-library-newbase >= 20.6.16
+Requires: smartmet-library-spine >= 20.6.8
 Requires: smartmet-library-gis >= 20.4.18
-Requires: smartmet-engine-geonames >= 20.4.18
+Requires: smartmet-engine-geonames >= 20.6.8
 Requires: smartmet-engine-querydata >= 20.5.13
 Requires: smartmet-engine-gis >= 20.5.7
 Requires: smartmet-server >= 20.4.18
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Jun 22 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.22-1.fmi
+- Rebuilt due to base library changes
+
 * Wed Jun 10 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.6.10-1.fmi
 - Rebuilt due to obsengine API change
 
