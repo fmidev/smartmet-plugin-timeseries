@@ -2635,6 +2635,9 @@ void Plugin::processObsEngineQuery(const State& state,
       {
         Engine::Observation::Settings& settings = item.settings;
 
+        if (query.debug)
+          settings.debug_options = Engine::Observation::Settings::DUMP_SETTINGS;
+
 #ifdef MYDEBUG
         print_settings(settings);
 #endif

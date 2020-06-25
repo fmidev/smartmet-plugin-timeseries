@@ -79,6 +79,8 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     allplaces = (Spine::optional_string(req.getParameter("places"), "") == "all");
 #endif
 
+    debug = Spine::optional_bool(req.getParameter("debug"), false);
+
     timezone = Spine::optional_string(req.getParameter("tz"), default_timezone);
 
     step = Spine::optional_double(req.getParameter("step"), 1.0);
