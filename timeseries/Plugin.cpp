@@ -1631,6 +1631,8 @@ bool Plugin::resolveAreaStations(Spine::LocationPtr location,
       else
       {
         pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
+        if (!pGeo)
+          pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbPolygon);
 
         if (!pGeo)
           throw Spine::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
