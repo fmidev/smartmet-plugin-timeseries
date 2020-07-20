@@ -1953,6 +1953,8 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
       }
     }  // for-loop
 
+    // Note: GEOIDs are processed by the nearest station search settings above
+
     // LPNNs
     for (auto lpnn : query.lpnns)
       stationSettings.lpnns.push_back(lpnn);
@@ -1962,15 +1964,6 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
     // FMISIDs
     for (auto fmisid : query.fmisids)
       stationSettings.fmisids.push_back(fmisid);
-    // GEOIDs
-    if (query.geoids.size() > 0)
-    {
-      stationSettings.geoid_settings.maxdistance = query.maxdistance;
-      stationSettings.geoid_settings.numberofstations = query.numberofstations;
-      stationSettings.geoid_settings.language = query.language;
-      for (auto geoid : query.geoids)
-        stationSettings.geoid_settings.geoids.push_back(geoid);
-    }
 
     // Bounding box
     if (!query.boundingBox.empty() && is_flash_producer(producer))
@@ -2858,9 +2851,9 @@ void Plugin::query(const State& state,
     // At least one of location specifiers must be set
 
 #ifndef WITHOUT_OBSERVATION
-    if (query.geoids.size() == 0 && query.fmisids.size() == 0 && query.lpnns.size() == 0 &&
-        query.wmos.size() == 0 && query.boundingBox.size() == 0 &&
-        !is_flash_or_mobile_producer(producer_option) && query.loptions->locations().size() == 0)
+    if (query.fmisids.size() == 0 && query.lpnns.size() == 0 && query.wmos.size() == 0 &&
+        query.boundingBox.size() == 0 && !is_flash_or_mobile_producer(producer_option) &&
+        query.loptions->locations().size() == 0)
 #else
     if (query.loptions->locations().size() == 0)
 #endif

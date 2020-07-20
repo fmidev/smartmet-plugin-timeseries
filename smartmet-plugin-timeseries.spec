@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.6.25
+Version: 20.7.20
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Jul 20 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.7.20-1.fmi
+- Fixed processing of geoid options to work similarly to coordinate searches instead of station searches
+
 * Thu Jun 25 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.25-1.fmi
 - Added debug querystring option
 
