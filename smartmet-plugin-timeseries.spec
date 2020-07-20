@@ -21,30 +21,30 @@ BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 20.6.8
 BuildRequires: smartmet-library-locus-devel >= 20.5.20
 BuildRequires: smartmet-library-macgyver-devel >= 20.4.18
-BuildRequires: smartmet-library-newbase-devel >= 20.6.1
-BuildRequires: smartmet-library-gis-devel >= 20.5.28
+BuildRequires: smartmet-library-newbase-devel >= 20.7.2
+BuildRequires: smartmet-library-gis-devel >= 20.7.2
 BuildRequires: smartmet-engine-geonames-devel >= 20.4.20
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 20.6.17
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 20.5.13
-BuildRequires: smartmet-engine-gis-devel >= 20.5.18
+BuildRequires: smartmet-engine-querydata-devel >= 20.7.2
+BuildRequires: smartmet-engine-gis-devel >= 20.7.2
 Requires: fmt >= 5.2.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 20.5.28
+Requires: smartmet-library-gis >= 20.7.2
 Requires: smartmet-library-locus >= 20.5.20
 Requires: smartmet-library-macgyver >= 20.4.18
-Requires: smartmet-library-newbase >= 20.6.1
+Requires: smartmet-library-newbase >= 20.7.2
 Requires: smartmet-library-spine >= 20.6.8
-Requires: smartmet-library-gis >= 20.5.28
+Requires: smartmet-library-gis >= 20.7.2
 Requires: smartmet-engine-geonames >= 20.4.20
-BuildRequires: smartmet-engine-gis-devel >= 20.5.18
+BuildRequires: smartmet-engine-gis-devel >= 20.7.2
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.6.10
 #%endif
-Requires: smartmet-engine-querydata >= 20.5.13
-Requires: smartmet-engine-gis >= 20.5.18
+Requires: smartmet-engine-querydata >= 20.7.2
+Requires: smartmet-engine-gis >= 20.7.2
 Requires: smartmet-server >= 20.4.18
 Requires: boost169-date-time
 Requires: boost169-filesystem
