@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.7.20
+Version: 20.7.27
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -25,7 +25,7 @@ BuildRequires: smartmet-library-newbase-devel >= 20.7.2
 BuildRequires: smartmet-library-gis-devel >= 20.7.2
 BuildRequires: smartmet-engine-geonames-devel >= 20.4.20
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.6.17
+BuildRequires: smartmet-engine-observation-devel >= 20.7.21
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.7.2
 BuildRequires: smartmet-engine-gis-devel >= 20.7.2
@@ -78,6 +78,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Jul 27 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.7.27-1.fmi
+- Proceed with obs requests even if the station is not known to geonames
+
+* Tue Jul 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.7.21-1.fmi
+- Fixed geoid handling to generate the geoid as the response for the place parameter
+
 * Mon Jul 20 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.7.20-1.fmi
 - Fixed processing of geoid options to work similarly to coordinate searches instead of station searches
 

@@ -1950,19 +1950,15 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
       {
         if (!is_flash_or_mobile_producer(producer))
         {
-          if (!loc->fmisid)
-          {
-            stationSettings.nearest_station_settings.emplace_back(loc->longitude,
-                                                                  loc->latitude,
-                                                                  settings.maxdistance,
-                                                                  settings.numberofstations,
-                                                                  tloc.tag);
-          }
-          else
-          {
-            // No need to search if the geoid has a known fmisid too
-            stationSettings.fmisids.push_back(*loc->fmisid);
-          }
+          // Note: We do not detect if there is an fmisid for the location since converting
+          // the search to be for a fmisid would lose the geoid tag for the location.
+
+          stationSettings.nearest_station_settings.emplace_back(loc->longitude,
+                                                                loc->latitude,
+                                                                settings.maxdistance,
+                                                                settings.numberofstations,
+                                                                tloc.tag,
+                                                                loc->fmisid);
         }
       }
       else
@@ -2107,9 +2103,9 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         loc = get_location(state.getGeoEngine(), fmisid, FMISID_PARAM, query.language);
         if (!loc)
         {
-          Spine::Exception ex(BCP,
-                              "Station fmisid=" + Fmi::to_string(fmisid) + " is not available!");
-          throw ex;
+          // Most likely an old station not known to geoengine. The result will not
+          // contain name, lon or lat. Use stationname, stationlon, stationlat instead.
+          loc = boost::make_shared<Spine::Location>(0, 0, "", query.timezone);
         }
       }
       else
