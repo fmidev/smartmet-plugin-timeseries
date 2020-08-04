@@ -168,6 +168,8 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     allplaces = (Spine::optional_string(req.getParameter("places"), "") == "all");
 #endif
 
+    debug = Spine::optional_bool(req.getParameter("debug"), false);
+
     timezone = Spine::optional_string(req.getParameter("tz"), default_timezone);
 
     step = Spine::optional_double(req.getParameter("step"), 1.0);
@@ -248,36 +250,8 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     numberofstations = Spine::optional_int(req.getParameter("numberofstations"), 1);
 #endif
 
-    auto name = req.getParameter("geoid");
-    if (name)
-    {
-      const string geoidreq = *name;
-      vector<string> parts;
-      boost::algorithm::split(parts, geoidreq, boost::algorithm::is_any_of(","));
-
-      for (const string& sgeoid : parts)
-      {
-        int g = Fmi::stoi(sgeoid);
-        this->geoids.push_back(g);
-      }
-    }
-
-    name = req.getParameter("geoids");
-    if (name)
-    {
-      const string geoidreq = *name;
-      vector<string> parts;
-      boost::algorithm::split(parts, geoidreq, boost::algorithm::is_any_of(","));
-
-      for (const string& sgeoid : parts)
-      {
-        int g = Fmi::stoi(sgeoid);
-        this->geoids.push_back(g);
-      }
-    }
-
 #ifndef WITHOUT_OBSERVATION
-    name = req.getParameter("fmisid");
+    auto name = req.getParameter("fmisid");
     if (name)
     {
       const string fmisidreq = *name;

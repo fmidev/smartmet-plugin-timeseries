@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.6.15
+Version: 20.7.27
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,23 +21,27 @@ BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 20.6.8
 BuildRequires: smartmet-library-locus-devel >= 20.6.8
 BuildRequires: smartmet-library-macgyver-devel >= 20.6.8
-BuildRequires: smartmet-library-newbase-devel >= 20.4.18
+BuildRequires: smartmet-library-newbase-devel >= 20.6.16
 BuildRequires: smartmet-library-gis-devel >= 20.4.18
 BuildRequires: smartmet-engine-geonames-devel >= 20.6.8
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.6.8
+BuildRequires: smartmet-engine-observation-devel >= 20.7.21
 %endif
 BuildRequires: smartmet-library-grid-content-devel >= 20.6.15
 BuildRequires: smartmet-library-grid-files-devel >= 20.6.15
 BuildRequires: smartmet-engine-querydata-devel >= 20.5.13
 BuildRequires: smartmet-engine-gis-devel >= 20.5.7
 BuildRequires: smartmet-engine-grid-devel >= 20.6.8
+# obsengine can be disabled in configuration: not included intentionally
+#%if %{with observation}
+#Requires: smartmet-engine-observation >= 20.6.10
+#%endif
 Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.4.18
 Requires: smartmet-library-locus >= 20.6.8
 Requires: smartmet-library-macgyver >= 20.6.8
-Requires: smartmet-library-newbase >= 20.4.18
+Requires: smartmet-library-newbase >= 20.6.16
 Requires: smartmet-library-spine >= 20.6.8
 Requires: smartmet-library-gis >= 20.4.18
 Requires: smartmet-engine-geonames >= 20.6.8
@@ -77,8 +81,26 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Mon Jul 27 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.7.27-1.fmi
+- Proceed with obs requests even if the station is not known to geonames
+
+* Tue Jul 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.7.21-1.fmi
+- Fixed geoid handling to generate the geoid as the response for the place parameter
+
+* Mon Jul 20 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.7.20-1.fmi
+- Fixed processing of geoid options to work similarly to coordinate searches instead of station searches
+
+* Thu Jun 25 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.25-1.fmi
+- Added debug querystring option
+
+* Mon Jun 22 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.22-1.fmi
+- Rebuilt due to base library changes
+
 * Mon Jun 15 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.15-1.fmi
 - Renamed .so file to enable simultaneous installation of timeseries and gribtimeseries
+
+* Wed Jun 10 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.6.10-1.fmi
+- Rebuilt due to obsengine API change
 
 * Tue Jun  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.9-1.fmi
 - Do not do a coordinate search for locations which already have a known fmisid

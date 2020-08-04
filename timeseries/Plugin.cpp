@@ -2048,19 +2048,15 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
       {
         if (!is_flash_or_mobile_producer(producer))
         {
-          if (!loc->fmisid)
-          {
-            stationSettings.nearest_station_settings.emplace_back(loc->longitude,
-                                                                  loc->latitude,
-                                                                  settings.maxdistance,
-                                                                  settings.numberofstations,
-                                                                  tloc.tag);
-          }
-          else
-          {
-            // No need to search if the geoid has a known fmisid too
-            stationSettings.fmisids.push_back(*loc->fmisid);
-          }
+          // Note: We do not detect if there is an fmisid for the location since converting
+          // the search to be for a fmisid would lose the geoid tag for the location.
+
+          stationSettings.nearest_station_settings.emplace_back(loc->longitude,
+                                                                loc->latitude,
+                                                                settings.maxdistance,
+                                                                settings.numberofstations,
+                                                                tloc.tag,
+                                                                loc->fmisid);
         }
       }
       else
@@ -2075,6 +2071,8 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
       }
     }  // for-loop
 
+    // Note: GEOIDs are processed by the nearest station search settings above
+
     // LPNNs
     for (auto lpnn : query.lpnns)
       stationSettings.lpnns.push_back(lpnn);
@@ -2084,15 +2082,6 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
     // FMISIDs
     for (auto fmisid : query.fmisids)
       stationSettings.fmisids.push_back(fmisid);
-    // GEOIDs
-    if (query.geoids.size() > 0)
-    {
-      stationSettings.geoid_settings.maxdistance = query.maxdistance;
-      stationSettings.geoid_settings.numberofstations = query.numberofstations;
-      stationSettings.geoid_settings.language = query.language;
-      for (auto geoid : query.geoids)
-        stationSettings.geoid_settings.geoids.push_back(geoid);
-    }
 
     // Bounding box
     if (!query.boundingBox.empty() && is_flash_producer(producer))
@@ -2212,9 +2201,9 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         loc = get_location(state.getGeoEngine(), fmisid, FMISID_PARAM, query.language);
         if (!loc)
         {
-          Spine::Exception ex(BCP,
-                              "Station fmisid=" + Fmi::to_string(fmisid) + " is not available!");
-          throw ex;
+          // Most likely an old station not known to geoengine. The result will not
+          // contain name, lon or lat. Use stationname, stationlon, stationlat instead.
+          loc = boost::make_shared<Spine::Location>(0, 0, "", query.timezone);
         }
       }
       else
@@ -2762,6 +2751,9 @@ void Plugin::processObsEngineQuery(const State& state,
       {
         Engine::Observation::Settings& settings = item.settings;
 
+        if (query.debug)
+          settings.debug_options = Engine::Observation::Settings::DUMP_SETTINGS;
+
 #ifdef MYDEBUG
         print_settings(settings);
 #endif
@@ -3210,9 +3202,9 @@ void Plugin::query(const State& state,
     // At least one of location specifiers must be set
 
 #ifndef WITHOUT_OBSERVATION
-    if (query.geoids.size() == 0 && query.fmisids.size() == 0 && query.lpnns.size() == 0 &&
-        query.wmos.size() == 0 && query.boundingBox.size() == 0 &&
-        !is_flash_or_mobile_producer(producer_option) && query.loptions->locations().size() == 0)
+    if (query.fmisids.size() == 0 && query.lpnns.size() == 0 && query.wmos.size() == 0 &&
+        query.boundingBox.size() == 0 && !is_flash_or_mobile_producer(producer_option) &&
+        query.loptions->locations().size() == 0)
 #else
     if (query.loptions->locations().size() == 0)
 #endif
