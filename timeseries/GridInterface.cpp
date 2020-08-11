@@ -504,7 +504,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       std::string startT = startTime;
       if (startTimeUTC)
       {
-        boost::local_time::local_date_time localTime(boost::posix_time::from_iso_string(startTime),
+        boost::local_time::local_date_time localTime(Fmi::TimeParser::parse_iso(startTime),
                                                      tz);
         startT = Fmi::to_iso_string(localTime.local_time());
       }
@@ -514,7 +514,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
       while (gridQuery.mStartTime < startT)
       {
-        auto ptime = boost::posix_time::from_iso_string(gridQuery.mStartTime);
+        auto ptime = Fmi::TimeParser::parse_iso(gridQuery.mStartTime);
         ptime = ptime + boost::posix_time::seconds(step);
         gridQuery.mStartTime = Fmi::to_iso_string(ptime);
       }
@@ -529,7 +529,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       {
         // Adding one hour to the end time because of the daylight saving.
 
-        auto ptime = boost::posix_time::from_iso_string(gridQuery.mEndTime);
+        auto ptime = Fmi::TimeParser::parse_iso(gridQuery.mEndTime);
         ptime = ptime + boost::posix_time::minutes(60);
         gridQuery.mEndTime = Fmi::to_iso_string(ptime);
       }
@@ -591,8 +591,8 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
     }
     else
     {
-      auto s = boost::posix_time::from_iso_string(gridQuery.mStartTime);
-      auto e = boost::posix_time::from_iso_string(gridQuery.mEndTime);
+      auto s = Fmi::TimeParser::parse_iso(gridQuery.mStartTime);
+      auto e = Fmi::TimeParser::parse_iso(gridQuery.mEndTime);
 
       if (masterquery.toptions.timeSteps)
       {
@@ -1256,7 +1256,7 @@ void GridInterface::processGridQuery(const State& state,
               // This value is added for aggregation. We should remove it later.
 
               boost::local_time::local_date_time queryTime(
-                  boost::posix_time::from_iso_string(
+                  Fmi::TimeParser::parse_iso(
                       gridQuery.mQueryParameterList[p].mValueList[x].mForecastTime),
                   tz);
               if (aggregationTimes.find(queryTime) == aggregationTimes.end())
@@ -1371,7 +1371,7 @@ void GridInterface::processGridQuery(const State& state,
                 for (uint t = 0; t < tLen; t++)
                 {
                   boost::local_time::local_date_time queryTime(
-                      boost::posix_time::from_iso_string(
+                      Fmi::TimeParser::parse_iso(
                           gridQuery.mQueryParameterList[pid].mValueList[t].mForecastTime),
                       tz);
 
@@ -1467,7 +1467,7 @@ void GridInterface::processGridQuery(const State& state,
                    ++ft)
               {
                 boost::local_time::local_date_time queryTime(
-                    boost::posix_time::from_iso_string(*ft), tz);
+                    Fmi::TimeParser::parse_iso(*ft), tz);
 
                 if (xLen == 1)
                 {
@@ -1884,7 +1884,7 @@ void GridInterface::processGridQuery(const State& state,
                         // boost::posix_time::ptime origTime =
                         // Fmi::TimeParser::parse_iso(info->mAnalysisTime);
                         boost::local_time::local_date_time origTime(
-                            boost::posix_time::from_iso_string(info->mAnalysisTime), tz);
+                            Fmi::TimeParser::parse_iso(info->mAnalysisTime), tz);
 
                         // boost::local_time::local_date_time origTime(oTime);
                         Spine::TimeSeries::TimedValue tsValue(
@@ -1910,7 +1910,7 @@ void GridInterface::processGridQuery(const State& state,
                     if (gridQuery.mQueryParameterList[idx].mValueList[t].mModificationTime > "")
                     {
                       boost::local_time::local_date_time modTime(
-                          boost::posix_time::from_iso_string(
+                          Fmi::TimeParser::parse_iso(
                               gridQuery.mQueryParameterList[idx].mValueList[t].mModificationTime),
                           tz);
                       Spine::TimeSeries::TimedValue tsValue(
