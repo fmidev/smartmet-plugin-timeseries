@@ -82,8 +82,8 @@ struct Query
   std::string timestring;
   std::string localename;
   std::locale outlocale;
-  std::vector<int> geoids;
   std::vector<int> weekdays;
+  bool debug = false;
 
 #ifndef WITHOUT_OBSERVATION
   std::vector<int> wmos;
