@@ -114,7 +114,7 @@ rm -rf $RPM_BUILD_ROOT
 * Mon Jun  8 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.8-1.fmi
 - Repackaged due to base library changes
 
-* Tue May 27 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
+* Tue May 26 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
 - Modified test cases to include percentage-function in order to test parameter parsing
 - Fixed bug in settings handling
 
