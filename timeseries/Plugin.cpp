@@ -79,7 +79,7 @@ bool is_mobile_producer(const std::string& producer)
 {
   return (producer == SmartMet::Engine::Observation::ROADCLOUD_PRODUCER ||
           producer == SmartMet::Engine::Observation::TECONER_PRODUCER ||
-          producer == SmartMet::Engine::Observation::ITMF_PRODUCER ||
+          producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER ||
           producer == SmartMet::Engine::Observation::NETATMO_PRODUCER);
 }
 
@@ -1471,6 +1471,8 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
 
     settings.format = query.format;
     settings.stationtype = producer;
+    if (producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER)
+      settings.stationtype_specifier = query.iot_producer_specifier;
     settings.maxdistance = query.maxdistance;
     if (!query.maxdistanceOptionGiven)
       settings.maxdistance = 60000;
