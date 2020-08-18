@@ -42,8 +42,8 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-GridInterface::GridInterface(Engine::Grid::Engine* engine, const Fmi::TimeZones& timezones)
-    : itsGridEngine(engine), itsTimezones(timezones)
+GridInterface::GridInterface(Engine::Grid::Engine* engine, const Fmi::TimeZones& timezones) :
+    itsGridEngine(engine), itsTimezones(timezones)
 {
   FUNCTION_TRACE
   try
@@ -83,7 +83,7 @@ bool GridInterface::isGridProducer(const std::string& producer)
     }
 
     std::string name = itsGridEngine->getProducerName(producer);
-    std::vector<std::string> nameList;
+    std::vector < std::string > nameList;
     itsGridEngine->getProducerNameList(name, nameList);
     for (auto it = nameList.begin(); it != nameList.end(); ++it)
     {
@@ -107,9 +107,7 @@ bool GridInterface::containsGridProducer(const Query& masterquery)
   FUNCTION_TRACE
   try
   {
-    for (auto areaproducers = masterquery.timeproducers.begin();
-         areaproducers != masterquery.timeproducers.end();
-         ++areaproducers)
+    for (auto areaproducers = masterquery.timeproducers.begin(); areaproducers != masterquery.timeproducers.end(); ++areaproducers)
     {
       for (auto producer = areaproducers->begin(); producer != areaproducers->end(); ++producer)
       {
@@ -132,13 +130,12 @@ bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
   FUNCTION_TRACE
   try
   {
-    const char removeChar[] = {'(', ')', '{', '}', '[', ']', ';', ' ', '\0'};
+    const char removeChar[] =
+    { '(', ')', '{', '}', '[', ']', ';', ' ', '\0' };
 
     // BOOST_FOREACH (const Spine::ParameterAndFunctions&
     // paramfunc,masterquery.poptions.parameterFunctions())
-    for (auto paramfunc = masterquery.poptions.parameterFunctions().begin();
-         paramfunc != masterquery.poptions.parameterFunctions().end();
-         ++paramfunc)
+    for (auto paramfunc = masterquery.poptions.parameterFunctions().begin(); paramfunc != masterquery.poptions.parameterFunctions().end(); ++paramfunc)
     {
       Spine::Parameter param = paramfunc->parameter;
 
@@ -167,7 +164,7 @@ bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
       }
       buf[c2] = '\0';
 
-      std::vector<std::string> partList;
+      std::vector < std::string > partList;
 
       splitString(param.name(), ':', partList);
       for (auto it = partList.begin(); it != partList.end(); ++it)
@@ -191,19 +188,18 @@ T::ParamLevelId GridInterface::getLevelId(const char* producerName, const Query&
   FUNCTION_TRACE
   try
   {
-    T::ParamLevelId cnt[20] = {0};
+    T::ParamLevelId cnt[20] =
+    { 0 };
     T::ProducerInfo* producerInfo = itsProducerInfoList.getProducerInfoByName(producerName);
     if (producerInfo != nullptr)
     {
       for (auto level = masterquery.levels.rbegin(); level != masterquery.levels.rend(); ++level)
       {
-        T::ParamLevelId levelId =
-            itsGridEngine->getFmiParameterLevelId(producerInfo->mProducerId, *level);
+        T::ParamLevelId levelId = itsGridEngine->getFmiParameterLevelId(producerInfo->mProducerId, *level);
         if (levelId == 0)
         {
           // Did not find a level id. Maybe the level value is given in hPa. Let's try with Pa.
-          levelId =
-              itsGridEngine->getFmiParameterLevelId(producerInfo->mProducerId, C_INT(*level * 100));
+          levelId = itsGridEngine->getFmiParameterLevelId(producerInfo->mProducerId, C_INT(*level * 100));
           if (levelId != 0)
             cnt[levelId % 20]++;
         }
@@ -227,9 +223,7 @@ T::ParamLevelId GridInterface::getLevelId(const char* producerName, const Query&
   }
 }
 
-void GridInterface::getDataTimes(const AreaProducers& areaproducers,
-                                 std::string& startTime,
-                                 std::string& endTime)
+void GridInterface::getDataTimes(const AreaProducers& areaproducers, std::string& startTime, std::string& endTime)
 {
   FUNCTION_TRACE
   try
@@ -237,11 +231,10 @@ void GridInterface::getDataTimes(const AreaProducers& areaproducers,
     startTime = "30000101T000000";
     endTime = "15000101T000000";
 
-    std::shared_ptr<SmartMet::ContentServer::ServiceInterface> contentServer =
-        itsGridEngine->getContentServer_sptr();
+    std::shared_ptr < SmartMet::ContentServer::ServiceInterface > contentServer = itsGridEngine->getContentServer_sptr();
     for (auto it = areaproducers.begin(); it != areaproducers.end(); ++it)
     {
-      std::vector<std::string> pnameList;
+      std::vector < std::string > pnameList;
       itsGridEngine->getProducerNameList(*it, pnameList);
 
       for (auto pname = pnameList.begin(); pname != pnameList.end(); ++pname)
@@ -249,9 +242,8 @@ void GridInterface::getDataTimes(const AreaProducers& areaproducers,
         T::ProducerInfo* producerInfo = itsProducerInfoList.getProducerInfoByName(*pname);
         if (producerInfo != nullptr)
         {
-          std::set<std::string> contentTimeList;
-          contentServer->getContentTimeListByProducerId(
-              0, producerInfo->mProducerId, contentTimeList);
+          std::set < std::string > contentTimeList;
+          contentServer->getContentTimeListByProducerId(0, producerInfo->mProducerId, contentTimeList);
           if (contentTimeList.size() > 0)
           {
             std::string s = *contentTimeList.begin();
@@ -275,8 +267,7 @@ void GridInterface::getDataTimes(const AreaProducers& areaproducers,
   }
 }
 
-void GridInterface::insertFileQueries(QueryServer::Query& query,
-                                      QueryServer::QueryStreamer_sptr queryStreamer)
+void GridInterface::insertFileQueries(QueryServer::Query& query, QueryServer::QueryStreamer_sptr queryStreamer)
 {
   FUNCTION_TRACE
   try
@@ -285,8 +276,7 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
     // to the file attribute definitions (query.mAttributeList). The queryStreamer sends these
     // queries to the queryServer and returns the results (= GRIB files) to the HTTP client.
 
-    for (auto param = query.mQueryParameterList.begin(); param != query.mQueryParameterList.end();
-         ++param)
+    for (auto param = query.mQueryParameterList.begin(); param != query.mQueryParameterList.end(); ++param)
     {
       for (auto val = param->mValueList.begin(); val != param->mValueList.end(); ++val)
       {
@@ -359,8 +349,11 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
   }
 }
 
-
-bool GridInterface::isValidDefaultRequest(const std::vector<uint>& defaultGeometries,bool ignoreGridGeometriesWhenPreloadReady,std::vector<std::vector<T::Coordinate>>& polygonPath,T::GeometryId_set& geometryIdList)
+bool GridInterface::isValidDefaultRequest(
+    const std::vector<uint>& defaultGeometries,
+    bool ignoreGridGeometriesWhenPreloadReady,
+    std::vector<std::vector<T::Coordinate>>& polygonPath,
+    T::GeometryId_set& geometryIdList)
 {
   try
   {
@@ -372,7 +365,7 @@ bool GridInterface::isValidDefaultRequest(const std::vector<uint>& defaultGeomet
       auto dataServer = itsGridEngine->getDataServer_sptr();
       uint count = 0;
 
-      if (dataServer->getGridMessagePreloadCount(0,count) == 0)
+      if (dataServer->getGridMessagePreloadCount(0, count) == 0)
       {
         if (count == 0)
           return true; // The dataServer has preload functionality active and all content is preloaded.
@@ -388,7 +381,7 @@ bool GridInterface::isValidDefaultRequest(const std::vector<uint>& defaultGeomet
         {
           double grid_i = ParamValueMissing;
           double grid_j = ParamValueMissing;
-          if (!Identification::gridDef.getGridPointByGeometryIdAndLatLonCoordinates(*geom,coordinate->y(), coordinate->x(),grid_i,grid_j))
+          if (!Identification::gridDef.getGridPointByGeometryIdAndLatLonCoordinates(*geom, coordinate->y(), coordinate->x(), grid_i, grid_j))
             match = false;
         }
       }
@@ -408,31 +401,30 @@ bool GridInterface::isValidDefaultRequest(const std::vector<uint>& defaultGeomet
   }
 }
 
-
-void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
-                                     AdditionalParameters& additionalParameters,
-                                     const Query& masterquery,
-                                     uint mode,
-                                     int origLevelId,
-                                     double origLevel,
-                                     const AreaProducers& areaproducers,
-                                     const Spine::TaggedLocation& tloc,
-                                     const Spine::LocationPtr loc,
-                                     T::GeometryId_set& geometryIdList,
-                                     std::vector<std::vector<T::Coordinate>>& polygonPath)
+void GridInterface::prepareGridQuery(
+    QueryServer::Query& gridQuery,
+    AdditionalParameters& additionalParameters,
+    const Query& masterquery,
+    uint mode,
+    int origLevelId,
+    double origLevel,
+    const AreaProducers& areaproducers,
+    const Spine::TaggedLocation& tloc,
+    const Spine::LocationPtr loc,
+    T::GeometryId_set& geometryIdList,
+    std::vector<std::vector<T::Coordinate>>& polygonPath)
 {
   FUNCTION_TRACE
   try
   {
-    const char* buildIdParameters[] = {
-        "origintime", "modtime", "mtime", "level", "lat", "lon", "latlon", "lonlat", "@", nullptr};
+    const char* buildIdParameters[] =
+    { "origintime", "modtime", "mtime", "level", "lat", "lon", "latlon", "lonlat", "@", nullptr };
 
     bool info = false;
     if (strcasecmp(masterquery.format.c_str(), "INFO") == 0)
       info = true;
 
-    std::shared_ptr<SmartMet::ContentServer::ServiceInterface> contentServer =
-        itsGridEngine->getContentServer_sptr();
+    std::shared_ptr < SmartMet::ContentServer::ServiceInterface > contentServer = itsGridEngine->getContentServer_sptr();
 
     gridQuery.mLanguage = masterquery.language;
 
@@ -449,8 +441,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
     if (geomId != nullptr && coordinateType == nullptr)
     {
-      gridQuery.mAttributeList.addAttribute(
-          "contour.coordinateType", std::to_string(T::CoordinateTypeValue::GRID_COORDINATES));
+      gridQuery.mAttributeList.addAttribute("contour.coordinateType", std::to_string(T::CoordinateTypeValue::GRID_COORDINATES));
     }
 
     gridQuery.mStartTime = startTime;
@@ -459,13 +450,13 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
     /*
 
-    // The QueryServer should be able to find this information by itself.
+     // The QueryServer should be able to find this information by itself.
 
-    if (!std::isnan(loc->dem))
-      gridQuery.mAttributeList.setAttribute("dem", std::to_string(loc->dem));
+     if (!std::isnan(loc->dem))
+     gridQuery.mAttributeList.setAttribute("dem", std::to_string(loc->dem));
 
-    gridQuery.mAttributeList.setAttribute("coverType", std::to_string(loc->covertype));
-    */
+     gridQuery.mAttributeList.setAttribute("coverType", std::to_string(loc->covertype));
+     */
 
     std::string timezoneName = loc->timezone;
     boost::local_time::time_zone_ptr localtz = itsTimezones.time_zone_from_string(loc->timezone);
@@ -498,14 +489,12 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
     // std::cout << "DAYLIGHT : " << daylightSavingTime << "\n";
 
-    if (masterquery.toptions.mode == Spine::TimeSeriesGeneratorOptions::TimeSteps ||
-        masterquery.toptions.mode == Spine::TimeSeriesGeneratorOptions::FixedTimes)
+    if (masterquery.toptions.mode == Spine::TimeSeriesGeneratorOptions::TimeSteps || masterquery.toptions.mode == Spine::TimeSeriesGeneratorOptions::FixedTimes)
     {
       std::string startT = startTime;
       if (startTimeUTC)
       {
-        boost::local_time::local_date_time localTime(Fmi::TimeParser::parse_iso(startTime),
-                                                     tz);
+        boost::local_time::local_date_time localTime(toTimeStamp(startTime), tz);
         startT = Fmi::to_iso_string(localTime.local_time());
       }
 
@@ -514,7 +503,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
       while (gridQuery.mStartTime < startT)
       {
-        auto ptime = Fmi::TimeParser::parse_iso(gridQuery.mStartTime);
+        auto ptime = toTimeStamp(gridQuery.mStartTime);
         ptime = ptime + boost::posix_time::seconds(step);
         gridQuery.mStartTime = Fmi::to_iso_string(ptime);
       }
@@ -529,7 +518,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       {
         // Adding one hour to the end time because of the daylight saving.
 
-        auto ptime = Fmi::TimeParser::parse_iso(gridQuery.mEndTime);
+        auto ptime = toTimeStamp(gridQuery.mEndTime);
         ptime = ptime + boost::posix_time::minutes(60);
         gridQuery.mEndTime = Fmi::to_iso_string(ptime);
       }
@@ -549,9 +538,8 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
     std::string latestTime = Fmi::to_iso_string(masterquery.latestTimestep);
 
-    if (masterquery.toptions.startTimeData || masterquery.toptions.endTimeData ||
-        masterquery.toptions.mode == Spine::TimeSeriesGeneratorOptions::DataTimes ||
-        masterquery.toptions.mode == Spine::TimeSeriesGeneratorOptions::GraphTimes)
+    if (masterquery.toptions.startTimeData || masterquery.toptions.endTimeData || masterquery.toptions.mode == Spine::TimeSeriesGeneratorOptions::DataTimes
+        || masterquery.toptions.mode == Spine::TimeSeriesGeneratorOptions::GraphTimes)
     {
       if (masterquery.toptions.startTimeData)
       {
@@ -591,8 +579,8 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
     }
     else
     {
-      auto s = Fmi::TimeParser::parse_iso(gridQuery.mStartTime);
-      auto e = Fmi::TimeParser::parse_iso(gridQuery.mEndTime);
+      auto s = toTimeStamp(gridQuery.mStartTime);
+      auto e = toTimeStamp(gridQuery.mEndTime);
 
       if (masterquery.toptions.timeSteps)
       {
@@ -723,9 +711,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
     // BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfunc,
     // masterquery.poptions.parameterFunctions())
-    for (auto paramfunc = masterquery.poptions.parameterFunctions().begin();
-         paramfunc != masterquery.poptions.parameterFunctions().end();
-         ++paramfunc)
+    for (auto paramfunc = masterquery.poptions.parameterFunctions().begin(); paramfunc != masterquery.poptions.parameterFunctions().end(); ++paramfunc)
     {
       Spine::Parameter param = paramfunc->parameter;
 
@@ -762,12 +748,12 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
       std::string tmp = param.originalName();
 
-      std::vector<std::string> partList;
+      std::vector < std::string > partList;
 
       splitString(tmp, ':', partList);
       if (partList.size() > 2 && (partList[0] == "ISOBANDS" || partList[0] == "ISOLINES"))
       {
-        std::vector<std::string> list;
+        std::vector < std::string > list;
         splitString(partList[1], ';', list);
         size_t len = list.size();
         if (len > 0)
@@ -812,7 +798,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       if (pos != std::string::npos)
       {
         qParam.mAreaInterpolationMethod = T::AreaInterpolationMethod::Linear;
-        qParam.mParam.erase(pos,4);
+        qParam.mParam.erase(pos, 4);
       }
 
       qParam.mOrigParam = param.originalName();
@@ -822,9 +808,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       int c = 0;
       while (buildIdParameters[c] != nullptr)
       {
-        if (strncasecmp(buildIdParameters[c],
-                        qParam.mSymbolicName.c_str(),
-                        strlen(buildIdParameters[c])) == 0)
+        if (strncasecmp(buildIdParameters[c], qParam.mSymbolicName.c_str(), strlen(buildIdParameters[c])) == 0)
           qParam.mParameterKeyType = T::ParamKeyTypeValue::BUILD_IN;
         c++;
       }
@@ -835,13 +819,10 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       if (atoi(qParam.mParam.c_str()) > 0)
         qParam.mParameterKeyType = T::ParamKeyTypeValue::NEWBASE_ID;
 
-      if (masterquery.maxAggregationIntervals.find(param.name()) !=
-          masterquery.maxAggregationIntervals.end())
+      if (masterquery.maxAggregationIntervals.find(param.name()) != masterquery.maxAggregationIntervals.end())
       {
-        unsigned int aggregationIntervalBehind =
-            masterquery.maxAggregationIntervals.at(param.name()).behind;
-        unsigned int aggregationIntervalAhead =
-            masterquery.maxAggregationIntervals.at(param.name()).ahead;
+        unsigned int aggregationIntervalBehind = masterquery.maxAggregationIntervals.at(param.name()).behind;
+        unsigned int aggregationIntervalAhead = masterquery.maxAggregationIntervals.at(param.name()).ahead;
 
         if (aggregationIntervalBehind > 0 || aggregationIntervalAhead > 0)
         {
@@ -905,14 +886,12 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
             {
               // Grib uses Pa and querydata hPa, so we have to convert the value.
               qParam.mParameterLevel = C_INT(qParam.mParameterLevel * 100);
-              qParam.mFlags =
-                  qParam.mFlags | QueryServer::QueryParameter::Flags::PressureLevelInterpolation;
+              qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::PressureLevelInterpolation;
             }
             break;
 
           case 1:
-            qParam.mFlags =
-                qParam.mFlags | QueryServer::QueryParameter::Flags::PressureLevelInterpolation;
+            qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::PressureLevelInterpolation;
             qParam.mParameterLevelId = 2;
             // Grib uses Pa and querydata hPa, so we have to convert the value.
             qParam.mParameterLevel = C_INT(qParam.mParameterLevel * 100);
@@ -920,8 +899,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
 
           case 2:
             qParam.mParameterLevelId = 0;
-            qParam.mFlags =
-                qParam.mFlags | QueryServer::QueryParameter::Flags::HeightLevelInterpolation;
+            qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::HeightLevelInterpolation;
             break;
         }
       }
@@ -983,8 +961,7 @@ int GridInterface::getParameterIndex(QueryServer::Query& gridQuery, std::string 
     size_t pLen = gridQuery.mQueryParameterList.size();
     for (size_t p = 0; p < pLen; p++)
     {
-      if (strcasecmp(gridQuery.mQueryParameterList[p].mParam.c_str(), param.c_str()) == 0 ||
-          strcasecmp(gridQuery.mQueryParameterList[p].mSymbolicName.c_str(), param.c_str()) == 0)
+      if (strcasecmp(gridQuery.mQueryParameterList[p].mParam.c_str(), param.c_str()) == 0 || strcasecmp(gridQuery.mQueryParameterList[p].mSymbolicName.c_str(), param.c_str()) == 0)
         return p;
     }
     return -1;
@@ -995,23 +972,23 @@ int GridInterface::getParameterIndex(QueryServer::Query& gridQuery, std::string 
   }
 }
 
-void GridInterface::processGridQuery(const State& state,
-                                     Query& masterquery,
-                                     OutputData& outputData,
-                                     QueryServer::QueryStreamer_sptr queryStreamer,
-                                     const AreaProducers& areaproducers,
-                                     const ProducerDataPeriod& producerDataPeriod,
-                                     const Spine::TaggedLocation& tloc,
-                                     const Spine::LocationPtr loc,
-                                     std::string country,
-                                     T::GeometryId_set& geometryIdList,
-                                     std::vector<std::vector<T::Coordinate>>& polygonPath)
+void GridInterface::processGridQuery(
+    const State& state,
+    Query& masterquery,
+    OutputData& outputData,
+    QueryServer::QueryStreamer_sptr queryStreamer,
+    const AreaProducers& areaproducers,
+    const ProducerDataPeriod& producerDataPeriod,
+    const Spine::TaggedLocation& tloc,
+    const Spine::LocationPtr loc,
+    std::string country,
+    T::GeometryId_set& geometryIdList,
+    std::vector<std::vector<T::Coordinate>>& polygonPath)
 {
   FUNCTION_TRACE
   try
   {
-    std::shared_ptr<SmartMet::ContentServer::ServiceInterface> contentServer =
-        itsGridEngine->getContentServer_sptr();
+    std::shared_ptr < SmartMet::ContentServer::ServiceInterface > contentServer = itsGridEngine->getContentServer_sptr();
 
     Spine::TimeSeries::Value missing_value = Spine::TimeSeries::None();
 
@@ -1039,13 +1016,9 @@ void GridInterface::processGridQuery(const State& state,
       tz = itsTimezones.time_zone_from_string(timezoneName);
     }
 
-    AdditionalParameters additionalParameters(itsTimezones,
-                                              masterquery.outlocale,
-                                              *masterquery.timeformatter,
-                                              masterquery.valueformatter);
+    AdditionalParameters additionalParameters(itsTimezones, masterquery.outlocale, *masterquery.timeformatter, masterquery.valueformatter);
 
-    const SmartMet::Spine::OptionParsers::ParameterFunctionList& paramFuncs =
-        masterquery.poptions.parameterFunctions();
+    const SmartMet::Spine::OptionParsers::ParameterFunctionList& paramFuncs = masterquery.poptions.parameterFunctions();
 
     // std::cout << "LEVELTYPE : " << masterquery.leveltype << "\n";
 
@@ -1102,8 +1075,7 @@ void GridInterface::processGridQuery(const State& state,
         case 0:
           if (masterquery.levels.empty())
           {
-            if (areaproducers.size() == 1 && masterquery.pressures.empty() &&
-                masterquery.heights.empty())
+            if (areaproducers.size() == 1 && masterquery.pressures.empty() && masterquery.heights.empty())
             {
               std::string producerName = *areaproducers.begin();
 
@@ -1121,7 +1093,7 @@ void GridInterface::processGridQuery(const State& state,
               }
               else if (masterquery.leveltype.empty())
               {
-                std::set<T::ParamLevelId> levelIdList;
+                std::set < T::ParamLevelId > levelIdList;
                 itsGridEngine->getProducerParameterLevelIdList(producerName, levelIdList);
                 if (levelIdList.size() == 1)
                 {
@@ -1131,8 +1103,7 @@ void GridInterface::processGridQuery(const State& state,
                   switch (levelId)
                   {
                     case 2:  // Pressure level
-                      itsGridEngine->getProducerParameterLevelList(
-                          producerName, 2, 0.01, tmpLevels);
+                      itsGridEngine->getProducerParameterLevelList(producerName, 2, 0.01, tmpLevels);
                       for (auto lev = tmpLevels.rbegin(); lev != tmpLevels.rend(); ++lev)
                         levels.push_back(*lev);
                       break;
@@ -1154,31 +1125,27 @@ void GridInterface::processGridQuery(const State& state,
           {
             if (qLevelId == 2)
             {
-              for (auto level = masterquery.levels.rbegin(); level != masterquery.levels.rend();
-                   ++level)
-                levels.push_back((double)(*level));
+              for (auto level = masterquery.levels.rbegin(); level != masterquery.levels.rend(); ++level)
+                levels.push_back((double) (*level));
             }
             else
             {
-              for (auto level = masterquery.levels.begin(); level != masterquery.levels.end();
-                   ++level)
-                levels.push_back((double)(*level));
+              for (auto level = masterquery.levels.begin(); level != masterquery.levels.end(); ++level)
+                levels.push_back((double) (*level));
             }
           }
           break;
 
         case 1:
           aLevelId = 2;
-          for (auto level = masterquery.pressures.begin(); level != masterquery.pressures.end();
-               ++level)
-            levels.push_back((double)(*level));
+          for (auto level = masterquery.pressures.begin(); level != masterquery.pressures.end(); ++level)
+            levels.push_back((double) (*level));
           break;
 
         case 2:
           aLevelId = 3;
-          for (auto level = masterquery.heights.begin(); level != masterquery.heights.end();
-               ++level)
-            levels.push_back((double)(*level));
+          for (auto level = masterquery.heights.begin(); level != masterquery.heights.end(); ++level)
+            levels.push_back((double) (*level));
           break;
       }
 
@@ -1191,17 +1158,7 @@ void GridInterface::processGridQuery(const State& state,
         if (geometryIdStr > "")
           splitString(geometryIdStr, ',', gridQuery.mGeometryIdList);
 
-        prepareGridQuery(gridQuery,
-                         additionalParameters,
-                         masterquery,
-                         mode,
-                         aLevelId,
-                         *level,
-                         areaproducers,
-                         tloc,
-                         loc,
-                         geometryIdList,
-                         polygonPath);
+        prepareGridQuery(gridQuery, additionalParameters, masterquery, mode, aLevelId, *level, areaproducers, tloc, loc, geometryIdList, polygonPath);
 
         std::vector<TimeSeriesData> tsdatavector;
         outputData.push_back(make_pair(get_location_id(tloc.loc), tsdatavector));
@@ -1223,10 +1180,8 @@ void GridInterface::processGridQuery(const State& state,
           switch (result)
           {
             case QueryServer::Result::NO_PRODUCERS_FOUND:
-              exception.addDetail(
-                  "The reason for this situation is usually that the given producer is unknown");
-              exception.addDetail(
-                  "or there are no producer list available in the grid engine's configuration "
+              exception.addDetail("The reason for this situation is usually that the given producer is unknown");
+              exception.addDetail("or there are no producer list available in the grid engine's configuration "
                   "file.");
               break;
           }
@@ -1242,7 +1197,7 @@ void GridInterface::processGridQuery(const State& state,
         //        gridQuery.print(std::cout, 0, 0);
 
         T::Coordinate_vec coordinates;
-        std::set<boost::local_time::local_date_time> aggregationTimes;
+        std::set < boost::local_time::local_date_time > aggregationTimes;
 
         int pLen = C_INT(gridQuery.mQueryParameterList.size());
         for (int p = 0; p < pLen; p++)
@@ -1250,15 +1205,11 @@ void GridInterface::processGridQuery(const State& state,
           uint xLen = gridQuery.mQueryParameterList[p].mValueList.size();
           for (uint x = 0; x < xLen; x++)
           {
-            if ((gridQuery.mQueryParameterList[p].mValueList[x].mFlags &
-                 QueryServer::ParameterValues::Flags::AggregationValue) != 0)
+            if ((gridQuery.mQueryParameterList[p].mValueList[x].mFlags & QueryServer::ParameterValues::Flags::AggregationValue) != 0)
             {
               // This value is added for aggregation. We should remove it later.
 
-              boost::local_time::local_date_time queryTime(
-                  Fmi::TimeParser::parse_iso(
-                      gridQuery.mQueryParameterList[p].mValueList[x].mForecastTime),
-                  tz);
+              boost::local_time::local_date_time queryTime(toTimeStamp(gridQuery.mQueryParameterList[p].mValueList[x].mForecastTime), tz);
               if (aggregationTimes.find(queryTime) == aggregationTimes.end())
               {
                 aggregationTimes.insert(queryTime);
@@ -1273,8 +1224,7 @@ void GridInterface::processGridQuery(const State& state,
                 for (uint v = 0; v < len; v++)
                 {
                   T::GridValue val;
-                  if (gridQuery.mQueryParameterList[p].mValueList[x].mValueList.getGridValueByIndex(
-                          v, val))
+                  if (gridQuery.mQueryParameterList[p].mValueList[x].mValueList.getGridValueByIndex(v, val))
                   {
                     coordinates.push_back(T::Coordinate(val.mX, val.mY));
                   }
@@ -1285,11 +1235,12 @@ void GridInterface::processGridQuery(const State& state,
         }
 
         unsigned long long outputTime = getTime();
-        std::vector<std::string> filenameList;
+        std::vector < std::string > filenameList;
 
         // Going through all parameters
 
-        int pidList[1000] = {0};
+        int pidList[1000] =
+        { 0 };
 
         int pIdx = 0;
         for (int pp = 0; pp < pLen; pp++)
@@ -1298,22 +1249,19 @@ void GridInterface::processGridQuery(const State& state,
           int pid = pp;
           int ai = gridQuery.mQueryParameterList[pp].mAlternativeParamId;
 
-          if ((gridQuery.mQueryParameterList[pp].mFlags &
-               QueryServer::QueryParameter::Flags::AlternativeParameter) == 0)
+          if ((gridQuery.mQueryParameterList[pp].mFlags & QueryServer::QueryParameter::Flags::AlternativeParameter) == 0)
           {
             std::vector<TimeSeriesData> aggregatedData;
 
             Spine::TimeSeries::TimeSeriesPtr tsForParameter(new Spine::TimeSeries::TimeSeries());
             Spine::TimeSeries::TimeSeriesPtr tsForNonGridParam(new Spine::TimeSeries::TimeSeries());
-            Spine::TimeSeries::TimeSeriesGroupPtr tsForGroup(
-                new Spine::TimeSeries::TimeSeriesGroup());
+            Spine::TimeSeries::TimeSeriesGroupPtr tsForGroup(new Spine::TimeSeries::TimeSeriesGroup());
 
             // Counting the number of values that the parameter can have in single timestep.
 
             uint vLen = 0;
             uint xLen = 0;
-            if (C_INT(gridQuery.mQueryParameterList.size()) > pp &&
-                gridQuery.mQueryParameterList[pp].mValueList.size() > 0)
+            if (C_INT(gridQuery.mQueryParameterList.size()) > pp && gridQuery.mQueryParameterList[pp].mValueList.size() > 0)
             {
               // ### Going through all timesteps.
 
@@ -1337,8 +1285,7 @@ void GridInterface::processGridQuery(const State& state,
               pidList[pIdx] = ai;
               vLen = 0;
               xLen = 0;
-              if (C_INT(gridQuery.mQueryParameterList.size()) > pid &&
-                  gridQuery.mQueryParameterList[pid].mValueList.size() > 0)
+              if (C_INT(gridQuery.mQueryParameterList.size()) > pid && gridQuery.mQueryParameterList[pid].mValueList.size() > 0)
               {
                 // ### Going through all timesteps.
 
@@ -1370,22 +1317,15 @@ void GridInterface::processGridQuery(const State& state,
 
                 for (uint t = 0; t < tLen; t++)
                 {
-                  boost::local_time::local_date_time queryTime(
-                      Fmi::TimeParser::parse_iso(
-                          gridQuery.mQueryParameterList[pid].mValueList[t].mForecastTime),
-                      tz);
+                  boost::local_time::local_date_time queryTime(toTimeStamp(gridQuery.mQueryParameterList[pid].mValueList[t].mForecastTime), tz);
 
                   T::GridValue val;
-                  if (gridQuery.mQueryParameterList[pid]
-                          .mValueList[t]
-                          .mValueList.getGridValueByIndex(v, val) &&
-                      (val.mValue != ParamValueMissing || val.mValueString.length() > 0))
+                  if (gridQuery.mQueryParameterList[pid].mValueList[t].mValueList.getGridValueByIndex(v, val) && (val.mValue != ParamValueMissing || val.mValueString.length() > 0))
                   {
                     if (val.mValueString.length() > 0)
                     {
                       // The parameter value is a string
-                      Spine::TimeSeries::TimedValue tsValue(
-                          queryTime, Spine::TimeSeries::Value(val.mValueString));
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, Spine::TimeSeries::Value(val.mValueString));
                       if (vLen == 1)
                       {
                         // The parameter has only single value in the timestep
@@ -1400,8 +1340,7 @@ void GridInterface::processGridQuery(const State& state,
                     else
                     {
                       // The parameter value is numeric
-                      Spine::TimeSeries::TimedValue tsValue(queryTime,
-                                                            Spine::TimeSeries::Value(val.mValue));
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, Spine::TimeSeries::Value(val.mValue));
                       if (vLen == 1)
                       {
                         // The parameter has only single value in the timestep
@@ -1435,18 +1374,14 @@ void GridInterface::processGridQuery(const State& state,
                 if (vLen > 1)
                 {
                   T::GridValue val;
-                  if (gridQuery.mQueryParameterList[pid]
-                          .mValueList[0]
-                          .mValueList.getGridValueByIndex(v, val))
+                  if (gridQuery.mQueryParameterList[pid].mValueList[0].mValueList.getGridValueByIndex(v, val))
                   {
-                    Spine::TimeSeries::LonLatTimeSeries llSeries(
-                        Spine::TimeSeries::LonLat(val.mX, val.mY), ts);
+                    Spine::TimeSeries::LonLatTimeSeries llSeries(Spine::TimeSeries::LonLat(val.mX, val.mY), ts);
                     tsForGroup->push_back(llSeries);
                   }
                   else
                   {
-                    Spine::TimeSeries::LonLatTimeSeries llSeries(Spine::TimeSeries::LonLat(0, 0),
-                                                                 ts);
+                    Spine::TimeSeries::LonLatTimeSeries llSeries(Spine::TimeSeries::LonLat(0, 0), ts);
                     tsForGroup->push_back(llSeries);
                   }
                 }
@@ -1462,12 +1397,9 @@ void GridInterface::processGridQuery(const State& state,
               size_t tLen = gridQuery.mForecastTimeList.size();
               size_t t = 0;
 
-              for (auto ft = gridQuery.mForecastTimeList.begin();
-                   ft != gridQuery.mForecastTimeList.end();
-                   ++ft)
+              for (auto ft = gridQuery.mForecastTimeList.begin(); ft != gridQuery.mForecastTimeList.end(); ++ft)
               {
-                boost::local_time::local_date_time queryTime(
-                    Fmi::TimeParser::parse_iso(*ft), tz);
+                boost::local_time::local_date_time queryTime(toTimeStamp(*ft), tz);
 
                 if (xLen == 1)
                 {
@@ -1478,8 +1410,7 @@ void GridInterface::processGridQuery(const State& state,
 
                   int width = atoi(gridQuery.mAttributeList.getAttributeValue("grid.width"));
                   int height = atoi(gridQuery.mAttributeList.getAttributeValue("grid.height"));
-                  bool rotate = (bool)atoi(
-                      gridQuery.mAttributeList.getAttributeValue("grid.original.reverseYDirection"));
+                  bool rotate = (bool) atoi(gridQuery.mAttributeList.getAttributeValue("grid.original.reverseYDirection"));
 
                   if (width > 0 && height > 0)
                   {
@@ -1504,21 +1435,11 @@ void GridInterface::processGridQuery(const State& state,
                         col = (r << 16) + (r << 8) + r;
                       }
 
-                      imagePaint.paintWkb(
-                          mp,
-                          mp,
-                          0,
-                          0,
-                          gridQuery.mQueryParameterList[pid].mValueList[t].mValueData[s],
-                          col);
+                      imagePaint.paintWkb(mp, mp, 0, 0, gridQuery.mQueryParameterList[pid].mValueList[t].mValueData[s], col);
                     }
 
                     char filename[100];
-                    sprintf(filename,
-                            "/tmp/timeseries_contours_%llu_%u_%lu.png",
-                            outputTime,
-                            pidList[pp],
-                            t);
+                    sprintf(filename, "/tmp/timeseries_contours_%llu_%u_%lu.png", outputTime, pidList[pp], t);
                     imagePaint.savePngImage(filename);
                     std::string image = fileToBase64(filename);
                     filenameList.push_back(std::string(filename));
@@ -1534,105 +1455,76 @@ void GridInterface::processGridQuery(const State& state,
                     tsForNonGridParam->push_back(tsValue);
                   }
                 }
-                else if (coordinates.size() > 1 &&
-                         strcasecmp(gridQuery.mQueryParameterList[pid].mParam.c_str(), "lat") == 0)
+                else if (coordinates.size() > 1 && strcasecmp(gridQuery.mQueryParameterList[pid].mParam.c_str(), "lat") == 0)
                 {
                   uint len = coordinates.size();
                   std::ostringstream output;
                   output << "[";
                   for (uint i = 0; i < len; i++)
                   {
-                    output << masterquery.valueformatter.format(
-                        coordinates[i].y(), gridQuery.mQueryParameterList[pid].mPrecision);
+                    output << masterquery.valueformatter.format(coordinates[i].y(), gridQuery.mQueryParameterList[pid].mPrecision);
                     if ((i + 1) < len)
                       output << " ";
                   }
                   output << "]";
-                  Spine::TimeSeries::TimedValue tsValue(queryTime,
-                                                        Spine::TimeSeries::Value(output.str()));
+                  Spine::TimeSeries::TimedValue tsValue(queryTime, Spine::TimeSeries::Value(output.str()));
                   tsForNonGridParam->push_back(tsValue);
                 }
-                else if (coordinates.size() > 1 &&
-                         strcasecmp(gridQuery.mQueryParameterList[pid].mParam.c_str(), "lon") == 0)
+                else if (coordinates.size() > 1 && strcasecmp(gridQuery.mQueryParameterList[pid].mParam.c_str(), "lon") == 0)
                 {
                   uint len = coordinates.size();
                   std::ostringstream output;
                   output << "[";
                   for (uint i = 0; i < len; i++)
                   {
-                    output << masterquery.valueformatter.format(
-                        coordinates[i].x(), gridQuery.mQueryParameterList[pid].mPrecision);
+                    output << masterquery.valueformatter.format(coordinates[i].x(), gridQuery.mQueryParameterList[pid].mPrecision);
                     if ((i + 1) < len)
                       output << " ";
                   }
                   output << "]";
-                  Spine::TimeSeries::TimedValue tsValue(queryTime,
-                                                        Spine::TimeSeries::Value(output.str()));
+                  Spine::TimeSeries::TimedValue tsValue(queryTime, Spine::TimeSeries::Value(output.str()));
                   tsForNonGridParam->push_back(tsValue);
                 }
-                else if (coordinates.size() > 1 &&
-                         strcasecmp(gridQuery.mQueryParameterList[pid].mParam.c_str(), "latlon") ==
-                             0)
+                else if (coordinates.size() > 1 && strcasecmp(gridQuery.mQueryParameterList[pid].mParam.c_str(), "latlon") == 0)
                 {
                   uint len = coordinates.size();
                   std::ostringstream output;
                   output << "[";
                   for (uint i = 0; i < len; i++)
                   {
-                    output << masterquery.valueformatter.format(
-                                  coordinates[i].x(), gridQuery.mQueryParameterList[pid].mPrecision)
-                           << ",";
-                    output << masterquery.valueformatter.format(
-                        coordinates[i].y(), gridQuery.mQueryParameterList[pid].mPrecision);
+                    output << masterquery.valueformatter.format(coordinates[i].x(), gridQuery.mQueryParameterList[pid].mPrecision) << ",";
+                    output << masterquery.valueformatter.format(coordinates[i].y(), gridQuery.mQueryParameterList[pid].mPrecision);
                     if ((i + 1) < len)
                       output << " ";
                   }
                   output << "]";
-                  Spine::TimeSeries::TimedValue tsValue(queryTime,
-                                                        Spine::TimeSeries::Value(output.str()));
+                  Spine::TimeSeries::TimedValue tsValue(queryTime, Spine::TimeSeries::Value(output.str()));
                   tsForNonGridParam->push_back(tsValue);
                 }
-                else if (coordinates.size() > 1 &&
-                         strcasecmp(gridQuery.mQueryParameterList[pid].mParam.c_str(), "lonlat") ==
-                             0)
+                else if (coordinates.size() > 1 && strcasecmp(gridQuery.mQueryParameterList[pid].mParam.c_str(), "lonlat") == 0)
                 {
                   uint len = coordinates.size();
                   std::ostringstream output;
                   output << "[";
                   for (uint i = 0; i < len; i++)
                   {
-                    output << masterquery.valueformatter.format(
-                                  coordinates[i].x(), gridQuery.mQueryParameterList[pid].mPrecision)
-                           << ",";
-                    output << masterquery.valueformatter.format(
-                        coordinates[i].y(), gridQuery.mQueryParameterList[pid].mPrecision);
+                    output << masterquery.valueformatter.format(coordinates[i].x(), gridQuery.mQueryParameterList[pid].mPrecision) << ",";
+                    output << masterquery.valueformatter.format(coordinates[i].y(), gridQuery.mQueryParameterList[pid].mPrecision);
                     if ((i + 1) < len)
                       output << " ";
                   }
                   output << "]";
-                  Spine::TimeSeries::TimedValue tsValue(queryTime,
-                                                        Spine::TimeSeries::Value(output.str()));
+                  Spine::TimeSeries::TimedValue tsValue(queryTime, Spine::TimeSeries::Value(output.str()));
                   tsForNonGridParam->push_back(tsValue);
                 }
-                else if (additionalParameters.getParameterValueByLocation(
-                             gridQuery.mQueryParameterList[pid].mParam,
-                             tloc.tag,
-                             loc,
-                             country,
-                             gridQuery.mQueryParameterList[pid].mPrecision,
-                             paramValue))
+                else if (additionalParameters.getParameterValueByLocation(gridQuery.mQueryParameterList[pid].mParam, tloc.tag, loc, country,
+                    gridQuery.mQueryParameterList[pid].mPrecision, paramValue))
                 {
                   Spine::TimeSeries::TimedValue tsValue(queryTime, paramValue);
                   tsForNonGridParam->push_back(tsValue);
                 }
-                else if (additionalParameters.getParameterValueByLocationAndTime(
-                             gridQuery.mQueryParameterList[pid].mParam,
-                             tloc.tag,
-                             loc,
-                             queryTime,
-                             tz,
-                             gridQuery.mQueryParameterList[pid].mPrecision,
-                             paramValue))
+                else if (additionalParameters.getParameterValueByLocationAndTime(gridQuery.mQueryParameterList[pid].mParam, tloc.tag, loc, queryTime, tz,
+                    gridQuery.mQueryParameterList[pid].mPrecision, paramValue))
                 {
                   Spine::TimeSeries::TimedValue tsValue(queryTime, paramValue);
                   tsForNonGridParam->push_back(tsValue);
@@ -1643,9 +1535,7 @@ void GridInterface::processGridQuery(const State& state,
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    Spine::TimeSeries::TimedValue tsValue(
-                        queryTime,
-                        C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mParameterLevel));
+                    Spine::TimeSeries::TimedValue tsValue(queryTime, C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mParameterLevel));
                     tsForNonGridParam->push_back(tsValue);
                   }
                   else
@@ -1664,10 +1554,8 @@ void GridInterface::processGridQuery(const State& state,
                     {
                       levelValue = gridQuery.mQueryParameterList[idx].mValueList[t].mParameterLevel;
                       if (levelValue < 0)
-                        if (gridQuery.mQueryParameterList[idx]
-                                    .mValueList[t]
-                                    .mParameterLevelIdType == T::ParamLevelIdTypeValue::FMI &&
-                            gridQuery.mQueryParameterList[idx].mValueList[t].mParameterLevelId == 2)
+                        if (gridQuery.mQueryParameterList[idx].mValueList[t].mParameterLevelIdType == T::ParamLevelIdTypeValue::FMI
+                            && gridQuery.mQueryParameterList[idx].mValueList[t].mParameterLevelId == 2)
                           levelValue = levelValue / 100;
                     }
                     idx++;
@@ -1682,29 +1570,23 @@ void GridInterface::processGridQuery(const State& state,
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    Spine::TimeSeries::TimedValue tsValue(
-                        queryTime,
-                        static_cast<int>(
-                            gridQuery.mQueryParameterList[i].mValueList[t].mParameterLevelId));
+                    Spine::TimeSeries::TimedValue tsValue(queryTime, static_cast<int>(gridQuery.mQueryParameterList[i].mValueList[t].mParameterLevelId));
                     tsForNonGridParam->push_back(tsValue);
                   }
                 }
-                else if (gridQuery.mQueryParameterList[pid].mParam == "model" ||
-                         gridQuery.mQueryParameterList[pid].mParam == "producer")
+                else if (gridQuery.mQueryParameterList[pid].mParam == "model" || gridQuery.mQueryParameterList[pid].mParam == "producer")
                 {
                   int idx = 0;
                   while (idx < pLen)
                   {
                     if (gridQuery.mQueryParameterList[idx].mValueList[t].mProducerId > 0)
                     {
-                      T::ProducerInfo* info = itsProducerInfoList.getProducerInfoById(
-                          gridQuery.mQueryParameterList[idx].mValueList[t].mProducerId);
+                      T::ProducerInfo* info = itsProducerInfoList.getProducerInfoById(gridQuery.mQueryParameterList[idx].mValueList[t].mProducerId);
                       if (info == nullptr)
                       {
                         contentServer->getProducerInfoList(0, itsProducerInfoList);
                         itsProducerInfoList_updateTime = time(nullptr);
-                        info = itsProducerInfoList.getProducerInfoById(
-                            gridQuery.mQueryParameterList[idx].mValueList[t].mProducerId);
+                        info = itsProducerInfoList.getProducerInfoById(gridQuery.mQueryParameterList[idx].mValueList[t].mProducerId);
                       }
 
                       if (info != nullptr)
@@ -1722,7 +1604,7 @@ void GridInterface::processGridQuery(const State& state,
                     std::string producer = "Unknown";
                     if (gridQuery.mProducerNameList.size() == 1)
                     {
-                      std::vector<std::string> pnameList;
+                      std::vector < std::string > pnameList;
                       itsGridEngine->getProducerNameList(gridQuery.mProducerNameList[0], pnameList);
                       if (pnameList.size() > 0)
                         producer = pnameList[0];
@@ -1738,16 +1620,12 @@ void GridInterface::processGridQuery(const State& state,
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    T::ProducerInfo* info = itsProducerInfoList.getProducerInfoById(
-                        gridQuery.mQueryParameterList[i].mValueList[t].mProducerId);
-                    if (info == nullptr &&
-                        gridQuery.mQueryParameterList[i].mValueList[t].mProducerId != 0 &&
-                        (itsProducerInfoList_updateTime + 60) < time(nullptr))
+                    T::ProducerInfo* info = itsProducerInfoList.getProducerInfoById(gridQuery.mQueryParameterList[i].mValueList[t].mProducerId);
+                    if (info == nullptr && gridQuery.mQueryParameterList[i].mValueList[t].mProducerId != 0 && (itsProducerInfoList_updateTime + 60) < time(nullptr))
                     {
                       contentServer->getProducerInfoList(0, itsProducerInfoList);
                       itsProducerInfoList_updateTime = time(nullptr);
-                      info = itsProducerInfoList.getProducerInfoById(
-                          gridQuery.mQueryParameterList[i].mValueList[t].mProducerId);
+                      info = itsProducerInfoList.getProducerInfoById(gridQuery.mQueryParameterList[i].mValueList[t].mProducerId);
                     }
 
                     if (info != nullptr)
@@ -1757,10 +1635,7 @@ void GridInterface::processGridQuery(const State& state,
                     }
                     else
                     {
-                      Spine::TimeSeries::TimedValue tsValue(
-                          queryTime,
-                          std::to_string(
-                              gridQuery.mQueryParameterList[i].mValueList[t].mProducerId));
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, std::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mProducerId));
                       tsForNonGridParam->push_back(tsValue);
                     }
                   }
@@ -1771,16 +1646,12 @@ void GridInterface::processGridQuery(const State& state,
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    T::GenerationInfo* info = itsGenerationInfoList.getGenerationInfoById(
-                        gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId);
-                    if (info == nullptr &&
-                        gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId != 0 &&
-                        (itsGenerationInfoList_updateTime + 60) < time(nullptr))
+                    T::GenerationInfo* info = itsGenerationInfoList.getGenerationInfoById(gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId);
+                    if (info == nullptr && gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId != 0 && (itsGenerationInfoList_updateTime + 60) < time(nullptr))
                     {
                       contentServer->getGenerationInfoList(0, itsGenerationInfoList);
                       itsGenerationInfoList_updateTime = time(nullptr);
-                      info = itsGenerationInfoList.getGenerationInfoById(
-                          gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId);
+                      info = itsGenerationInfoList.getGenerationInfoById(gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId);
                     }
                     if (info != nullptr)
                     {
@@ -1789,10 +1660,7 @@ void GridInterface::processGridQuery(const State& state,
                     }
                     else
                     {
-                      Spine::TimeSeries::TimedValue tsValue(
-                          queryTime,
-                          std::to_string(
-                              gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId));
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, std::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId));
                       tsForNonGridParam->push_back(tsValue);
                     }
                   }
@@ -1803,16 +1671,12 @@ void GridInterface::processGridQuery(const State& state,
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    T::GenerationInfo* info = itsGenerationInfoList.getGenerationInfoById(
-                        gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId);
-                    if (info == nullptr &&
-                        gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId != 0 &&
-                        (itsGenerationInfoList_updateTime + 60) < time(nullptr))
+                    T::GenerationInfo* info = itsGenerationInfoList.getGenerationInfoById(gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId);
+                    if (info == nullptr && gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId != 0 && (itsGenerationInfoList_updateTime + 60) < time(nullptr))
                     {
                       contentServer->getGenerationInfoList(0, itsGenerationInfoList);
                       itsGenerationInfoList_updateTime = time(nullptr);
-                      info = itsGenerationInfoList.getGenerationInfoById(
-                          gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId);
+                      info = itsGenerationInfoList.getGenerationInfoById(gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId);
                     }
                     if (info != nullptr)
                     {
@@ -1832,10 +1696,7 @@ void GridInterface::processGridQuery(const State& state,
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    Spine::TimeSeries::TimedValue tsValue(
-                        queryTime,
-                        static_cast<int>(
-                            gridQuery.mQueryParameterList[i].mValueList[t].mForecastType));
+                    Spine::TimeSeries::TimedValue tsValue(queryTime, static_cast<int>(gridQuery.mQueryParameterList[i].mValueList[t].mForecastType));
                     tsForNonGridParam->push_back(tsValue);
                   }
                   else
@@ -1850,10 +1711,7 @@ void GridInterface::processGridQuery(const State& state,
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    Spine::TimeSeries::TimedValue tsValue(
-                        queryTime,
-                        static_cast<int>(
-                            gridQuery.mQueryParameterList[i].mValueList[t].mForecastNumber));
+                    Spine::TimeSeries::TimedValue tsValue(queryTime, static_cast<int>(gridQuery.mQueryParameterList[i].mValueList[t].mForecastNumber));
                     tsForNonGridParam->push_back(tsValue);
                   }
                   else
@@ -1869,26 +1727,21 @@ void GridInterface::processGridQuery(const State& state,
                   {
                     if (gridQuery.mQueryParameterList[idx].mValueList[t].mGenerationId > 0)
                     {
-                      T::GenerationInfo* info = itsGenerationInfoList.getGenerationInfoById(
-                          gridQuery.mQueryParameterList[idx].mValueList[t].mGenerationId);
-                      if (info == nullptr &&
-                          (itsGenerationInfoList_updateTime + 60) < time(nullptr))
+                      T::GenerationInfo* info = itsGenerationInfoList.getGenerationInfoById(gridQuery.mQueryParameterList[idx].mValueList[t].mGenerationId);
+                      if (info == nullptr && (itsGenerationInfoList_updateTime + 60) < time(nullptr))
                       {
                         contentServer->getGenerationInfoList(0, itsGenerationInfoList);
                         itsGenerationInfoList_updateTime = time(nullptr);
-                        info = itsGenerationInfoList.getGenerationInfoById(
-                            gridQuery.mQueryParameterList[idx].mValueList[t].mGenerationId);
+                        info = itsGenerationInfoList.getGenerationInfoById(gridQuery.mQueryParameterList[idx].mValueList[t].mGenerationId);
                       }
                       if (info != nullptr)
                       {
                         // boost::posix_time::ptime origTime =
-                        // Fmi::TimeParser::parse_iso(info->mAnalysisTime);
-                        boost::local_time::local_date_time origTime(
-                            Fmi::TimeParser::parse_iso(info->mAnalysisTime), tz);
+                        // toTimeStamp(info->mAnalysisTime);
+                        boost::local_time::local_date_time origTime(toTimeStamp(info->mAnalysisTime), tz);
 
                         // boost::local_time::local_date_time origTime(oTime);
-                        Spine::TimeSeries::TimedValue tsValue(
-                            queryTime, masterquery.timeformatter->format(origTime));
+                        Spine::TimeSeries::TimedValue tsValue(queryTime, masterquery.timeformatter->format(origTime));
                         tsForNonGridParam->push_back(tsValue);
                         idx = pLen + 10;
                       }
@@ -1901,20 +1754,15 @@ void GridInterface::processGridQuery(const State& state,
                     tsForNonGridParam->push_back(tsValue);
                   }
                 }
-                else if (gridQuery.mQueryParameterList[pid].mParam == "modtime" ||
-                         gridQuery.mQueryParameterList[pid].mParam == "mtime")
+                else if (gridQuery.mQueryParameterList[pid].mParam == "modtime" || gridQuery.mQueryParameterList[pid].mParam == "mtime")
                 {
                   int idx = 0;
                   while (idx < pLen)
                   {
                     if (gridQuery.mQueryParameterList[idx].mValueList[t].mModificationTime > "")
                     {
-                      boost::local_time::local_date_time modTime(
-                          Fmi::TimeParser::parse_iso(
-                              gridQuery.mQueryParameterList[idx].mValueList[t].mModificationTime),
-                          tz);
-                      Spine::TimeSeries::TimedValue tsValue(
-                          queryTime, masterquery.timeformatter->format(modTime));
+                      boost::local_time::local_date_time modTime(toTimeStamp(gridQuery.mQueryParameterList[idx].mValueList[t].mModificationTime), tz);
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, masterquery.timeformatter->format(modTime));
                       tsForNonGridParam->push_back(tsValue);
                       idx = pLen + 10;
                     }
@@ -1934,8 +1782,7 @@ void GridInterface::processGridQuery(const State& state,
                   {
                     int i = pidList[idx];
                     std::string producerName;
-                    T::ProducerInfo* producer = itsProducerInfoList.getProducerInfoById(
-                        gridQuery.mQueryParameterList[i].mValueList[t].mProducerId);
+                    T::ProducerInfo* producer = itsProducerInfoList.getProducerInfoById(gridQuery.mQueryParameterList[i].mValueList[t].mProducerId);
                     if (producer != nullptr)
                       producerName = producer->mName;
 
@@ -1944,45 +1791,31 @@ void GridInterface::processGridQuery(const State& state,
                     // gridQuery.mQueryParameterList[idx].mValueList[t].mGenerationId;
                     // gridQuery.mQueryParameterList[idx].mValueList[t].mGeometryId;
 
-                    sprintf(tmp,
-                            "%s:%s:%u:%d:%d:%d:%d",
-                            gridQuery.mQueryParameterList[i].mValueList[t].mParameterKey.c_str(),
-                            producerName.c_str(),
-                            gridQuery.mQueryParameterList[i].mValueList[t].mGeometryId,
-                            C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mParameterLevelId),
-                            C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mParameterLevel),
-                            C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mForecastType),
-                            C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mForecastNumber));
+                    sprintf(tmp, "%s:%s:%u:%d:%d:%d:%d", gridQuery.mQueryParameterList[i].mValueList[t].mParameterKey.c_str(), producerName.c_str(),
+                        gridQuery.mQueryParameterList[i].mValueList[t].mGeometryId, C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mParameterLevelId),
+                        C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mParameterLevel), C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mForecastType),
+                        C_INT(gridQuery.mQueryParameterList[i].mValueList[t].mForecastNumber));
 
                     Spine::TimeSeries::TimedValue tsValue(queryTime, std::string(tmp));
                     tsForNonGridParam->push_back(tsValue);
                   }
                 }
-                else if ((gridQuery.mQueryParameterList[pid].mFlags &
-                          QueryServer::QueryParameter::Flags::NoReturnValues) != 0 &&
-                         (gridQuery.mQueryParameterList[pid].mValueList[t].mFlags &
-                          QueryServer::ParameterValues::Flags::DataAvailable) != 0)
+                else if ((gridQuery.mQueryParameterList[pid].mFlags & QueryServer::QueryParameter::Flags::NoReturnValues) != 0
+                    && (gridQuery.mQueryParameterList[pid].mValueList[t].mFlags & QueryServer::ParameterValues::Flags::DataAvailable) != 0)
                 {
                   std::string producerName;
-                  T::ProducerInfo* producer = itsProducerInfoList.getProducerInfoById(
-                      gridQuery.mQueryParameterList[pid].mValueList[t].mProducerId);
+                  T::ProducerInfo* producer = itsProducerInfoList.getProducerInfoById(gridQuery.mQueryParameterList[pid].mValueList[t].mProducerId);
                   if (producer != nullptr)
                     producerName = producer->mName;
 
                   // gridQuery.mQueryParameterList[pid].mValueList[t].print(std::cout,0,0);
 
                   char tmp[1000];
-                  sprintf(tmp,
-                          "%s:%s:%u:%d:%d:%d:%d %s flags:%d",
-                          gridQuery.mQueryParameterList[pid].mValueList[t].mParameterKey.c_str(),
-                          producerName.c_str(),
-                          gridQuery.mQueryParameterList[pid].mValueList[t].mGeometryId,
-                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mParameterLevelId),
-                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mParameterLevel),
-                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mForecastType),
-                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mForecastNumber),
-                          gridQuery.mQueryParameterList[pid].mValueList[t].mAnalysisTime.c_str(),
-                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mFlags));
+                  sprintf(tmp, "%s:%s:%u:%d:%d:%d:%d %s flags:%d", gridQuery.mQueryParameterList[pid].mValueList[t].mParameterKey.c_str(), producerName.c_str(),
+                      gridQuery.mQueryParameterList[pid].mValueList[t].mGeometryId, C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mParameterLevelId),
+                      C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mParameterLevel), C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mForecastType),
+                      C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mForecastNumber), gridQuery.mQueryParameterList[pid].mValueList[t].mAnalysisTime.c_str(),
+                      C_INT(gridQuery.mQueryParameterList[pid].mValueList[t].mFlags));
 
                   Spine::TimeSeries::TimedValue tsValue(queryTime, std::string(tmp));
                   // tsForNonGridParam->push_back(tsValue);
@@ -1994,16 +1827,14 @@ void GridInterface::processGridQuery(const State& state,
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    Spine::TimeSeries::TimedValue tsValue(
-                        queryTime,
-                        std::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mGeometryId));
+                    Spine::TimeSeries::TimedValue tsValue(queryTime, std::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mGeometryId));
                     tsForNonGridParam->push_back(tsValue);
                   }
                 }
                 else if (gridQuery.mQueryParameterList[pid].mParam.substr(0, 7) == "@MERGE-")
                 {
-                  std::vector<std::string> partList;
-                  std::vector<std::string> fileList;
+                  std::vector < std::string > partList;
+                  std::vector < std::string > fileList;
 
                   splitString(gridQuery.mQueryParameterList[pid].mParam, '-', partList);
 
@@ -2021,8 +1852,7 @@ void GridInterface::processGridQuery(const State& state,
 
                   if (fileList.size() > 0)
                   {
-                    sprintf(
-                        filename, "/tmp/timeseries_contours_%llu_%lu_%lu.png", outputTime, t, t);
+                    sprintf(filename, "/tmp/timeseries_contours_%llu_%lu_%lu.png", outputTime, t, t);
                     mergePngFiles(filename, fileList);
 
                     std::string image = fileToBase64(filename);
@@ -2048,26 +1878,20 @@ void GridInterface::processGridQuery(const State& state,
                   // that we get values from several levels.
 
                   char tmp[10000];
-                  std::set<std::string> pList;
+                  std::set < std::string > pList;
 
                   for (uint r = 0; r < rLen; r++)
                   {
                     if (gridQuery.mQueryParameterList[pid].mValueList[r].mForecastTime == *ft)
                     {
                       std::string producerName;
-                      T::ProducerInfo* producer = itsProducerInfoList.getProducerInfoById(
-                          gridQuery.mQueryParameterList[pid].mValueList[r].mProducerId);
+                      T::ProducerInfo* producer = itsProducerInfoList.getProducerInfoById(gridQuery.mQueryParameterList[pid].mValueList[r].mProducerId);
                       if (producer != nullptr)
                         producerName = producer->mName;
 
-                      sprintf(
-                          tmp,
-                          "%s:%d:%d:%d:%d:%s",
-                          gridQuery.mQueryParameterList[pid].mValueList[r].mParameterKey.c_str(),
-                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[r].mParameterLevelId),
-                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[r].mParameterLevel),
-                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[r].mForecastType),
-                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[r].mForecastNumber),
+                      sprintf(tmp, "%s:%d:%d:%d:%d:%s", gridQuery.mQueryParameterList[pid].mValueList[r].mParameterKey.c_str(),
+                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[r].mParameterLevelId), C_INT(gridQuery.mQueryParameterList[pid].mValueList[r].mParameterLevel),
+                          C_INT(gridQuery.mQueryParameterList[pid].mValueList[r].mForecastType), C_INT(gridQuery.mQueryParameterList[pid].mValueList[r].mForecastNumber),
                           producerName.c_str());
 
                       if (pList.find(std::string(tmp)) == pList.end())
@@ -2094,24 +1918,18 @@ void GridInterface::processGridQuery(const State& state,
 
               if (tsForNonGridParam->size() > 0)
               {
-                aggregatedData.push_back(erase_redundant_timesteps(
-                    DataFunctions::aggregate(tsForNonGridParam, paramFuncs[pIdx].functions),
-                    aggregationTimes));
+                aggregatedData.push_back(erase_redundant_timesteps(DataFunctions::aggregate(tsForNonGridParam, paramFuncs[pIdx].functions), aggregationTimes));
               }
             }
 
             if (tsForParameter->size() > 0)
             {
-              aggregatedData.push_back(erase_redundant_timesteps(
-                  DataFunctions::aggregate(tsForParameter, paramFuncs[pIdx].functions),
-                  aggregationTimes));
+              aggregatedData.push_back(erase_redundant_timesteps(DataFunctions::aggregate(tsForParameter, paramFuncs[pIdx].functions), aggregationTimes));
             }
 
             if (tsForGroup->size() > 0)
             {
-              aggregatedData.push_back(erase_redundant_timesteps(
-                  DataFunctions::aggregate(tsForGroup, paramFuncs[pIdx].functions),
-                  aggregationTimes));
+              aggregatedData.push_back(erase_redundant_timesteps(DataFunctions::aggregate(tsForGroup, paramFuncs[pIdx].functions), aggregationTimes));
             }
 
             DataFunctions::store_data(aggregatedData, masterquery, outputData);
@@ -2130,24 +1948,21 @@ void GridInterface::processGridQuery(const State& state,
   }
 }
 
-void GridInterface::erase_redundant_timesteps(
-    ts::TimeSeries& ts, std::set<boost::local_time::local_date_time>& aggregationTimes)
+void GridInterface::erase_redundant_timesteps(ts::TimeSeries& ts, std::set<boost::local_time::local_date_time>& aggregationTimes)
 {
   FUNCTION_TRACE
   try
   {
     ts::TimeSeries no_redundant;
     no_redundant.reserve(ts.size());
-    std::set<std::string> newTimes;
+    std::set < boost::local_time::local_date_time > newTimes;
 
     for (auto it = ts.begin(); it != ts.end(); ++it)
     {
-      std::string lTime = Fmi::to_iso_string(it->time.local_time());
-      if (aggregationTimes.find(it->time) == aggregationTimes.end() &&
-          newTimes.find(lTime) == newTimes.end())
+      if (aggregationTimes.find(it->time) == aggregationTimes.end() && newTimes.find(it->time) == newTimes.end())
       {
         no_redundant.push_back(*it);
-        newTimes.insert(lTime);
+        newTimes.insert(it->time);
       }
       else
       {
@@ -2163,8 +1978,7 @@ void GridInterface::erase_redundant_timesteps(
   }
 }
 
-ts::TimeSeriesPtr GridInterface::erase_redundant_timesteps(
-    ts::TimeSeriesPtr ts, std::set<boost::local_time::local_date_time>& aggregationTimes)
+ts::TimeSeriesPtr GridInterface::erase_redundant_timesteps(ts::TimeSeriesPtr ts, std::set<boost::local_time::local_date_time>& aggregationTimes)
 {
   FUNCTION_TRACE
   try
@@ -2178,8 +1992,7 @@ ts::TimeSeriesPtr GridInterface::erase_redundant_timesteps(
   }
 }
 
-ts::TimeSeriesVectorPtr GridInterface::erase_redundant_timesteps(
-    ts::TimeSeriesVectorPtr tsv, std::set<boost::local_time::local_date_time>& aggregationTimes)
+ts::TimeSeriesVectorPtr GridInterface::erase_redundant_timesteps(ts::TimeSeriesVectorPtr tsv, std::set<boost::local_time::local_date_time>& aggregationTimes)
 {
   FUNCTION_TRACE
   try
@@ -2195,8 +2008,7 @@ ts::TimeSeriesVectorPtr GridInterface::erase_redundant_timesteps(
   }
 }
 
-ts::TimeSeriesGroupPtr GridInterface::erase_redundant_timesteps(
-    ts::TimeSeriesGroupPtr tsg, std::set<boost::local_time::local_date_time>& aggregationTimes)
+ts::TimeSeriesGroupPtr GridInterface::erase_redundant_timesteps(ts::TimeSeriesGroupPtr tsg, std::set<boost::local_time::local_date_time>& aggregationTimes)
 {
   FUNCTION_TRACE
   try
