@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.8.14
+Version: 20.8.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -20,18 +20,18 @@ BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 20.8.11
 BuildRequires: smartmet-library-locus-devel >= 20.6.8
-BuildRequires: smartmet-library-macgyver-devel >= 20.8.7
+BuildRequires: smartmet-library-macgyver-devel >= 20.8.14
 BuildRequires: smartmet-library-newbase-devel >= 20.6.16
 BuildRequires: smartmet-library-gis-devel >= 20.8.12
 BuildRequires: smartmet-engine-geonames-devel >= 20.6.8
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 20.8.7
 %endif
-BuildRequires: smartmet-library-grid-content-devel >= 20.8.14
-BuildRequires: smartmet-library-grid-files-devel >= 20.8.14
+BuildRequires: smartmet-library-grid-content-devel >= 20.8.18
+BuildRequires: smartmet-library-grid-files-devel >= 20.8.18
 BuildRequires: smartmet-engine-querydata-devel >= 20.5.13
 BuildRequires: smartmet-engine-gis-devel >= 20.7.22
-BuildRequires: smartmet-engine-grid-devel >= 20.8.14
+BuildRequires: smartmet-engine-grid-devel >= 20.8.18
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.6.10
@@ -40,14 +40,14 @@ Requires: fmt >= 5.2.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.8.12
 Requires: smartmet-library-locus >= 20.6.8
-Requires: smartmet-library-macgyver >= 20.8.7
+Requires: smartmet-library-macgyver >= 20.8.14
 Requires: smartmet-library-newbase >= 20.6.16
 Requires: smartmet-library-spine >= 20.8.11
 Requires: smartmet-library-gis >= 20.8.12
 Requires: smartmet-engine-geonames >= 20.6.8
 Requires: smartmet-engine-querydata >= 20.5.13
 Requires: smartmet-engine-gis >= 20.7.22
-Requires: smartmet-engine-grid >= 20.8.14
+Requires: smartmet-engine-grid >= 20.8.18
 Requires: smartmet-server >= 20.8.10
 Requires: boost169-date-time
 Requires: boost169-filesystem
@@ -81,6 +81,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Tue Aug 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.18-1.fmi
+- Speed improvements
+
 * Fri Aug 14 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.14-1.fmi
 - Repackaged due to grid library ABI changes
 
