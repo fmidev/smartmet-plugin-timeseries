@@ -4,7 +4,7 @@
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
 Version: 20.8.21
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -81,6 +81,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Fri Aug 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.21-2.fmi
+- Use Fmi::to_string instead of std::string for speed
+
 * Fri Aug 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.21-1.fmi
 - Upgrade to fmt 6.2
 
