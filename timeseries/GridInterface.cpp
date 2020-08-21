@@ -441,7 +441,7 @@ void GridInterface::prepareGridQuery(
 
     if (geomId != nullptr && coordinateType == nullptr)
     {
-      gridQuery.mAttributeList.addAttribute("contour.coordinateType", std::to_string(T::CoordinateTypeValue::GRID_COORDINATES));
+      gridQuery.mAttributeList.addAttribute("contour.coordinateType", Fmi::to_string(T::CoordinateTypeValue::GRID_COORDINATES));
     }
 
     gridQuery.mStartTime = startTime;
@@ -453,9 +453,9 @@ void GridInterface::prepareGridQuery(
      // The QueryServer should be able to find this information by itself.
 
      if (!std::isnan(loc->dem))
-     gridQuery.mAttributeList.setAttribute("dem", std::to_string(loc->dem));
+     gridQuery.mAttributeList.setAttribute("dem", Fmi::to_string(loc->dem));
 
-     gridQuery.mAttributeList.setAttribute("coverType", std::to_string(loc->covertype));
+     gridQuery.mAttributeList.setAttribute("coverType", Fmi::to_string(loc->covertype));
      */
 
     std::string timezoneName = loc->timezone;
@@ -1174,7 +1174,7 @@ void GridInterface::processGridQuery(
         if (result != 0)
         {
           Spine::Exception exception(BCP, "The query server returns an error message!");
-          exception.addParameter("Result", std::to_string(result));
+          exception.addParameter("Result", Fmi::to_string(result));
           exception.addParameter("Message", QueryServer::getResultString(result));
 
           switch (result)
@@ -1635,7 +1635,7 @@ void GridInterface::processGridQuery(
                     }
                     else
                     {
-                      Spine::TimeSeries::TimedValue tsValue(queryTime, std::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mProducerId));
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, Fmi::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mProducerId));
                       tsForNonGridParam->push_back(tsValue);
                     }
                   }
@@ -1660,7 +1660,7 @@ void GridInterface::processGridQuery(
                     }
                     else
                     {
-                      Spine::TimeSeries::TimedValue tsValue(queryTime, std::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId));
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, Fmi::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mGenerationId));
                       tsForNonGridParam->push_back(tsValue);
                     }
                   }
@@ -1827,7 +1827,7 @@ void GridInterface::processGridQuery(
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    Spine::TimeSeries::TimedValue tsValue(queryTime, std::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mGeometryId));
+                    Spine::TimeSeries::TimedValue tsValue(queryTime, Fmi::to_string(gridQuery.mQueryParameterList[i].mValueList[t].mGeometryId));
                     tsForNonGridParam->push_back(tsValue);
                   }
                 }
