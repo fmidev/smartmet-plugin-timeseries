@@ -11,3 +11,4 @@ obj/
 *.c2t
 compile_commands.json
 .gdb_history
+/doc/timeseries
