@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.8.21
-Release: 2%{?dist}.fmi
+Version: 20.8.31
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -18,20 +18,20 @@ BuildRequires: fmt-devel >= 6.2.1
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.8.21
+BuildRequires: smartmet-library-spine-devel >= 20.8.26
 BuildRequires: smartmet-library-locus-devel >= 20.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 20.8.21
+BuildRequires: smartmet-library-macgyver-devel >= 20.8.26
 BuildRequires: smartmet-library-newbase-devel >= 20.8.21
 BuildRequires: smartmet-library-gis-devel >= 20.8.21
 BuildRequires: smartmet-engine-geonames-devel >= 20.8.21
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 20.8.21
 %endif
-BuildRequires: smartmet-library-grid-content-devel >= 20.8.21
-BuildRequires: smartmet-library-grid-files-devel >= 20.8.21
+BuildRequires: smartmet-library-grid-content-devel >= 20.8.31
+BuildRequires: smartmet-library-grid-files-devel >= 20.8.31
 BuildRequires: smartmet-engine-querydata-devel >= 20.8.21
 BuildRequires: smartmet-engine-gis-devel >= 20.8.21
-BuildRequires: smartmet-engine-grid-devel >= 20.8.21
+BuildRequires: smartmet-engine-grid-devel >= 20.8.31
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.6.10
@@ -40,15 +40,15 @@ Requires: fmt >= 6.2.1
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.8.21
 Requires: smartmet-library-locus >= 20.8.21
-Requires: smartmet-library-macgyver >= 20.8.21
+Requires: smartmet-library-macgyver >= 20.8.26
 Requires: smartmet-library-newbase >= 20.8.21
-Requires: smartmet-library-spine >= 20.8.21
+Requires: smartmet-library-spine >= 20.8.26
 Requires: smartmet-library-gis >= 20.8.21
 Requires: smartmet-engine-geonames >= 20.8.21
 Requires: smartmet-engine-querydata >= 20.8.21
 Requires: smartmet-engine-gis >= 20.8.21
-Requires: smartmet-engine-grid >= 20.8.21
-Requires: smartmet-server >= 20.8.21
+Requires: smartmet-engine-grid >= 20.8.31
+Requires: smartmet-server >= 20.8.25
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -81,6 +81,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Mon Aug 31 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.31-1.fmi
+- Repackaged due to library ABI changes
+
 * Fri Aug 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.21-2.fmi
 - Use Fmi::to_string instead of std::string for speed
 
