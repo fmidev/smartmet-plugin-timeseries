@@ -113,7 +113,7 @@ rm -rf $RPM_BUILD_ROOT
 - Support for itmf-producer (INSPIRE-909)
 - Support for PostgresSQL-driver in observation engine: configuration file structure changed (BRAINSTORM-1783)
 
-* Tue May 27 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
+* Tue May 26 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
 - Modified test cases to include percentage-function in order to test parameter parsing
 - Fixed bug in settings handling
 
