@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.8.21
+Version: 20.9.1
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -25,7 +25,7 @@ BuildRequires: smartmet-library-newbase-devel >= 20.8.21
 BuildRequires: smartmet-library-gis-devel >= 20.8.21
 BuildRequires: smartmet-engine-geonames-devel >= 20.8.21
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.8.21
+BuildRequires: smartmet-engine-observation-devel >= 20.9.1
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.8.21
 BuildRequires: smartmet-engine-gis-devel >= 20.8.21
@@ -77,6 +77,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Tue Sep  1 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.8.20-1.fmi
+- Support for both 'itmf' and 'fmi_iot' producer names
+- Configuration files for regression tests updated
+
 * Fri Aug 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.21-1.fmi
 - Upgrade to fmt 6.2
 
