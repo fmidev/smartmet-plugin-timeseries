@@ -84,6 +84,10 @@ rm -rf $RPM_BUILD_ROOT
 * Fri Aug 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.21-1.fmi
 - Upgrade to fmt 6.2
 
+* Thu Aug 20 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.8.20-1.fmi
+- Support for both 'itmf' and 'fmi_iot' producer names
+- Configuration files for regression tests updated
+
 * Mon Jul 27 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.7.27-1.fmi
 - Proceed with obs requests even if the station is not known to geonames
 
