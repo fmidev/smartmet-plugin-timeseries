@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 6.2.1
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.8.26
+BuildRequires: smartmet-library-spine-devel >= 20.9.1
 BuildRequires: smartmet-library-locus-devel >= 20.8.21
 BuildRequires: smartmet-library-macgyver-devel >= 20.8.31
 BuildRequires: smartmet-library-newbase-devel >= 20.8.21
@@ -39,7 +39,7 @@ Requires: smartmet-library-gis >= 20.8.21
 Requires: smartmet-library-locus >= 20.8.21
 Requires: smartmet-library-macgyver >= 20.8.31
 Requires: smartmet-library-newbase >= 20.8.21
-Requires: smartmet-library-spine >= 20.8.26
+Requires: smartmet-library-spine >= 20.9.1
 Requires: smartmet-library-gis >= 20.8.21
 Requires: smartmet-engine-geonames >= 20.8.21
 Requires: smartmet-engine-querydata >= 20.8.21
