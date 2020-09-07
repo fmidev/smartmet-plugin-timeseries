@@ -334,9 +334,16 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
       boost::algorithm::split(resultProducers, opt2, boost::algorithm::is_any_of(";"));
 
     for (auto& p : resultProducers)
+    {
       boost::algorithm::to_lower(p);
+      if (p == "itmf")
+      {
+        p = SmartMet::Engine::Observation::FMI_IOT_PRODUCER;
+        iot_producer_specifier = "itmf";
+      }
+    }
 
-      // Verify the producer names are valid
+    // Verify the producer names are valid
 
 #ifndef WITHOUT_OBSERVATION
     std::set<std::string> observations;

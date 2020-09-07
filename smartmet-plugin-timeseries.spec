@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.8.21
+Version: 20.9.1
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,14 +18,14 @@ BuildRequires: fmt-devel >= 6.2.1
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.8.21
+BuildRequires: smartmet-library-spine-devel >= 20.9.1
 BuildRequires: smartmet-library-locus-devel >= 20.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 20.8.21
+BuildRequires: smartmet-library-macgyver-devel >= 20.8.31
 BuildRequires: smartmet-library-newbase-devel >= 20.8.21
 BuildRequires: smartmet-library-gis-devel >= 20.8.21
 BuildRequires: smartmet-engine-geonames-devel >= 20.8.21
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.8.21
+BuildRequires: smartmet-engine-observation-devel >= 20.9.1
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.8.21
 BuildRequires: smartmet-engine-gis-devel >= 20.8.21
@@ -33,9 +33,9 @@ Requires: fmt >= 6.2.1
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.8.21
 Requires: smartmet-library-locus >= 20.8.21
-Requires: smartmet-library-macgyver >= 20.8.21
+Requires: smartmet-library-macgyver >= 20.8.31
 Requires: smartmet-library-newbase >= 20.8.21
-Requires: smartmet-library-spine >= 20.8.21
+Requires: smartmet-library-spine >= 20.9.1
 Requires: smartmet-library-gis >= 20.8.21
 Requires: smartmet-engine-geonames >= 20.8.21
 BuildRequires: smartmet-engine-gis-devel >= 20.8.21
@@ -45,7 +45,7 @@ BuildRequires: smartmet-engine-gis-devel >= 20.8.21
 #%endif
 Requires: smartmet-engine-querydata >= 20.8.21
 Requires: smartmet-engine-gis >= 20.8.21
-Requires: smartmet-server >= 20.8.21
+Requires: smartmet-server >= 20.8.25
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -78,8 +78,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Tue Sep  1 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.8.20-1.fmi
+- Support for both 'itmf' and 'fmi_iot' producer names
+- Configuration files for regression tests updated
+
 * Fri Aug 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.21-1.fmi
 - Upgrade to fmt 6.2
+
+* Thu Aug 20 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.8.20-1.fmi
+- Support for both 'itmf' and 'fmi_iot' producer names
+- Configuration files for regression tests updated
 
 * Mon Jul 27 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.7.27-1.fmi
 - Proceed with obs requests even if the station is not known to geonames
@@ -102,7 +110,11 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Jun  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.9-1.fmi
 - Do not do a coordinate search for locations which already have a known fmisid
 
-* Tue May 27 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
+* Mon Jun 8 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.6.8-1.fmi
+- Support for itmf-producer (INSPIRE-909)
+- Support for PostgresSQL-driver in observation engine: configuration file structure changed (BRAINSTORM-1783)
+
+* Tue May 26 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
 - Modified test cases to include percentage-function in order to test parameter parsing
 - Fixed bug in settings handling
 

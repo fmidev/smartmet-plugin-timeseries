@@ -45,7 +45,6 @@ else
   INCLUDES += -I/usr/include/gdal
 endif
 
-
 ifeq ($(CXX), clang++)
 
  // TODO: Enable sign conversion warnings
