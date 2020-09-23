@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const TimeSeriesData& tsdata)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -63,7 +63,7 @@ void erase_redundant_timesteps(Spine::TimeSeries::TimeSeries& ts,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -83,7 +83,7 @@ Spine::TimeSeries::TimeSeriesPtr erase_redundant_timesteps(
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -106,7 +106,7 @@ Spine::TimeSeries::TimeSeriesVectorPtr erase_redundant_timesteps(
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -128,7 +128,7 @@ Spine::TimeSeries::TimeSeriesGroupPtr erase_redundant_timesteps(
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -160,7 +160,7 @@ void update_latest_timestep(Query& query, const Spine::TimeSeries::TimeSeriesVec
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -186,7 +186,7 @@ void update_latest_timestep(Query& query, const Spine::TimeSeries::TimeSeries& t
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -211,7 +211,7 @@ void update_latest_timestep(Query& query, const Spine::TimeSeries::TimeSeriesGro
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -237,7 +237,7 @@ void store_data(Spine::TimeSeries::TimeSeriesVectorPtr aggregatedData,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -290,7 +290,7 @@ void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, Outpu
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 

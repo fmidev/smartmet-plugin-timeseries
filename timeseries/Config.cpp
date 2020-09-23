@@ -10,7 +10,7 @@
 #include <grid-files/common/GeneralFunctions.h>
 #include <grid-files/common/ShowFunction.h>
 #include <macgyver/StringConversion.h>
-#include <spine/Exception.h>
+#include <macgyver/Exception.h>
 #include <stdexcept>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
@@ -47,7 +47,7 @@ void Config::add_default_precisions()
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -106,7 +106,7 @@ Spine::FunctionId get_function_id(const string& configName)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -123,14 +123,14 @@ void Config::parse_config_precision(const string& name)
     string optname = "precision." + name;
 
     if (!itsConfig.exists(optname))
-      throw Spine::Exception(BCP,
+      throw Fmi::Exception(BCP,
                              string("Precision settings for ") + name +
                                  " are missing from pointforecast configuration");
 
     libconfig::Setting& settings = itsConfig.lookup(optname);
 
     if (!settings.isGroup())
-      throw Spine::Exception(
+      throw Fmi::Exception(
           BCP,
           "Precision settings for point forecasts must be stored in groups delimited by {}: line " +
               Fmi::to_string(settings.getSourceLine()));
@@ -145,7 +145,7 @@ void Config::parse_config_precision(const string& name)
       {
         int value = settings[i];
         if (value < 0)
-          throw Spine::Exception(
+          throw Fmi::Exception(
               BCP,
               "Precision settings must be nonnegative in pointforecast configuration for " +
                   string(name) + "." + paramname);
@@ -157,21 +157,21 @@ void Config::parse_config_precision(const string& name)
       }
       catch (const libconfig::ParseException& e)
       {
-        throw Spine::Exception(BCP,
+        throw Fmi::Exception(BCP,
                                string("TimeSeries configuration error ' ") + e.getError() +
                                    "' with variable '" + paramname + "' on line " +
                                    Fmi::to_string(e.getLine()));
       }
       catch (const libconfig::ConfigException&)
       {
-        throw Spine::Exception(BCP,
+        throw Fmi::Exception(BCP,
                                string("TimeSeries configuration error with variable '") +
                                    paramname + "' on line " +
                                    Fmi::to_string(settings[i].getSourceLine()));
       }
       catch (const std::exception& e)
       {
-        throw Spine::Exception(BCP,
+        throw Fmi::Exception(BCP,
                                e.what() + string(" (line number ") +
                                    Fmi::to_string(settings[i].getSourceLine()) + ")");
       }
@@ -184,7 +184,7 @@ void Config::parse_config_precision(const string& name)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -205,13 +205,13 @@ void Config::parse_config_precisions()
       // Require available precisions in
 
       if (!itsConfig.exists("precision.enabled"))
-        throw Spine::Exception(BCP,
+        throw Fmi::Exception(BCP,
                                "precision.enabled missing from pointforecast congiguration file");
 
       libconfig::Setting& enabled = itsConfig.lookup("precision.enabled");
       if (!enabled.isArray())
       {
-        throw Spine::Exception(
+        throw Fmi::Exception(
             BCP,
             "precision.enabled must be an array in pointforecast configuration file line " +
                 Fmi::to_string(enabled.getSourceLine()));
@@ -226,12 +226,12 @@ void Config::parse_config_precisions()
       }
 
       if (itsPrecisions.empty())
-        throw Spine::Exception(BCP, "No precisions defined in pointforecast precision: datablock!");
+        throw Fmi::Exception(BCP, "No precisions defined in pointforecast precision: datablock!");
     }
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -249,7 +249,7 @@ string parse_config_key(const char* str1 = 0, const char* str2 = 0, const char* 
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -281,7 +281,7 @@ Config::Config(const string& configfile)
     itsIgnoreGridGeometriesWhenPreloadReady = true;
 
     if (configfile.empty())
-      throw Spine::Exception(BCP, "TimeSeries configuration file cannot be empty");
+      throw Fmi::Exception(BCP, "TimeSeries configuration file cannot be empty");
 
     itsConfig.readFile(configfile.c_str());
 
@@ -290,10 +290,10 @@ Config::Config(const string& configfile)
     itsDefaultLanguage = itsConfig.lookup("language").c_str();
 
     if (itsDefaultLocaleName.empty())
-      throw Spine::Exception(BCP, "Default locale name cannot be empty");
+      throw Fmi::Exception(BCP, "Default locale name cannot be empty");
 
     if (itsDefaultLanguage.empty())
-      throw Spine::Exception(BCP, "Default language code cannot be empty");
+      throw Fmi::Exception(BCP, "Default language code cannot be empty");
 
     // Optional settings
     itsConfig.lookupValue("timeformat", itsDefaultTimeFormat);
@@ -356,7 +356,7 @@ Config::Config(const string& configfile)
           postgis_id.field = field;
 
           if (schema.empty() || table.empty() || field.empty())
-            throw Spine::Exception(BCP,
+            throw Fmi::Exception(BCP,
                                    "Configuration file error. Some of the following fields "
                                    "missing: server, schema, table, field!");
 
@@ -373,7 +373,7 @@ Config::Config(const string& configfile)
     {
       const libconfig::Setting& gridGeometries = itsConfig.lookup("defaultGridGeometries");
       if (!gridGeometries.isArray())
-        throw Spine::Exception(BCP, "Configured value of 'defaultGridGeometries' must be an array");
+        throw Fmi::Exception(BCP, "Configured value of 'defaultGridGeometries' must be an array");
 
       for (int i = 0; i < gridGeometries.getLength(); ++i)
       {
@@ -387,7 +387,7 @@ Config::Config(const string& configfile)
       const libconfig::Setting& aliasFiles = itsConfig.lookup("parameterAliasFiles");
 
       if (!aliasFiles.isArray())
-        throw Spine::Exception(BCP, "Configured value of 'parameterAliasFiles' must be an array");
+        throw Fmi::Exception(BCP, "Configured value of 'parameterAliasFiles' must be an array");
 
       boost::filesystem::path path(configfile);
 
@@ -407,16 +407,16 @@ Config::Config(const string& configfile)
     }
     catch (const libconfig::SettingNotFoundException& e)
     {
-      // throw Spine::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
+      // throw Fmi::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
     }
   }
   catch (const libconfig::SettingNotFoundException& e)
   {
-    throw Spine::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
+    throw Fmi::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -434,11 +434,11 @@ const Precision& Config::getPrecision(const string& name) const
     if (p != itsPrecisions.end())
       return p->second;
 
-    throw Spine::Exception(BCP, "Unknown precision '" + name + "'!");
+    throw Fmi::Exception(BCP, "Unknown precision '" + name + "'!");
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 

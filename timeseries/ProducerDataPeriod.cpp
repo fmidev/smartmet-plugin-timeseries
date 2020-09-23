@@ -2,7 +2,7 @@
 #include "State.h"
 
 #include <macgyver/TimeZones.h>
-#include <spine/Exception.h>
+#include <macgyver/Exception.h>
 
 #include <boost/date_time/local_time/local_time.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -43,12 +43,12 @@ boost::local_time::local_date_time ProducerDataPeriod::getTime(const std::string
     }
     catch (...)
     {
-      throw Spine::Exception(BCP, "Failed to construct local time for timezone '" + timezone + "'");
+      throw Fmi::Exception(BCP, "Failed to construct local time for timezone '" + timezone + "'");
     }
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -69,7 +69,7 @@ boost::posix_time::ptime ProducerDataPeriod::getTime(const std::string& producer
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -90,7 +90,7 @@ void ProducerDataPeriod::getQEngineDataPeriods(const Engine::Querydata::Engine& 
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -117,7 +117,7 @@ void ProducerDataPeriod::getObsEngineDataPeriods(const Engine::Observation::Engi
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -132,7 +132,7 @@ boost::local_time::local_date_time ProducerDataPeriod::getLocalStartTime(
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -145,7 +145,7 @@ boost::posix_time::ptime ProducerDataPeriod::getUTCStartTime(const std::string& 
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -159,7 +159,7 @@ boost::local_time::local_date_time ProducerDataPeriod::getLocalEndTime(
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -172,7 +172,7 @@ boost::posix_time::ptime ProducerDataPeriod::getUTCEndTime(const std::string& pr
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -194,7 +194,7 @@ void ProducerDataPeriod::init(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 

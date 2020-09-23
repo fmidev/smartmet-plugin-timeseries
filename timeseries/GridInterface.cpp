@@ -51,10 +51,11 @@ GridInterface::GridInterface(Engine::Grid::Engine* engine, const Fmi::TimeZones&
     itsProducerList_updateTime = 0;
     itsProducerInfoList_updateTime = 0;
     itsGenerationInfoList_updateTime = 0;
+    itsGenerationInfoList.setLockingEnabled(true);
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -66,7 +67,7 @@ GridInterface::~GridInterface()
   }
   catch (...)
   {
-    SmartMet::Spine::Exception exception(BCP, "Destructor failed", nullptr);
+    Fmi::Exception exception(BCP, "Destructor failed", nullptr);
     exception.printError();
   }
 }
@@ -98,7 +99,7 @@ bool GridInterface::isGridProducer(const std::string& producer)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -121,7 +122,7 @@ bool GridInterface::containsGridProducer(const Query& masterquery)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -179,7 +180,7 @@ bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -219,7 +220,7 @@ T::ParamLevelId GridInterface::getLevelId(const char* producerName, const Query&
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -263,7 +264,7 @@ void GridInterface::getDataTimes(const AreaProducers& areaproducers, std::string
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -345,7 +346,7 @@ void GridInterface::insertFileQueries(QueryServer::Query& query, QueryServer::Qu
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -397,7 +398,7 @@ bool GridInterface::isValidDefaultRequest(
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -949,7 +950,7 @@ void GridInterface::prepareGridQuery(
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -968,7 +969,7 @@ int GridInterface::getParameterIndex(QueryServer::Query& gridQuery, std::string 
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -1632,17 +1633,19 @@ void GridInterface::processGridQuery(
                   int idx = atoi(gridQuery->mQueryParameterList[pid].mParam.substr(3).c_str());
                   if (idx >= 0 && idx < pLen)
                   {
-                    int i = pidList[idx];
-                    T::GenerationInfo* info = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId);
-                    if (info == nullptr && gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId != 0 && (itsGenerationInfoList_updateTime + 60) < time(nullptr))
+                    int i = pidList[idx];                    
+                    T::GenerationInfo info;                    
+                    bool res = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId,info);
+
+                    if (!res && gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId != 0 && (itsGenerationInfoList_updateTime + 60) < time(nullptr))
                     {
                       contentServer->getGenerationInfoList(0, itsGenerationInfoList);
                       itsGenerationInfoList_updateTime = time(nullptr);
-                      info = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId);
+                      res = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId,info);
                     }
-                    if (info != nullptr)
+                    if (res)
                     {
-                      Spine::TimeSeries::TimedValue tsValue(queryTime, info->mName);
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, info.mName);
                       tsForNonGridParam->push_back(tsValue);
                     }
                     else
@@ -1658,16 +1661,17 @@ void GridInterface::processGridQuery(
                   if (idx >= 0 && idx < pLen)
                   {
                     int i = pidList[idx];
-                    T::GenerationInfo* info = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId);
-                    if (info == nullptr && gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId != 0 && (itsGenerationInfoList_updateTime + 60) < time(nullptr))
+                    T::GenerationInfo info;                    
+                    bool res = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId,info);
+                    if (!res && gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId != 0 && (itsGenerationInfoList_updateTime + 60) < time(nullptr))
                     {
                       contentServer->getGenerationInfoList(0, itsGenerationInfoList);
                       itsGenerationInfoList_updateTime = time(nullptr);
-                      info = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId);
+                      res = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[i].mValueList[t].mGenerationId,info);
                     }
-                    if (info != nullptr)
+                    if (res)
                     {
-                      Spine::TimeSeries::TimedValue tsValue(queryTime, info->mAnalysisTime);
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, info.mAnalysisTime);
                       tsForNonGridParam->push_back(tsValue);
                     }
                     else
@@ -1714,18 +1718,19 @@ void GridInterface::processGridQuery(
                   {
                     if (gridQuery->mQueryParameterList[idx].mValueList[t].mGenerationId > 0)
                     {
-                      T::GenerationInfo* info = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[idx].mValueList[t].mGenerationId);
-                      if (info == nullptr && (itsGenerationInfoList_updateTime + 60) < time(nullptr))
+                      T::GenerationInfo info;                    
+                      bool res = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[idx].mValueList[t].mGenerationId,info);
+                      if (!res && (itsGenerationInfoList_updateTime + 60) < time(nullptr))
                       {
                         contentServer->getGenerationInfoList(0, itsGenerationInfoList);
                         itsGenerationInfoList_updateTime = time(nullptr);
-                        info = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[idx].mValueList[t].mGenerationId);
+                        res = itsGenerationInfoList.getGenerationInfoById(gridQuery->mQueryParameterList[idx].mValueList[t].mGenerationId,info);
                       }
-                      if (info != nullptr)
+                      if (res)
                       {
                         // boost::posix_time::ptime origTime =
                         // toTimeStamp(info->mAnalysisTime);
-                        boost::local_time::local_date_time origTime(toTimeStamp(info->mAnalysisTime), tz);
+                        boost::local_time::local_date_time origTime(toTimeStamp(info.mAnalysisTime), tz);
 
                         // boost::local_time::local_date_time origTime(oTime);
                         Spine::TimeSeries::TimedValue tsValue(queryTime, masterquery.timeformatter->format(origTime));
@@ -1931,7 +1936,7 @@ void GridInterface::processGridQuery(
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -1961,7 +1966,7 @@ void GridInterface::erase_redundant_timesteps(ts::TimeSeries& ts, std::set<boost
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -1975,7 +1980,7 @@ ts::TimeSeriesPtr GridInterface::erase_redundant_timesteps(ts::TimeSeriesPtr ts,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -1991,7 +1996,7 @@ ts::TimeSeriesVectorPtr GridInterface::erase_redundant_timesteps(ts::TimeSeriesV
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -2007,7 +2012,7 @@ ts::TimeSeriesGroupPtr GridInterface::erase_redundant_timesteps(ts::TimeSeriesGr
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 

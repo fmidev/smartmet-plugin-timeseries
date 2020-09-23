@@ -21,7 +21,7 @@
 #include <macgyver/TimeParser.h>
 #include <newbase/NFmiPoint.h>
 #include <spine/Convenience.h>
-#include <spine/Exception.h>
+#include <macgyver/Exception.h>
 #include <spine/ParameterFactory.h>
 #include <algorithm>
 
@@ -81,7 +81,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       {
         loopCount++;
         if (loopCount > 10)
-          throw Spine::Exception(BCP, "The alias definitions seem to contain an eternal loop!");
+          throw Fmi::Exception(BCP, "The alias definitions seem to contain an eternal loop!");
 
         ind = false;
         std::string alias;
@@ -326,7 +326,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       // Bounding box must contain exactly 4 elements
       if (parts.size() != 4)
       {
-        throw Spine::Exception(BCP, "Invalid bounding box '" + bbox + "'!");
+        throw Fmi::Exception(BCP, "Invalid bounding box '" + bbox + "'!");
       }
 
       if (!parts[0].empty())
@@ -377,7 +377,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
   catch (...)
   {
     // The stack traces are useless when the user has made a typo
-    throw Spine::Exception::Trace(BCP, "TimeSeries plugin failed to parse query string options!")
+    throw Fmi::Exception::Trace(BCP, "TimeSeries plugin failed to parse query string options!")
         .disableStackTrace();
   }
 }
@@ -445,7 +445,7 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
         ok = theGridEngine->isGridProducer(p);
 
       if (!ok)
-        throw Spine::Exception(BCP, "Unknown producer name '" + p + "'");
+        throw Fmi::Exception(BCP, "Unknown producer name '" + p + "'");
     }
 
     // Now split into location parts
@@ -464,7 +464,7 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -532,7 +532,7 @@ void Query::parse_levels(const Spine::HTTP::Request& theReq)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -568,7 +568,7 @@ void Query::parse_precision(const Spine::HTTP::Request& req, const Config& confi
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -587,7 +587,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
 
     // Protect against empty selection
     if (opt.empty())
-      throw Spine::Exception(BCP, "The 'param' option is empty!");
+      throw Fmi::Exception(BCP, "The 'param' option is empty!");
 
     // Split
     typedef list<string> Names;
@@ -601,7 +601,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     {
       loopCount++;
       if (loopCount > 10)
-        throw Spine::Exception(BCP, "The alias definitions seem to contain an eternal loop!");
+        throw Fmi::Exception(BCP, "The alias definitions seem to contain an eternal loop!");
 
       ind = false;
       names.clear();
@@ -676,7 +676,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
       }
       catch (...)
       {
-        Spine::Exception exception(BCP, "Parameter parsing failed for '" + paramname + "'!", NULL);
+        Fmi::Exception exception(BCP, "Parameter parsing failed for '" + paramname + "'!", NULL);
         throw exception;
       }
     }
@@ -699,7 +699,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     int agg_interval_ahead(Spine::duration_string_to_minutes(aggregationIntervalStringAhead));
 
     if (agg_interval_behind < 0 || agg_interval_ahead < 0)
-      throw Spine::Exception(BCP, "The 'interval' option must be positive!");
+      throw Fmi::Exception(BCP, "The 'interval' option must be positive!");
 
     // set aggregation interval if it has not been set in parameter parser
     for (const Spine::ParameterAndFunctions& paramfuncs : poptions.parameterFunctions())
@@ -761,7 +761,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 

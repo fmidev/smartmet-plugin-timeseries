@@ -2,6 +2,7 @@
 #include "LonLatDistance.h"
 #include <engines/observation/Keywords.h>
 #include <newbase/NFmiSvgTools.h>
+#include <macgyver/Exception.h>
 
 namespace ts = SmartMet::Spine::TimeSeries;
 
@@ -37,7 +38,7 @@ std::string get_name_base(const std::string& theName)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -77,7 +78,7 @@ const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 
   return ret;
@@ -140,7 +141,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
       }
       else
       {
-        throw Spine::Exception(BCP, "Area '" + place + "' not found in PostGIS database!");
+        throw Fmi::Exception(BCP, "Area '" + place + "' not found in PostGIS database!");
       }
     }
     else if (loc->type == Spine::Location::Path)
@@ -175,14 +176,14 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
         }
         else
         {
-          throw Spine::Exception(BCP, "Path '" + place + "' not found in PostGIS database!");
+          throw Fmi::Exception(BCP, "Path '" + place + "' not found in PostGIS database!");
         }
       }
     }
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -293,7 +294,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -316,7 +317,7 @@ std::string get_location_id(Spine::LocationPtr loc)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -347,7 +348,7 @@ std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -387,7 +388,7 @@ Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -412,7 +413,7 @@ int get_fmisid_index(const Engine::Observation::Settings& settings)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -438,22 +439,22 @@ int get_fmisid_value(const ts::Value& value)
       if (!fmisidstr.empty())
         return std::stoi(fmisidstr);
       else
-        throw Spine::Exception(BCP, "fmisid value is an empty string");
+        throw Fmi::Exception(BCP, "fmisid value is an empty string");
     }
     else if (boost::get<int>(&value))
       return boost::get<int>(value);
     else if (boost::get<double>(&value))
       return boost::get<double>(value);
     else if (boost::get<Spine::TimeSeries::None>(&value))
-      throw Spine::Exception(BCP, "Station with null fmisid encountered!");
+      throw Fmi::Exception(BCP, "Station with null fmisid encountered!");
     else if (boost::get<Spine::TimeSeries::LonLat>(&value))
-      throw Spine::Exception(BCP, "Station with latlon as fmisid encountered!");
+      throw Fmi::Exception(BCP, "Station with latlon as fmisid encountered!");
     else
-      throw Spine::Exception(BCP, "Unknown fmisid type");
+      throw Fmi::Exception(BCP, "Unknown fmisid type");
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 

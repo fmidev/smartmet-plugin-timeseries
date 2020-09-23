@@ -20,7 +20,7 @@
 #include <newbase/NFmiIndexMaskTools.h>
 #include <newbase/NFmiSvgTools.h>
 #include <spine/Convenience.h>
-#include <spine/Exception.h>
+#include <macgyver/Exception.h>
 #include <spine/ParameterTools.h>
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
@@ -148,7 +148,7 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -217,7 +217,7 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -254,7 +254,7 @@ void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -374,7 +374,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -626,7 +626,7 @@ std::size_t Plugin::hash_value(const State& state,
 
             if (producer.empty())
             {
-              Spine::Exception ex(BCP, "No data available for '" + loc->name + "'!");
+              Fmi::Exception ex(BCP, "No data available for '" + loc->name + "'!");
               ex.disableLogging();
               throw ex;
             }
@@ -652,7 +652,7 @@ std::size_t Plugin::hash_value(const State& state,
 
               const auto validtimes = qi->validTimes();
               if (validtimes->empty())
-                throw Spine::Exception(BCP, "Producer '" + producer + "' has no valid timesteps!");
+                throw Fmi::Exception(BCP, "Producer '" + producer + "' has no valid timesteps!");
               subquery.toptions.setDataTimes(validtimes, qi->isClimatology());
 
               // no area operations allowed for non-grid data
@@ -717,7 +717,7 @@ std::size_t Plugin::hash_value(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -785,7 +785,7 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -885,7 +885,7 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Fmi::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -969,7 +969,7 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1010,7 +1010,7 @@ void Plugin::fetchStaticLocationValues(Query& query,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1082,7 +1082,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
     if (producer.empty())
     {
-      Spine::Exception ex(BCP, "No data available for " + place);
+      Fmi::Exception ex(BCP, "No data available for " + place);
       ex.disableLogging();
       throw ex;
     }
@@ -1091,7 +1091,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
     const auto validtimes = qi->validTimes();
     if (validtimes->empty())
-      throw Spine::Exception(BCP, "Producer " + producer + " has no valid time steps");
+      throw Fmi::Exception(BCP, "Producer " + producer + " has no valid time steps");
     query.toptions.setDataTimes(validtimes, qi->isClimatology());
 
     // no area operations allowed for non-grid data
@@ -1411,7 +1411,7 @@ void Plugin::fetchQEngineValues(const State& state,
               std::vector<std::string> coordinates;
               boost::algorithm::split(coordinates, place, boost::algorithm::is_any_of(","));
               if (coordinates.size() != 4)
-                throw Spine::Exception(BCP,
+                throw Fmi::Exception(BCP,
                                        "Invalid bbox parameter " + place +
                                            ", should be in format 'lon,lat,lon,lat[:radius]'!");
 
@@ -1492,7 +1492,7 @@ void Plugin::fetchQEngineValues(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1553,7 +1553,7 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -1611,7 +1611,7 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -1675,7 +1675,7 @@ bool Plugin::resolveAreaStations(Spine::LocationPtr location,
           std::vector<std::string> parts;
           boost::algorithm::split(parts, loc_name, boost::algorithm::is_any_of(","));
           if (parts.size() % 2)
-            throw Spine::Exception(
+            throw Fmi::Exception(
                 BCP, "Path " + loc_name + "is invalid, because it has odd number of coordinates!");
 
           std::string wkt = "LINESTRING(";
@@ -1698,7 +1698,7 @@ bool Plugin::resolveAreaStations(Spine::LocationPtr location,
           pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiLineString);
 
           if (!pGeo)
-            throw Spine::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
+            throw Fmi::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
 
           std::unique_ptr<OGRGeometry> poly;
           poly.reset(Fmi::OGR::expandGeometry(pGeo, radius));
@@ -1724,7 +1724,7 @@ bool Plugin::resolveAreaStations(Spine::LocationPtr location,
         pGeo = query.wktGeometries.getGeometry(loc_name_original);
 
         if (!pGeo)
-          throw Spine::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
+          throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
 
         wktString = Fmi::OGR::exportToWkt(*pGeo);
       }
@@ -1733,7 +1733,7 @@ bool Plugin::resolveAreaStations(Spine::LocationPtr location,
         pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
 
         if (!pGeo)
-          throw Spine::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
+          throw Fmi::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
 
         std::unique_ptr<OGRGeometry> poly;
         poly.reset(Fmi::OGR::expandGeometry(pGeo, loc->radius * 1000));
@@ -1810,7 +1810,7 @@ bool Plugin::resolveAreaStations(Spine::LocationPtr location,
         const OGRGeometry* pGeo = query.wktGeometries.getGeometry(loc_name_original);
 
         if (!pGeo)
-          throw Spine::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
+          throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
 
         wktString = Fmi::OGR::exportToWkt(*pGeo);
       }
@@ -2127,7 +2127,7 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -2379,7 +2379,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -2713,7 +2713,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -2735,7 +2735,7 @@ void Plugin::processObsEngineQuery(const State& state,
   try
   {
     if (areaproducers.empty())
-      throw Spine::Exception(BCP, "BUG: processObsEngineQuery producer list empty");
+      throw Fmi::Exception(BCP, "BUG: processObsEngineQuery producer list empty");
 
     for (const auto producer : areaproducers)
     {
@@ -2772,7 +2772,7 @@ void Plugin::processObsEngineQuery(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 #endif
@@ -2849,7 +2849,7 @@ void Plugin::processQEngineQuery(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -3044,7 +3044,7 @@ bool Plugin::processGridEngineQuery(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception(BCP, "Operation failed!", NULL);
+    throw Fmi::Exception(BCP, "Operation failed!", NULL);
   }
 }
 
@@ -3165,7 +3165,7 @@ void Plugin::processQuery(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -3208,7 +3208,7 @@ void Plugin::query(const State& state,
 #else
     if (query.loptions->locations().size() == 0)
 #endif
-      throw Spine::Exception(BCP, "No location option given!");
+      throw Fmi::Exception(BCP, "No location option given!");
 
     // The formatter knows which mimetype to send
 
@@ -3249,7 +3249,7 @@ void Plugin::query(const State& state,
     catch (...)
     {
       if (!gridEnabled)
-        throw Spine::Exception(BCP, "Operation failed!", NULL);
+        throw Fmi::Exception(BCP, "Operation failed!", NULL);
     }
 
     if (gridEnabled)
@@ -3393,7 +3393,7 @@ void Plugin::query(const State& state,
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -3450,7 +3450,7 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
   {
     // Catching all exceptions
 
-    Spine::Exception ex(BCP, "Request processing exception!", nullptr);
+    Fmi::Exception ex(BCP, "Request processing exception!", nullptr);
     ex.addParameter("URI", theRequest.getURI());
     ex.addParameter("ClientIP", theRequest.getClientIP());
     ex.printError();
@@ -3504,7 +3504,7 @@ Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -3530,13 +3530,13 @@ void Plugin::init()
     /* GeoEngine */
     auto engine = itsReactor->getSingleton("Geonames", nullptr);
     if (!engine)
-      throw Spine::Exception(BCP, "Geonames engine unavailable");
+      throw Fmi::Exception(BCP, "Geonames engine unavailable");
     itsGeoEngine = reinterpret_cast<Engine::Geonames::Engine*>(engine);
 
     /* GisEngine */
     engine = itsReactor->getSingleton("Gis", nullptr);
     if (!engine)
-      throw Spine::Exception(BCP, "Gis engine unavailable");
+      throw Fmi::Exception(BCP, "Gis engine unavailable");
     itsGisEngine = reinterpret_cast<Engine::Gis::Engine*>(engine);
 
     // Read the geometries from PostGIS database
@@ -3545,7 +3545,7 @@ void Plugin::init()
     /* QEngine */
     engine = itsReactor->getSingleton("Querydata", nullptr);
     if (!engine)
-      throw Spine::Exception(BCP, "Querydata engine unavailable");
+      throw Fmi::Exception(BCP, "Querydata engine unavailable");
     itsQEngine = reinterpret_cast<Engine::Querydata::Engine*>(engine);
 
     /* GridEngine */
@@ -3553,7 +3553,7 @@ void Plugin::init()
     {
       engine = itsReactor->getSingleton("grid", NULL);
       if (!engine)
-        throw Spine::Exception(BCP, "The 'grid-engine' unavailable!");
+        throw Fmi::Exception(BCP, "The 'grid-engine' unavailable!");
 
       itsGridEngine = reinterpret_cast<Engine::Grid::Engine*>(engine);
       itsGridEngine->setDem(itsGeoEngine->dem());
@@ -3568,7 +3568,7 @@ void Plugin::init()
       /* ObsEngine */
       engine = itsReactor->getSingleton("Observation", nullptr);
       if (!engine)
-        throw Spine::Exception(BCP, "Observation engine unavailable");
+        throw Fmi::Exception(BCP, "Observation engine unavailable");
       itsObsEngine = reinterpret_cast<Engine::Observation::Engine*>(engine);
 
       // fetch obsebgine station types (producers)
@@ -3582,20 +3582,20 @@ void Plugin::init()
     if (!itsReactor->addContentHandler(this,
                                        itsConfig.defaultUrl(),
                                        boost::bind(&Plugin::callRequestHandler, this, _1, _2, _3)))
-      throw Spine::Exception(BCP, "Failed to register timeseries content handler");
+      throw Fmi::Exception(BCP, "Failed to register timeseries content handler");
 
     // DEPRECATED:
 
     if (!itsReactor->addContentHandler(
             this, "/pointforecast", boost::bind(&Plugin::callRequestHandler, this, _1, _2, _3)))
-      throw Spine::Exception(BCP, "Failed to register pointforecast content handler");
+      throw Fmi::Exception(BCP, "Failed to register pointforecast content handler");
 
     // DONE
     itsReady = true;
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -3615,7 +3615,7 @@ void Plugin::shutdown()
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -3655,7 +3655,7 @@ bool Plugin::queryIsFast(const Spine::HTTP::Request& theRequest) const
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
