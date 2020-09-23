@@ -34,34 +34,13 @@ GCC_DIAG_COLOR ?= always
 # Boost 1.69
 
 ifneq "$(wildcard /usr/include/boost169)" ""
-  INCLUDES += -I/usr/include/boost169
+  INCLUDES += -isystem /usr/include/boost169
   LIBS += -L/usr/lib64/boost169
 endif
 
-ifeq ($(CXX), clang++)
+FLAGS = -std=c++11 -fPIC -MD -Wall -W -Wno-unused-parameter -fno-omit-frame-pointer -Wno-unknown-pragmas -fdiagnostics-color=$(GCC_DIAG_COLOR)
 
- // TODO: Enable sign conversion warnings
- FLAGS = \
-	-std=c++11 -fPIC -MD -fno-omit-frame-pointer \
-	-Weverything \
-	-Wno-c++98-compat \
-	-Wno-float-equal \
-	-Wno-padded \
-	-Wno-missing-prototypes \
-	-Wno-sign-conversion
-
- INCLUDES += \
-	-isystem $(includedir) \
-	-isystem $(includedir)/smartmet \
-	-isystem $(includedir)/mysql \
-	-isystem $(includedir)/soci \
-	-isystem $(includedir)/oracle/11.2/client64
-
-else
-
- FLAGS = -std=c++11 -fPIC -MD -Wall -W -Wno-unused-parameter -fno-omit-frame-pointer -Wno-unknown-pragmas -fdiagnostics-color=$(GCC_DIAG_COLOR)
-
- FLAGS_DEBUG = \
+FLAGS_DEBUG = \
 	-Wcast-align \
 	-Wcast-qual \
 	-Winline \
@@ -71,16 +50,13 @@ else
 	-Wwrite-strings \
 	-DDEBUG
 
- FLAGS_RELEASE = -Wuninitialized -Wno-unknown-pragmas
+FLAGS_RELEASE = -Wuninitialized -Wno-unknown-pragmas
 
- INCLUDES += \
-	-I$(includedir) \
+INCLUDES += \
 	-I$(includedir)/smartmet \
-	-I$(includedir)/mysql \
+	-isystem $(includedir)/mysql \
 	-isystem $(includedir)/soci \
-	-I$(includedir)/oracle/11.2/client64
-
-endif
+	-isystem $(includedir)/oracle/11.2/client64
 
 
 ifeq ($(TSAN), yes)
@@ -145,7 +121,7 @@ release: all
 profile: all
 
 $(LIBFILE): $(OBJS)
-	$(CXX) $(CFLAGS) -shared -rdynamic -o $(LIBFILE) $(OBJS) $(LIBS)
+	$(CC) $(LDFLAGS) -shared -rdynamic -o $(LIBFILE) $(OBJS) $(LIBS)
 
 clean:
 	rm -f $(LIBFILE) *~ $(SUBNAME)/*~
