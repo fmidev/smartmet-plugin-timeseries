@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.9.1
+Version: 20.9.23
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,17 +18,17 @@ BuildRequires: fmt-devel >= 6.2.1
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.9.1
+BuildRequires: smartmet-library-spine-devel >= 20.9.23
 BuildRequires: smartmet-library-locus-devel >= 20.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 20.8.31
-BuildRequires: smartmet-library-newbase-devel >= 20.8.21
+BuildRequires: smartmet-library-macgyver-devel >= 20.9.18
+BuildRequires: smartmet-library-newbase-devel >= 20.9.11
 BuildRequires: smartmet-library-gis-devel >= 20.8.21
-BuildRequires: smartmet-engine-geonames-devel >= 20.8.21
+BuildRequires: smartmet-engine-geonames-devel >= 20.9.23
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.9.1
+BuildRequires: smartmet-engine-observation-devel >= 20.9.23
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 20.8.21
-BuildRequires: smartmet-engine-gis-devel >= 20.8.21
+BuildRequires: smartmet-engine-querydata-devel >= 20.9.23
+BuildRequires: smartmet-engine-gis-devel >= 20.8.23
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.6.10
@@ -37,14 +37,14 @@ Requires: fmt >= 6.2.1
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.8.21
 Requires: smartmet-library-locus >= 20.8.21
-Requires: smartmet-library-macgyver >= 20.8.31
-Requires: smartmet-library-newbase >= 20.8.21
-Requires: smartmet-library-spine >= 20.9.1
+Requires: smartmet-library-macgyver >= 20.9.18
+Requires: smartmet-library-newbase >= 20.9.11
+Requires: smartmet-library-spine >= 20.9.23
 Requires: smartmet-library-gis >= 20.8.21
-Requires: smartmet-engine-geonames >= 20.8.21
-Requires: smartmet-engine-querydata >= 20.8.21
-Requires: smartmet-engine-gis >= 20.8.21
-Requires: smartmet-server >= 20.8.25
+Requires: smartmet-engine-geonames >= 20.9.23
+Requires: smartmet-engine-querydata >= 20.9.23
+Requires: smartmet-engine-gis >= 20.8.23
+Requires: smartmet-server >= 20.9.23
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Sep 23 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.9.23-1.fmi
+- Use Fmi::Exception instead of Spine::Exception
+
 * Tue Sep  1 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.8.20-1.fmi
 - Support for both 'itmf' and 'fmi_iot' producer names
 - Configuration files for regression tests updated

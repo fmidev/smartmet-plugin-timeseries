@@ -62,7 +62,7 @@ T aggregate(const T& raw_data, const Spine::ParameterFunctions& pf)
   }
   catch (...)
   {
-    throw Spine::Exception::Trace(BCP, "Operation failed!");
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
