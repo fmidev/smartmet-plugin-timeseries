@@ -2613,7 +2613,7 @@ void Plugin::processObsEngineQuery(const State& state,
     if (areaproducers.empty())
       throw Fmi::Exception(BCP, "BUG: processObsEngineQuery producer list empty");
 
-    for (const auto producer : areaproducers)
+    for (const auto& producer : areaproducers)
     {
       if (!isObsProducer(producer))
         continue;
