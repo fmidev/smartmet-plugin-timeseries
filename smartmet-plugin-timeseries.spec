@@ -55,6 +55,7 @@ Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: libconfig-devel
 #TestRequires: gcc-c++
+#TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-library-gis-devel >= 20.8.21
 #TestRequires: smartmet-library-newbase-devel >= 20.9.11
 #TestRequires: smartmet-library-spine-devel >= 20.9.23
