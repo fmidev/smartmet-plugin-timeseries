@@ -53,6 +53,8 @@ Requires: boost169-thread
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
+#TestRequires: libconfig-devel
+#TestRequires: libstdc++-devel
 
 %description
 SmartMet timeseries plugin
