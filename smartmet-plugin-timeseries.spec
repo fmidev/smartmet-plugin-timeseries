@@ -54,7 +54,23 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: libconfig-devel
-#TestRequires: libstdc++-devel
+#TestRequires: gcc-c++
+#TestRequires: smartmet-library-gis-devel >= 20.8.21
+#TestRequires: smartmet-library-newbase-devel >= 20.9.11
+#TestRequires: smartmet-library-spine-devel >= 20.9.23
+#TestRequires: smartmet-engine-geonames-devel >= 20.8.23
+#TestRequires: smartmet-engine-gis-devel >= 20.8.23
+#TestRequires: smartmet-engine-querydata-devel >= 20.9.23
+%if %{with observation}
+#TestRequires: smartmet-engine-observation-devel >= 20.9.23
+%endif
+#TestRequires: boost169-devel
+#TestRequires: gdal-devel
+#TestRequires: boost169-date-time
+#TestRequires: boost169-filesystem
+#TestRequires: boost169-iostreams
+#TestRequires: boost169-system
+#TestRequires: boost169-thread
 
 %description
 SmartMet timeseries plugin

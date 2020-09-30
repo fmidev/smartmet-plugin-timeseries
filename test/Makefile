@@ -23,7 +23,7 @@ LIBS +=  -lsmartmet-spine  \
 	-lboost_filesystem \
 	-lboost_iostreams \
 	-lboost_system \
-	-lbz2 -lz -lpthread -ldl
+	-lpthread -ldl
 
 all: $(PROG)
 clean:
