@@ -98,6 +98,7 @@ bool is_mobile_producer(const std::string& producer)
 {
   return (producer == SmartMet::Engine::Observation::ROADCLOUD_PRODUCER ||
           producer == SmartMet::Engine::Observation::TECONER_PRODUCER ||
+          producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER ||
           producer == SmartMet::Engine::Observation::NETATMO_PRODUCER);
 }
 
@@ -626,7 +627,7 @@ std::size_t Plugin::hash_value(const State& state,
 
             if (producer.empty())
             {
-              Fmi::Exception ex(BCP, "No data available for '" + loc->name + "'!");
+              Fmi::Exception ex(BCP, "No data available for '" + tloc.tag + "'!");
               ex.disableLogging();
               throw ex;
             }
@@ -1592,6 +1593,8 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
 
     settings.format = query.format;
     settings.stationtype = producer;
+    if (producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER)
+      settings.stationtype_specifier = query.iot_producer_specifier;
     settings.maxdistance = query.maxdistance;
     if (!query.maxdistanceOptionGiven)
       settings.maxdistance = 60000;
@@ -2737,7 +2740,7 @@ void Plugin::processObsEngineQuery(const State& state,
     if (areaproducers.empty())
       throw Fmi::Exception(BCP, "BUG: processObsEngineQuery producer list empty");
 
-    for (const auto producer : areaproducers)
+    for (const auto& producer : areaproducers)
     {
       if (!isObsProducer(producer))
         continue;

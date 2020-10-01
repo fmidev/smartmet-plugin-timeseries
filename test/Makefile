@@ -1,53 +1,20 @@
 PROG = $(patsubst %.cpp,%,$(wildcard *Test*.cpp))
 
-FLAGS = -std=c++11 -Wall -W -Wno-unused-parameter
+REQUIRES_GDAL = yes
 
-ENV_FILE = cnf/smartmet-test-env.cfg
+include ../common.mk
 
-CONFIG_FILES = \
-	cnf/gis.conf \
-	cnf/geonames.conf \
-	cnf/querydata.conf \
-	cnf/observation.conf \
-	cnf/timeseries.conf \
-	cnf/timeseries-grid.conf \
-	cnf/redis.conf
-
-
-EXTRAFLAGS = -Werror -pedantic -Wpointer-arith -Wcast-qual \
-	-Wcast-align -Wwrite-strings -Wconversion -Winline \
-	-Wctor-dtor-privacy -Wnon-virtual-dtor -Wno-pmf-conversions \
-	-Wsign-promo -Wchar-subscripts -Wold-style-cast \
-	-Wshadow -Woverloaded-virtual
-
-DIFFICULTFLAGS = -Weffc++ -Wunreachable-code -Wredundant-decls
-
-ifeq ($(TSAN), yes)
-  FLAGS += -fsanitize=thread
-endif
-ifeq ($(ASAN), yes)
-  FLAGS += -fsanitize=address -fsanitize=pointer-compare -fsanitize=pointer-subtract -fsanitize=undefined -fsanitize-address-use-after-scope
-endif
-
-CC = g++
 CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
-
-# Boost 1.69
-
-ifneq "$(wildcard /usr/include/boost169)" ""
-  INCLUDES += -I/usr/include/boost169
-  LIBS += -L/usr/lib64/boost169
-endif
 
 # Unfortunately otlv4.h forces us to define the full oracle include path
 INCLUDES += \
 	-I ../timeseries \
-	-I /usr/include/mysql \
+	-isystem /usr/include/mysql \
 	-I /usr/include/smartmet \
 	-I /usr/include/smartmet/grid-files \
 	-I /usr/include/smartmet/grid-content \
-	-I /usr/include/soci \
-	-I/usr/include/oracle/11.2/client64 \
+	-isystem /usr/include/soci \
+	-isystem /usr/include/oracle/11.2/client64 \
 	`pkg-config --cflags libconfig++`
 
 LIBS +=  -lsmartmet-spine  \
@@ -61,7 +28,7 @@ LIBS +=  -lsmartmet-spine  \
 	-lboost_filesystem \
 	-lboost_iostreams \
 	-lboost_system \
-	-lbz2 -lz -lpthread -ldl
+	-lpthread -ldl
 
 all: $(PROG)
 
@@ -139,4 +106,4 @@ cnf/redis.conf: cnf/templates/redis.conf $(ENV_FILE)
 	@./TestConfigCreator $(ENV_FILE) cnf/templates/redis.conf cnf/redis.conf
 
 $(PROG) : % : %.cpp Makefile ../timeseries.so
-	$(CC) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
+	$(CXX) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)

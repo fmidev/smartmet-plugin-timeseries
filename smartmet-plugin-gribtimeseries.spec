@@ -57,6 +57,25 @@ Requires: boost169-thread
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
+#TestRequires: libconfig-devel
+#TestRequires: gcc-c++
+#TestRequires: smartmet-test-data >= 20.6.30
+#TestRequires: smartmet-library-gis-devel >= 20.8.21
+#TestRequires: smartmet-library-newbase-devel >= 20.9.11
+#TestRequires: smartmet-library-spine-devel >= 20.9.23
+#TestRequires: smartmet-engine-geonames-devel >= 20.8.23
+#TestRequires: smartmet-engine-gis-devel >= 20.8.23
+#TestRequires: smartmet-engine-querydata-devel >= 20.9.23
+%if %{with observation}
+#TestRequires: smartmet-engine-observation-devel >= 20.9.23
+%endif
+#TestRequires: boost169-devel
+#TestRequires: gdal-devel
+#TestRequires: boost169-date-time
+#TestRequires: boost169-filesystem
+#TestRequires: boost169-iostreams
+#TestRequires: boost169-system
+#TestRequires: boost169-thread
 
 %description
 SmartMet timeseries plugin
@@ -95,6 +114,10 @@ rm -rf $RPM_BUILD_ROOT
 
 * Mon Sep  7 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.9.7-1.fmi
 - Repackaged due to library ABI changes
+
+* Tue Sep  1 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.8.20-1.fmi
+- Support for both 'itmf' and 'fmi_iot' producer names
+- Configuration files for regression tests updated
 
 * Mon Aug 31 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.31-1.fmi
 - Repackaged due to library ABI changes
@@ -138,8 +161,14 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Jun  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.9-1.fmi
 - Do not do a coordinate search for locations which already have a known fmisid
 
+<<<<<<< HEAD:smartmet-plugin-gribtimeseries.spec
 * Mon Jun  8 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.8-1.fmi
 - Repackaged due to base library changes
+=======
+* Mon Jun 8 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.6.8-1.fmi
+- Support for itmf-producer (INSPIRE-909)
+- Support for PostgresSQL-driver in observation engine: configuration file structure changed (BRAINSTORM-1783)
+>>>>>>> master:smartmet-plugin-timeseries.spec
 
 * Tue May 26 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
 - Modified test cases to include percentage-function in order to test parameter parsing
