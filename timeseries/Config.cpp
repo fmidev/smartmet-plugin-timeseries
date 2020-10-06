@@ -276,6 +276,10 @@ Config::Config(const string& configfile)
     if (configfile.empty())
       throw Fmi::Exception(BCP, "TimeSeries configuration file cannot be empty");
 
+    boost::filesystem::path p = configfile;
+    p.remove_filename();
+    itsConfig.setIncludeDir(p.c_str());
+    
     itsConfig.readFile(configfile.c_str());
 
     // Obligatory settings
