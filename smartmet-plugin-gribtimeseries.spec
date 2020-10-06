@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.9.18
+Version: 20.9.23
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,20 +18,20 @@ BuildRequires: fmt-devel >= 6.2.1
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.9.14
+BuildRequires: smartmet-library-spine-devel >= 20.9.23
 BuildRequires: smartmet-library-locus-devel >= 20.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 20.9.15
+BuildRequires: smartmet-library-macgyver-devel >= 20.9.18
 BuildRequires: smartmet-library-newbase-devel >= 20.9.11
 BuildRequires: smartmet-library-gis-devel >= 20.8.21
-BuildRequires: smartmet-engine-geonames-devel >= 20.8.21
+BuildRequires: smartmet-engine-geonames-devel >= 20.9.23
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.9.18
+BuildRequires: smartmet-engine-observation-devel >= 20.9.23
 %endif
-BuildRequires: smartmet-library-grid-content-devel >= 20.9.18
-BuildRequires: smartmet-library-grid-files-devel >= 20.9.18
-BuildRequires: smartmet-engine-querydata-devel >= 20.9.15
-BuildRequires: smartmet-engine-gis-devel >= 20.8.21
-BuildRequires: smartmet-engine-grid-devel >= 20.9.18
+BuildRequires: smartmet-library-grid-content-devel >= 20.9.23
+BuildRequires: smartmet-library-grid-files-devel >= 20.9.23
+BuildRequires: smartmet-engine-querydata-devel >= 20.9.23
+BuildRequires: smartmet-engine-gis-devel >= 20.8.23
+BuildRequires: smartmet-engine-grid-devel >= 20.9.23
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.6.10
@@ -40,15 +40,15 @@ Requires: fmt >= 6.2.1
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.8.21
 Requires: smartmet-library-locus >= 20.8.21
-Requires: smartmet-library-macgyver >= 20.9.15
+Requires: smartmet-library-macgyver >= 20.9.18
 Requires: smartmet-library-newbase >= 20.9.11
-Requires: smartmet-library-spine >= 20.9.14
+Requires: smartmet-library-spine >= 20.9.23
 Requires: smartmet-library-gis >= 20.8.21
-Requires: smartmet-engine-geonames >= 20.8.21
-Requires: smartmet-engine-querydata >= 20.9.15
-Requires: smartmet-engine-gis >= 20.8.21
-Requires: smartmet-engine-grid >= 20.9.18
-Requires: smartmet-server >= 20.9.14
+Requires: smartmet-engine-geonames >= 20.9.23
+Requires: smartmet-engine-querydata >= 20.9.23
+Requires: smartmet-engine-gis >= 20.8.23
+Requires: smartmet-engine-grid >= 20.9.23
+Requires: smartmet-server >= 20.9.23
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -57,6 +57,25 @@ Requires: boost169-thread
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
+#TestRequires: libconfig-devel
+#TestRequires: gcc-c++
+#TestRequires: smartmet-test-data >= 20.6.30
+#TestRequires: smartmet-library-gis-devel >= 20.8.21
+#TestRequires: smartmet-library-newbase-devel >= 20.9.11
+#TestRequires: smartmet-library-spine-devel >= 20.9.23
+#TestRequires: smartmet-engine-geonames-devel >= 20.8.23
+#TestRequires: smartmet-engine-gis-devel >= 20.8.23
+#TestRequires: smartmet-engine-querydata-devel >= 20.9.23
+%if %{with observation}
+#TestRequires: smartmet-engine-observation-devel >= 20.9.23
+%endif
+#TestRequires: boost169-devel
+#TestRequires: gdal-devel
+#TestRequires: boost169-date-time
+#TestRequires: boost169-filesystem
+#TestRequires: boost169-iostreams
+#TestRequires: boost169-system
+#TestRequires: boost169-thread
 
 %description
 SmartMet timeseries plugin
@@ -81,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Wed Sep 23 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.9.23-1.fmi
+- Use Fmi::Exception instead of Spine::Exception
+
 * Fri Sep 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.9.18-1.fmi
 - Repackaged due to library ABI changes
 
@@ -92,6 +114,10 @@ rm -rf $RPM_BUILD_ROOT
 
 * Mon Sep  7 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.9.7-1.fmi
 - Repackaged due to library ABI changes
+
+* Tue Sep  1 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.8.20-1.fmi
+- Support for both 'itmf' and 'fmi_iot' producer names
+- Configuration files for regression tests updated
 
 * Mon Aug 31 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.8.31-1.fmi
 - Repackaged due to library ABI changes
@@ -135,8 +161,14 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Jun  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.9-1.fmi
 - Do not do a coordinate search for locations which already have a known fmisid
 
+<<<<<<< HEAD:smartmet-plugin-gribtimeseries.spec
 * Mon Jun  8 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.6.8-1.fmi
 - Repackaged due to base library changes
+=======
+* Mon Jun 8 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.6.8-1.fmi
+- Support for itmf-producer (INSPIRE-909)
+- Support for PostgresSQL-driver in observation engine: configuration file structure changed (BRAINSTORM-1783)
+>>>>>>> master:smartmet-plugin-timeseries.spec
 
 * Tue May 26 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.5.26-1.fmi
 - Modified test cases to include percentage-function in order to test parameter parsing

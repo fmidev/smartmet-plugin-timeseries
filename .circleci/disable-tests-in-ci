@@ -1,6 +1,0 @@
-Existence of this file indicates that make test will not be run inside CI.
-This is because tests do not work, or only work partially.
-Long term solution is to fix tests.
-
-Installation test is done regardless of existence of this file.
-When tests are working, remove this file and push changes to GitHub.

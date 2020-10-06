@@ -100,6 +100,7 @@ struct Query
   bool latestObservation;
   Engine::Observation::SQLDataFilter sqlDataFilter;
   bool useDataCache;
+  std::string iot_producer_specifier{""};
 #endif
 
   bool starttimeOptionGiven;
