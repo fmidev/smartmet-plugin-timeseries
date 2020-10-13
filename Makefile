@@ -18,6 +18,7 @@ LIBS += -L$(libdir) \
 	-lsmartmet-spine \
 	-lsmartmet-newbase \
 	-lsmartmet-locus \
+        -lsmartmet-gis \
 	-lsmartmet-macgyver \
 	-lboost_date_time \
 	-lboost_thread \
