@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.10.6
+Version: 20.10.14
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,10 +18,10 @@ BuildRequires: fmt-devel >= 6.2.1
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.10.6
+BuildRequires: smartmet-library-spine-devel >= 20.10.14
 BuildRequires: smartmet-library-locus-devel >= 20.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 20.10.5
-BuildRequires: smartmet-library-newbase-devel >= 20.10.2
+BuildRequires: smartmet-library-macgyver-devel >= 20.10.9
+BuildRequires: smartmet-library-newbase-devel >= 20.10.9
 BuildRequires: smartmet-library-gis-devel >= 20.9.25
 BuildRequires: smartmet-engine-geonames-devel >= 20.10.6
 %if %{with observation}
@@ -37,9 +37,9 @@ Requires: fmt >= 6.2.1
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.9.25
 Requires: smartmet-library-locus >= 20.8.21
-Requires: smartmet-library-macgyver >= 20.10.5
-Requires: smartmet-library-newbase >= 20.10.2
-Requires: smartmet-library-spine >= 20.10.6
+Requires: smartmet-library-macgyver >= 20.10.9
+Requires: smartmet-library-newbase >= 20.10.9
+Requires: smartmet-library-spine >= 20.10.14
 Requires: smartmet-library-gis >= 20.9.25
 Requires: smartmet-engine-geonames >= 20.10.6
 BuildRequires: smartmet-engine-gis-devel >= 20.10.6
@@ -49,7 +49,7 @@ BuildRequires: smartmet-engine-gis-devel >= 20.10.6
 #%endif
 Requires: smartmet-engine-querydata >= 20.10.6
 Requires: smartmet-engine-gis >= 20.10.6
-Requires: smartmet-server >= 20.9.23
+Requires: smartmet-server >= 20.10.12
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -63,7 +63,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-library-gis-devel >= 20.10.5
 #TestRequires: smartmet-library-newbase-devel >= 20.9.29
-#TestRequires: smartmet-library-spine-devel >= 20.10.6
+#TestRequires: smartmet-library-spine-devel >= 20.10.14
 #TestRequires: smartmet-engine-geonames-devel >= 20.8.23
 #TestRequires: smartmet-engine-gis-devel >= 20.8.23
 #TestRequires: smartmet-engine-querydata-devel >= 20.10.6
@@ -101,6 +101,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Oct 14 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.14-1.fmi
+- Use new TableFormatter API
+
 * Tue Oct  6 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.6-1.fmi
 - Enable sensible relative libconfig include paths
 
