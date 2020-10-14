@@ -8,6 +8,8 @@ include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
 # Compiler options
 
+CFLAGS += -Wno-maybe-uninitialized
+
 DEFINES = -DUNIX -D_REENTRANT
 
 INCLUDES += -isystem $(includedir)/mysql \
