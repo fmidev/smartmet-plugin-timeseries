@@ -2947,16 +2947,14 @@ void Plugin::query(const State& state,
     auto formatter_options = itsConfig.formatterOptions();
     formatter_options.setFormatType(wxml_type);
 
-    std::ostringstream output;
-    formatter->format(output, data, headers, request, formatter_options);
+    auto out = formatter->format(data, headers, request, formatter_options);
     high_resolution_clock::time_point t5 = high_resolution_clock::now();
     timeheader.append("+").append(
         Fmi::to_string(std::chrono::duration_cast<std::chrono::microseconds>(t5 - t4).count()));
 
     // TODO: Should use std::move when it has become available
     boost::shared_ptr<std::string> result(new std::string());
-    std::string tmp = output.str();
-    std::swap(tmp, *result);
+    std::swap(out, *result);
 
     // Too many flash data requests with empty output filling the logs...
 #if 0    
