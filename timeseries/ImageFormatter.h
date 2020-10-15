@@ -17,11 +17,10 @@ class TableFormatterOptions;
 class ImageFormatter : public TableFormatter
 {
  public:
-  void format(std::ostream& theOutput,
-              const Table& theTable,
-              const TableFormatter::Names& theNames,
-              const HTTP::Request& theReq,
-              const TableFormatterOptions& theConfig) const;
+  std::string format(const Table& theTable,
+                     const TableFormatter::Names& theNames,
+                     const HTTP::Request& theReq,
+                     const TableFormatterOptions& theConfig) const;
 
   const std::string mimetype() const { return "text/html"; }
 };
