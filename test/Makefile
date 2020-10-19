@@ -1,8 +1,8 @@
 PROG = $(patsubst %.cpp,%,$(wildcard *Test.cpp))
 
-REQUIRES_GDAL = yes
+REQUIRES = gdal configpp
 
-include ../common.mk
+include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
 CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
 
@@ -11,13 +11,12 @@ INCLUDES += \
 	-I ../timeseries \
 	-isystem /usr/include/mysql \
 	-isystem /usr/include/soci \
-	-isystem /usr/include/oracle/11.2/client64 \
-	`pkg-config --cflags libconfig++`
+	-isystem /usr/include/oracle/11.2/client64
 
 LIBS +=  -lsmartmet-spine  \
 	-lsmartmet-macgyver \
 	-lsmartmet-newbase \
-	`pkg-config --libs libconfig++` \
+	$(CONFIGPP_LIBS) \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_filesystem \
