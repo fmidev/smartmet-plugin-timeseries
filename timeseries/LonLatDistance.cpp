@@ -1,6 +1,7 @@
 #include "LonLatDistance.h"
 
 #include <boost/math/constants/constants.hpp>
+#include <macgyver/Exception.h>
 
 namespace SmartMet
 {
@@ -13,12 +14,26 @@ static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
 
 double deg_to_rad(const double& degrees)
 {
-  return degrees * (boost::math::constants::pi<double>() / 180.0);
+  try
+  {
+    return degrees * (boost::math::constants::pi<double>() / 180.0);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 double rad_to_deg(const double& radians)
 {
-  return radians * (180.0 / boost::math::constants::pi<double>());
+  try
+  {
+    return radians * (180.0 / boost::math::constants::pi<double>());
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 /**
@@ -30,15 +45,22 @@ double rad_to_deg(const double& radians)
  */
 double initial_bearing(const std::pair<double, double>& from, const std::pair<double, double>& to)
 {
-  double lat1 = deg_to_rad(from.second);
-  double lat2 = deg_to_rad(to.second);
-  double dLon = deg_to_rad(to.first - from.first);
+  try
+  {
+    double lat1 = deg_to_rad(from.second);
+    double lat2 = deg_to_rad(to.second);
+    double dLon = deg_to_rad(to.first - from.first);
 
-  double y = sin(dLon) * cos(lat2);
-  double x = (cos(lat1) * sin(lat2)) - (sin(lat1) * cos(lat2) * cos(dLon));
-  double brng = atan2(y, x);
+    double y = sin(dLon) * cos(lat2);
+    double x = (cos(lat1) * sin(lat2)) - (sin(lat1) * cos(lat2) * cos(dLon));
+    double brng = atan2(y, x);
 
-  return fmod((rad_to_deg(brng) + 360.0), 360.0);
+    return fmod((rad_to_deg(brng) + 360.0), 360.0);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 /**
@@ -50,16 +72,23 @@ double initial_bearing(const std::pair<double, double>& from, const std::pair<do
  */
 double final_bearing(const std::pair<double, double>& from, const std::pair<double, double>& to)
 {
-  // get initial bearing from supplied point back to this point...
-  double lat1 = deg_to_rad(to.second);
-  double lat2 = deg_to_rad(from.second);
-  double dLon = deg_to_rad(from.first - to.first);
+  try
+  {
+    // get initial bearing from supplied point back to this point...
+    double lat1 = deg_to_rad(to.second);
+    double lat2 = deg_to_rad(from.second);
+    double dLon = deg_to_rad(from.first - to.first);
 
-  double y = sin(dLon) * cos(lat2);
-  double x = (cos(lat1) * sin(lat2)) - (sin(lat1) * cos(lat2) * cos(dLon));
-  double brng = atan2(y, x);
-  // ... & reverse it by adding 180°
-  return fmod((rad_to_deg(brng) + 180.0), 360.0);
+    double y = sin(dLon) * cos(lat2);
+    double x = (cos(lat1) * sin(lat2)) - (sin(lat1) * cos(lat2) * cos(dLon));
+    double brng = atan2(y, x);
+    // ... & reverse it by adding 180°
+    return fmod((rad_to_deg(brng) + 180.0), 360.0);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 /**
@@ -72,20 +101,27 @@ double final_bearing(const std::pair<double, double>& from, const std::pair<doub
 std::pair<double, double> midpoint(const std::pair<double, double>& from,
                                    const std::pair<double, double>& to)
 {
-  double lat1 = deg_to_rad(from.second);
-  double lon1 = deg_to_rad(from.first);
-  double lat2 = deg_to_rad(to.second);
-  double dLon = deg_to_rad(to.first - from.first);
+  try
+  {
+    double lat1 = deg_to_rad(from.second);
+    double lon1 = deg_to_rad(from.first);
+    double lat2 = deg_to_rad(to.second);
+    double dLon = deg_to_rad(to.first - from.first);
 
-  double Bx = cos(lat2) * cos(dLon);
-  double By = cos(lat2) * sin(dLon);
+    double Bx = cos(lat2) * cos(dLon);
+    double By = cos(lat2) * sin(dLon);
 
-  double lat3 = atan2(sin(lat1) + sin(lat2), sqrt((cos(lat1) + Bx) * (cos(lat1) + Bx) + By * By));
-  double lon3 = lon1 + atan2(By, cos(lat1) + Bx);
-  double pi(boost::math::constants::pi<double>());
-  lon3 = fmod(lon3 + (3 * pi), 2 * pi) - pi;  // normalise to -180..+180º
+    double lat3 = atan2(sin(lat1) + sin(lat2), sqrt((cos(lat1) + Bx) * (cos(lat1) + Bx) + By * By));
+    double lon3 = lon1 + atan2(By, cos(lat1) + Bx);
+    double pi(boost::math::constants::pi<double>());
+    lon3 = fmod(lon3 + (3 * pi), 2 * pi) - pi;  // normalise to -180..+180º
 
-  return std::pair<double, double>(rad_to_deg(lon3), rad_to_deg(lat3));
+    return std::pair<double, double>(rad_to_deg(lon3), rad_to_deg(lat3));
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 /**
@@ -102,20 +138,27 @@ std::pair<double, double> destination_point(const std::pair<double, double>& fro
                                             const std::pair<double, double>& to,
                                             const double& distance)
 {
-  double brng(initial_bearing(from, to));
+  try
+  {
+    double brng(initial_bearing(from, to));
 
-  double dist =
-      distance / (EARTH_RADIUS_IN_METERS / 1000.0);  // convert dist to angular distance in radians
-  brng = deg_to_rad(brng);
-  double lat1 = deg_to_rad(from.second);
-  double lon1 = deg_to_rad(from.first);
+    double dist =
+        distance / (EARTH_RADIUS_IN_METERS / 1000.0);  // convert dist to angular distance in radians
+    brng = deg_to_rad(brng);
+    double lat1 = deg_to_rad(from.second);
+    double lon1 = deg_to_rad(from.first);
 
-  double lat2 = asin(sin(lat1) * cos(dist) + cos(lat1) * sin(dist) * cos(brng));
-  double lon2 = lon1 + atan2(sin(brng) * sin(dist) * cos(lat1), cos(dist) - sin(lat1) * sin(lat2));
-  double pi(boost::math::constants::pi<double>());
-  lon2 = fmod(lon2 + 3 * pi, 2 * pi) - pi;  // normalise to -180..+180º
+    double lat2 = asin(sin(lat1) * cos(dist) + cos(lat1) * sin(dist) * cos(brng));
+    double lon2 = lon1 + atan2(sin(brng) * sin(dist) * cos(lat1), cos(dist) - sin(lat1) * sin(lat2));
+    double pi(boost::math::constants::pi<double>());
+    lon2 = fmod(lon2 + 3 * pi, 2 * pi) - pi;  // normalise to -180..+180º
 
-  return std::pair<double, double>(rad_to_deg(lon2), rad_to_deg(lat2));
+    return std::pair<double, double>(rad_to_deg(lon2), rad_to_deg(lat2));
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 /** @brief Computes the arc, in radian, between two WGS-84 positions.
@@ -135,14 +178,21 @@ std::pair<double, double> destination_point(const std::pair<double, double>& fro
  */
 double arc_in_radians(const std::pair<double, double>& from, const std::pair<double, double>& to)
 {
-  double latitudeArc = deg_to_rad(from.second - to.second);
-  double longitudeArc = deg_to_rad(from.first - to.first);
-  double latitudeH = sin(latitudeArc * 0.5);
-  latitudeH *= latitudeH;
-  double lontitudeH = sin(longitudeArc * 0.5);
-  lontitudeH *= lontitudeH;
-  double tmp = cos(deg_to_rad(from.second)) * cos(deg_to_rad(to.second));
-  return 2.0 * asin(sqrt(latitudeH + tmp * lontitudeH));
+  try
+  {
+    double latitudeArc = deg_to_rad(from.second - to.second);
+    double longitudeArc = deg_to_rad(from.first - to.first);
+    double latitudeH = sin(latitudeArc * 0.5);
+    latitudeH *= latitudeH;
+    double lontitudeH = sin(longitudeArc * 0.5);
+    lontitudeH *= lontitudeH;
+    double tmp = cos(deg_to_rad(from.second)) * cos(deg_to_rad(to.second));
+    return 2.0 * asin(sqrt(latitudeH + tmp * lontitudeH));
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 /** @brief Computes the distance, in meters, between two WGS-84 positions.
@@ -154,13 +204,27 @@ double arc_in_radians(const std::pair<double, double>& from, const std::pair<dou
 double distance_in_meters(const std::pair<double, double>& from,
                           const std::pair<double, double>& to)
 {
-  return EARTH_RADIUS_IN_METERS * arc_in_radians(from, to);
+  try
+  {
+    return EARTH_RADIUS_IN_METERS * arc_in_radians(from, to);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 double distance_in_kilometers(const std::pair<double, double>& from,
                               const std::pair<double, double>& to)
 {
-  return (distance_in_meters(from, to) / 1000.0);
+  try
+  {
+    return (distance_in_meters(from, to) / 1000.0);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 }  // namespace TimeSeries

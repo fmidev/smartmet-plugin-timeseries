@@ -40,10 +40,17 @@ void add_sql_data_filter(const Spine::HTTP::Request& req,
                          const std::string& param_name,
                          Engine::Observation::SQLDataFilter& dataFilter)
 {
-  auto param = req.getParameter(param_name);
+  try
+  {
+    auto param = req.getParameter(param_name);
 
-  if (param)
-    dataFilter.setDataFilter(param_name, *param);
+    if (param)
+      dataFilter.setDataFilter(param_name, *param);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
 }
 
 }  // namespace

@@ -86,26 +86,33 @@ const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
 
 std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string wktString, double radius /*= 0.0*/)
 {
-  std::unique_ptr<OGRGeometry> ret;
-
-  std::string wkt = get_name_base(wktString);
-
-  OGRGeometry* geom = Fmi::OGR::createFromWkt(wkt, 4326);
-
-  if (geom)
+  try
   {
-    if (radius > 0.0)
+    std::unique_ptr<OGRGeometry> ret;
+
+    std::string wkt = get_name_base(wktString);
+
+    OGRGeometry* geom = Fmi::OGR::createFromWkt(wkt, 4326);
+
+    if (geom)
     {
-      std::unique_ptr<OGRGeometry> poly;
-      poly.reset(Fmi::OGR::expandGeometry(geom, radius * 1000));
-      OGRGeometryFactory::destroyGeometry(geom);
-      geom = poly.release();
+      if (radius > 0.0)
+      {
+        std::unique_ptr<OGRGeometry> poly;
+        poly.reset(Fmi::OGR::expandGeometry(geom, radius * 1000));
+        OGRGeometryFactory::destroyGeometry(geom);
+        geom = poly.release();
+      }
+
+      ret.reset(geom);
     }
 
-    ret.reset(geom);
+    return ret;
   }
-
-  return ret;
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 // ----------------------------------------------------------------------
@@ -493,22 +500,29 @@ std::unique_ptr<Spine::Location> get_coordinate_location(double lon,
                                                          const Engine::Geonames::Engine& geoEngine)
 
 {
-  Spine::LocationPtr loc = geoEngine.lonlatSearch(lon, lat, language);
+  try
+  {
+    Spine::LocationPtr loc = geoEngine.lonlatSearch(lon, lat, language);
 
-  std::unique_ptr<Spine::Location> ret(new Spine::Location(loc->geoid,
-                                                           "",  // tloc.tag,
-                                                           loc->iso2,
-                                                           loc->municipality,
-                                                           loc->area,
-                                                           loc->feature,
-                                                           loc->country,
-                                                           loc->longitude,
-                                                           loc->latitude,
-                                                           loc->timezone,
-                                                           loc->population,
-                                                           loc->elevation));
+    std::unique_ptr<Spine::Location> ret(new Spine::Location(loc->geoid,
+                                                             "",  // tloc.tag,
+                                                             loc->iso2,
+                                                             loc->municipality,
+                                                             loc->area,
+                                                             loc->feature,
+                                                             loc->country,
+                                                             loc->longitude,
+                                                             loc->latitude,
+                                                             loc->timezone,
+                                                             loc->population,
+                                                             loc->elevation));
 
-  return ret;
+    return ret;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 }  // namespace TimeSeries

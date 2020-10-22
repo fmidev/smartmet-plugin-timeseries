@@ -85,31 +85,59 @@ void print_settings(const Engine::Observation::Settings& settings)
 
 std::string get_parameter_id(const Spine::Parameter& parameter)
 {
-  std::string ret = parameter.name();
-  if (parameter.getSensorNumber())
-    ret += Fmi::to_string(*(parameter.getSensorNumber()));
-  std::string sensorParameter = parameter.getSensorParameter();
-  if (sensorParameter == "qc")  // later maybe longitude, latitude
-    ret += sensorParameter;
-  return ret;
+  try
+  {
+    std::string ret = parameter.name();
+    if (parameter.getSensorNumber())
+      ret += Fmi::to_string(*(parameter.getSensorNumber()));
+    std::string sensorParameter = parameter.getSensorParameter();
+    if (sensorParameter == "qc")  // later maybe longitude, latitude
+      ret += sensorParameter;
+    return ret;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 bool is_mobile_producer(const std::string& producer)
 {
-  return (producer == SmartMet::Engine::Observation::ROADCLOUD_PRODUCER ||
-          producer == SmartMet::Engine::Observation::TECONER_PRODUCER ||
-          producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER ||
-          producer == SmartMet::Engine::Observation::NETATMO_PRODUCER);
+  try
+  {
+    return (producer == SmartMet::Engine::Observation::ROADCLOUD_PRODUCER ||
+            producer == SmartMet::Engine::Observation::TECONER_PRODUCER ||
+            producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER ||
+            producer == SmartMet::Engine::Observation::NETATMO_PRODUCER);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 bool is_flash_producer(const std::string& producer)
 {
-  return (producer == FLASH_PRODUCER);
+  try
+  {
+    return (producer == FLASH_PRODUCER);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 bool is_flash_or_mobile_producer(const std::string& producer)
 {
-  return (is_flash_producer(producer) || is_mobile_producer(producer));
+  try
+  {
+    return (is_flash_producer(producer) || is_mobile_producer(producer));
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 // ----------------------------------------------------------------------
@@ -390,13 +418,20 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
 #ifndef WITHOUT_OBSERVATION
 void fix_precisions(Query& masterquery, const ObsParameters& obsParameters)
 {
-  for (unsigned int i = 0; i < obsParameters.size(); i++)
+  try
   {
-    std::string paramname(obsParameters[i].param.name());
-    if (paramname == WMO_PARAM || paramname == LPNN_PARAM || paramname == FMISID_PARAM ||
-        paramname == RWSID_PARAM || paramname == SENSOR_NO_PARAM || paramname == LEVEL_PARAM ||
-        paramname == GEOID_PARAM)
-      masterquery.precisions[i] = 0;
+    for (unsigned int i = 0; i < obsParameters.size(); i++)
+    {
+      std::string paramname(obsParameters[i].param.name());
+      if (paramname == WMO_PARAM || paramname == LPNN_PARAM || paramname == FMISID_PARAM ||
+          paramname == RWSID_PARAM || paramname == SENSOR_NO_PARAM || paramname == LEVEL_PARAM ||
+          paramname == GEOID_PARAM)
+        masterquery.precisions[i] = 0;
+    }
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 #endif
@@ -1633,192 +1668,163 @@ bool Plugin::resolveAreaStations(Spine::LocationPtr location,
                                  Engine::Observation::Settings& settings,
                                  std::string& name) const
 {
-  if (!location)
-    return false;
-
-  std::string loc_name_original = location->name;
-  std::string loc_name = get_name_base(location->name);
-
-  Spine::LocationPtr loc = location;
-  bool isWkt = (loc->type == Spine::Location::Wkt);
-
-  if (isWkt)
-    loc = query.wktGeometries.getLocation(loc_name_original);
-
-  // Area handling:
-  // 1) Get OGRGeometry object, expand it with radius
-  // 2) Fetch stations fmisids from ObsEngine located inside the area
-  // 3) Fetch location info from GeoEngine. The info will be used in
-  // responses to location and time related queries
-  // 4) Fetch the observations from ObsEngine using the geoids
-  if (loc)
+  try
   {
-    Engine::Observation::StationSettings stationSettings;
+    if (!location)
+      return false;
 
-    std::string wktString;
-    if (loc->type == Spine::Location::Path)
+    std::string loc_name_original = location->name;
+    std::string loc_name = get_name_base(location->name);
+
+    Spine::LocationPtr loc = location;
+    bool isWkt = (loc->type == Spine::Location::Wkt);
+
+    if (isWkt)
+      loc = query.wktGeometries.getLocation(loc_name_original);
+
+    // Area handling:
+    // 1) Get OGRGeometry object, expand it with radius
+    // 2) Fetch stations fmisids from ObsEngine located inside the area
+    // 3) Fetch location info from GeoEngine. The info will be used in
+    // responses to location and time related queries
+    // 4) Fetch the observations from ObsEngine using the geoids
+    if (loc)
     {
-      const OGRGeometry* pGeo = 0;
-      // if no radius has been given use 200 meters
-      double radius = (loc->radius == 0 ? 200 : loc->radius * 1000);
+      Engine::Observation::StationSettings stationSettings;
 
-#ifdef MYDEBUG
-      std::cout << loc_name << " is a Path" << std::endl;
-#endif
+      std::string wktString;
+      if (loc->type == Spine::Location::Path)
+      {
+        const OGRGeometry* pGeo = 0;
+        // if no radius has been given use 200 meters
+        double radius = (loc->radius == 0 ? 200 : loc->radius * 1000);
 
-      if (isWkt)
-      {
-        pGeo = query.wktGeometries.getGeometry(loc_name_original);
-        wktString = Fmi::OGR::exportToWkt(*pGeo);
-      }
-      else
-      {
-        if (loc_name.find(',') != std::string::npos)
+  #ifdef MYDEBUG
+        std::cout << loc_name << " is a Path" << std::endl;
+  #endif
+
+        if (isWkt)
         {
-          std::vector<std::string> parts;
-          boost::algorithm::split(parts, loc_name, boost::algorithm::is_any_of(","));
-          if (parts.size() % 2)
-            throw Fmi::Exception(
-                BCP, "Path " + loc_name + "is invalid, because it has odd number of coordinates!");
-
-          std::string wkt = "LINESTRING(";
-          for (unsigned int i = 0; i < parts.size(); i += 2)
-          {
-            if (i > 0)
-              wkt += ", ";
-            wkt += parts[i];
-            wkt += " ";
-            wkt += parts[i + 1];
-          }
-          wkt += ")";
-
-          std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
-          wktString = Fmi::OGR::exportToWkt(*geom);
+          pGeo = query.wktGeometries.getGeometry(loc_name_original);
+          wktString = Fmi::OGR::exportToWkt(*pGeo);
         }
         else
         {
-          // path is fetched from database
-          pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiLineString);
+          if (loc_name.find(',') != std::string::npos)
+          {
+            std::vector<std::string> parts;
+            boost::algorithm::split(parts, loc_name, boost::algorithm::is_any_of(","));
+            if (parts.size() % 2)
+              throw Fmi::Exception(
+                  BCP, "Path " + loc_name + "is invalid, because it has odd number of coordinates!");
+
+            std::string wkt = "LINESTRING(";
+            for (unsigned int i = 0; i < parts.size(); i += 2)
+            {
+              if (i > 0)
+                wkt += ", ";
+              wkt += parts[i];
+              wkt += " ";
+              wkt += parts[i + 1];
+            }
+            wkt += ")";
+
+            std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+            wktString = Fmi::OGR::exportToWkt(*geom);
+          }
+          else
+          {
+            // path is fetched from database
+            pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiLineString);
+
+            if (!pGeo)
+              throw Fmi::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
+
+            std::unique_ptr<OGRGeometry> poly;
+            poly.reset(Fmi::OGR::expandGeometry(pGeo, radius));
+            wktString = Fmi::OGR::exportToWkt(*poly);
+          }
+        }
+        if (!is_flash_or_mobile_producer(producer))
+          stationSettings.fmisids = get_fmisids_for_wkt(
+              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+
+        query.maxdistance = 0;
+      }
+      else if (loc->type == Spine::Location::Area)
+      {
+  #ifdef MYDEBUG
+        std::cout << loc_name << " is an Area" << std::endl;
+  #endif
+
+        const OGRGeometry* pGeo = 0;
+
+        if (isWkt)
+        {
+          pGeo = query.wktGeometries.getGeometry(loc_name_original);
 
           if (!pGeo)
-            throw Fmi::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
+            throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
+
+          wktString = Fmi::OGR::exportToWkt(*pGeo);
+        }
+        else
+        {
+          pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
+
+          if (!pGeo)
+            throw Fmi::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
 
           std::unique_ptr<OGRGeometry> poly;
-          poly.reset(Fmi::OGR::expandGeometry(pGeo, radius));
+          poly.reset(Fmi::OGR::expandGeometry(pGeo, loc->radius * 1000));
+
           wktString = Fmi::OGR::exportToWkt(*poly);
         }
+
+        if (!is_flash_or_mobile_producer(producer))
+          stationSettings.fmisids = get_fmisids_for_wkt(
+              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+        query.maxdistance = 0;
       }
-      if (!is_flash_or_mobile_producer(producer))
-        stationSettings.fmisids = get_fmisids_for_wkt(
-            itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-
-      query.maxdistance = 0;
-    }
-    else if (loc->type == Spine::Location::Area)
-    {
-#ifdef MYDEBUG
-      std::cout << loc_name << " is an Area" << std::endl;
-#endif
-
-      const OGRGeometry* pGeo = 0;
-
-      if (isWkt)
+      else if (loc->type == Spine::Location::BoundingBox && !is_flash_producer(producer))
       {
-        pGeo = query.wktGeometries.getGeometry(loc_name_original);
+  #ifdef MYDEBUG
+        std::cout << loc_name << " is a BoundingBox" << std::endl;
+  #endif
 
-        if (!pGeo)
-          throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
+        Spine::BoundingBox bbox(loc_name);
 
-        wktString = Fmi::OGR::exportToWkt(*pGeo);
+        NFmiSvgPath svgPath;
+        NFmiSvgTools::BBoxToSvgPath(svgPath, bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
+
+        std::string wkt;
+        for (NFmiSvgPath::const_iterator iter = svgPath.begin(); iter != svgPath.end(); iter++)
+        {
+          if (wkt.empty())
+            wkt += "POLYGON((";
+          else
+            wkt += ", ";
+          wkt += Fmi::to_string(iter->itsX);
+          wkt += " ";
+          wkt += Fmi::to_string(iter->itsY);
+        }
+        if (!wkt.empty())
+          wkt += "))";
+
+        std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+        wktString = Fmi::OGR::exportToWkt(*geom);
+        if (!is_flash_or_mobile_producer(producer))
+          stationSettings.fmisids = get_fmisids_for_wkt(
+              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+
+        query.maxdistance = 0;
       }
-      else
+      else if (!is_flash_producer(producer) && loc->type == Spine::Location::Place && loc->radius > 0)
       {
-        pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
+  #ifdef MYDEBUG
+        std::cout << loc_name << " is an Area (Place + radius)" << std::endl;
+  #endif
 
-        if (!pGeo)
-          throw Fmi::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
-
-        std::unique_ptr<OGRGeometry> poly;
-        poly.reset(Fmi::OGR::expandGeometry(pGeo, loc->radius * 1000));
-
-        wktString = Fmi::OGR::exportToWkt(*poly);
-      }
-
-      if (!is_flash_or_mobile_producer(producer))
-        stationSettings.fmisids = get_fmisids_for_wkt(
-            itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-      query.maxdistance = 0;
-    }
-    else if (loc->type == Spine::Location::BoundingBox && !is_flash_producer(producer))
-    {
-#ifdef MYDEBUG
-      std::cout << loc_name << " is a BoundingBox" << std::endl;
-#endif
-
-      Spine::BoundingBox bbox(loc_name);
-
-      NFmiSvgPath svgPath;
-      NFmiSvgTools::BBoxToSvgPath(svgPath, bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
-
-      std::string wkt;
-      for (NFmiSvgPath::const_iterator iter = svgPath.begin(); iter != svgPath.end(); iter++)
-      {
-        if (wkt.empty())
-          wkt += "POLYGON((";
-        else
-          wkt += ", ";
-        wkt += Fmi::to_string(iter->itsX);
-        wkt += " ";
-        wkt += Fmi::to_string(iter->itsY);
-      }
-      if (!wkt.empty())
-        wkt += "))";
-
-      std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
-      wktString = Fmi::OGR::exportToWkt(*geom);
-      if (!is_flash_or_mobile_producer(producer))
-        stationSettings.fmisids = get_fmisids_for_wkt(
-            itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-
-      query.maxdistance = 0;
-    }
-    else if (!is_flash_producer(producer) && loc->type == Spine::Location::Place && loc->radius > 0)
-    {
-#ifdef MYDEBUG
-      std::cout << loc_name << " is an Area (Place + radius)" << std::endl;
-#endif
-
-      std::string wkt = "POINT(";
-      wkt += Fmi::to_string(loc->longitude);
-      wkt += " ";
-      wkt += Fmi::to_string(loc->latitude);
-      wkt += ")";
-
-      std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
-      wktString = Fmi::OGR::exportToWkt(*geom);
-      if (!is_flash_or_mobile_producer(producer))
-        stationSettings.fmisids = get_fmisids_for_wkt(
-            itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-      query.maxdistance = 0;
-    }
-    else if (!is_flash_producer(producer) && loc->type == Spine::Location::CoordinatePoint &&
-             loc->radius > 0)
-    {
-#ifdef MYDEBUG
-      std::cout << loc_name << " is an Area (coordinate point + radius)" << std::endl;
-#endif
-
-      if (isWkt)
-      {
-        const OGRGeometry* pGeo = query.wktGeometries.getGeometry(loc_name_original);
-
-        if (!pGeo)
-          throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
-
-        wktString = Fmi::OGR::exportToWkt(*pGeo);
-      }
-      else
-      {
         std::string wkt = "POINT(";
         wkt += Fmi::to_string(loc->longitude);
         wkt += " ";
@@ -1827,41 +1833,77 @@ bool Plugin::resolveAreaStations(Spine::LocationPtr location,
 
         std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
         wktString = Fmi::OGR::exportToWkt(*geom);
+        if (!is_flash_or_mobile_producer(producer))
+          stationSettings.fmisids = get_fmisids_for_wkt(
+              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+        query.maxdistance = 0;
+      }
+      else if (!is_flash_producer(producer) && loc->type == Spine::Location::CoordinatePoint &&
+               loc->radius > 0)
+      {
+  #ifdef MYDEBUG
+        std::cout << loc_name << " is an Area (coordinate point + radius)" << std::endl;
+  #endif
+
+        if (isWkt)
+        {
+          const OGRGeometry* pGeo = query.wktGeometries.getGeometry(loc_name_original);
+
+          if (!pGeo)
+            throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
+
+          wktString = Fmi::OGR::exportToWkt(*pGeo);
+        }
+        else
+        {
+          std::string wkt = "POINT(";
+          wkt += Fmi::to_string(loc->longitude);
+          wkt += " ";
+          wkt += Fmi::to_string(loc->latitude);
+          wkt += ")";
+
+          std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+          wktString = Fmi::OGR::exportToWkt(*geom);
+        }
+
+        if (!is_flash_or_mobile_producer(producer))
+          stationSettings.fmisids = get_fmisids_for_wkt(
+              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+        query.maxdistance = 0;
       }
 
-      if (!is_flash_or_mobile_producer(producer))
-        stationSettings.fmisids = get_fmisids_for_wkt(
-            itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-      query.maxdistance = 0;
-    }
+  #ifdef MYDEBUG
+      std::cout << "WKT of buffered area: " << std::endl << wktString << std::endl;
+      std::cout << "#" << stationSettings.fmisids.size() << " stations found" << std::endl;
+      for (auto fmisid : stationSettings.fmisids)
+        std::cout << "fmisid: " << fmisid << std::endl;
+  #endif
 
-#ifdef MYDEBUG
-    std::cout << "WKT of buffered area: " << std::endl << wktString << std::endl;
-    std::cout << "#" << stationSettings.fmisids.size() << " stations found" << std::endl;
-    for (auto fmisid : stationSettings.fmisids)
-      std::cout << "fmisid: " << fmisid << std::endl;
-#endif
+      if (is_flash_or_mobile_producer(producer) && !wktString.empty())
+      {
+        settings.wktArea = wktString;
+      }
+      else if (stationSettings.fmisids.size() > 0)
+      {
+        settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
+            settings.starttime, settings.endtime, producer, stationSettings);
 
-    if (is_flash_or_mobile_producer(producer) && !wktString.empty())
-    {
-      settings.wktArea = wktString;
-    }
-    else if (stationSettings.fmisids.size() > 0)
-    {
-      settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
-          settings.starttime, settings.endtime, producer, stationSettings);
+        name = loc->name;
+        if (loc->type == Spine::Location::Wkt)
+          name = query.wktGeometries.getName(name);
+        else if (name.find(" as ") != std::string::npos)
+          name = name.substr(name.find(" as ") + 4);
 
-      name = loc->name;
-      if (loc->type == Spine::Location::Wkt)
-        name = query.wktGeometries.getName(name);
-      else if (name.find(" as ") != std::string::npos)
-        name = name.substr(name.find(" as ") + 4);
+        return (!settings.taggedFMISIDs.empty());
+      }
+    }  // if(loc)
 
-      return (!settings.taggedFMISIDs.empty());
-    }
-  }  // if(loc)
-
-  return false;
+    return false;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
 }
 
 void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
@@ -1871,45 +1913,52 @@ void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
                                       unsigned int& aggregationIntervalBehind,
                                       unsigned int& aggregationIntervalAhead) const
 {
-  int fmisid_index = -1;
-
-  for (unsigned int i = 0; i < obsParameters.size(); i++)
+  try
   {
-    const Spine::Parameter& param = obsParameters[i].param;
+    int fmisid_index = -1;
 
-    std::string pname = param.name();
-
-    if (query.maxAggregationIntervals.find(pname) != query.maxAggregationIntervals.end())
+    for (unsigned int i = 0; i < obsParameters.size(); i++)
     {
-      if (query.maxAggregationIntervals.at(pname).behind > aggregationIntervalBehind)
-        aggregationIntervalBehind = query.maxAggregationIntervals.at(pname).behind;
-      if (query.maxAggregationIntervals.at(pname).ahead > aggregationIntervalAhead)
-        aggregationIntervalAhead = query.maxAggregationIntervals.at(pname).ahead;
+      const Spine::Parameter& param = obsParameters[i].param;
+
+      std::string pname = param.name();
+
+      if (query.maxAggregationIntervals.find(pname) != query.maxAggregationIntervals.end())
+      {
+        if (query.maxAggregationIntervals.at(pname).behind > aggregationIntervalBehind)
+          aggregationIntervalBehind = query.maxAggregationIntervals.at(pname).behind;
+        if (query.maxAggregationIntervals.at(pname).ahead > aggregationIntervalAhead)
+          aggregationIntervalAhead = query.maxAggregationIntervals.at(pname).ahead;
+      }
+
+      // prevent passing duplicate parameters to observation (for example temperature,
+      // max_t(temperature))
+      // location parameters are handled in timeseries plugin
+      if (obsParameters[i].duplicate ||
+          (SmartMet::Spine::is_location_parameter(pname) && !is_flash_or_mobile_producer(producer)) ||
+          SmartMet::Spine::is_time_parameter(pname))
+        continue;
+
+      // fmisid must be always included (except for flash) in queries in order to get location
+      // info from geonames
+      if (pname == FMISID_PARAM && !is_flash_or_mobile_producer(producer))
+        fmisid_index = settings.parameters.size();
+
+      // all parameters are fetched at once
+      settings.parameters.push_back(param);
     }
 
-    // prevent passing duplicate parameters to observation (for example temperature,
-    // max_t(temperature))
-    // location parameters are handled in timeseries plugin
-    if (obsParameters[i].duplicate ||
-        (SmartMet::Spine::is_location_parameter(pname) && !is_flash_or_mobile_producer(producer)) ||
-        SmartMet::Spine::is_time_parameter(pname))
-      continue;
-
-    // fmisid must be always included (except for flash) in queries in order to get location
-    // info from geonames
-    if (pname == FMISID_PARAM && !is_flash_or_mobile_producer(producer))
-      fmisid_index = settings.parameters.size();
-
-    // all parameters are fetched at once
-    settings.parameters.push_back(param);
+    // fmisid must be always included in order to get thelocation info from geonames
+    if (fmisid_index == -1 && !is_flash_or_mobile_producer(producer))
+    {
+      Spine::Parameter fmisidParam =
+          Spine::Parameter(FMISID_PARAM, Spine::Parameter::Type::DataIndependent);
+      settings.parameters.push_back(fmisidParam);
+    }
   }
-
-  // fmisid must be always included in order to get thelocation info from geonames
-  if (fmisid_index == -1 && !is_flash_or_mobile_producer(producer))
+  catch (...)
   {
-    Spine::Parameter fmisidParam =
-        Spine::Parameter(FMISID_PARAM, Spine::Parameter::Type::DataIndependent);
-    settings.parameters.push_back(fmisidParam);
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
 
@@ -1921,88 +1970,95 @@ void Plugin::resolveTimeSettings(const std::string& producer,
                                  unsigned int aggregationIntervalAhead,
                                  Engine::Observation::Settings& settings) const
 {
-  // Below are listed optional settings, defaults are set while constructing an
-  // ObsEngine::Oracle instance.
-
-  boost::local_time::time_zone_ptr tz = getTimeZones().time_zone_from_string(query.timezone);
-  boost::local_time::local_date_time ldt_now(now, tz);
-  boost::posix_time::ptime ptime_now =
-      (query.toptions.startTimeUTC ? ldt_now.utc_time() : ldt_now.local_time());
-
-  if (query.toptions.startTimeData)
+  try
   {
-    query.toptions.startTime = ptime_now - boost::posix_time::hours(24);
-    query.toptions.startTimeData = false;
-  }
-  if (query.toptions.endTimeData)
-  {
-    query.toptions.endTime = ptime_now;
-    query.toptions.endTimeData = false;
-  }
+    // Below are listed optional settings, defaults are set while constructing an
+    // ObsEngine::Oracle instance.
 
-  if (query.toptions.startTime > ptime_now)
-    query.toptions.startTime = ptime_now;
-  if (query.toptions.endTime > ptime_now)
-    query.toptions.endTime = ptime_now;
+    boost::local_time::time_zone_ptr tz = getTimeZones().time_zone_from_string(query.timezone);
+    boost::local_time::local_date_time ldt_now(now, tz);
+    boost::posix_time::ptime ptime_now =
+        (query.toptions.startTimeUTC ? ldt_now.utc_time() : ldt_now.local_time());
 
-  if (!query.starttimeOptionGiven && !query.endtimeOptionGiven)
-  {
-    if (query.toptions.startTimeUTC)
-      query.toptions.startTime =
-          producerDataPeriod.getLocalStartTime(producer, query.timezone, getTimeZones()).utc_time();
+    if (query.toptions.startTimeData)
+    {
+      query.toptions.startTime = ptime_now - boost::posix_time::hours(24);
+      query.toptions.startTimeData = false;
+    }
+    if (query.toptions.endTimeData)
+    {
+      query.toptions.endTime = ptime_now;
+      query.toptions.endTimeData = false;
+    }
+
+    if (query.toptions.startTime > ptime_now)
+      query.toptions.startTime = ptime_now;
+    if (query.toptions.endTime > ptime_now)
+      query.toptions.endTime = ptime_now;
+
+    if (!query.starttimeOptionGiven && !query.endtimeOptionGiven)
+    {
+      if (query.toptions.startTimeUTC)
+        query.toptions.startTime =
+            producerDataPeriod.getLocalStartTime(producer, query.timezone, getTimeZones()).utc_time();
+      else
+        query.toptions.startTime =
+            producerDataPeriod.getLocalStartTime(producer, query.timezone, getTimeZones())
+                .local_time();
+      if (query.toptions.startTimeUTC)
+        query.toptions.endTime =
+            producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones()).utc_time();
+      else
+        query.toptions.endTime =
+            producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones()).local_time();
+    }
+
+    if (query.starttimeOptionGiven && !query.endtimeOptionGiven)
+    {
+      query.toptions.endTime = ptime_now;
+    }
+
+    if (!query.starttimeOptionGiven && query.endtimeOptionGiven)
+    {
+      query.toptions.startTime = query.toptions.endTime - boost::posix_time::hours(24);
+      query.toptions.startTimeUTC = query.toptions.endTimeUTC;
+    }
+
+    // observation requires the times to be in UTC. The correct way to do it
+    // is to use the make_time function IF the times are assumed to be in local time
+
+    boost::local_time::local_date_time local_starttime(query.toptions.startTime, tz);
+    boost::local_time::local_date_time local_endtime(query.toptions.endTime, tz);
+
+    if (!query.toptions.startTimeUTC)
+      local_starttime = Fmi::TimeParser::make_time(
+          query.toptions.startTime.date(), query.toptions.startTime.time_of_day(), tz);
+
+    if (!query.toptions.endTimeUTC)
+      local_endtime = Fmi::TimeParser::make_time(
+          query.toptions.endTime.date(), query.toptions.endTime.time_of_day(), tz);
+
+    settings.starttime = local_starttime.utc_time();
+    settings.endtime = local_endtime.utc_time();
+
+    // Adjust to accommodate aggregation
+
+    settings.starttime = settings.starttime - boost::posix_time::minutes(aggregationIntervalBehind);
+    settings.endtime = settings.endtime + boost::posix_time::minutes(aggregationIntervalAhead);
+
+    // observations up till now
+    if (settings.endtime > now)
+      settings.endtime = now;
+
+    if (!query.toptions.timeStep)
+      settings.timestep = 0;
     else
-      query.toptions.startTime =
-          producerDataPeriod.getLocalStartTime(producer, query.timezone, getTimeZones())
-              .local_time();
-    if (query.toptions.startTimeUTC)
-      query.toptions.endTime =
-          producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones()).utc_time();
-    else
-      query.toptions.endTime =
-          producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones()).local_time();
+      settings.timestep = *query.toptions.timeStep;
   }
-
-  if (query.starttimeOptionGiven && !query.endtimeOptionGiven)
+  catch (...)
   {
-    query.toptions.endTime = ptime_now;
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
-
-  if (!query.starttimeOptionGiven && query.endtimeOptionGiven)
-  {
-    query.toptions.startTime = query.toptions.endTime - boost::posix_time::hours(24);
-    query.toptions.startTimeUTC = query.toptions.endTimeUTC;
-  }
-
-  // observation requires the times to be in UTC. The correct way to do it
-  // is to use the make_time function IF the times are assumed to be in local time
-
-  boost::local_time::local_date_time local_starttime(query.toptions.startTime, tz);
-  boost::local_time::local_date_time local_endtime(query.toptions.endTime, tz);
-
-  if (!query.toptions.startTimeUTC)
-    local_starttime = Fmi::TimeParser::make_time(
-        query.toptions.startTime.date(), query.toptions.startTime.time_of_day(), tz);
-
-  if (!query.toptions.endTimeUTC)
-    local_endtime = Fmi::TimeParser::make_time(
-        query.toptions.endTime.date(), query.toptions.endTime.time_of_day(), tz);
-
-  settings.starttime = local_starttime.utc_time();
-  settings.endtime = local_endtime.utc_time();
-
-  // Adjust to accommodate aggregation
-
-  settings.starttime = settings.starttime - boost::posix_time::minutes(aggregationIntervalBehind);
-  settings.endtime = settings.endtime + boost::posix_time::minutes(aggregationIntervalAhead);
-
-  // observations up till now
-  if (settings.endtime > now)
-    settings.endtime = now;
-
-  if (!query.toptions.timeStep)
-    settings.timestep = 0;
-  else
-    settings.timestep = *query.toptions.timeStep;
 }
 
 void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
