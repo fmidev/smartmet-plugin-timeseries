@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.10.15
+Version: 20.10.22
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,20 +18,20 @@ BuildRequires: fmt-devel >= 6.2.1
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.10.14
+BuildRequires: smartmet-library-spine-devel >= 20.10.20
 BuildRequires: smartmet-library-locus-devel >= 20.10.7
 BuildRequires: smartmet-library-macgyver-devel >= 20.10.9
-BuildRequires: smartmet-library-newbase-devel >= 20.10.9
+BuildRequires: smartmet-library-newbase-devel >= 20.10.16
 BuildRequires: smartmet-library-gis-devel >= 20.10.5
 BuildRequires: smartmet-engine-geonames-devel >= 20.10.6
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 20.10.9
 %endif
-BuildRequires: smartmet-library-grid-content-devel >= 20.10.15
-BuildRequires: smartmet-library-grid-files-devel >= 20.10.15
+BuildRequires: smartmet-library-grid-content-devel >= 20.10.22
+BuildRequires: smartmet-library-grid-files-devel >= 20.10.22
 BuildRequires: smartmet-engine-querydata-devel >= 20.10.6
 BuildRequires: smartmet-engine-gis-devel >= 20.10.6
-BuildRequires: smartmet-engine-grid-devel >= 20.10.15
+BuildRequires: smartmet-engine-grid-devel >= 20.10.22
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.6.10
@@ -41,14 +41,14 @@ Requires: libconfig
 Requires: smartmet-library-gis >= 20.10.5
 Requires: smartmet-library-locus >= 20.10.7
 Requires: smartmet-library-macgyver >= 20.10.9
-Requires: smartmet-library-newbase >= 20.10.9
-Requires: smartmet-library-spine >= 20.10.14
+Requires: smartmet-library-newbase >= 20.10.16
+Requires: smartmet-library-spine >= 20.10.20
 Requires: smartmet-library-gis >= 20.10.5
 Requires: smartmet-engine-geonames >= 20.10.6
 Requires: smartmet-engine-querydata >= 20.10.6
 Requires: smartmet-engine-gis >= 20.10.6
-Requires: smartmet-engine-grid >= 20.10.15
-Requires: smartmet-server >= 20.10.12
+Requires: smartmet-engine-grid >= 20.10.22
+Requires: smartmet-server >= 20.10.21
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -61,8 +61,8 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: gcc-c++
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-library-gis-devel >= 20.10.5
-#TestRequires: smartmet-library-newbase-devel >= 20.10.9
-#TestRequires: smartmet-library-spine-devel >= 20.10.14
+#TestRequires: smartmet-library-newbase-devel >= 20.10.16
+#TestRequires: smartmet-library-spine-devel >= 20.10.20
 #TestRequires: smartmet-engine-geonames-devel >= 20.8.23
 #TestRequires: smartmet-engine-gis-devel >= 20.10.6
 #TestRequires: smartmet-engine-querydata-devel >= 20.10.6
@@ -100,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Thu Oct 22 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.22-1.fmi
+- Use new faster GRIB API
+
 * Thu Oct 15 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.15-1.fmi
 - Repackaged due to library ABI changes
 - Use new TableFormatter API
