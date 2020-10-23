@@ -1,1 +1,1 @@
-GET /timeseries?param=utctime,flash_id,peak_current,latitude,longitude,ellipse_major,multiplicity,cloud_indicator&producer=flash&format=ascii&starttime=2012-03-25T00:00:00&endtime=2012-04-25T00:00:00&bbox=9,60,11,67 HTTP/1.0
+GET /timeseries?param=utctime,flash_id,peak_current,latitude,longitude,ellipse_major,multiplicity,cloud_indicator&producer=flash&format=ascii&starttime=2013-08-05T00:00:00&endtime=2013-08-05T13:00:00&bbox=9,60,11,67 HTTP/1.0

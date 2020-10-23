@@ -1,1 +1,1 @@
-GET /timeseries?param=time,name,temperature,interpolate_t(temperature:10m:10m),nearest_t(temperature:10m:10m)&area=Kuopio&producer=road&format=ascii&timeformat=sql&precision=double&starttime=2019-02-08T00:00:00Z&endtime=2019-02-08T04:00:00Z&timestep=20 HTTP/1.0
+GET /timeseries?param=time,name,temperature,interpolate_t(temperature:10m:10m),nearest_t(temperature:10m:10m)&area=Kuopio&producer=road&format=ascii&timeformat=sql&precision=double&starttime=2013-01-09T04:00:00Z&endtime=2013-01-09T08:00:00Z&timestep=20 HTTP/1.0

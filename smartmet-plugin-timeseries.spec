@@ -3,12 +3,12 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.10.14
+Version: 20.10.22
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
-Source0: %{name}.tar.gz
+Source0: %{name}.tar.gz1
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
@@ -25,13 +25,13 @@ BuildRequires: smartmet-library-newbase-devel >= 20.10.9
 BuildRequires: smartmet-library-gis-devel >= 20.10.5
 BuildRequires: smartmet-engine-geonames-devel >= 20.10.6
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.10.9
+BuildRequires: smartmet-engine-observation-devel >= 20.10.22
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.10.6
 BuildRequires: smartmet-engine-gis-devel >= 20.10.6
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 20.6.10
+#Requires: smartmet-engine-observation >= 20.10.22
 #%endif
 Requires: fmt >= 6.2.1
 Requires: libconfig
@@ -63,7 +63,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis-devel >= 20.10.6
 #TestRequires: smartmet-engine-querydata-devel >= 20.10.6
 %if %{with observation}
-#TestRequires: smartmet-engine-observation-devel >= 20.10.9
+#TestRequires: smartmet-engine-observation-devel >= 20.10.22
 %endif
 #TestRequires: boost169-devel
 #TestRequires: gdal-devel
@@ -96,6 +96,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+
+* Thu Oct 22 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.10.22-1.fmi
+- Time period in several observation test cases changed because of CircleCI (BRAINSTORM-1940)
+
 * Wed Oct 14 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.14-1.fmi
 - Use new TableFormatter API
 
