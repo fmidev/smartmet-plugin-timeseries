@@ -18,10 +18,10 @@ BuildRequires: fmt-devel >= 6.2.1
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.10.14
+BuildRequires: smartmet-library-spine-devel >= 20.10.20
 BuildRequires: smartmet-library-locus-devel >= 20.10.7
-BuildRequires: smartmet-library-macgyver-devel >= 20.10.9
-BuildRequires: smartmet-library-newbase-devel >= 20.10.9
+BuildRequires: smartmet-library-macgyver-devel >= 20.10.24
+BuildRequires: smartmet-library-newbase-devel >= 20.10.16
 BuildRequires: smartmet-library-gis-devel >= 20.10.5
 BuildRequires: smartmet-engine-geonames-devel >= 20.10.6
 %if %{with observation}
@@ -37,14 +37,14 @@ Requires: fmt >= 6.2.1
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.10.5
 Requires: smartmet-library-locus >= 20.10.7
-Requires: smartmet-library-macgyver >= 20.10.9
-Requires: smartmet-library-newbase >= 20.10.9
-Requires: smartmet-library-spine >= 20.10.14
+Requires: smartmet-library-macgyver >= 20.10.24
+Requires: smartmet-library-newbase >= 20.10.16
+Requires: smartmet-library-spine >= 20.10.20
 Requires: smartmet-library-gis >= 20.10.5
 Requires: smartmet-engine-geonames >= 20.10.6
 Requires: smartmet-engine-querydata >= 20.10.6
 Requires: smartmet-engine-gis >= 20.10.6
-Requires: smartmet-server >= 20.10.12
+Requires: smartmet-server >= 20.10.21
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -57,8 +57,8 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: gcc-c++
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-library-gis-devel >= 20.10.5
-#TestRequires: smartmet-library-newbase-devel >= 20.10.9
-#TestRequires: smartmet-library-spine-devel >= 20.10.14
+#TestRequires: smartmet-library-newbase-devel >= 20.10.16
+#TestRequires: smartmet-library-spine-devel >= 20.10.20
 #TestRequires: smartmet-engine-geonames-devel >= 20.8.23
 #TestRequires: smartmet-engine-gis-devel >= 20.10.6
 #TestRequires: smartmet-engine-querydata-devel >= 20.10.6
