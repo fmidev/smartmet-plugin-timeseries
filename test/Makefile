@@ -1,4 +1,4 @@
-PROG = $(patsubst %.cpp,%,$(wildcard *Test.cpp))
+PROG = PluginTest
 
 REQUIRES = gdal configpp
 
@@ -28,16 +28,46 @@ all: $(PROG)
 clean:
 	rm -f $(PROG) *~
 
-test: $(PROG)
-	@mkdir -p failures
-	@rm -f failures/*
-	@echo Running tests:
-	@rm -f *.err
-	@for prog in $(PROG); do \
-		( ./$$prog || touch $$prog.err ) ; \
-	 done
+test: $(PROG) test_oracle test_sqlite test_postgresql
 	@test `find . -name \*.err | wc -l` = "0" || ( echo ; echo "The following tests have errors:" ; \
-	   for i in *.err ; do echo `basename $$i .err`; done ; rm -f *.err ; false ) 
+	   for i in *.err ; do echo `basename $$i .err`; done ; rm -f *.err ; false )
+
+test_sqlite:
+	@echo RUNNING SQLITE TESTS:
+	@echo
+	@rm -rf failures_sqlite
+	@mkdir -p failures
+	@rm -f failures/* sqlite.err
+	@./PluginTest -c cnf/reactor_sqlite.conf || touch PluginTest.err
+	@mv failures failures_sqlite
+	@test -f PluginTest.err && mv PluginTest.err sqlite.err || echo All sqlite tests passed
+	@echo
+
+test_oracle:
+ifndef CI
+	@echo RUNNING ORACLE TESTS:
+	@echo
+	@rm -rf failures_oracle
+	@mkdir -p failures
+	@rm -f failures/* oracle.err
+	@./PluginTest -c cnf/reactor_oracle.conf
+	@mv failures failures_oracle
+	@test -f PluginTest.err && mv PluginTest.err oracle.err || echo All Oracle tests passed
+	@echo
+endif
+
+test_postgresql:
+ifndef CI
+	@echo RUNNING POSTGRESQL TESTS:
+	@echo
+	@rm -rf failures_postgresql
+	@mkdir -p failures
+	@rm -f failures/* postgresql.err
+	@./PluginTest -c cnf/reactor_postgresql.conf || touch PluginTest.err
+	@mv failures failures_postgresql
+	@test -f PluginTest.err && mv PluginTest.err postgresql.err || echo All PostGreSQL tests passed
+	@echo
+endif
 
 $(PROG) : % : %.cpp Makefile ../timeseries.so
 	$(CXX) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
