@@ -1,1 +1,1 @@
-GET /timeseries?producer=opendata_mareograph&param=stationname,time,localtime,utctime,lat,lon,watlev,data_source&starttime=2016-05-09T06:00:00Z&endtime=2016-05-09T18:00:00Z&fmisid=132310&format=ascii HTTP/1.0
+GET /timeseries?producer=opendata_mareograph&param=stationname,time,localtime,utctime,lat,lon,watlev,data_source&starttime=2013-08-05T06:00:00Z&endtime=2013-08-05T18:00:00Z&fmisid=132310&format=ascii HTTP/1.0

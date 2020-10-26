@@ -1,1 +1,1 @@
-GET /timeseries?producer=fmi&param=stationname,time,localtime,utctime,lat,lon,td&starttime=2013-05-09T06:00:00Z&endtime=2013-05-09T13:00:00Z&timestep=360&fmisid=101004&tz=UTC HTTP/1.0
+GET /timeseries?producer=fmi&param=stationname,time,localtime,utctime,lat,lon,td&starttime=2013-08-05T06:00:00Z&endtime=2013-08-05T13:00:00Z&timestep=360&fmisid=101004&tz=UTC HTTP/1.0
