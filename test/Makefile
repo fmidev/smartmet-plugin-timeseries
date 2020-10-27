@@ -28,11 +28,16 @@ all: $(PROG)
 clean:
 	rm -f $(PROG) *~
 
-test: $(PROG) test_oracle test_sqlite test_postgresql
+test: $(PROG) fminames test_oracle test_sqlite test_postgresql
 	@test `find . -name \*.err | wc -l` = "0" || ( echo ; echo "The following tests have errors:" ; \
 	   for i in *.err ; do echo `basename $$i .err`; done ; rm -f *.err ; false )
 
-test_sqlite: $(PROG)
+fminames:
+ifdef CI
+	@/usr/share/smartmet/test/db/init-and-start.sh && /usr/share/smartmet/test/db/install-test-db.sh
+endif	
+
+test_sqlite: $(PROG) fminames
 	@printf "RUNNING SQLITE TESTS:\n\n"
 	@rm -rf failures_sqlite failures sqlite.err input/.testignore
 	@mkdir -p failures
@@ -42,7 +47,7 @@ test_sqlite: $(PROG)
 	@test -f PluginTest.err && mv PluginTest.err sqlite.err || echo All sqlite tests passed
 	@printf "\n"
 
-test_oracle: $(PROG)
+test_oracle: $(PROG) fminames
 ifndef CI
 	@printf "RUNNING ORACLE TESTS:\n\n"
 	@rm -rf failures_oracle failures oracle.err input/.testignore
@@ -55,7 +60,7 @@ ifndef CI
 	@printf "\n";
 endif
 
-test_postgresql: $(PROG)
+test_postgresql: $(PROG) fminames
 ifndef CI
 	@printf "RUNNING POSTGRESQL TESTS:\n\n"
 	@rm -rf failures_postgresql failures postgresql.err input/.testignore
