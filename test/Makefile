@@ -34,6 +34,7 @@ test: $(PROG) fminames test_oracle test_sqlite test_postgresql
 
 fminames:
 ifdef CI
+	sed -i -e 's/"smartmet-test"/"localhost"/g' cnf/*.conf
 	@/usr/share/smartmet/test/db/init-and-start.sh && /usr/share/smartmet/test/db/install-test-db.sh
 endif	
 
