@@ -1,4 +1,5 @@
 foreign_yletekstitv.get
+observation_interpolate_nearest_area.get
 observation_interpolate_nearest_place.get
 producer_road_keyword.get
 road-latlon.get
