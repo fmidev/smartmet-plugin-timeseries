@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.10.22
+Version: 20.10.28
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -14,32 +14,32 @@ BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: boost169-devel
-BuildRequires: fmt-devel >= 6.2.1
+BuildRequires: fmt-devel >= 7.1.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.10.20
+BuildRequires: smartmet-library-spine-devel >= 20.10.28
 BuildRequires: smartmet-library-locus-devel >= 20.10.7
-BuildRequires: smartmet-library-macgyver-devel >= 20.10.24
+BuildRequires: smartmet-library-macgyver-devel >= 20.10.28
 BuildRequires: smartmet-library-newbase-devel >= 20.10.16
 BuildRequires: smartmet-library-gis-devel >= 20.10.5
 BuildRequires: smartmet-engine-geonames-devel >= 20.10.6
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 20.10.22
-%endif
+%endif8
 BuildRequires: smartmet-engine-querydata-devel >= 20.10.6
 BuildRequires: smartmet-engine-gis-devel >= 20.10.6
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.10.22
 #%endif
-Requires: fmt >= 6.2.1
+Requires: fmt >= 7.1.0
 Requires: libconfig
 Requires: smartmet-library-gis >= 20.10.5
 Requires: smartmet-library-locus >= 20.10.7
-Requires: smartmet-library-macgyver >= 20.10.24
+Requires: smartmet-library-macgyver >= 20.10.28
 Requires: smartmet-library-newbase >= 20.10.16
-Requires: smartmet-library-spine >= 20.10.20
+Requires: smartmet-library-spine >= 20.10.28
 Requires: smartmet-library-gis >= 20.10.5
 Requires: smartmet-engine-geonames >= 20.10.6
 Requires: smartmet-engine-querydata >= 20.10.6
@@ -97,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+
+* Wed Oct 28 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.10.28-1.fmi
+- Rebuild due to fmt upgrade
 
 * Thu Oct 22 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.10.22-1.fmi
 - Time period in several observation test cases changed because of CircleCI (BRAINSTORM-1940)
