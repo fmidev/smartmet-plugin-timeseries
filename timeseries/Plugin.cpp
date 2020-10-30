@@ -1037,7 +1037,7 @@ void Plugin::fetchQEngineValues(const State& state,
     for (qi->resetLevel();;)
     {
       boost::optional<float> pressure, height;
-      float levelValue;
+      float levelValue = 0;
 
       if (loadDataLevels)
       {
