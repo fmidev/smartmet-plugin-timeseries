@@ -83,7 +83,7 @@ const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
   return ret;
 }
 
-std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string wktString, double radius /*= 0.0*/)
+std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string& wktString, double radius /*= 0.0*/)
 {
   std::unique_ptr<OGRGeometry> ret;
 
@@ -303,7 +303,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
  */
 // ----------------------------------------------------------------------
 
-std::string get_location_id(Spine::LocationPtr loc)
+std::string get_location_id(const Spine::LocationPtr & loc)
 {
   try
   {

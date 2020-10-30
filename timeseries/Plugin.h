@@ -161,7 +161,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                       const ObsParameters& obsParameters,
                       Query& query) const;
 
-  bool resolveAreaStations(Spine::LocationPtr location,
+  bool resolveAreaStations(const Spine::LocationPtr & location,
                            const std::string& producer,
                            Query& query,
                            Engine::Observation::Settings& settings,

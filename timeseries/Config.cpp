@@ -401,7 +401,7 @@ const Precision& Config::getPrecision(const string& name) const
 Engine::Gis::PostGISIdentifierVector Config::getPostGISIdentifiers() const
 {
   Engine::Gis::PostGISIdentifierVector ret;
-  for (auto item : postgis_identifiers)
+  for (const auto & item : postgis_identifiers)
     ret.push_back(item.second);
 
   return ret;

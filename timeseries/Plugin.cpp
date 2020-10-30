@@ -71,7 +71,7 @@ std::string get_parameter_id(const Spine::Parameter& parameter)
   std::string ret = parameter.name();
   if (parameter.getSensorNumber())
     ret += Fmi::to_string(*(parameter.getSensorNumber()));
-  std::string sensorParameter = parameter.getSensorParameter();
+  const auto & sensorParameter = parameter.getSensorParameter();
   if (sensorParameter == "qc")  // later maybe longitude, latitude
     ret += sensorParameter;
   return ret;
@@ -877,7 +877,7 @@ void Plugin::fetchStaticLocationValues(Query& query,
     for (const Spine::Parameter& param : query.poptions.parameters())
     {
       row = row_index;
-      std::string pname = param.name();
+      const auto & pname = param.name();
       for (const auto& tloc : query.loptions->locations())
       {
         Spine::LocationPtr loc = tloc.loc;
@@ -1218,7 +1218,7 @@ void Plugin::fetchQEngineValues(const State& state,
               {
                 // OGRMultiLineString -> handle each LineString separately
                 std::list<NFmiSvgPath> svgList = query.wktGeometries.getSvgPaths(tloc.loc->name);
-                for (auto svg : svgList)
+                for (const auto & svg : svgList)
                 {
                   Spine::LocationList ll =
                       get_location_list(svg, tloc.tag, query.step, state.getGeoEngine());
@@ -1507,7 +1507,7 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
 
 #ifndef WITHOUT_OBSERVATION
 
-bool Plugin::resolveAreaStations(Spine::LocationPtr location,
+bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
                                  const std::string& producer,
                                  Query& query,
                                  Engine::Observation::Settings& settings,
@@ -1757,7 +1757,7 @@ void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
   {
     const Spine::Parameter& param = obsParameters[i].param;
 
-    std::string pname = param.name();
+    const auto & pname = param.name();
 
     if (query.maxAggregationIntervals.find(pname) != query.maxAggregationIntervals.end())
     {
@@ -1921,7 +1921,7 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
 
     Engine::Observation::StationSettings stationSettings;
 
-    for (auto tloc : query.loptions->locations())
+    for (const auto & tloc : query.loptions->locations())
     {
       Spine::LocationPtr loc = tloc.loc;
       if (!loc)
