@@ -2230,7 +2230,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
               query.toptions.startTime.date(), query.toptions.startTime.time_of_day(), tz);
           startTimeAsUTC = ldt.utc_time();
         }
-        if (query.toptions.endTimeUTC == false)
+        if (!query.toptions.endTimeUTC)
         {
           boost::local_time::local_date_time ldt = Fmi::TimeParser::make_time(
               query.toptions.endTime.date(), query.toptions.endTime.time_of_day(), tz);
@@ -2639,7 +2639,7 @@ void Plugin::processObsEngineQuery(const State& state,
         std::vector<TimeSeriesData> tsdatavector;
         outputData.push_back(make_pair("_obs_", tsdatavector));
 
-        if (item.is_area == false || is_flash_or_mobile_producer(producer))
+        if (!item.is_area || is_flash_or_mobile_producer(producer))
           fetchObsEngineValuesForPlaces(
               state, producer, obsParameters, settings, query, outputData);
         else
