@@ -230,7 +230,7 @@ void store_data(Spine::TimeSeries::TimeSeriesVectorPtr aggregatedData,
 
     // insert data to the end
     std::vector<TimeSeriesData>& odata = (--outputData.end())->second;
-    odata.push_back(TimeSeriesData(aggregatedData));
+    odata.emplace_back(TimeSeriesData(aggregatedData));
     update_latest_timestep(query, aggregatedData);
   }
   catch (...)

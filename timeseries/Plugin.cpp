@@ -1191,7 +1191,7 @@ void Plugin::fetchQEngineValues(const State& state,
           }
         }
 
-        aggregatedData.push_back(TimeSeriesData(
+        aggregatedData.emplace_back(TimeSeriesData(
             erase_redundant_timesteps(aggregate(querydata_result, paramfunc.functions), tlist)));
       }
       else
@@ -1363,7 +1363,7 @@ void Plugin::fetchQEngineValues(const State& state,
         }  // area handling
 
         if (querydata_result->size() > 0)
-          aggregatedData.push_back(TimeSeriesData(
+          aggregatedData.emplace_back(TimeSeriesData(
               erase_redundant_timesteps(aggregate(querydata_result, paramfunc.functions), tlist)));
       }
     }  // levels
@@ -1412,12 +1412,12 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
 
             if (parameter_columns.find(parameter_id) != parameter_columns.end())
             {
-              ret.push_back(ObsParameter(
+              ret.emplace_back(ObsParameter(
                   parameter, paramfuncs.functions, parameter_columns.at(parameter_id), true));
             }
             else
             {
-              ret.push_back(ObsParameter(parameter, paramfuncs.functions, column_index, false));
+              ret.emplace_back(ObsParameter(parameter, paramfuncs.functions, column_index, false));
               parameter_columns.insert(make_pair(parameter_id, column_index));
               column_index++;
             }
@@ -2400,7 +2400,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           obs_result_field_index++;
         }
       }
-      tsv_area_with_added_fields.push_back(
+      tsv_area_with_added_fields.emplace_back(
           FmisidTSVectorPair(val.first, observation_result_with_added_fields));
     }
 
@@ -2576,14 +2576,14 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         for (const ts::TimedValue& tv : ts)
           aggtimes.push_back(tv.time);
         // store observation data
-        aggregatedData.push_back(
+        aggregatedData.emplace_back(
             TimeSeriesData(erase_redundant_timesteps(aggregated_tsg, aggtimes)));
         store_data(aggregatedData, query, outputData);
       }
       else
       {
         // Else accept only the original generated timesteps
-        aggregatedData.push_back(TimeSeriesData(erase_redundant_timesteps(aggregated_tsg, *tlist)));
+        aggregatedData.emplace_back(TimeSeriesData(erase_redundant_timesteps(aggregated_tsg, *tlist)));
         // store observation data
         store_data(aggregatedData, query, outputData);
       }
