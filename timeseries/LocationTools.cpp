@@ -205,7 +205,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
     std::pair<double, double> to(thePath.begin()->itsX, thePath.begin()->itsY);
 
     double leftoverDistanceKmFromPreviousLeg = 0.0;
-    std::string theTimezone = "";
+    std::string theTimezone;
 
     for (NFmiSvgPath::const_iterator it = thePath.begin(); it != thePath.end(); ++it)
     {

@@ -85,7 +85,7 @@ std::pair<double, double> midpoint(const std::pair<double, double>& from,
   double pi(boost::math::constants::pi<double>());
   lon3 = fmod(lon3 + (3 * pi), 2 * pi) - pi;  // normalise to -180..+180º
 
-  return std::pair<double, double>(rad_to_deg(lon3), rad_to_deg(lat3));
+  return {rad_to_deg(lon3), rad_to_deg(lat3)};
 }
 
 /**
@@ -115,7 +115,7 @@ std::pair<double, double> destination_point(const std::pair<double, double>& fro
   double pi(boost::math::constants::pi<double>());
   lon2 = fmod(lon2 + 3 * pi, 2 * pi) - pi;  // normalise to -180..+180º
 
-  return std::pair<double, double>(rad_to_deg(lon2), rad_to_deg(lat2));
+  return {rad_to_deg(lon2), rad_to_deg(lat2)};
 }
 
 /** @brief Computes the arc, in radian, between two WGS-84 positions.

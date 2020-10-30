@@ -219,7 +219,7 @@ void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
     ts::TableFeeder tf(table, query.valueformatter, query.precisions);
     int startRow = tf.getCurrentRow();
 
-    if (outputData.size() == 0)
+    if (outputData.empty())
       return;
 
     std::string locationName(outputData[0].first);
@@ -253,7 +253,7 @@ void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
 void add_missing_timesteps(ts::TimeSeries& ts,
                            const Spine::TimeSeriesGeneratorCache::TimeList& tlist)
 {
-  if (!tlist || tlist->size() == 0)
+  if (!tlist || tlist->empty())
     return;
 
   ts::TimeSeries ts2;
@@ -286,8 +286,6 @@ void add_missing_timesteps(ts::TimeSeries& ts,
 TimeSeriesByLocation get_timeseries_by_fmisid(
     const std::string& producer,
     const ts::TimeSeriesVectorPtr& observation_result,
-    const Engine::Observation::Settings& settings,
-    const Query& query,
     const Spine::TimeSeriesGeneratorCache::TimeList& tlist,
     int fmisid_index)
 
@@ -313,16 +311,13 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
     for (unsigned int i = 1; i < fmisid_ts.size(); i++)
     {
       if (fmisid_ts[i].value == fmisid_ts[i - 1].value)
-      {
         continue;
-      }
-      else
-      {
-        end_index = i;
-        location_indexes.emplace_back(
-            std::pair<unsigned int, unsigned int>(start_index, end_index));
-        start_index = i;
-      }
+
+      end_index = i;
+      location_indexes.emplace_back(
+          std::pair<unsigned int, unsigned int>(start_index, end_index));
+      start_index = i;
+
     }
     end_index = fmisid_ts.size();
     location_indexes.emplace_back(std::pair<unsigned int, unsigned int>(start_index, end_index));
@@ -780,7 +775,7 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
 // ----------------------------------------------------------------------
 
 Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
-    const Engine::Querydata::Q& q, const Query& query, const std::string& paramname) const
+    const Query& query, const std::string& paramname) const
 {
   try
   {
@@ -1097,7 +1092,7 @@ void Plugin::fetchQEngineValues(const State& state,
         }
       }
 
-      if (tlist.size() == 0)
+      if (tlist.empty())
         return;
 
 #ifdef BRAINSTORM_1195
@@ -1122,7 +1117,7 @@ void Plugin::fetchQEngineValues(const State& state,
       }
 #endif
 
-      auto querydata_tlist = generateQEngineQueryTimes(qi, query, paramname);
+      auto querydata_tlist = generateQEngineQueryTimes(query, paramname);
 
 #ifdef BRAINSTORM_1195
       // restore original timestep
@@ -1448,9 +1443,6 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
 #ifndef WITHOUT_OBSERVATION
 void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
                                   const std::string& producer,
-                                  const ProducerDataPeriod& producerDataPeriod,
-                                  const boost::posix_time::ptime& now,
-                                  const ObsParameters& obsParameters,
                                   Query& query) const
 {
   try
@@ -1538,7 +1530,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
     std::string wktString;
     if (loc->type == Spine::Location::Path)
     {
-      const OGRGeometry* pGeo = 0;
+      const OGRGeometry* pGeo = nullptr;
       // if no radius has been given use 200 meters
       double radius = (loc->radius == 0 ? 200 : loc->radius * 1000);
 
@@ -1600,7 +1592,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
       std::cout << loc_name << " is an Area" << std::endl;
 #endif
 
-      const OGRGeometry* pGeo = 0;
+      const OGRGeometry* pGeo = nullptr;
 
       if (isWkt)
       {
@@ -1897,7 +1889,7 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
     Engine::Observation::Settings settings;
 
     // Common settings for all locations
-    getCommonObsSettings(settings, producer, producerDataPeriod, now, obsParameters, query);
+    getCommonObsSettings(settings, producer, query);
 
     unsigned int aggregationIntervalBehind = 0;
     unsigned int aggregationIntervalAhead = 0;
@@ -2057,7 +2049,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     std::cout << "observation_result for places: " << *observation_result << std::endl;
 #endif
 
-    if (observation_result->size() == 0)
+    if (observation_result->empty())
       return;
 
     int fmisid_index = get_fmisid_index(settings);
@@ -2068,7 +2060,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       tlist = itsTimeSeriesCache->generate(query.toptions, tz);
 
     TimeSeriesByLocation observation_result_by_location = get_timeseries_by_fmisid(
-        producer, observation_result, settings, query, tlist, fmisid_index);
+        producer, observation_result, tlist, fmisid_index);
 
     // iterate locations
     for (unsigned int i = 0; i < observation_result_by_location.size(); i++)
@@ -2195,7 +2187,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         if (pfunc.innerFunction.exists())
         {
           tsptr = ts::aggregate(ts, pfunc);
-          if (tsptr->size() == 0)
+          if (tsptr->empty())
             continue;
         }
         else
@@ -2206,7 +2198,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         aggregated_observation_result->push_back(*tsptr);
       }
 
-      if (aggregated_observation_result->size() == 0)
+      if (aggregated_observation_result->empty())
       {
 #ifdef MYDEBUG
         std::cout << "aggregated_observation_result (" << producer << ") is empty" << std::endl;
@@ -2286,7 +2278,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 #ifdef MYDEBYG
     std::cout << "observation_result for area: " << *observation_result << std::endl;
 #endif
-    if (observation_result->size() == 0)
+    if (observation_result->empty())
       return;
 
     // lets find out actual timesteps: different locations may have different timesteps
@@ -2308,7 +2300,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
     // separate timeseries of different locations to their own data structures
     TimeSeriesByLocation tsv_area = get_timeseries_by_fmisid(
-        producer, observation_result, settings, query, tlist, fmisid_index);
+        producer, observation_result, tlist, fmisid_index);
     // make sure that all timeseries have the same timesteps
     for (FmisidTSVectorPair& val : tsv_area)
     {
@@ -2470,7 +2462,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       unsigned int data_column = obsParameters[i].data_column;
       ts::TimeSeriesGroupPtr tsg = tsg_vector.at(data_column);
 
-      if (tsg->size() == 0)
+      if (tsg->empty())
         continue;
 
       if (special(obsParameters[i].param))
@@ -2852,11 +2844,11 @@ void Plugin::query(const State& state,
     // At least one of location specifiers must be set
 
 #ifndef WITHOUT_OBSERVATION
-    if (query.fmisids.size() == 0 && query.lpnns.size() == 0 && query.wmos.size() == 0 &&
-        query.boundingBox.size() == 0 && !is_flash_or_mobile_producer(producer_option) &&
-        query.loptions->locations().size() == 0)
+    if (query.fmisids.empty() && query.lpnns.empty() && query.wmos.empty() &&
+        query.boundingBox.empty() && !is_flash_or_mobile_producer(producer_option) &&
+        query.loptions->locations().empty())
 #else
-    if (query.loptions->locations().size() == 0)
+    if (query.loptions->locations().empty())
 #endif
       throw Fmi::Exception(BCP, "No location option given!");
 
@@ -2864,7 +2856,7 @@ void Plugin::query(const State& state,
     boost::shared_ptr<Spine::TableFormatter> formatter(
         Spine::TableFormatterFactory::create(query.format));
     std::string mime = formatter->mimetype() + "; charset=UTF-8";
-    response.setHeader("Content-Type", mime.c_str());
+    response.setHeader("Content-Type", mime);
 
     // Calculate the hash value for the product. Zero value implies
     // the product is not cacheable.
@@ -2960,7 +2952,7 @@ void Plugin::query(const State& state,
 
     // Too many flash data requests with empty output filling the logs...
 #if 0    
-    if (result->size() == 0)
+    if (result->empty())
     {
       std::cerr << "Warning: Empty output for request " << request.getQueryString() << " from "
                 << request.getClientIP() << std::endl;
@@ -2989,7 +2981,7 @@ void Plugin::query(const State& state,
  */
 // ----------------------------------------------------------------------
 
-void Plugin::requestHandler(Spine::Reactor& theReactor,
+void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
                             const Spine::HTTP::Request& theRequest,
                             Spine::HTTP::Response& theResponse)
 {
@@ -3021,16 +3013,16 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
     else
     {
       std::string cachecontrol = "public, max-age=" + Fmi::to_string(expires_seconds);
-      theResponse.setHeader("Cache-Control", cachecontrol.c_str());
+      theResponse.setHeader("Cache-Control", cachecontrol);
 
       boost::posix_time::ptime t_expires =
           state.getTime() + boost::posix_time::seconds(expires_seconds);
       std::string expiration = tformat->format(t_expires);
-      theResponse.setHeader("Expires", expiration.c_str());
+      theResponse.setHeader("Expires", expiration);
     }
 
     std::string modification = tformat->format(state.getTime());
-    theResponse.setHeader("Last-Modified", modification.c_str());
+    theResponse.setHeader("Last-Modified", modification);
   }
   catch (...)
   {
@@ -3058,7 +3050,7 @@ void Plugin::requestHandler(Spine::Reactor& theReactor,
     std::string firstMessage = ex.what();
     boost::algorithm::replace_all(firstMessage, "\n", " ");
     firstMessage = firstMessage.substr(0, 300);
-    theResponse.setHeader("X-TimeSeriesPlugin-Error", firstMessage.c_str());
+    theResponse.setHeader("X-TimeSeriesPlugin-Error", firstMessage);
   }
 }
 
@@ -3072,13 +3064,7 @@ Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
     : SmartMetPlugin(),
       itsModuleName("TimeSeries"),
       itsConfig(theConfig),
-      itsReady(false),
-      itsReactor(theReactor),
-#ifndef WITHOUT_OBSERVATION
-      itsObsEngine(0),
-#endif
-      itsCache(),
-      itsTimeSeriesCache()
+      itsReactor(theReactor)
 {
   try
   {
@@ -3114,7 +3100,7 @@ void Plugin::init()
     itsTimeSeriesCache->resize(itsConfig.maxTimeSeriesCacheSize());
 
     /* GeoEngine */
-    auto engine = itsReactor->getSingleton("Geonames", nullptr);
+    auto * engine = itsReactor->getSingleton("Geonames", nullptr);
     if (!engine)
       throw Fmi::Exception(BCP, "Geonames engine unavailable");
     itsGeoEngine = reinterpret_cast<Engine::Geonames::Engine*>(engine);
@@ -3207,23 +3193,21 @@ bool Plugin::queryIsFast(const Spine::HTTP::Request& theRequest) const
       // No producers mentioned, default producer is forecast which is fast
       return true;
     }
-    else
+
+    for (const auto& producer : producers)
     {
-      for (const auto& producer : producers)
+      for (const auto& obsProducer : itsObsEngineStationTypes)
       {
-        for (const auto& obsProducer : itsObsEngineStationTypes)
+        if (boost::algorithm::contains(producer, obsProducer))
         {
-          if (boost::algorithm::contains(producer, obsProducer))
-          {
-            // Observation mentioned, query is slow
-            return false;
-          }
+          // Observation mentioned, query is slow
+          return false;
         }
       }
-
-      // No observation producers mentioned, query is fast
-      return true;
     }
+
+    // No observation producers mentioned, query is fast
+    return true;
   }
   catch (...)
   {

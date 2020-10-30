@@ -504,7 +504,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
       throw Fmi::Exception(BCP, "The 'param' option is empty!");
 
     // Split
-    typedef list<string> Names;
+    using Names = list<string>;
     Names names;
     boost::algorithm::split(names, opt, boost::algorithm::is_any_of(","));
 

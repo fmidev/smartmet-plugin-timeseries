@@ -49,12 +49,10 @@ void erase_redundant_timesteps(Spine::TimeSeries::TimeSeries& ts,
     no_redundant.reserve(ts.size());
     std::set<boost::local_time::local_date_time> timestep_set(timesteps.begin(), timesteps.end());
 
-    for (auto it = ts.begin(); it != ts.end(); ++it)
+    for(const auto & data : ts)
     {
-      if (timestep_set.find(it->time) != timestep_set.end())
-      {
-        no_redundant.push_back(*it);
-      }
+      if (timestep_set.find(data.time) != timestep_set.end())
+        no_redundant.push_back(data);
     }
 
     ts = no_redundant;
@@ -225,7 +223,7 @@ void store_data(Spine::TimeSeries::TimeSeriesVectorPtr aggregatedData,
 {
   try
   {
-    if (aggregatedData->size() == 0)
+    if (aggregatedData->empty())
       return;
 
     // insert data to the end
@@ -249,7 +247,7 @@ void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, Outpu
 {
   try
   {
-    if (aggregatedData.size() == 0)
+    if (aggregatedData.empty())
       return;
 
     TimeSeriesData tsdata;
