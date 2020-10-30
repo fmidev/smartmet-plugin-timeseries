@@ -31,7 +31,8 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-static const char* default_timezone = "localtime";
+const char* default_timezone = "localtime";
+
 namespace
 {
 void add_sql_data_filter(const Spine::HTTP::Request& req,
