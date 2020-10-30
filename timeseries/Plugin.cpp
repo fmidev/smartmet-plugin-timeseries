@@ -30,6 +30,7 @@ namespace TimeSeries
 {
 namespace
 {
+#if 0
 void print_settings(const Engine::Observation::Settings& settings)
 {
   std::cout << "settings.taggedFMISIDs: " << settings.taggedFMISIDs.size() << " kpl" << std::endl;
@@ -63,6 +64,7 @@ void print_settings(const Engine::Observation::Settings& settings)
   }
   std::cout << "settings.wktArea: " << wktString << std::endl;
 }
+#endif
 
 std::string get_parameter_id(const Spine::Parameter& parameter)
 {
