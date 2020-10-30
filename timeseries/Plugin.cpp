@@ -321,7 +321,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
         end_index = i;
         location_indexes.emplace_back(
             std::pair<unsigned int, unsigned int>(start_index, end_index));
-        start_index = end_index = i;
+        start_index = i;
       }
     }
     end_index = fmisid_ts.size();
