@@ -14,18 +14,18 @@ BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: boost169-devel
-BuildRequires: fmt-devel >= 6.2.1
+BuildRequires: fmt-devel >= 7.1.0
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.10.20
+BuildRequires: smartmet-library-spine-devel >= 20.10.28
 BuildRequires: smartmet-library-locus-devel >= 20.10.7
-BuildRequires: smartmet-library-macgyver-devel >= 20.10.24
-BuildRequires: smartmet-library-newbase-devel >= 20.10.16
-BuildRequires: smartmet-library-gis-devel >= 20.10.5
-BuildRequires: smartmet-engine-geonames-devel >= 20.10.6
+BuildRequires: smartmet-library-macgyver-devel >= 20.10.28
+BuildRequires: smartmet-library-newbase-devel >= 20.10.28
+BuildRequires: smartmet-library-gis-devel >= 20.10.28
+BuildRequires: smartmet-engine-geonames-devel >= 20.10.28
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.10.22
+BuildRequires: smartmet-engine-observation-devel >= 20.10.29
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 20.10.6
 BuildRequires: smartmet-engine-gis-devel >= 20.10.6
@@ -33,18 +33,18 @@ BuildRequires: smartmet-engine-gis-devel >= 20.10.6
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.10.22
 #%endif
-Requires: fmt >= 6.2.1
+Requires: fmt >= 7.1.0
 Requires: libconfig
-Requires: smartmet-library-gis >= 20.10.5
+Requires: smartmet-library-gis >= 20.10.28
 Requires: smartmet-library-locus >= 20.10.7
-Requires: smartmet-library-macgyver >= 20.10.24
-Requires: smartmet-library-newbase >= 20.10.16
-Requires: smartmet-library-spine >= 20.10.20
-Requires: smartmet-library-gis >= 20.10.5
-Requires: smartmet-engine-geonames >= 20.10.6
+Requires: smartmet-library-macgyver >= 20.10.28
+Requires: smartmet-library-newbase >= 20.10.28
+Requires: smartmet-library-spine >= 20.10.28
+Requires: smartmet-library-gis >= 20.10.28
+Requires: smartmet-engine-geonames >= 20.10.28
 Requires: smartmet-engine-querydata >= 20.10.6
 Requires: smartmet-engine-gis >= 20.10.6
-Requires: smartmet-server >= 20.10.21
+Requires: smartmet-server >= 20.10.28
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -57,14 +57,14 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: gcc-c++
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
-#TestRequires: smartmet-library-gis-devel >= 20.10.5
-#TestRequires: smartmet-library-newbase-devel >= 20.10.16
-#TestRequires: smartmet-library-spine-devel >= 20.10.20
+#TestRequires: smartmet-library-gis-devel >= 20.10.28
+#TestRequires: smartmet-library-newbase-devel >= 20.10.28
+#TestRequires: smartmet-library-spine-devel >= 20.10.28
 #TestRequires: smartmet-engine-geonames-devel >= 20.8.23
 #TestRequires: smartmet-engine-gis-devel >= 20.10.6
 #TestRequires: smartmet-engine-querydata-devel >= 20.10.6
 %if %{with observation}
-#TestRequires: smartmet-engine-observation-devel >= 20.10.22
+#TestRequires: smartmet-engine-observation-devel >= 20.10.29
 %endif
 #TestRequires: boost169-devel
 #TestRequires: gdal-devel
