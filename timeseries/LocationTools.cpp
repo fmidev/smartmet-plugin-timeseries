@@ -14,7 +14,7 @@ namespace TimeSeries
 namespace
 {
 // Construct the locale for case conversions only once
-std::locale stdlocale = std::locale();
+const std::locale stdlocale = std::locale();
 }  // namespace
 
 // ----------------------------------------------------------------------

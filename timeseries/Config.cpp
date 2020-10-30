@@ -13,13 +13,12 @@
 
 using namespace std;
 
-static const char* default_url = "/timeseries";
-static const char* default_timeformat = "iso";
-// static const char* default_postgis_client_encoding = "latin1";
+const char* default_url = "/timeseries";
+const char* default_timeformat = "iso";
 
-static double default_maxdistance = 60.0;  // km
+double default_maxdistance = 60.0;  // km
 
-static unsigned int default_expires = 60;  // seconds
+unsigned int default_expires = 60;  // seconds
 
 namespace SmartMet
 {
