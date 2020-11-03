@@ -1,1 +1,1 @@
-GET /timeseries?starttime=200808051200&lonlat=24.9642,60.2089&feature=SYNOP&param=time,Temperature,geoid,feature,name,longitude,latitude HTTP/1.0
+GET /timeseries?starttime=200808051200&lonlat=24.95,60.175&feature=SYNOP&param=time,Temperature,geoid,feature,name,longitude,latitude HTTP/1.0
