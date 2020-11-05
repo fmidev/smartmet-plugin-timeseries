@@ -28,17 +28,19 @@ all: $(PROG)
 clean:
 	rm -f $(PROG) *~
 
-test: $(PROG) fminames test_oracle test_sqlite test_postgresql
+ifdef CI
+test: $(PROG) fminames test_sqlite
+else
+test: $(PROG) test_sqlite test_oracle test_postgresql
+endif
 	@test `find . -name \*.err | wc -l` = "0" || ( echo ; echo "The following tests have errors:" ; \
 	   for i in *.err ; do echo `basename $$i .err`; done ; rm -f *.err ; false )
 
 fminames:
-ifdef CI
 	sed -i -e 's/"smartmet-test"/"localhost"/g' cnf/*.conf
 	@/usr/share/smartmet/test/db/init-and-start.sh && /usr/share/smartmet/test/db/install-test-db.sh
-endif	
 
-test_sqlite: $(PROG) fminames
+test_sqlite: $(PROG)
 	@printf "RUNNING SQLITE TESTS:\n\n"
 	@rm -rf failures_sqlite failures sqlite.err input/.testignore
 	@mkdir -p failures
@@ -48,8 +50,7 @@ test_sqlite: $(PROG) fminames
 	@test -f PluginTest.err && mv PluginTest.err sqlite.err || echo All sqlite tests passed
 	@printf "\n"
 
-test_oracle: $(PROG) fminames
-ifndef CI
+test_oracle: $(PROG)
 	@printf "RUNNING ORACLE TESTS:\n\n"
 	@rm -rf failures_oracle failures oracle.err input/.testignore
 	@mkdir -p failures
@@ -59,10 +60,8 @@ ifndef CI
 	@mv failures failures_oracle
 	@test -f PluginTest.err && mv PluginTest.err oracle.err || echo All Oracle tests passed
 	@printf "\n";
-endif
 
-test_postgresql: $(PROG) fminames
-ifndef CI
+test_postgresql: $(PROG)
 	@printf "RUNNING POSTGRESQL TESTS:\n\n"
 	@rm -rf failures_postgresql failures postgresql.err input/.testignore
 	@mkdir -p failures
@@ -72,7 +71,6 @@ ifndef CI
 	@mv failures failures_postgresql
 	@test -f PluginTest.err && mv PluginTest.err postgresql.err || echo All PostGreSQL tests passed
 	@printf "\n";
-endif
 
 $(PROG) : % : %.cpp Makefile ../timeseries.so
 	$(CXX) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
