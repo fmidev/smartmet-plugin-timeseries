@@ -32,7 +32,10 @@ int main(int argc, char* argv[])
   SmartMet::Spine::Options options;
   options.quiet = true;
   options.defaultlogging = false;
-  options.configfile = argv[1];
+  options.configfile = "cnf/reactor.conf";
+  
+  if(!options.parse(argc, argv))
+    exit(1);
 
   SmartMet::Spine::PluginTest tests;
   tests.setOutputDir("output-grid");

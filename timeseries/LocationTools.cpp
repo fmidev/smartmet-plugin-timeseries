@@ -15,7 +15,7 @@ namespace TimeSeries
 namespace
 {
 // Construct the locale for case conversions only once
-std::locale stdlocale = std::locale();
+const std::locale stdlocale = std::locale();
 }  // namespace
 
 // ----------------------------------------------------------------------
@@ -84,7 +84,7 @@ const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
   return ret;
 }
 
-std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string wktString, double radius /*= 0.0*/)
+std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string& wktString, double radius /*= 0.0*/)
 {
   try
   {
@@ -213,7 +213,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
     std::pair<double, double> to(thePath.begin()->itsX, thePath.begin()->itsY);
 
     double leftoverDistanceKmFromPreviousLeg = 0.0;
-    std::string theTimezone = "";
+    std::string theTimezone;
 
     for (NFmiSvgPath::const_iterator it = thePath.begin(); it != thePath.end(); ++it)
     {
@@ -311,7 +311,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
  */
 // ----------------------------------------------------------------------
 
-std::string get_location_id(Spine::LocationPtr loc)
+std::string get_location_id(const Spine::LocationPtr & loc)
 {
   try
   {

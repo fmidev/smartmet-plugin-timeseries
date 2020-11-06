@@ -1,0 +1,8 @@
+netatmo_observations.get
+netatmo_observations_selected_stations.get
+netatmo_observations_uusimaa.get
+roadcloud_observations.get
+roadcloud_observations_selected_stations.get
+sounding_observations_area_kymenlaakso.get
+sounding_observations_default_sounding_type.get
+sounding_observations_selected_sounding_type.get

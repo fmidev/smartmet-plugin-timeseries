@@ -1,1 +1,1 @@
-GET /timeseries?param=fmisid,stationname,utctime,TWATER,data_source&producer=syke&format=ascii&fmisid=887419&starttime=201311010000&endtime=201311020000&tz=utc HTTP/1.0
+GET /timeseries?param=fmisid,stationname,utctime,TWATER,data_source&producer=syke&format=ascii&fmisid=887419&starttime=201309010000&endtime=201309040000&tz=utc HTTP/1.0

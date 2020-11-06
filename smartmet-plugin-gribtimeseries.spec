@@ -34,7 +34,7 @@ BuildRequires: smartmet-engine-gis-devel >= 20.10.6
 BuildRequires: smartmet-engine-grid-devel >= 20.10.22
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 20.6.10
+#Requires: smartmet-engine-observation >= 20.10.22
 #%endif
 Requires: fmt >= 7.1.0
 Requires: libconfig
@@ -59,6 +59,7 @@ Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: libconfig-devel
 #TestRequires: gcc-c++
+#TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-library-gis-devel >= 20.10.28
 #TestRequires: smartmet-library-newbase-devel >= 20.10.28
@@ -67,7 +68,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis-devel >= 20.10.6
 #TestRequires: smartmet-engine-querydata-devel >= 20.10.6
 %if %{with observation}
-#TestRequires: smartmet-engine-observation-devel >= 20.10.28
+#TestRequires: smartmet-engine-observation-devel >= 20.10.29
 %endif
 #TestRequires: boost169-devel
 #TestRequires: gdal-devel
@@ -103,11 +104,20 @@ rm -rf $RPM_BUILD_ROOT
 * Fri Oct 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.30-1.fmi
 - Upgrade to FMT 7.1
 
+* Wed Oct 28 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.10.28-1.fmi
+- Rebuild due to fmt upgrade
+
 * Thu Oct 22 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.22-1.fmi
 - Use new faster GRIB API
 
 * Thu Oct 15 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.15-1.fmi
 - Repackaged due to library ABI changes
+- Fixed a large number of clang analyzer warnings
+
+* Thu Oct 22 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.10.22-1.fmi
+- Time period in several observation test cases changed because of CircleCI (BRAINSTORM-1940)
+
+* Wed Oct 14 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.14-1.fmi
 - Use new TableFormatter API
 
 * Tue Oct  6 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.6-1.fmi

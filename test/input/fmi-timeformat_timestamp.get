@@ -1,1 +1,1 @@
-GET /timeseries?producer=fmi&starttime=200808051200&endtime=200808052200&place=Kumpula&param=time,localtime,utctime,epochtime,isotime,xmltime,Temperature&separator=,&timeformat=timestamp HTTP/1.0
+GET /timeseries?producer=fmi&starttime=201308051200&endtime=201308052200&place=Kumpula&param=time,localtime,utctime,epochtime,isotime,xmltime,Temperature&separator=,&timeformat=timestamp HTTP/1.0

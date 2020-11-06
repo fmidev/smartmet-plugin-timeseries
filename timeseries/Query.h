@@ -60,20 +60,22 @@ struct Query
 {
   Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Config& config);
 
-  typedef std::vector<int> ParamPrecisions;
-  typedef std::set<int> Levels;
-  typedef std::set<double> Pressures;
-  typedef std::set<double> Heights;
+  // Note: Data members ordered according to the advice of Clang Analyzer to avoid excessive padding
+  
+  // iot_producer_specifier, latestTimestep, origintime, timeproducers, loptions, timeformatter, lastpoint, weekdays, wmos, lpnns, fmisids, precisions, valueformatter, boundingBox, sqlDataFilter, levels, pressures, heights, poptions, maxAggregationIntervals, wktGeometries, toptions, numberofstations, maxdistanceOptionGiven, findnearestvalidpoint, debug, allplaces, latestObservation, useDataCache, starttimeOptionGiven, endtimeOptionGiven, timeAggregationRequested,
+  
+  using ParamPrecisions = std::vector<int>;
+  using Levels = std::set<int>;
+  using Pressures = std::set<double>;
+  using Heights = std::set<double>;
 
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
   double maxdistance;
   double step;  // used with path geometry
-  bool maxdistanceOptionGiven;
-  bool findnearestvalidpoint;
 
   std::size_t startrow;    // Paging; first (0-) row to return; default 0
-  std::size_t maxresults;  //         max rows to return (page length); default 0 (all)
+  std::size_t maxresults;  // max rows to return (page length); default 0 (all)
 
   std::string wmo;
   std::string fmisid;
@@ -87,52 +89,69 @@ struct Query
   std::string timestring;
   std::string localename;
   std::locale outlocale;
+
+#ifndef WITHOUT_OBSERVATION
+  std::string iot_producer_specifier{""};
+#endif
+
+  boost::posix_time::ptime latestTimestep;
+  boost::optional<boost::posix_time::ptime> origintime;
+
+  TimeProducers timeproducers;
+  std::shared_ptr<Engine::Geonames::LocationOptions> loptions;
+  boost::shared_ptr<Fmi::TimeFormatter> timeformatter;
+
+  // last coordinate used while forming the output
+  mutable NFmiPoint lastpoint;
+  
   std::vector<int> weekdays;
-  bool debug = false;
 
 #ifndef WITHOUT_OBSERVATION
   std::vector<int> wmos;
   std::vector<int> lpnns;
   std::vector<int> fmisids;
-  std::map<std::string, double> boundingBox;
-  int numberofstations;
-  bool allplaces;
-  bool latestObservation;
-  Engine::Observation::SQLDataFilter sqlDataFilter;
-  bool useDataCache;
-  std::string iot_producer_specifier{""};
 #endif
 
-  bool starttimeOptionGiven;
-  bool endtimeOptionGiven;
-  boost::optional<boost::posix_time::ptime> origintime;
-  boost::posix_time::ptime latestTimestep;
+  ParamPrecisions precisions;
+  SmartMet::Spine::ValueFormatter valueformatter;
 
-  TimeProducers timeproducers;
+#ifndef WITHOUT_OBSERVATION
+  std::map<std::string, double> boundingBox;
+  Engine::Observation::SQLDataFilter sqlDataFilter;
+#endif
+
   Levels levels;
   Pressures pressures;
   Heights heights;
 
-  // shared so that copying would be fast
-  std::shared_ptr<Engine::Geonames::LocationOptions> loptions;
-
   SmartMet::Spine::OptionParsers::ParameterOptions poptions;
-  SmartMet::Spine::TimeSeriesGeneratorOptions toptions;
-  ParamPrecisions precisions;
-
-  SmartMet::Spine::ValueFormatter valueformatter;
-  boost::shared_ptr<Fmi::TimeFormatter> timeformatter;
   MaxAggregationIntervals maxAggregationIntervals;
+  Engine::Geonames::WktGeometries wktGeometries;
+  SmartMet::Spine::TimeSeriesGeneratorOptions toptions;
+  
+#ifndef WITHOUT_OBSERVATION
+  int numberofstations;
+#endif
+
+  bool maxdistanceOptionGiven;
+  bool findnearestvalidpoint;
+  bool debug = false;
+  bool starttimeOptionGiven;
+  bool endtimeOptionGiven;
   bool timeAggregationRequested;
   // WKT geometries passed in URL are stored here
   Engine::Geonames::WktGeometries wktGeometries;
   std::string forecastSource;
   T::AttributeList attributeList;
 
-  // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
+#ifndef WITHOUT_OBSERVATION
+  bool allplaces;
+  bool latestObservation;
+  bool useDataCache;
+#endif
+  
 
-  // last coordinate used while forming the output
-  mutable NFmiPoint lastpoint;
+  // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
  private:
   Query();

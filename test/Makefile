@@ -1,8 +1,8 @@
-PROG = $(patsubst %.cpp,%,$(wildcard *Test*.cpp))
+PROG = PluginTest
 
-REQUIRES_GDAL = yes
+REQUIRES = gdal configpp
 
-include ../common.mk
+include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
 CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
 
@@ -14,15 +14,14 @@ INCLUDES += \
 	-I /usr/include/smartmet/grid-files \
 	-I /usr/include/smartmet/grid-content \
 	-isystem /usr/include/soci \
-	-isystem /usr/include/oracle/11.2/client64 \
-	`pkg-config --cflags libconfig++`
+	-isystem /usr/include/oracle/11.2/client64
 
 LIBS +=  -lsmartmet-spine  \
 	-lsmartmet-macgyver \
 	-lsmartmet-newbase \
 	-lsmartmet-grid-files \
 	-lsmartmet-grid-content \
-	`pkg-config --libs libconfig++` \
+	$(CONFIGPP_LIBS) \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_filesystem \
@@ -50,7 +49,7 @@ qd-test: $(PROG) $(CONFIG_FILES)
 	@echo "*********** Running timeseries querydata tests **************"
 	@echo "*************************************************************"
 	@echo 
-	@./PluginTest cnf/reactor.conf
+	@./PluginTest -c cnf/reactor.conf
 
 grid-test: $(PROG) $(CONFIG_FILES)
 	@mkdir -p failures-grid
@@ -64,7 +63,7 @@ grid-test: $(PROG) $(CONFIG_FILES)
 	@redis-server cnf/redis.conf
 	@echo "*** Executing plugin tests."
 	@echo 
-	@./PluginTestGrid cnf/reactor-grid.conf
+	@./PluginTestGrid -c cnf/reactor-grid.conf
 	@echo 
 	@echo "*** Shutting down the Redis database and removing useless files." 
 	@echo 

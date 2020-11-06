@@ -169,9 +169,6 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
 
   void getCommonObsSettings(Engine::Observation::Settings& settings,
                             const std::string& producer,
-                            const ProducerDataPeriod& producerDataPeriod,
-                            const boost::posix_time::ptime& now,
-                            const ObsParameters& obsParameters,
                             Query& query) const;
   void getObsSettings(std::vector<SettingsInfo>& settingsVector,
                       const std::string& producer,
@@ -180,7 +177,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                       const ObsParameters& obsParameters,
                       Query& query) const;
 
-  bool resolveAreaStations(Spine::LocationPtr location,
+  bool resolveAreaStations(const Spine::LocationPtr & location,
                            const std::string& producer,
                            Query& query,
                            Engine::Observation::Settings& settings,
@@ -202,7 +199,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
 #endif
 
   Spine::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(
-      const Engine::Querydata::Q& q, const Query& query, const std::string& paramname) const;
+      const Query& query, const std::string& paramname) const;
 
   Spine::LocationPtr getLocationForArea(const Spine::TaggedLocation& tloc,
                                         const Query& query,
@@ -215,7 +212,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
 
   const std::string itsModuleName;
   Config itsConfig;
-  bool itsReady;
+  bool itsReady = false;
 
   Spine::Reactor* itsReactor = nullptr;
   Engine::Querydata::Engine* itsQEngine = nullptr;

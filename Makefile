@@ -2,10 +2,13 @@ SUBNAME = timeseries
 SPEC = smartmet-plugin-grib$(SUBNAME)
 INCDIR = smartmet/plugins/$(SUBNAME)
 
-REQUIRES_GDAL = yes
+REQUIRES = gdal
 
-include common.mk
+include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
+
 # Compiler options
+
+CFLAGS += -Wno-maybe-uninitialized
 
 DEFINES = -DUNIX -D_REENTRANT
 
@@ -17,6 +20,7 @@ LIBS += -L$(libdir) \
 	-lsmartmet-spine \
 	-lsmartmet-newbase \
 	-lsmartmet-locus \
+        -lsmartmet-gis \
 	-lsmartmet-macgyver \
 	-lsmartmet-grid-content \
 	-lboost_date_time \
@@ -27,11 +31,6 @@ LIBS += -L$(libdir) \
 # What to install
 
 LIBFILE = grib$(SUBNAME).so
-
-# How to install
-
-INSTALL_PROG = install -p -m 775
-INSTALL_DATA = install -p -m 664
 
 # Compilation directories
 
@@ -57,6 +56,11 @@ profile: all
 
 $(LIBFILE): $(OBJS)
 	$(CXX) $(LDFLAGS) -shared -rdynamic -o $(LIBFILE) $(OBJS) $(LIBS)
+	@echo Checking $(LIBFILE) for unresolved references
+	@if ldd -r $(LIBFILE) 2>&1 | c++filt | grep ^undefined\ symbol | grep -v SmartMet::Engine:: ; \
+		then rm -v $(LIBFILE); \
+		exit 1; \
+	fi
 
 clean:
 	rm -f $(LIBFILE) *~ $(SUBNAME)/*~

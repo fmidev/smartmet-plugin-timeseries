@@ -33,7 +33,8 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-static const char* default_timezone = "localtime";
+const char* default_timezone = "localtime";
+
 namespace
 {
 void add_sql_data_filter(const Spine::HTTP::Request& req,
@@ -701,12 +702,12 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     std::string aggregationIntervalStringAhead = ("0m");
 
     // check if second aggregation interval is defined
-    if (aggregationIntervalStringBehind.find(":") != string::npos)
+    if (aggregationIntervalStringBehind.find(':') != string::npos)
     {
       aggregationIntervalStringAhead =
-          aggregationIntervalStringBehind.substr(aggregationIntervalStringBehind.find(":") + 1);
+          aggregationIntervalStringBehind.substr(aggregationIntervalStringBehind.find(':') + 1);
       aggregationIntervalStringBehind =
-          aggregationIntervalStringBehind.substr(0, aggregationIntervalStringBehind.find(":"));
+          aggregationIntervalStringBehind.substr(0, aggregationIntervalStringBehind.find(':'));
     }
 
     int agg_interval_behind(Spine::duration_string_to_minutes(aggregationIntervalStringBehind));
