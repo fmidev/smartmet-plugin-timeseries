@@ -104,5 +104,5 @@ cnf/redis.conf: cnf/templates/redis.conf $(ENV_FILE)
 	@echo "*** Creating configuration file for the redis database." 
 	@./TestConfigCreator $(ENV_FILE) cnf/templates/redis.conf cnf/redis.conf
 
-$(PROG) : % : %.cpp Makefile ../timeseries.so
+$(PROG) : % : %.cpp Makefile ../gribtimeseries.so
 	$(CXX) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
