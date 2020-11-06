@@ -1341,7 +1341,7 @@ void Plugin::fetchQEngineValues(const State& state,
         }
 
         aggregatedData.emplace_back(TimeSeriesData(
-            erase_redundant_timesteps(aggregate(querydata_result, paramfunc.functions), tlist)));
+            DataFunctions::erase_redundant_timesteps(DataFunctions::aggregate(querydata_result, paramfunc.functions), tlist)));
       }
       else
       {
@@ -1516,7 +1516,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
         if (querydata_result->size() > 0)
           aggregatedData.emplace_back(TimeSeriesData(
-              erase_redundant_timesteps(aggregate(querydata_result, paramfunc.functions), tlist)));
+              DataFunctions::erase_redundant_timesteps(DataFunctions::aggregate(querydata_result, paramfunc.functions), tlist)));
       }
     }  // levels
 
@@ -1686,10 +1686,6 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
     {
       Engine::Observation::StationSettings stationSettings;
 
-      const OGRGeometry* pGeo = nullptr;
-      // if no radius has been given use 200 meters
-      double radius = (loc->radius == 0 ? 200 : loc->radius * 1000);
-
 #ifdef MYDEBUG
       std::cout << loc_name << " is a Path" << std::endl;
 #endif
@@ -1697,7 +1693,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
       std::string wktString;
       if (loc->type == Spine::Location::Path)
       {
-        const OGRGeometry* pGeo = 0;
+        const OGRGeometry* pGeo = nullptr;
         // if no radius has been given use 200 meters
         double radius = (loc->radius == 0 ? 200 : loc->radius * 1000);
 
@@ -1919,14 +1915,10 @@ void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
   {
     int fmisid_index = -1;
 
-    const Spine::Parameter& param = obsParameters[i].param;
-    const auto & pname = param.name();
-
     for (unsigned int i = 0; i < obsParameters.size(); i++)
     {
       const Spine::Parameter& param = obsParameters[i].param;
-
-      std::string pname = param.name();
+      const auto & pname = param.name();
 
       if (query.maxAggregationIntervals.find(pname) != query.maxAggregationIntervals.end())
       {
@@ -2762,13 +2754,13 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           aggtimes.push_back(tv.time);
         // store observation data
         aggregatedData.emplace_back(
-            TimeSeriesData(erase_redundant_timesteps(aggregated_tsg, aggtimes)));
-        store_data(aggregatedData, query, outputData);
+            TimeSeriesData(DataFunctions::erase_redundant_timesteps(aggregated_tsg, aggtimes)));
+        DataFunctions::store_data(aggregatedData, query, outputData);
       }
       else
       {
         // Else accept only the original generated timesteps
-        aggregatedData.emplace_back(TimeSeriesData(erase_redundant_timesteps(aggregated_tsg, *tlist)));
+        aggregatedData.emplace_back(TimeSeriesData(DataFunctions::erase_redundant_timesteps(aggregated_tsg, *tlist)));
         // store observation data
         DataFunctions::store_data(aggregatedData, query, outputData);
       }

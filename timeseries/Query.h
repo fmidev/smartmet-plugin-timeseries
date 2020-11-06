@@ -139,8 +139,6 @@ struct Query
   bool starttimeOptionGiven;
   bool endtimeOptionGiven;
   bool timeAggregationRequested;
-  // WKT geometries passed in URL are stored here
-  Engine::Geonames::WktGeometries wktGeometries;
   std::string forecastSource;
   T::AttributeList attributeList;
 
