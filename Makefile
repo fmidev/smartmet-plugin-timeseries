@@ -8,7 +8,7 @@ include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
 # Compiler options
 
-CFLAGS += -Wno-maybe-uninitialized
+CFLAGS += -Wno-maybe-uninitialized -Wno-pedantic
 
 DEFINES = -DUNIX -D_REENTRANT
 
