@@ -107,15 +107,13 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Oct 28 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.10.28-1.fmi
 - Rebuild due to fmt upgrade
 
-* Thu Oct 22 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.22-1.fmi
+* Thu Oct 22 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.10.22-1.fmi
+- Time period in several observation test cases changed because of CircleCI (BRAINSTORM-1940)
 - Use new faster GRIB API
 
 * Thu Oct 15 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.15-1.fmi
 - Repackaged due to library ABI changes
 - Fixed a large number of clang analyzer warnings
-
-* Thu Oct 22 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.10.22-1.fmi
-- Time period in several observation test cases changed because of CircleCI (BRAINSTORM-1940)
 
 * Wed Oct 14 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.14-1.fmi
 - Use new TableFormatter API
