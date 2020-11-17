@@ -38,6 +38,8 @@ endif
 
 fminames:
 	sed -i -e 's/"smartmet-test"/"localhost"/g' cnf/*.conf
+	-systemctl list-unit-files | grep smartmet
+	-systemctl status --lines=50 smartmet-test-db.service
 
 test_sqlite: $(PROG)
 	@printf "RUNNING SQLITE TESTS:\n\n"
