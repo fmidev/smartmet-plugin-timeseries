@@ -29,7 +29,7 @@ jobs:
           command: ci-build testprep
       - run:
           name: Start geonames database (port 5444)
-          command: sudo -u postgres pg-ctl --pgdata=/var/lib/smartmet-test-db -o '-k /tmp -p 5444' start
+          command: sudo -u postgres /usr/pgsql-9.5/bin/pg_ctl --pgdata=/var/lib/smartmet-test-db -o '-k /tmp -p 5444' start
       - run:
           name: Test
           command: ci-build test
