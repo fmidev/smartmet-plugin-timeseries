@@ -72,5 +72,11 @@ test_postgresql: $(PROG)
 	@test -f PluginTest.err && mv PluginTest.err postgresql.err || echo All PostGreSQL tests passed
 	@printf "\n";
 
+testdatabase: $(PROG)
+	@printf "CREATING TEST DATABASE:\n\n"
+	@ls -1 input > input/.testignore
+	@./PluginTest -c cnf/reactor_testdb.conf && echo .quit | spatialite -silent test_cache.sqlite
+	@rm -f input/.testignore
+
 $(PROG) : % : %.cpp Makefile ../timeseries.so
 	$(CXX) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
