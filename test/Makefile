@@ -75,6 +75,7 @@ test_postgresql: $(PROG)
 testdatabase: $(PROG)
 	@printf "CREATING TEST DATABASE:\n\n"
 	@ls -1 input > input/.testignore
+	@rm -f test_cache.sqlite
 	@./PluginTest -c cnf/reactor_testdb.conf && echo .quit | spatialite -silent test_cache.sqlite
 	@rm -f input/.testignore
 
