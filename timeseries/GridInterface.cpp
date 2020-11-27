@@ -48,7 +48,7 @@ GridInterface::GridInterface(Engine::Grid::Engine* engine, const Fmi::TimeZones&
   FUNCTION_TRACE
   try
   {
-    itsProducerList_updateTime = 0;
+    //itsProducerList_updateTime = 0;
     itsProducerInfoList_updateTime = 0;
     itsProducerInfoList.setLockingEnabled(true);
     itsGenerationInfoList_updateTime = 0;
@@ -78,6 +78,8 @@ bool GridInterface::isGridProducer(const std::string& producer)
   FUNCTION_TRACE
   try
   {
+    return itsGridEngine->isGridProducer(producer);
+/*
     if ((time(nullptr) - itsProducerList_updateTime) > 60)
     {
       itsProducerList_updateTime = time(nullptr);
@@ -97,6 +99,7 @@ bool GridInterface::isGridProducer(const std::string& producer)
     }
 
     return false;
+*/
   }
   catch (...)
   {
@@ -661,8 +664,6 @@ void GridInterface::prepareGridQuery(
     // Producers
     for (auto it = areaproducers.begin(); it != areaproducers.end(); ++it)
     {
-      // std::cout << "PRODUCER " << *it << "\n";
-
       std::string producerName = *it;
       producerName = itsGridEngine->getProducerAlias(producerName, levelId);
 
@@ -672,14 +673,14 @@ void GridInterface::prepareGridQuery(
       size_t len = parameters.size();
       for (size_t t = 0; t < len; t++)
       {
-        // std::cout << "** PRODUCER " << *pname << "\n";
-        if (masterquery.leveltype.empty() && levelId < 0 && parameters[t].mLevelId > "")
+        if (masterquery.leveltype.empty() && levelId < 0 && !parameters[t].mLevelId.empty())
           levelId = toInt32(parameters[t].mLevelId);
 
-        if (parameters[t].mGeometryId > "")
+        if (!parameters[t].mGeometryId.empty())
           geometryId = toInt32(parameters[t].mGeometryId);
 
-        gridQuery.mProducerNameList.push_back(parameters[t].mProducerName);
+        if (!parameters[t].mProducerName.empty())
+          gridQuery.mProducerNameList.push_back(parameters[t].mProducerName);
       }
     }
 
@@ -711,6 +712,7 @@ void GridInterface::prepareGridQuery(
 
     // parameters
     uint idx = 0;
+    uint gIdx = 0;
 
     // BOOST_FOREACH (const Spine::ParameterAndFunctions& paramfunc,
     // masterquery.poptions.parameterFunctions())
@@ -720,7 +722,7 @@ void GridInterface::prepareGridQuery(
 
       QueryServer::QueryParameter qParam;
 
-      qParam.mId = idx;
+      qParam.mId = gIdx;
 
       if (info)
         qParam.mFlags = QueryServer::QueryParameter::Flags::NoReturnValues;
@@ -742,7 +744,9 @@ void GridInterface::prepareGridQuery(
       if (sameParamAnalysisTime)
         qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::SameAnalysisTime;
 
-      qParam.mPrecision = masterquery.precisions[idx];
+      if (gIdx < masterquery.precisions.size())
+        qParam.mPrecision = masterquery.precisions[gIdx];
+
       if (levelId > 0)
         qParam.mParameterLevelId = levelId;
 
@@ -913,6 +917,7 @@ void GridInterface::prepareGridQuery(
 
       gridQuery.mQueryParameterList.push_back(qParam);
       idx++;
+      gIdx++;
 
       if (len > 1)
       {
@@ -920,6 +925,7 @@ void GridInterface::prepareGridQuery(
         {
           QueryServer::QueryParameter qp(qParam);
           qp.mId = idx;
+          qp.mPrecision = qParam.mPrecision;
           qp.mFlags |= QueryServer::QueryParameter::Flags::AlternativeParameter;
           if ((t + 1) < len)
             qp.mAlternativeParamId = idx + 1;

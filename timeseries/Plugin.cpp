@@ -3083,11 +3083,17 @@ bool Plugin::processGridEngineQuery(const State& state,
       // std::cout << formatLocation(*loc) << endl;
       // std::cout << formatLocation(*(tloc.loc)) << endl;
 
+      AreaProducers producers = areaproducers;
+      auto defaultProducer = itsConfig.defaultProducerMappingName();
+
+      if (producers.empty()  &&  !defaultProducer.empty())
+        producers.push_back(defaultProducer);
+
       itsGridInterface->processGridQuery(state,
                                          query,
                                          outputData,
                                          queryStreamer,
-                                         areaproducers,
+                                         producers,
                                          producerDataPeriod,
                                          tloc,
                                          loc,

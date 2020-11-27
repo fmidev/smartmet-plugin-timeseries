@@ -34,6 +34,7 @@ class Config : private boost::noncopyable
   const Precision& getPrecision(const std::string& name) const;
 
   const std::string& defaultPrecision() const { return itsDefaultPrecision; }
+  const std::string& defaultProducerMappingName() const { return itsDefaultProducerMappingName; }
   const std::string& defaultLanguage() const { return itsDefaultLanguage; }
   // You can copy the locale, not modify it!
   const std::locale& defaultLocale() const { return *itsDefaultLocale; }
@@ -75,6 +76,7 @@ class Config : private boost::noncopyable
  private:
   libconfig::Config itsConfig;
   std::string itsDefaultPrecision;
+  std::string itsDefaultProducerMappingName;
   std::string itsDefaultLanguage;
   std::string itsDefaultLocaleName;
   std::unique_ptr<std::locale> itsDefaultLocale;

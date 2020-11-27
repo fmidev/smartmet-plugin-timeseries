@@ -110,8 +110,8 @@ class GridInterface
 
     Engine::Grid::Engine*   itsGridEngine;
     const Fmi::TimeZones&   itsTimezones;
-    string_vec              itsProducerList;
-    time_t                  itsProducerList_updateTime;
+    //string_vec              itsProducerList;
+    // time_t                  itsProducerList_updateTime;
     T::ProducerInfoList     itsProducerInfoList;
     time_t                  itsProducerInfoList_updateTime;
     T::GenerationInfoList   itsGenerationInfoList;

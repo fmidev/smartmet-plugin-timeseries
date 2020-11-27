@@ -385,7 +385,7 @@ Config::Config(const string& configfile)
       }
 
       itsConfig.lookupValue("ignoreGridGeometriesWhenPreloadReady", itsIgnoreGridGeometriesWhenPreloadReady);
-
+      itsConfig.lookupValue("defaultProducerMappingName", itsDefaultProducerMappingName);
 
       const libconfig::Setting& aliasFiles = itsConfig.lookup("parameterAliasFiles");
 
