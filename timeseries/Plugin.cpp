@@ -2941,6 +2941,14 @@ bool Plugin::processGridEngineQuery(const State& state,
           loc = query.wktGeometries.getLocation(tloc.loc->name);
           svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
           convertSvgPathToPolygonPath(svgPath, polygonPath);
+
+          if (polygonPath.size() > 1  && getPolygonPathLength(polygonPath) == polygonPath.size())
+          {
+            T::Coordinate_vec polygonPoints;
+            convertToPointVector(polygonPath,polygonPoints);
+            polygonPath.clear();
+            polygonPath.push_back(polygonPoints);
+          }
         }
         break;
         case Spine::Location::Area:

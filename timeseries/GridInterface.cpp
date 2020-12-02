@@ -1556,6 +1556,8 @@ void GridInterface::processGridQuery(
                     }
                     idx++;
                   }
+                  if (levelValue < 0)
+                    levelValue = 0;
 
                   Spine::TimeSeries::TimedValue tsValue(queryTime, levelValue);
                   tsForNonGridParam->push_back(tsValue);
