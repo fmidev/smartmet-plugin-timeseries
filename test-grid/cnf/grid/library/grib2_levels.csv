@@ -1,0 +1,97 @@
+1;;Ground or Water Surface
+2;;Cloud Base Level
+3;;Level of Cloud Tops
+4;;Level of 0 degree C Isotherm
+5;;Level of Adiabatic Condensation Lifted from the Surface
+6;;Maximum Wind Level
+7;;Tropopause
+8;;Nominal Top of the Atmosphere
+9;;Sea Bottom
+10;;Entire Atmosphere 
+11;;Cumulonimbus Base (CB)
+12;;Cumulonimbus Top (CT)
+13;;Lowest level where vertically integrated cloud cover exceeds the specified percentage (cloud base for a given percentage cloud cover)
+14;;Level of free convection (LFC)  
+15;;Convection condensation level (CCL) 
+16;;Level of neutral buoyancy or equilibrium (LNB)  
+20;;Isothermal Level
+21;;Lowest level where mass density exceeds the specified value (base for a given threshold of mass density)
+22;;Highest level where mass density exceeds the specified value (top for a given threshold of mass density)
+23;;Lowest level where air concentration exceeds the specified value (base for a given threshold of air concentration)
+24;;Highest level where air concentration exceeds the specified value (top for a given threshold of air concentration)
+100;;Isobaric Surface
+101;;Mean Sea Level
+102;;Specific Altitude Above Mean Sea Level
+103;;Specified Height Level Above Ground
+104;;Sigma Level
+105;;Hybrid Level
+106;;Depth Below Land Surface
+107;;Isentropic (theta) Level
+108;;Level at Specified Pressure Difference from Ground to Level
+109;;Potential Vorticity Surface
+111;;Eta Level 
+113;;Logarithmic Hybrid Level  
+114;;Snow Level
+115;;Sigma height level 
+117;;Mixed Layer Depth
+118;;Hybrid Height Level 
+119;;Hybrid Pressure Level 
+150;;Generalized Vertical Height Coordinate 
+151;;Soil level
+160;;Depth Below Sea Level
+161;;Depth Below Water Surface 
+162;;Lake or River Bottom  
+163;;Bottom Of Sediment Layer  
+164;;Bottom Of Thermally Active Sediment Layer 
+165;;Bottom Of Sediment Layer Penetrated By Thermal Wave 
+166;;Mixing Layer  
+167;;Bottom of Root Zone 
+174;;Top Surface of Ice on Sea, Lake or River  
+175;;Top Surface of Ice, under Snow, on Sea, Lake or River 
+176;;Bottom Surface (underside) Ice on Sea, Lake or River  
+177;;Deep Soil (of indefinite depth) 
+179;;Top Surface of Glacier Ice and Inland Ice 
+180;;Deep Inland or Glacier Ice (of indefinite depth)  
+181;;Grid Tile Land Fraction as a Model Surface  
+182;;Grid Tile Water Fraction as a Model Surface 
+183;;Grid Tile Ice Fraction on Sea, Lake or River as a Model Surface 
+184;;Grid Tile Glacier Ice and Inland Ice Fraction as a Model Surface  
+200;;Entire atmosphere (considered as a single layer)  
+201;;Entire ocean (considered as a single layer) 
+204;;Highest tropospheric freezing level 
+206;;Grid scale cloud bottom level 
+207;;Grid scale cloud top level  
+209;;Boundary layer cloud bottom level 
+210;;Boundary layer cloud top level  
+211;;Boundary layer cloud layer  
+212;;Low cloud bottom level  
+213;;Low cloud top level 
+214;;Low cloud layer 
+215;;Cloud ceiling 
+220;;Planetary Boundary Layer  
+221;;Layer Between Two Hybrid Levels 
+222;;Middle cloud bottom level 
+223;;Middle cloud top level  
+224;;Middle cloud layer  
+232;;High cloud bottom level 
+233;;High cloud top level  
+234;;High cloud layer  
+235;;Ocean Isotherm Level (1/10 ° C) 
+236;;Layer between two depths below ocean surface 
+237;;Bottom of Ocean Mixed Layer (m) 
+238;;Bottom of Ocean Isothermal Layer (m)  
+239;;Layer Ocean Surface and 26C Ocean Isothermal Level  
+240;;Ocean Mixed Layer 
+241;;Ordered Sequence of Data  
+242;;Convective cloud bottom level 
+243;;Convective cloud top level  
+244;;Convective cloud layer  
+245;;Lowest level of the wet bulb zero 
+246;;Maximum equivalent potential temperature level  
+247;;Equilibrium level 
+248;;Shallow convective cloud bottom level 
+249;;Shallow convective cloud top level  
+251;;Deep convective cloud bottom level  
+252;;Deep convective cloud top level 
+253;;Lowest bottom level of supercooled liquid water layer 
+254;;Highest top level of supercooled liquid water layer 

@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&lonlat=24.95,60.20:20&param=place,name,time,t2m,min_a(t2m),max_a(t2m),mean_a(t2m)&precision=double HTTP/1.0

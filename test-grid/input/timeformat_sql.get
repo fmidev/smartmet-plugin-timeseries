@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&place=Helsinki&param=time,localtime,utctime,epochtime,isotime,xmltime,Temperature&separator=,&timeformat=sql HTTP/1.0

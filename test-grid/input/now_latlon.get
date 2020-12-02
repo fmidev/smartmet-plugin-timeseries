@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&latlon=60,25&param=time,Temperature,longitude,latitude HTTP/1.0

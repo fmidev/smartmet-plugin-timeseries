@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&places=Helsinki,Tampere&param=time,name,Temperature,Precipitation1h&format=php&attributes=name,time HTTP/1.0

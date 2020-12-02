@@ -1,0 +1,29 @@
+# This file is an extension for the 'parameterDef_fmi.csv' file. You can add your
+# own parameter definitions here. They will be not overridden.
+1000000;1;VIRT-T-F;F;Temperature in Fahrenheits;1;;
+1000001;1;VIRT-T-C;F;Temperature in Celcius;1;;
+
+1000100;1;VIRT-DD-RAD;Rad;Wind direction in radius;1;;
+
+1000200;1;VIRT-FEELS-LIKE;C;Feels like temperature;1;;
+
+1000300;1;VIRT-SSI;;Summer Simmer Index;1;;
+
+1000400;1;VIRT-WIND-CHILL;;Wind Chill;1;;
+
+
+1001400;1;VIRT-WIND-DIR;degrees;Wind direction;1;;
+1001401;1;VIRT-WIND-SPEED;m s-1;Wind speed;;;
+1001402;1;VIRT-WIND-V;m s-1;Wind speed in V-direction;;;
+1001403;1;VIRT-WIND-U;m s-1;Wind speed in U-direction;;;
+
+
+1001500;1;VIRT-TG-K-GT-283;%;TG-K > 283;;;
+1001501;1;VIRT-TG-K-GT-288;%;TG-K > 288;;;
+1001502;1;VIRT-TG-K-LT-283;%;TG-K < 283;;;
+1001503;1;VIRT-TG-K-LT-288;%;TG-K < 288;;;
+1001504;1;VIRT-TG-K-MIN;K;Min TG-K;;;
+1001505;1;VIRT-TG-K-MAX;K;Max TG-K;;;
+1001506;1;VIRT-TG-K-IN-273-283;%;TG-K >= 273 and TG-K <= 283;;;
+1001507;1;VIRT-TG-K-OUT-273-283;%;TG-K < 273 or TG-K > 283;;;
+1001508;1;VIRT-TG-K-AVG;%;TG-K average;;;

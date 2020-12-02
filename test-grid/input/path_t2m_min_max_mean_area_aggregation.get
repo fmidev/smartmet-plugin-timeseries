@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&path=24.94,60.17,22.27,60.45,23.76,61.50&step=5&precision=double&param=name,time,min_a(t2m),max_a(t2m),mean_a(t2m) HTTP/1.0

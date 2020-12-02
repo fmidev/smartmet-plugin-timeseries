@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&lang=en&places=Helsinki,Lahti&param=name,time,Temperature,country HTTP/1.0

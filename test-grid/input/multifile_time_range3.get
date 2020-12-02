@@ -1,0 +1,1 @@
+GET /timeseries?model=tutka&timestep=data&precision=double&place=Humppila&param=time,lat,lon,PrecipitationRate&starttime=20130910131500&endtime=20130910132500 HTTP/1.0

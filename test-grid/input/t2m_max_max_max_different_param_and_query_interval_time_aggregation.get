@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&interval=6h&place=Helsinki&precision=double&param=name,time,max_t(t2m:2h),max_t(t2m:4h),max_t(t2m),t2m HTTP/1.0

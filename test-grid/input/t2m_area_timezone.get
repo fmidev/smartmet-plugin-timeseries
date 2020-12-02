@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&area=Varsinais-Suomi&param=name,localtz,tz,min_a(t2m)&precision=double HTTP/1.0

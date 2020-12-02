@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&lonlat=24.96,60.17&precision=double&param=name,time,Temperature HTTP/1.0

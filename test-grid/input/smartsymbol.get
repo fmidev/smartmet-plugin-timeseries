@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&place=Helsinki&param=time,SmartSymbol,WeatherNumber,SmartSymbolText,WeatherSymbol3 HTTP/1.0

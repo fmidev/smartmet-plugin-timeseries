@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&timestep=graph&tz=UTC&places=Helsinki,Tokio&param=name,time,Temperature HTTP/1.0

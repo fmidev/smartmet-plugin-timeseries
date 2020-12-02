@@ -1,0 +1,1 @@
+GET /timeseries?missingtext=*&starttime=200808051300&hour=12&interval=24h&timesteps=5&area=Helsinki&precision=double&param=name,time,min_t(t2m),max_t(t2m),mean_t(t2m) HTTP/1.0
