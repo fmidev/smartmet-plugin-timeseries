@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.12.17
+Version: 21.1.5
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -97,6 +97,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+
+* Tue Jan 5 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.1.5-1.fmi
+- Added inkeyword-parameter (BRAINSTORM-929)
+
 * Thu Dec 17 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.12.17-1.fmi
 - Check for duplicate areas in qengine query (BRAINSTORM-1987)
 
