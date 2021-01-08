@@ -32,7 +32,7 @@ ifdef CI
 GEONAMES_HOST_EDIT := sed -e 's/"smartmet-test"/"localhost"/g'
 TEST_PREPARE_TARGETS += geonames-database start-geonames-db
 TEST_FINISH_TARGETS += stop-test-db
-TEST_TARGETS := sqlite
+TEST_TARGETS := test-sqlite
 EXTRA_IGNORE := input/.testignore_circle-ci
 else
 GEONAMES_HOST_EDIT := cat
