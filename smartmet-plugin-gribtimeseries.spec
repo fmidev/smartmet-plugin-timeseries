@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.1.11
+Version: 21.1.14
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,37 +18,37 @@ BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.1.5
-BuildRequires: smartmet-library-locus-devel >= 21.1.5
-BuildRequires: smartmet-library-macgyver-devel >= 21.1.5
-BuildRequires: smartmet-library-newbase-devel >= 21.1.5
-BuildRequires: smartmet-library-gis-devel >= 21.1.7
-BuildRequires: smartmet-engine-geonames-devel >= 21.1.5
+BuildRequires: smartmet-library-spine-devel >= 21.1.14
+BuildRequires: smartmet-library-locus-devel >= 21.1.14
+BuildRequires: smartmet-library-macgyver-devel >= 21.1.14
+BuildRequires: smartmet-library-newbase-devel >= 21.1.14
+BuildRequires: smartmet-library-gis-devel >= 21.1.14
+BuildRequires: smartmet-engine-geonames-devel >= 21.1.14
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.1.5
+BuildRequires: smartmet-engine-observation-devel >= 21.1.14
 %endif
-BuildRequires: smartmet-library-grid-content-devel >= 21.1.11
-BuildRequires: smartmet-library-grid-files-devel >= 21.1.11
-BuildRequires: smartmet-engine-querydata-devel >= 20.12.30
-BuildRequires: smartmet-engine-gis-devel >= 21.1.5
-BuildRequires: smartmet-engine-grid-devel >= 21.1.11
+BuildRequires: smartmet-library-grid-content-devel >= 21.1.14
+BuildRequires: smartmet-library-grid-files-devel >= 21.1.14
+BuildRequires: smartmet-engine-querydata-devel >= 21.1.14
+BuildRequires: smartmet-engine-gis-devel >= 21.1.14
+BuildRequires: smartmet-engine-grid-devel >= 21.1.14
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.10.22
 #%endif
 Requires: fmt >= 7.1.3
 Requires: libconfig
-Requires: smartmet-library-gis >= 21.1.7
-Requires: smartmet-library-locus >= 21.1.5
-Requires: smartmet-library-macgyver >= 21.1.5
-Requires: smartmet-library-newbase >= 21.1.5
-Requires: smartmet-library-spine >= 21.1.5
-Requires: smartmet-library-gis >= 21.1.7
-Requires: smartmet-engine-geonames >= 21.1.5
-Requires: smartmet-engine-querydata >= 20.12.30
-Requires: smartmet-engine-gis >= 21.1.5
-Requires: smartmet-engine-grid >= 21.1.11
-Requires: smartmet-server >= 21.1.5
+Requires: smartmet-library-gis >= 21.1.14
+Requires: smartmet-library-locus >= 21.1.14
+Requires: smartmet-library-macgyver >= 21.1.14
+Requires: smartmet-library-newbase >= 21.1.14
+Requires: smartmet-library-spine >= 21.1.14
+Requires: smartmet-library-gis >= 21.1.14
+Requires: smartmet-engine-geonames >= 21.1.14
+Requires: smartmet-engine-querydata >= 21.1.14
+Requires: smartmet-engine-gis >= 21.1.14
+Requires: smartmet-engine-grid >= 21.1.14
+Requires: smartmet-server >= 21.1.14
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -61,16 +61,16 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: gcc-c++
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
-#TestRequires: smartmet-library-gis-devel >= 21.1.7
-#TestRequires: smartmet-library-newbase-devel >= 21.1.5
-#TestRequires: smartmet-library-spine-devel >= 21.1.5
+#TestRequires: smartmet-library-gis-devel >= 21.1.14
+#TestRequires: smartmet-library-newbase-devel >= 21.1.14
+#TestRequires: smartmet-library-spine-devel >= 21.1.14
 #TestRequires: smartmet-engine-geonames-devel >= 20.8.23
-#TestRequires: smartmet-engine-gis-devel >= 21.1.5
-#TestRequires: smartmet-engine-querydata-devel >= 20.12.30
+#TestRequires: smartmet-engine-gis-devel >= 21.1.14
+#TestRequires: smartmet-engine-querydata-devel >= 21.1.14
 %if %{with observation}
 #TestRequires: smartmet-engine-observation-devel >= 20.10.29
 %endif
-#TestRequires: smartmet-engine-grid-devel >= 21.1.11
+#TestRequires: smartmet-engine-grid-devel >= 21.1.14
 #TestRequires: boost169-devel
 #TestRequires: gdal32-devel
 #TestRequires: boost169-date-time
@@ -102,6 +102,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Thu Jan 14 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.14-1.fmi
+- Repackaged smartmet to resolve debuginfo issues
+
 * Mon Jan 11 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.11-1.fmi
 - Repackaged due to grid-files API changes
 
