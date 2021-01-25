@@ -106,6 +106,20 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
         Spine::optional_double(req.getParameter("maxdistance"), config.defaultMaxDistance());
 
     keyword = Spine::optional_string(req.getParameter("keyword"), "");
+	auto searchName = req.getParameterList("inkeyword");
+	if (!searchName.empty())
+	  {
+		for (const std::string& keyword : searchName)
+		  {
+			Locus::QueryOptions opts;
+			opts.SetLanguage(language);
+			Spine::LocationList places = state.getGeoEngine().keywordSearch(opts, keyword);
+			if (places.empty())
+			  throw Fmi::Exception(BCP,
+								   "No locations for keyword " + std::string(keyword) + " found");
+			inKeywordLocations.insert(inKeywordLocations.end(),places.begin(),places.end());
+		  }
+	  }
 
     findnearestvalidpoint = Spine::optional_bool(req.getParameter("findnearestvalid"), false);
 

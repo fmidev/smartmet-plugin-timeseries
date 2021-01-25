@@ -41,7 +41,7 @@ Requires: smartmet-library-macgyver >= 21.1.14
 Requires: smartmet-library-newbase >= 21.1.14
 Requires: smartmet-library-spine >= 21.1.14
 Requires: smartmet-library-gis >= 21.1.14
-Requires: smartmet-engine-geonames >= 21.1.14
+Requires: smartmet-engine-geonames >= 21.1.25
 Requires: smartmet-engine-querydata >= 21.1.14
 Requires: smartmet-engine-gis >= 21.1.14
 Requires: smartmet-server >= 21.1.14
@@ -60,7 +60,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis-devel >= 21.1.14
 #TestRequires: smartmet-library-newbase-devel >= 21.1.14
 #TestRequires: smartmet-library-spine-devel >= 21.1.14
-#TestRequires: smartmet-engine-geonames-devel >= 20.8.23
+#TestRequires: smartmet-engine-geonames-devel >= 21.1.25
 #TestRequires: smartmet-engine-gis-devel >= 21.1.14
 #TestRequires: smartmet-engine-querydata-devel >= 21.1.14
 %if %{with observation}
@@ -98,13 +98,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Mon Jan 25 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.1.25-1.fmi
-- Check for duplicate areas in qengine query (BRAINSTORM-1987)
+- Added inkeyword-parameter (BRAINSTORM-929)
 
 * Thu Jan 14 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.14-1.fmi
 - Repackaged smartmet to resolve debuginfo issues
 
 * Tue Jan  5 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.5-1.fmi
 - Upgrade to fmt 7.1.3
+
+* Thu Dec 17 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.12.17-1.fmi
+- Check for duplicate areas in qengine query (BRAINSTORM-1987)
 
 * Tue Dec 15 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.12.15-1.fmi
 - Upgrade to pgdg12

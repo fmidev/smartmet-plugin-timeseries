@@ -379,6 +379,29 @@ void fix_precisions(Query& masterquery, const ObsParameters& obsParameters)
 }
 #endif
 
+Spine::TaggedLocationList get_locations_inside_geometry(const Spine::LocationList& locations, const OGRGeometry& geom)
+{
+  try
+	{
+	  Spine::TaggedLocationList ret;
+	  
+	  for (auto loc : locations)
+		{
+		  
+		  std::string wkt = ("POINT(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")");
+		  std::unique_ptr<OGRGeometry> location_geom = get_ogr_geometry(wkt);
+		  if(geom.Contains(location_geom.get()))
+			ret.push_back(Spine::TaggedLocation(loc->name, loc));
+		}
+	  
+	  return ret;
+	}
+  catch (...)
+	{
+	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
+	}
+}
+
 }  // namespace
 
 // ----------------------------------------------------------------------
@@ -2730,6 +2753,84 @@ void Plugin::processQEngineQuery(const State& state,
   }
 }
 
+void Plugin::checkInKeywordLocations(Query& masterquery)
+{
+  //If inkeyword given resolve locations
+  if(!masterquery.inKeywordLocations.empty())
+	{
+	  Spine::TaggedLocationList tloc_list;
+	  for (const auto& tloc : masterquery.loptions->locations())
+		{
+		  if(tloc.loc->type ==  Spine::Location::Wkt)
+			{
+			  // Find locations inside WKT-area
+			  const OGRGeometry* geom = masterquery.wktGeometries.getGeometry(tloc.loc->name);
+			  if(geom)
+				tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+			}
+		  else if(tloc.loc->type == Spine::Location::Area)
+			{
+			  // Find locations inside Area
+			  const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
+			  if(geom)
+				tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+			}
+		  else if(tloc.loc->type ==  Spine::Location::BoundingBox)
+			{
+			  // Find locations inside Bounding Box
+			  Spine::BoundingBox bbox(get_name_base(tloc.loc->name));
+			  
+			  std::string wkt = ("POLYGON((" + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMin) + ","
+								 + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMax) + ","
+								 + Fmi::to_string(bbox.xMax) + " " + Fmi::to_string(bbox.yMax) + ","
+								 + Fmi::to_string(bbox.xMax) + " " + Fmi::to_string(bbox.yMin) + ","
+								 + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMin) + "))");
+			  std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt);
+			  if(geom)
+				tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+			}
+		  else if(tloc.loc->type == Spine::Location::CoordinatePoint || tloc.loc->type == Spine::Location::Place)
+			{
+			  if(tloc.loc->radius == 0)
+				{
+				  // Find nearest location
+				  std::pair<double, double> from_location(tloc.loc->longitude, tloc.loc->latitude);
+				  double distance = -1;
+				  Spine::LocationPtr nearest_loc = nullptr;
+				  for(const auto& loc : masterquery.inKeywordLocations)
+					{
+					  std::pair<double, double> to_location(loc->longitude, loc->latitude);
+					  
+					  double dist = distance_in_kilometers(from_location, to_location);
+					  if(distance == -1 || dist < distance)
+						{
+						  distance = dist;
+						  nearest_loc = loc;
+						}
+					}
+				  if(nearest_loc)
+					{
+					  tloc_list.push_back(Spine::TaggedLocation(nearest_loc->name, nearest_loc));
+					}
+				}
+			  else
+				{
+				  // Find locations inside area
+				  std::string wkt = "POINT(";
+				  wkt += Fmi::to_string(tloc.loc->longitude);
+				  wkt += " ";
+				  wkt += Fmi::to_string(tloc.loc->latitude);
+				  wkt += ")";
+				  std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, tloc.loc->radius);
+				  if(geom)
+					tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+				}
+			}
+		}
+	  masterquery.loptions->setLocations(tloc_list);
+	}
+}
+
 // ----------------------------------------------------------------------
 /*!
  * \brief
@@ -2740,6 +2841,8 @@ void Plugin::processQuery(const State& state, Spine::Table& table, Query& master
 {
   try
   {
+	checkInKeywordLocations(masterquery);
+
     // if only location related parameters queried, use shortcut
     if (is_plain_location_query(masterquery.poptions.parameters()))
     {

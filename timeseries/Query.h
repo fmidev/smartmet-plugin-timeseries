@@ -140,7 +140,7 @@ struct Query
   bool latestObservation;
   bool useDataCache;
 #endif
-  
+  Spine::LocationList inKeywordLocations;
 
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
