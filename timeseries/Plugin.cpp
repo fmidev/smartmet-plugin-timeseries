@@ -2666,13 +2666,20 @@ void Plugin::processQEngineQuery(const State& state,
 
     bool firstProducer = outputData.empty();
 
+	std::set<std::string> processed_locations;
     for (const auto& tloc : masterquery.loptions->locations())
     {
+	  std::string location_id = get_location_id(tloc.loc);
+	  // Data for each location is fetched only once
+	  if(processed_locations.find(location_id) != processed_locations.end())
+		continue;
+	  processed_locations.insert(location_id);
+
       Query query = masterquery;
       QueryLevelDataCache queryLevelDataCache;
 
       std::vector<TimeSeriesData> tsdatavector;
-      outputData.push_back(make_pair(get_location_id(tloc.loc), tsdatavector));
+      outputData.push_back(make_pair(location_id, tsdatavector));
 
       if (masterquery.timezone == LOCALTIME_PARAM)
         query.timezone = tloc.loc->timezone;
