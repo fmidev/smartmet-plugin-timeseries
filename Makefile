@@ -73,8 +73,8 @@ install:
 	@mkdir -p $(plugindir)
 	$(INSTALL_PROG) $(LIBFILE) $(plugindir)/$(LIBFILE)
 
-test:
-	cd test && make test
+test test-sqlite test-oracle test-postgresql:
+	$(MAKE) -C test $@
 
 objdir:
 	@mkdir -p $(objdir)

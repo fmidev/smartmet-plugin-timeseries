@@ -24,60 +24,88 @@ LIBS +=  -lsmartmet-spine  \
 	-lboost_system \
 	-lpthread -ldl
 
-all: $(PROG)
-clean:
-	rm -f $(PROG) *~
+TEST_PREPARE_TARGETS := cnf/geonames.conf cnf/gis.conf
+TEST_FINISH_TARGETS := dummy
+
 
 ifdef CI
-test: $(PROG) fminames test_sqlite
+GEONAMES_HOST_EDIT := sed -e 's/"smartmet-test"/"localhost"/g'
+TEST_PREPARE_TARGETS += geonames-database start-geonames-db
+TEST_FINISH_TARGETS += stop-test-db
+TEST_TARGETS := test-sqlite
+EXTRA_IGNORE := input/.testignore_circle-ci
 else
-test: $(PROG) test_sqlite test_oracle test_postgresql
+GEONAMES_HOST_EDIT := cat
+TEST_TARGETS := test-sqlite test-oracle test-postgresql
+EXTRA_IGNORE :=
 endif
-	@test `find . -name \*.err | wc -l` = "0" || ( echo ; echo "The following tests have errors:" ; \
-	   for i in *.err ; do echo `basename $$i .err`; done ; rm -f *.err ; false )
 
-fminames:
-	sed -i -e 's/"smartmet-test"/"localhost"/g' cnf/*.conf
-	@/usr/share/smartmet/test/db/init-and-start.sh && /usr/share/smartmet/test/db/install-test-db.sh > /dev/null
+TEST_DB_DIR := $(shell pwd)/tmp-geonames-db
+TEST_RUNNER :=
 
-test_sqlite: $(PROG)
-	@printf "RUNNING SQLITE TESTS:\n\n"
-	@rm -rf failures_sqlite failures sqlite.err input/.testignore
-	@mkdir -p failures
-	@test -f input/.testignore_sqlite && cp input/.testignore_sqlite input/.testignore || true
-	@./PluginTest -c cnf/reactor_sqlite.conf
-	@mv failures failures_sqlite
-	@test -f PluginTest.err && mv PluginTest.err sqlite.err || echo All sqlite tests passed
-	@printf "\n"
+all:
 
-test_oracle: $(PROG)
-	@printf "RUNNING ORACLE TESTS:\n\n"
-	@rm -rf failures_oracle failures oracle.err input/.testignore
-	@mkdir -p failures
-	@test -f input/.testignore_oracle && cp input/.testignore_oracle input/.testignore || true
-	@./PluginTest -c cnf/reactor_oracle.conf
-	@rm -f input/.testignore
-	@mv failures failures_oracle
-	@test -f PluginTest.err && mv PluginTest.err oracle.err || echo All Oracle tests passed
-	@printf "\n";
+clean:
+	-$(MAKE) $(TEST_FINISH_TARGETS)
+	rm -rf failed-sqlite failed-oracle failed-postgresql
+	rm -rf tmp-geonames-db
 
-test_postgresql: $(PROG)
-	@printf "RUNNING POSTGRESQL TESTS:\n\n"
-	@rm -rf failures_postgresql failures postgresql.err input/.testignore
-	@mkdir -p failures
-	@test -f input/.testignore_postgresql && cp input/.testignore_postgresql input/.testignore || true
-	@./PluginTest -c cnf/reactor_postgresql.conf
-	@rm -f input/.testignore
-	@mv failures failures_postgresql
-	@test -f PluginTest.err && mv PluginTest.err postgresql.err || echo All PostGreSQL tests passed
-	@printf "\n";
+test:	$(TEST_PREPARE_TARGETS)
+	@ok=true; failed=; \
+	for test in $(TEST_TARGETS); do \
+	  if ! $(MAKE) $$test; then ok=false; failed="$$failed $$test"; fi; \
+        done; \
+	if ! $$ok ; then \
+	  echo "======================================================================="; \
+	  echo "Failed: $$failed"; \
+	  echo "======================================================================="; \
+        fi; \
+        $$ok
 
-testdatabase: $(PROG)
+PRE_TEST :=
+POST_TEST :=
+
+test-oracle:		DB_TYPE := oracle
+test-postgresql:	DB_TYPE := postgresql
+test-sqlite:		DB_TYPE := sqlite
+
+test-sqlite test-oracle test-postgresql: $(TEST_PREPARE_TARGETS)
+	rm -rf failures-$(DB_TYPE)
+	mkdir -p failures-$(DB_TYPE)
+	$(TEST_RUNNER) smartmet-plugin-test --handler /timeseries \
+		--reactor-config cnf/reactor_$(DB_TYPE).conf \
+		--failures-dir failures-$(DB_TYPE) \
+		$(foreach fn, input/.testignore_$(DB_TYPE) $(EXTRA_IGNORE), --ignore $(fn)) \
+		--timeout 300
+	$(MAKE) $(TEST_FINISH_TARGETS)
+
+testdatabase:
 	@printf "CREATING TEST DATABASE:\n\n"
 	@ls -1 input > input/.testignore
 	@rm -f test_cache.sqlite
-	@./PluginTest -c cnf/reactor_testdb.conf && echo .quit | spatialite -silent test_cache.sqlite
+	@$(TEST_RUNNER) smartmet-plugin-test --handler /timeseries \
+		--reactor-config cnf/reactor_testdb.conf \
+		--ignore input/.testignore \
+		&& \
+	echo .quit | spatialite -silent test_cache.sqlite
 	@rm -f input/.testignore
 
-$(PROG) : % : %.cpp Makefile ../timeseries.so
-	$(CXX) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
+geonames-database:
+	@-$(MAKE) stop-test-db
+	rm -rf tmp-geonames-db
+	if ! /usr/share/smartmet/test/db/create-local-db.sh $(TEST_DB_DIR) >tmp-geonames-db.log 2>&1 ; then \
+	    cat tmp-geonames-db.log; \
+	    false; \
+	fi
+
+start-geonames-db: geonames-database
+	/usr/share/smartmet/test/db/test-db-ctl.sh $(TEST_DB_DIR) start -w
+
+stop-test-db:
+	-/usr/share/smartmet/test/db/test-db-ctl.sh $(TEST_DB_DIR) stop
+
+cnf/geonames.conf cnf/gis.conf:	dummy
+	$(GEONAMES_HOST_EDIT) $@.in >$@
+
+dummy:
+
