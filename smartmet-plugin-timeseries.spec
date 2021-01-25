@@ -60,6 +60,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis-devel >= 21.1.22
 #TestRequires: smartmet-library-newbase-devel >= 21.1.22
 #TestRequires: smartmet-library-spine-devel >= 21.1.14
+#TestRequires: smartmet-library-macgyver-devel >= 21.1.14
 #TestRequires: smartmet-engine-geonames-devel >= 21.1.25
 #TestRequires: smartmet-engine-gis-devel >= 21.1.14
 #TestRequires: smartmet-engine-querydata-devel >= 21.1.14
