@@ -1,4 +1,4 @@
-B65;6201;1c%bcond_without observation
+%bcond_without observation
 %define DIRNAME timeseries
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
