@@ -12,10 +12,10 @@
 #include "ObsParameter.h"
 #include "Query.h"
 #include "QueryLevelDataCache.h"
-#include <engines/grid/Engine.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <engines/gis/GeometryStorage.h>
+#include <engines/grid/Engine.h>
 #include <grid-content/queryServer/definition/QueryStreamer.h>
 #include <macgyver/TimeZones.h>
 #include <newbase/NFmiPoint.h>
@@ -116,7 +116,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   void processQuery(const State& state,
                     Spine::Table& data,
                     Query& masterquery,
-                    QueryServer::QueryStreamer_sptr queryStreamer);
+                    const QueryServer::QueryStreamer_sptr& queryStreamer);
 
   void processQEngineQuery(const State& state,
                            Query& query,
@@ -177,7 +177,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                       const ObsParameters& obsParameters,
                       Query& query) const;
 
-  bool resolveAreaStations(const Spine::LocationPtr & location,
+  bool resolveAreaStations(const Spine::LocationPtr& location,
                            const std::string& producer,
                            Query& query,
                            Engine::Observation::Settings& settings,
