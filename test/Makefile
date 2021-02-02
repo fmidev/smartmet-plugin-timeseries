@@ -30,7 +30,7 @@ TEST_FINISH_TARGETS := dummy
 
 ifdef CI
 GEONAMES_HOST_EDIT := sed -e 's/"smartmet-test"/"localhost"/g'
-TEST_PREPARE_TARGETS += geonames-database start-geonames-db
+TEST_PREPARE_TARGETS += start-geonames-db
 TEST_FINISH_TARGETS += stop-test-db
 TEST_TARGETS := test-sqlite
 EXTRA_IGNORE := input/.testignore_circle-ci
@@ -50,7 +50,7 @@ clean:
 	rm -rf failed-sqlite failed-oracle failed-postgresql
 	rm -rf tmp-geonames-db
 
-test:	$(TEST_PREPARE_TARGETS)
+test:
 	@ok=true; failed=; \
 	for test in $(TEST_TARGETS); do \
 	  if ! $(MAKE) $$test; then ok=false; failed="$$failed $$test"; fi; \
@@ -72,12 +72,13 @@ test-sqlite:		DB_TYPE := sqlite
 test-sqlite test-oracle test-postgresql: $(TEST_PREPARE_TARGETS)
 	rm -rf failures-$(DB_TYPE)
 	mkdir -p failures-$(DB_TYPE)
-	$(TEST_RUNNER) smartmet-plugin-test --handler /timeseries \
+	ok=true; $(TEST_RUNNER) smartmet-plugin-test --handler /timeseries \
 		--reactor-config cnf/reactor_$(DB_TYPE).conf \
 		--failures-dir failures-$(DB_TYPE) \
 		$(foreach fn, input/.testignore_$(DB_TYPE) $(EXTRA_IGNORE), --ignore $(fn)) \
-		--timeout 300
-	$(MAKE) $(TEST_FINISH_TARGETS)
+		--timeout 300 || ok=false; \
+	$(MAKE) $(TEST_FINISH_TARGETS); \
+	$$ok
 
 testdatabase:
 	@printf "CREATING TEST DATABASE:\n\n"
@@ -104,8 +105,9 @@ start-geonames-db: geonames-database
 stop-test-db:
 	-/usr/share/smartmet/test/db/test-db-ctl.sh $(TEST_DB_DIR) stop
 
-cnf/geonames.conf cnf/gis.conf:	dummy
+cnf/geonames.conf cnf/gis.conf:
 	$(GEONAMES_HOST_EDIT) $@.in >$@
 
 dummy:
 
+.PHONY: cnf/geonames.conf cnf/gis.conf
