@@ -1718,9 +1718,11 @@ void GridInterface::processGridQuery(
                   int idx = 0;
                   while (idx < pLen)
                   {
-                    if (gridQuery->mQueryParameterList[idx].mValueList[t]->mModificationTime > "")
+                    if (gridQuery->mQueryParameterList[idx].mValueList[t]->mModificationTime > 0)
                     {
-                      boost::local_time::local_date_time modTime(toTimeStamp(gridQuery->mQueryParameterList[idx].mValueList[t]->mModificationTime), tz);
+                      auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[idx].mValueList[t]->mModificationTime);
+                      boost::local_time::local_date_time modTime(dt,tz);
+                      //boost::local_time::local_date_time modTime(toTimeStamp(gridQuery->mQueryParameterList[idx].mValueList[t]->mModificationTime), tz);
                       Spine::TimeSeries::TimedValue tsValue(queryTime, masterquery.timeformatter->format(modTime));
                       tsForNonGridParam->emplace_back(tsValue);
                       idx = pLen + 10;
