@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.1.25
+Version: 21.2.3
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -25,7 +25,7 @@ BuildRequires: smartmet-library-newbase-devel >= 21.1.22
 BuildRequires: smartmet-library-gis-devel >= 21.1.22
 BuildRequires: smartmet-engine-geonames-devel >= 21.1.25
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.1.14
+BuildRequires: smartmet-engine-observation-devel >= 21.2.3
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.1.14
 BuildRequires: smartmet-engine-gis-devel >= 21.1.14
@@ -65,7 +65,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis-devel >= 21.1.14
 #TestRequires: smartmet-engine-querydata-devel >= 21.1.14
 %if %{with observation}
-#TestRequires: smartmet-engine-observation-devel >= 21.1.14
+#TestRequires: smartmet-engine-observation-devel >= 21.2.3
 %endif
 #TestRequires: boost169-devel
 #TestRequires: gdal32-devel
@@ -98,6 +98,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Wed Feb 3 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.3-1.fmi
+- New optional configuration parameter 'prevent_observation_database_query' introduced, 
+observation engine parameter interface changed (INSPIRE-914)
+
 * Mon Jan 25 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.1.25-1.fmi
 - Added inkeyword-parameter (BRAINSTORM-929)
 - Check for duplicate areas in qengine query (BRAINSTORM-1987)
