@@ -55,6 +55,7 @@ class Config : private boost::noncopyable
   Engine::Gis::PostGISIdentifierVector getPostGISIdentifiers() const;
 
   bool obsEngineDisabled() const { return itsObsEngineDisabled; }
+  bool obsEngineDatabaseQueryPrevented() const { return itsPreventObsEngineDatabaseQuery; }
   unsigned long long maxMemoryCacheSize() const;
   unsigned long long maxFilesystemCacheSize() const;
   const std::string& filesystemCacheDirectory() const;
@@ -80,6 +81,7 @@ class Config : private boost::noncopyable
   std::map<std::string, Engine::Gis::postgis_identifier> postgis_identifiers;
   std::string itsDefaultPostGISIdentifierKey;
   bool itsObsEngineDisabled;
+  bool itsPreventObsEngineDatabaseQuery;
 
   std::string itsFilesystemCacheDirectory;
   unsigned long long itsMaxMemoryCacheSize;

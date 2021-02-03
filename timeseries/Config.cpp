@@ -263,6 +263,7 @@ Config::Config(const string& configfile)
       itsFormatterOptions(),
       itsPrecisions(),
       itsObsEngineDisabled(false),
+      itsPreventObsEngineDatabaseQuery(false),
       itsFilesystemCacheDirectory("/var/smartmet/timeseriescache"),
       itsMaxMemoryCacheSize(104857600)  // 100 MB
       ,
@@ -297,6 +298,7 @@ Config::Config(const string& configfile)
     itsConfig.lookupValue("maxdistance", itsDefaultMaxDistance);
     itsConfig.lookupValue("expires", itsExpirationTime);
     itsConfig.lookupValue("observation_disabled", itsObsEngineDisabled);
+    itsConfig.lookupValue("prevent_observation_database_query", itsPreventObsEngineDatabaseQuery);
 
     itsConfig.lookupValue("cache.memory_bytes", itsMaxMemoryCacheSize);
     itsConfig.lookupValue("cache.filesystem_bytes", itsMaxFilesystemCacheSize);
