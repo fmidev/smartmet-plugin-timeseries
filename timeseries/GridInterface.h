@@ -40,12 +40,12 @@ class GridInterface
     void                    processGridQuery(const State& state,
                                 Query& query,
                                 OutputData& outputData,
-                                QueryServer::QueryStreamer_sptr queryStreamer,
+                                const QueryServer::QueryStreamer_sptr& queryStreamer,
                                 const AreaProducers& areaproducers,
                                 const ProducerDataPeriod& producerDataPeriod,
                                 const Spine::TaggedLocation& tloc,
-                                const Spine::LocationPtr loc,
-                                std::string country,
+                                const Spine::LocationPtr& loc,
+                                const std::string& country,
                                 T::GeometryId_set& geometryIdList,
                                 std::vector<std::vector<T::Coordinate>>& polygonPath);
 
@@ -71,11 +71,11 @@ class GridInterface
                                 double origLevel,
                                 const AreaProducers& areaproducers,
                                 const Spine::TaggedLocation& tloc,
-                                const Spine::LocationPtr loc,
+                                const Spine::LocationPtr& loc,
                                 T::GeometryId_set& geometryIdList,
                                 std::vector<std::vector<T::Coordinate>>& polygonPath);
 
-    void                    insertFileQueries(QueryServer::Query& query,QueryServer::QueryStreamer_sptr queryStreamer);
+    void                    insertFileQueries(QueryServer::Query& query,const QueryServer::QueryStreamer_sptr& queryStreamer);
 
     void                    getDataTimes(
                                 const AreaProducers& areaproducers,
@@ -83,7 +83,7 @@ class GridInterface
                                 std::string& endTime);
 
     int                     getParameterIndex(
-                                QueryServer::Query& gridQuery,std::string param);
+                                QueryServer::Query& gridQuery,const std::string& param);
 
 
     void                    erase_redundant_timesteps(

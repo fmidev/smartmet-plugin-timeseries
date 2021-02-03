@@ -844,7 +844,7 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
     std::unique_ptr<OGRGeometry> expandedGeomUptr;
     if (geom && radius > 0)
     {
-      auto expandedGeom = Fmi::OGR::expandGeometry(geom, radius);
+      auto * expandedGeom = Fmi::OGR::expandGeometry(geom, radius);
       expandedGeomUptr.reset(expandedGeom);
       wktString = Fmi::OGR::exportToWkt(*expandedGeom);
       geom = expandedGeom;
@@ -2970,9 +2970,9 @@ bool Plugin::processGridEngineQuery(const State& state,
           for (auto ll = locationList.begin(); ll != locationList.end(); ++ll)
           {
             // std::cout << formatLocation(*(*ll)) << endl;
-            coordinates.push_back(T::Coordinate((*ll)->longitude, (*ll)->latitude));
+            coordinates.emplace_back(T::Coordinate((*ll)->longitude, (*ll)->latitude));
           }
-          polygonPath.push_back(coordinates);
+          polygonPath.emplace_back(coordinates);
         }
         break;
 
@@ -3019,12 +3019,12 @@ bool Plugin::processGridEngineQuery(const State& state,
             // Create bounding box polygon
 
             std::vector<T::Coordinate> coordinates;
-            coordinates.push_back(T::Coordinate(lon1, lat1));
-            coordinates.push_back(T::Coordinate(lon1, lat2));
-            coordinates.push_back(T::Coordinate(lon2, lat2));
-            coordinates.push_back(T::Coordinate(lon2, lat1));
-            coordinates.push_back(T::Coordinate(lon1, lat1));
-            polygonPath.push_back(coordinates);
+            coordinates.emplace_back(T::Coordinate(lon1, lat1));
+            coordinates.emplace_back(T::Coordinate(lon1, lat2));
+            coordinates.emplace_back(T::Coordinate(lon2, lat2));
+            coordinates.emplace_back(T::Coordinate(lon2, lat1));
+            coordinates.emplace_back(T::Coordinate(lon1, lat1));
+            polygonPath.emplace_back(coordinates);
           }
           else
           {
@@ -3126,7 +3126,7 @@ bool Plugin::processGridEngineQuery(const State& state,
 void Plugin::processQuery(const State& state,
                           Spine::Table& table,
                           Query& masterquery,
-                          QueryServer::QueryStreamer_sptr queryStreamer)
+                          const QueryServer::QueryStreamer_sptr& queryStreamer)
 {
   try
   {

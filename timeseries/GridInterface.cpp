@@ -268,7 +268,7 @@ void GridInterface::getDataTimes(const AreaProducers& areaproducers, std::string
   }
 }
 
-void GridInterface::insertFileQueries(QueryServer::Query& query, QueryServer::QueryStreamer_sptr queryStreamer)
+void GridInterface::insertFileQueries(QueryServer::Query& query, const QueryServer::QueryStreamer_sptr& queryStreamer)
 {
   FUNCTION_TRACE
   try
@@ -358,7 +358,7 @@ bool GridInterface::isValidDefaultRequest(
 {
   try
   {
-    if (defaultGeometries.size() == 0)
+    if (defaultGeometries.empty())
       return true;
 
     if (ignoreGridGeometriesWhenPreloadReady)
@@ -411,7 +411,7 @@ void GridInterface::prepareGridQuery(
     double origLevel,
     const AreaProducers& areaproducers,
     const Spine::TaggedLocation& tloc,
-    const Spine::LocationPtr loc,
+    const Spine::LocationPtr& loc,
     T::GeometryId_set& geometryIdList,
     std::vector<std::vector<T::Coordinate>>& polygonPath)
 {
@@ -752,7 +752,7 @@ void GridInterface::prepareGridQuery(
       if (geometryId > 0)
         qParam.mGeometryId = geometryId;
 
-      std::string tmp = param.originalName();
+      const std::string& tmp = param.originalName();
 
       std::vector < std::string > partList;
 
@@ -961,7 +961,7 @@ void GridInterface::prepareGridQuery(
   }
 }
 
-int GridInterface::getParameterIndex(QueryServer::Query& gridQuery, std::string param)
+int GridInterface::getParameterIndex(QueryServer::Query& gridQuery, const std::string& param)
 {
   FUNCTION_TRACE
   try
@@ -984,12 +984,12 @@ void GridInterface::processGridQuery(
     const State& state,
     Query& masterquery,
     OutputData& outputData,
-    QueryServer::QueryStreamer_sptr queryStreamer,
+    const QueryServer::QueryStreamer_sptr& queryStreamer,
     const AreaProducers& areaproducers,
     const ProducerDataPeriod& producerDataPeriod,
     const Spine::TaggedLocation& tloc,
-    const Spine::LocationPtr loc,
-    std::string country,
+    const Spine::LocationPtr& loc,
+    const std::string& country,
     T::GeometryId_set& geometryIdList,
     std::vector<std::vector<T::Coordinate>>& polygonPath)
 {
@@ -1200,7 +1200,7 @@ void GridInterface::processGridQuery(
               }
             }
 
-            if (coordinates.size() == 0)
+            if (coordinates.empty())
             {
               uint len = gridQuery->mQueryParameterList[p].mValueList[x]->mValueList.getLength();
               if (len > 0)
