@@ -285,14 +285,14 @@ void GridInterface::insertFileQueries(QueryServer::Query& query, QueryServer::Qu
 
         newQuery.mSearchType = QueryServer::Query::SearchType::TimeSteps;
         // newQuery.mProducerNameList;
-        newQuery.mForecastTimeList.insert((*val)->mForecastTime);
+        newQuery.mForecastTimeList.insert((*val)->mForecastTimeUTC);
         newQuery.mAttributeList = query.mAttributeList;
         // newQuery.mCoordinateType;
         // newQuery.mAreaCoordinates;
         // newQuery.mRadius;
         newQuery.mTimezone = query.mTimezone;
-        newQuery.mStartTime = (*val)->mForecastTime;
-        newQuery.mEndTime = (*val)->mForecastTime;
+        newQuery.mStartTime = (*val)->mForecastTimeUTC;
+        newQuery.mEndTime = (*val)->mForecastTimeUTC;
         newQuery.mTimesteps = 1;
         newQuery.mTimestepSizeInMinutes = 60;
         newQuery.mAnalysisTime = (*val)->mAnalysisTime;
@@ -445,8 +445,8 @@ void GridInterface::prepareGridQuery(
       gridQuery.mAttributeList.addAttribute("contour.coordinateType", Fmi::to_string(T::CoordinateTypeValue::GRID_COORDINATES));
     }
 
-    gridQuery.mStartTime = startTime;
-    gridQuery.mEndTime = endTime;
+    std::string grid_startTime = startTime;
+    std::string grid_endTime = endTime;
     gridQuery.mGeometryIdList = geometryIdList;
 
     /*
@@ -500,28 +500,28 @@ void GridInterface::prepareGridQuery(
       }
 
       startTimeUTC = false;
-      gridQuery.mStartTime = startTime.substr(0, 9) + "000000";
+      grid_startTime = startTime.substr(0, 9) + "000000";
 
-      while (gridQuery.mStartTime < startT)
+      while (grid_startTime < startT)
       {
-        auto ptime = toTimeStamp(gridQuery.mStartTime);
+        auto ptime = toTimeStamp(grid_startTime);
         ptime = ptime + boost::posix_time::seconds(step);
-        gridQuery.mStartTime = Fmi::to_iso_string(ptime);
+        grid_startTime = Fmi::to_iso_string(ptime);
       }
 
-      gridQuery.mEndTime = endTime.substr(0, 11) + "0000";
+      grid_endTime = endTime.substr(0, 11) + "0000";
     }
 
-    if (gridQuery.mStartTime <= daylightSavingTime && gridQuery.mEndTime >= daylightSavingTime)
+    if (grid_startTime <= daylightSavingTime && grid_endTime >= daylightSavingTime)
     {
       daylightSavingActive = true;
       if (masterquery.toptions.timeSteps && *masterquery.toptions.timeSteps != 0)
       {
         // Adding one hour to the end time because of the daylight saving.
 
-        auto ptime = toTimeStamp(gridQuery.mEndTime);
+        auto ptime = toTimeStamp(grid_endTime);
         ptime = ptime + boost::posix_time::minutes(60);
-        gridQuery.mEndTime = Fmi::to_iso_string(ptime);
+        grid_endTime = Fmi::to_iso_string(ptime);
       }
     }
 
@@ -529,12 +529,12 @@ void GridInterface::prepareGridQuery(
 
     if (!startTimeUTC)
     {
-      gridQuery.mStartTime = localTimeToUtc(gridQuery.mStartTime, tz);
+      grid_startTime = localTimeToUtc(grid_startTime, tz);
     }
 
     if (!endTimeUTC)
     {
-      gridQuery.mEndTime = localTimeToUtc(gridQuery.mEndTime, tz);
+      grid_endTime = localTimeToUtc(grid_endTime, tz);
     }
 
     std::string latestTime = Fmi::to_iso_string(masterquery.latestTimestep);
@@ -545,13 +545,13 @@ void GridInterface::prepareGridQuery(
       if (masterquery.toptions.startTimeData)
       {
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeFromData;
-        gridQuery.mStartTime = "19000101T000000";
+        grid_startTime = "19000101T000000";
       }
 
       if (masterquery.toptions.endTimeData)
       {
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::EndTimeFromData;
-        gridQuery.mEndTime = "30000101T000000";
+        grid_endTime = "21000101T000000";
       }
 
       if (masterquery.toptions.mode == Spine::TimeSeriesGeneratorOptions::TimeSteps)
@@ -562,7 +562,7 @@ void GridInterface::prepareGridQuery(
 
       if (latestTime != startTime)
       {
-        gridQuery.mStartTime = localTimeToUtc(latestTime, tz);
+        grid_startTime = localTimeToUtc(latestTime, tz);
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeNotIncluded;
       }
 
@@ -574,14 +574,14 @@ void GridInterface::prepareGridQuery(
         if (daylightSavingActive)
           gridQuery.mMaxParameterValues++;
 
-        if (gridQuery.mStartTime == gridQuery.mEndTime)
-          gridQuery.mEndTime = "30000101T000000";
+        if (grid_startTime == grid_endTime)
+          grid_endTime = "21000101T000000";
       }
     }
     else
     {
-      auto s = toTimeStamp(gridQuery.mStartTime);
-      auto e = toTimeStamp(gridQuery.mEndTime);
+      auto s = toTimeStamp(grid_startTime);
+      auto e = toTimeStamp(grid_endTime);
 
       if (masterquery.toptions.timeSteps)
       {
@@ -620,7 +620,7 @@ void GridInterface::prepareGridQuery(
         if (additionOk)
         {
           stepCount++;
-          gridQuery.mForecastTimeList.insert(str);
+          gridQuery.mForecastTimeList.insert(toTimeT(s));
 
           if (masterquery.toptions.timeSteps && stepCount == steps)
             s = e;
@@ -628,6 +628,10 @@ void GridInterface::prepareGridQuery(
         s = s + boost::posix_time::seconds(step);
       }
     }
+
+    gridQuery.mStartTime = utcTimeToTimeT(grid_startTime);
+    gridQuery.mEndTime = utcTimeToTimeT(grid_endTime);
+    //std::cout << grid_startTime << "   -   " << grid_endTime << "\n";
 
     // bool sameQueryAnalysisTime = false;
     bool sameParamAnalysisTime = false;
@@ -1188,7 +1192,8 @@ void GridInterface::processGridQuery(
             {
               // This value is added for aggregation. We should remove it later.
 
-              boost::local_time::local_date_time queryTime(toTimeStamp(gridQuery->mQueryParameterList[p].mValueList[x]->mForecastTime), tz);
+              auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[p].mValueList[x]->mForecastTimeUTC);
+              boost::local_time::local_date_time queryTime(dt,tz);
               if (aggregationTimes.find(queryTime) == aggregationTimes.end())
               {
                 aggregationTimes.insert(queryTime);
@@ -1296,7 +1301,8 @@ void GridInterface::processGridQuery(
 
                 for (uint t = 0; t < tLen; t++)
                 {
-                  boost::local_time::local_date_time queryTime(toTimeStamp(gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastTime), tz);
+                  auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastTimeUTC);
+                  boost::local_time::local_date_time queryTime(dt,tz);
 
                   T::GridValue val;
                   if (gridQuery->mQueryParameterList[pid].mValueList[t]->mValueList.getGridValueByIndex(v, val) && (val.mValue != ParamValueMissing || val.mValueString.length() > 0))
@@ -1378,7 +1384,8 @@ void GridInterface::processGridQuery(
 
               for (auto ft = gridQuery->mForecastTimeList.begin(); ft != gridQuery->mForecastTimeList.end(); ++ft)
               {
-                boost::local_time::local_date_time queryTime(toTimeStamp(*ft), tz);
+                auto dt = boost::posix_time::from_time_t(*ft);
+                boost::local_time::local_date_time queryTime(dt,tz);
 
                 if (xLen == 1)
                 {
@@ -1834,7 +1841,7 @@ void GridInterface::processGridQuery(
 
                   for (uint r = 0; r < rLen; r++)
                   {
-                    if (gridQuery->mQueryParameterList[pid].mValueList[r]->mForecastTime == *ft)
+                    if (gridQuery->mQueryParameterList[pid].mValueList[r]->mForecastTimeUTC == *ft)
                     {
                       std::string producerName;
                       T::ProducerInfo producer;
