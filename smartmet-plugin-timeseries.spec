@@ -18,16 +18,16 @@ BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.1.14
-BuildRequires: smartmet-library-locus-devel >= 21.1.14
-BuildRequires: smartmet-library-macgyver-devel >= 21.1.14
+BuildRequires: smartmet-library-spine-devel >= 21.2.5
+BuildRequires: smartmet-library-locus-devel >= 21.2.2
+BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
 BuildRequires: smartmet-library-newbase-devel >= 21.1.22
 BuildRequires: smartmet-library-gis-devel >= 21.1.22
 BuildRequires: smartmet-engine-geonames-devel >= 21.1.25
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.2.3
+BuildRequires: smartmet-engine-observation-devel >= 21.2.9
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 21.1.14
+BuildRequires: smartmet-engine-querydata-devel >= 21.1.25
 BuildRequires: smartmet-engine-gis-devel >= 21.1.14
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
@@ -36,13 +36,13 @@ BuildRequires: smartmet-engine-gis-devel >= 21.1.14
 Requires: fmt >= 7.1.3
 Requires: libconfig
 Requires: smartmet-library-gis >= 21.1.22
-Requires: smartmet-library-locus >= 21.1.14
-Requires: smartmet-library-macgyver >= 21.1.14
+Requires: smartmet-library-locus >= 21.2.2
+Requires: smartmet-library-macgyver >= 21.1.25
 Requires: smartmet-library-newbase >= 21.1.22
-Requires: smartmet-library-spine >= 21.1.14
+Requires: smartmet-library-spine >= 21.2.5
 Requires: smartmet-library-gis >= 21.1.22
 Requires: smartmet-engine-geonames >= 21.1.25
-Requires: smartmet-engine-querydata >= 21.1.14
+Requires: smartmet-engine-querydata >= 21.1.25
 Requires: smartmet-engine-gis >= 21.1.14
 Requires: smartmet-server >= 21.1.14
 Requires: boost169-date-time
@@ -59,13 +59,13 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-library-gis-devel >= 21.1.22
 #TestRequires: smartmet-library-newbase-devel >= 21.1.22
-#TestRequires: smartmet-library-spine-devel >= 21.1.14
-#TestRequires: smartmet-library-macgyver-devel >= 21.1.14
+#TestRequires: smartmet-library-spine-devel >= 21.2.5
+#TestRequires: smartmet-library-macgyver-devel >= 21.1.25
 #TestRequires: smartmet-engine-geonames-devel >= 21.1.25
 #TestRequires: smartmet-engine-gis-devel >= 21.1.14
-#TestRequires: smartmet-engine-querydata-devel >= 21.1.14
+#TestRequires: smartmet-engine-querydata-devel >= 21.1.25
 %if %{with observation}
-#TestRequires: smartmet-engine-observation-devel >= 21.2.3
+#TestRequires: smartmet-engine-observation-devel >= 21.2.9
 %endif
 #TestRequires: boost169-devel
 #TestRequires: gdal32-devel
