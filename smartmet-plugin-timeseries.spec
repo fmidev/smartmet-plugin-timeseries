@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.2.3
+Version: 21.2.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -98,6 +98,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Tue Feb 9 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.9-1.fmi
+- Return HTTP response status code '408' when database timeout occurs (BRAINSTORM-2002)
+
 * Wed Feb 3 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.3-1.fmi
 - New optional configuration parameter 'prevent_observation_database_query' introduced, 
 observation engine parameter interface changed (INSPIRE-914)

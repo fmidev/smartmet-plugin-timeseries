@@ -3145,6 +3145,7 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
     ex.addParameter("ClientIP", theRequest.getClientIP());
     ex.printError();
 
+    std::string firstMessage = ex.what();
     if (isdebug)
     {
       // Delivering the exception information as HTTP content
@@ -3154,12 +3155,13 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
     }
     else
     {
-      theResponse.setStatus(Spine::HTTP::Status::bad_request);
+	  if(firstMessage.find("timeout") != std::string::npos)
+		theResponse.setStatus(Spine::HTTP::Status::request_timeout);
+	  else
+		theResponse.setStatus(Spine::HTTP::Status::bad_request);
     }
 
     // Adding the first exception information into the response header
-
-    std::string firstMessage = ex.what();
     boost::algorithm::replace_all(firstMessage, "\n", " ");
     firstMessage = firstMessage.substr(0, 300);
     theResponse.setHeader("X-TimeSeriesPlugin-Error", firstMessage);
