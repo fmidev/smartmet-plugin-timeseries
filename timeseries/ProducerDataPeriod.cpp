@@ -37,9 +37,9 @@ boost::local_time::local_date_time ProducerDataPeriod::getTime(const std::string
 
       if (time_enum == STARTTIME)
         return local_date_time(itsDataPeriod.at(producer).begin(), tz);
-      else
-        return local_date_time(
-            itsDataPeriod.at(producer).last() + boost::posix_time::microseconds(1), tz);
+
+      return local_date_time(
+          itsDataPeriod.at(producer).last() + boost::posix_time::microseconds(1), tz);
     }
     catch (...)
     {
@@ -61,8 +61,8 @@ boost::posix_time::ptime ProducerDataPeriod::getTime(const std::string& producer
     {
       if (time_enum == STARTTIME)
         return itsDataPeriod.at(producer).begin();
-      else
-        return (itsDataPeriod.at(producer).last() + boost::posix_time::microseconds(1));
+
+      return (itsDataPeriod.at(producer).last() + boost::posix_time::microseconds(1));
     }
 
     return not_a_date_time;

@@ -1,1 +1,1 @@
-GET /timeseries?param=time,name,temperature,interpolate_t(temperature:60m:60m),nearest_t(temperature:20m:20m)&fmisid=100422&producer=road&format=ascii&timeformat=sql&precision=double&starttime=2019-02-08T00:00:00Z&endtime=2019-02-08T03:00:00Z&timestep=60 HTTP/1.0
+GET /timeseries?param=time,name,temperature,interpolate_t(temperature:60m:60m),nearest_t(temperature:20m:20m)&fmisid=100422&producer=road&format=ascii&timeformat=sql&precision=double&starttime=2013-01-09T04:00:00Z&endtime=2013-01-09T08:00:00Z&timestep=60 HTTP/1.0

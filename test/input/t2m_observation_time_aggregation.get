@@ -1,1 +1,1 @@
-GET /timeseries?param=name,localtime,utctime,time,t2m,min_t(t2m:30m:30m),max_t(t2m:30m:30m)&places=Kaisaniemi&timeformat=timestamp&precision=double&producer=fmi&starttime=201404080800&endtime=201404081100&timestep=60&tz=Europe/Helsinki HTTP/1.0
+GET /timeseries?param=name,localtime,utctime,time,t2m,min_t(t2m:30m:30m),max_t(t2m:30m:30m)&places=Kaisaniemi&timeformat=timestamp&precision=double&producer=fmi&starttime=201308050800&endtime=201308051100&timestep=60&tz=Europe/Helsinki HTTP/1.0

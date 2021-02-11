@@ -1,1 +1,1 @@
-GET /timeseries?param=stationname,time,lpnn,tday,rrday&producer=opendata_daily&starttime=2018-10-01T00:00:00&endtime=2018-10-31T23:59:59&precision=double&timeformat=timestamp&lpnn=1401&missingtext=999.0 HTTP/1.0
+GET /timeseries?param=stationname,time,lpnn,tday,rrday&producer=opendata_daily&starttime=2013-10-01T00:00:00&endtime=2013-10-31T23:59:59&precision=double&timeformat=timestamp&lpnn=1401&missingtext=999.0 HTTP/1.0

@@ -8,6 +8,8 @@ include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
 # Compiler options
 
+CFLAGS += -Wno-maybe-uninitialized
+
 DEFINES = -DUNIX -D_REENTRANT
 
 INCLUDES += -isystem $(includedir)/mysql \
@@ -71,8 +73,8 @@ install:
 	@mkdir -p $(plugindir)
 	$(INSTALL_PROG) $(LIBFILE) $(plugindir)/$(LIBFILE)
 
-test:
-	cd test && make test
+test test-sqlite test-oracle test-postgresql:
+	$(MAKE) -C test $@
 
 objdir:
 	@mkdir -p $(objdir)
@@ -80,7 +82,7 @@ objdir:
 rpm: clean $(SPEC).spec
 	rm -f $(SPEC).tar.gz # Clean a possible leftover from previous attempt
 	tar -czvf $(SPEC).tar.gz --exclude test --exclude-vcs --transform "s,^,$(SPEC)/," *
-	rpmbuild -ta $(SPEC).tar.gz
+	rpmbuild -tb $(SPEC).tar.gz
 	rm -f $(SPEC).tar.gz
 
 .SUFFIXES: $(SUFFIXES) .cpp

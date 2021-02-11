@@ -1,1 +1,1 @@
-GET /timeseries?producer=fmi&starttime=200808051200&endtime=200808052200&place=Kumpula&param=time,WindSpeedMS,WindDirection,WindCompass8,WindCompass16,WindCompass32 HTTP/1.0
+GET /timeseries?producer=fmi&starttime=201308051200&endtime=201308052200&place=Kumpula&param=time,WindSpeedMS,WindDirection,WindCompass8,WindCompass16,WindCompass32 HTTP/1.0

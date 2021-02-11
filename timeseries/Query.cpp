@@ -32,7 +32,8 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-static const char* default_timezone = "localtime";
+const char* default_timezone = "localtime";
+
 namespace
 {
 void add_sql_data_filter(const Spine::HTTP::Request& req,
@@ -106,6 +107,20 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
         Spine::optional_double(req.getParameter("maxdistance"), config.defaultMaxDistance());
 
     keyword = Spine::optional_string(req.getParameter("keyword"), "");
+	auto searchName = req.getParameterList("inkeyword");
+	if (!searchName.empty())
+	  {
+		for (const std::string& keyword : searchName)
+		  {
+			Locus::QueryOptions opts;
+			opts.SetLanguage(language);
+			Spine::LocationList places = state.getGeoEngine().keywordSearch(opts, keyword);
+			if (places.empty())
+			  throw Fmi::Exception(BCP,
+								   "No locations for keyword " + std::string(keyword) + " found");
+			inKeywordLocations.insert(inKeywordLocations.end(),places.begin(),places.end());
+		  }
+	  }
 
     findnearestvalidpoint = Spine::optional_bool(req.getParameter("findnearestvalid"), false);
 
@@ -504,7 +519,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
       throw Fmi::Exception(BCP, "The 'param' option is empty!");
 
     // Split
-    typedef list<string> Names;
+    using Names = list<string>;
     Names names;
     boost::algorithm::split(names, opt, boost::algorithm::is_any_of(","));
 
@@ -549,12 +564,12 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     std::string aggregationIntervalStringAhead = ("0m");
 
     // check if second aggregation interval is defined
-    if (aggregationIntervalStringBehind.find(":") != string::npos)
+    if (aggregationIntervalStringBehind.find(':') != string::npos)
     {
       aggregationIntervalStringAhead =
-          aggregationIntervalStringBehind.substr(aggregationIntervalStringBehind.find(":") + 1);
+          aggregationIntervalStringBehind.substr(aggregationIntervalStringBehind.find(':') + 1);
       aggregationIntervalStringBehind =
-          aggregationIntervalStringBehind.substr(0, aggregationIntervalStringBehind.find(":"));
+          aggregationIntervalStringBehind.substr(0, aggregationIntervalStringBehind.find(':'));
     }
 
     int agg_interval_behind(Spine::duration_string_to_minutes(aggregationIntervalStringBehind));

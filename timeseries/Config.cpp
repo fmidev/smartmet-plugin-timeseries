@@ -14,13 +14,12 @@
 
 using namespace std;
 
-static const char* default_url = "/timeseries";
-static const char* default_timeformat = "iso";
-// static const char* default_postgis_client_encoding = "latin1";
+const char* default_url = "/timeseries";
+const char* default_timeformat = "iso";
 
-static double default_maxdistance = 60.0;  // km
+double default_maxdistance = 60.0;  // km
 
-static unsigned int default_expires = 60;  // seconds
+unsigned int default_expires = 60;  // seconds
 
 namespace SmartMet
 {
@@ -232,7 +231,7 @@ void Config::parse_config_precisions()
   }
 }
 
-string parse_config_key(const char* str1 = 0, const char* str2 = 0, const char* str3 = 0)
+string parse_config_key(const char* str1 = nullptr, const char* str2 = nullptr, const char* str3 = nullptr)
 {
   try
   {
@@ -265,6 +264,7 @@ Config::Config(const string& configfile)
       itsFormatterOptions(),
       itsPrecisions(),
       itsObsEngineDisabled(false),
+      itsPreventObsEngineDatabaseQuery(false),
       itsFilesystemCacheDirectory("/var/smartmet/timeseriescache"),
       itsMaxMemoryCacheSize(104857600)  // 100 MB
       ,
@@ -299,6 +299,7 @@ Config::Config(const string& configfile)
     itsConfig.lookupValue("maxdistance", itsDefaultMaxDistance);
     itsConfig.lookupValue("expires", itsExpirationTime);
     itsConfig.lookupValue("observation_disabled", itsObsEngineDisabled);
+    itsConfig.lookupValue("prevent_observation_database_query", itsPreventObsEngineDatabaseQuery);
 
     itsConfig.lookupValue("cache.memory_bytes", itsMaxMemoryCacheSize);
     itsConfig.lookupValue("cache.filesystem_bytes", itsMaxFilesystemCacheSize);
@@ -402,7 +403,7 @@ const Precision& Config::getPrecision(const string& name) const
 Engine::Gis::PostGISIdentifierVector Config::getPostGISIdentifiers() const
 {
   Engine::Gis::PostGISIdentifierVector ret;
-  for (auto item : postgis_identifiers)
+  for (const auto & item : postgis_identifiers)
     ret.push_back(item.second);
 
   return ret;

@@ -1,1 +1,1 @@
-GET /timeseries?producer=fmi&starttime=200808051200&endtime=200808052200&attributes=name,time&places=Kumpula,Tampere&format=serial&param=time,name,Temperature HTTP/1.0
+GET /timeseries?producer=fmi&starttime=201308051200&endtime=201308052200&attributes=name,time&places=Kumpula,Tampere&format=serial&param=time,name,Temperature HTTP/1.0

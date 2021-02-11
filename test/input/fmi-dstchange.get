@@ -1,1 +1,1 @@
-GET /timeseries?producer=fmi&starttime=201703230400&endtime=201703260600&geoid=-16000084&format=ascii&param=time,wmo,lat,lon,temperature&precision=double&timestep=360&timeformat=xml HTTP/1.0
+GET /timeseries?producer=fmi&starttime=201303300800&endtime=201304020800&geoid=-16000084&format=ascii&param=time,wmo,lat,lon,temperature&precision=double&timestep=360&timeformat=xml HTTP/1.0

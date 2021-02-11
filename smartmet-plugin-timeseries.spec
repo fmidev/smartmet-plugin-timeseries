@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 20.10.14
+Version: 21.2.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -14,42 +14,37 @@ BuildRequires: rpm-build
 BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: boost169-devel
-BuildRequires: fmt-devel >= 6.2.1
+BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 20.10.14
-BuildRequires: smartmet-library-locus-devel >= 20.8.21
-BuildRequires: smartmet-library-macgyver-devel >= 20.10.9
-BuildRequires: smartmet-library-newbase-devel >= 20.10.9
-BuildRequires: smartmet-library-gis-devel >= 20.9.25
-BuildRequires: smartmet-engine-geonames-devel >= 20.10.6
+BuildRequires: smartmet-library-spine-devel >= 21.2.5
+BuildRequires: smartmet-library-locus-devel >= 21.2.2
+BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
+BuildRequires: smartmet-library-newbase-devel >= 21.1.22
+BuildRequires: smartmet-library-gis-devel >= 21.1.22
+BuildRequires: smartmet-engine-geonames-devel >= 21.1.25
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 20.9.23
+BuildRequires: smartmet-engine-observation-devel >= 21.2.9
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 20.10.6
-BuildRequires: smartmet-engine-gis-devel >= 20.10.6
+BuildRequires: smartmet-engine-querydata-devel >= 21.1.25
+BuildRequires: smartmet-engine-gis-devel >= 21.1.14
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 20.6.10
+#Requires: smartmet-engine-observation >= 20.10.22
 #%endif
-Requires: fmt >= 6.2.1
+Requires: fmt >= 7.1.3
 Requires: libconfig
-Requires: smartmet-library-gis >= 20.9.25
-Requires: smartmet-library-locus >= 20.8.21
-Requires: smartmet-library-macgyver >= 20.10.9
-Requires: smartmet-library-newbase >= 20.10.9
-Requires: smartmet-library-spine >= 20.10.14
-Requires: smartmet-library-gis >= 20.9.25
-Requires: smartmet-engine-geonames >= 20.10.6
-BuildRequires: smartmet-engine-gis-devel >= 20.10.6
-# obsengine can be disabled in configuration: not included intentionally
-#%if %{with observation}
-#Requires: smartmet-engine-observation >= 20.6.10
-#%endif
-Requires: smartmet-engine-querydata >= 20.10.6
-Requires: smartmet-engine-gis >= 20.10.6
-Requires: smartmet-server >= 20.10.12
+Requires: smartmet-library-gis >= 21.1.22
+Requires: smartmet-library-locus >= 21.2.2
+Requires: smartmet-library-macgyver >= 21.1.25
+Requires: smartmet-library-newbase >= 21.1.22
+Requires: smartmet-library-spine >= 21.2.5
+Requires: smartmet-library-gis >= 21.1.22
+Requires: smartmet-engine-geonames >= 21.1.25
+Requires: smartmet-engine-querydata >= 21.1.25
+Requires: smartmet-engine-gis >= 21.1.14
+Requires: smartmet-server >= 21.1.14
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -60,18 +55,20 @@ Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: libconfig-devel
 #TestRequires: gcc-c++
+#TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
-#TestRequires: smartmet-library-gis-devel >= 20.10.5
-#TestRequires: smartmet-library-newbase-devel >= 20.9.29
-#TestRequires: smartmet-library-spine-devel >= 20.10.14
-#TestRequires: smartmet-engine-geonames-devel >= 20.8.23
-#TestRequires: smartmet-engine-gis-devel >= 20.8.23
-#TestRequires: smartmet-engine-querydata-devel >= 20.10.6
+#TestRequires: smartmet-library-gis-devel >= 21.1.22
+#TestRequires: smartmet-library-newbase-devel >= 21.1.22
+#TestRequires: smartmet-library-spine-devel >= 21.2.5
+#TestRequires: smartmet-library-macgyver-devel >= 21.1.25
+#TestRequires: smartmet-engine-geonames-devel >= 21.1.25
+#TestRequires: smartmet-engine-gis-devel >= 21.1.14
+#TestRequires: smartmet-engine-querydata-devel >= 21.1.25
 %if %{with observation}
-#TestRequires: smartmet-engine-observation-devel >= 20.9.23
+#TestRequires: smartmet-engine-observation-devel >= 21.2.9
 %endif
 #TestRequires: boost169-devel
-#TestRequires: gdal-devel
+#TestRequires: gdal32-devel
 #TestRequires: boost169-date-time
 #TestRequires: boost169-filesystem
 #TestRequires: boost169-iostreams
@@ -101,6 +98,38 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Tue Feb 9 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.9-1.fmi
+- Return HTTP response status code '408' when database timeout occurs (BRAINSTORM-2002)
+
+* Wed Feb 3 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.3-1.fmi
+- New optional configuration parameter 'prevent_observation_database_query' introduced, 
+observation engine parameter interface changed (INSPIRE-914)
+
+* Mon Jan 25 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.1.25-1.fmi
+- Added inkeyword-parameter (BRAINSTORM-929)
+- Check for duplicate areas in qengine query (BRAINSTORM-1987)
+
+* Thu Jan 14 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.14-1.fmi
+- Repackaged smartmet to resolve debuginfo issues
+
+* Tue Jan  5 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.5-1.fmi
+- Upgrade to fmt 7.1.3
+
+* Thu Dec 17 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.12.17-1.fmi
+- Check for duplicate areas in qengine query (BRAINSTORM-1987)
+
+* Tue Dec 15 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.12.15-1.fmi
+- Upgrade to pgdg12
+
+* Fri Oct 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.30-1.fmi
+- Fixed a large number of clang analyzer warnings
+
+* Wed Oct 28 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.10.28-1.fmi
+- Rebuild due to fmt upgrade
+
+* Thu Oct 22 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.10.22-1.fmi
+- Time period in several observation test cases changed because of CircleCI (BRAINSTORM-1940)
+
 * Wed Oct 14 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.10.14-1.fmi
 - Use new TableFormatter API
 

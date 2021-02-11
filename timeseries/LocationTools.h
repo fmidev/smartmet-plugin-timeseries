@@ -22,7 +22,7 @@ std::string get_name_base(const std::string& theName);
 const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
                                     const Engine::Gis::GeometryStorage& geometryStorage);
 
-std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string wktString, double radius = 0.0);
+std::unique_ptr<OGRGeometry> get_ogr_geometry(const std::string& wktString, double radius = 0.0);
 
 void get_svg_path(const Spine::TaggedLocation& tloc,
                   const Engine::Gis::GeometryStorage& geometryStorage,
@@ -33,7 +33,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
                                       const double& stepInKm,
                                       const Engine::Geonames::Engine& geonames);
 
-std::string get_location_id(Spine::LocationPtr loc);
+std::string get_location_id(const Spine::LocationPtr&loc);
 
 Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
                                 const int id,
