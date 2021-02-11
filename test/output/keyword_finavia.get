@@ -61,7 +61,7 @@ Helsinki-Malmin lentoasema 20080805T210000 14
 Helsinki-Malmin lentoasema 20080805T220000 14
 Helsinki-Malmin lentoasema 20080805T230000 14
 Helsinki-Malmin lentoasema 20080806T000000 14
-Helsinki-Malmin lentoasema 20080806T010000 14
+Helsinki-Malmin lentoasema 20080806T010000 13
 Helsinki-Malmin lentoasema 20080806T020000 13
 Helsinki-Malmin lentoasema 20080806T030000 13
 Helsinki-Malmin lentoasema 20080806T040000 13
@@ -86,7 +86,7 @@ Helsinki-Vantaan lentoasema 20080805T210000 14
 Helsinki-Vantaan lentoasema 20080805T220000 13
 Helsinki-Vantaan lentoasema 20080805T230000 13
 Helsinki-Vantaan lentoasema 20080806T000000 13
-Helsinki-Vantaan lentoasema 20080806T010000 13
+Helsinki-Vantaan lentoasema 20080806T010000 12
 Helsinki-Vantaan lentoasema 20080806T020000 12
 Helsinki-Vantaan lentoasema 20080806T030000 12
 Helsinki-Vantaan lentoasema 20080806T040000 12
@@ -212,7 +212,7 @@ Kemi 20080805T220000 13
 Kemi 20080805T230000 12
 Kemi 20080806T000000 11
 Kemi 20080806T010000 9
-Kemi 20080806T020000 8
+Kemi 20080806T020000 7
 Kemi 20080806T030000 6
 Kemi 20080806T040000 6
 Kemi 20080806T050000 5
@@ -249,7 +249,7 @@ Kittilän lentoasema 20080806T100000 14
 Kittilän lentoasema 20080806T110000 15
 Kittilän lentoasema 20080806T120000 15
 Kokkola (Kruunupyy) 20080805T120000 16
-Kokkola (Kruunupyy) 20080805T130000 17
+Kokkola (Kruunupyy) 20080805T130000 16
 Kokkola (Kruunupyy) 20080805T140000 16
 Kokkola (Kruunupyy) 20080805T150000 17
 Kokkola (Kruunupyy) 20080805T160000 17
@@ -289,7 +289,7 @@ Kuopio Airport 20080806T000000 10
 Kuopio Airport 20080806T010000 9
 Kuopio Airport 20080806T020000 8
 Kuopio Airport 20080806T030000 8
-Kuopio Airport 20080806T040000 8
+Kuopio Airport 20080806T040000 7
 Kuopio Airport 20080806T050000 7
 Kuopio Airport 20080806T060000 7
 Kuopio Airport 20080806T070000 9
@@ -362,7 +362,7 @@ Maarianhaminan lentoasema 20080805T220000 17
 Maarianhaminan lentoasema 20080805T230000 17
 Maarianhaminan lentoasema 20080806T000000 17
 Maarianhaminan lentoasema 20080806T010000 16
-Maarianhaminan lentoasema 20080806T020000 15
+Maarianhaminan lentoasema 20080806T020000 14
 Maarianhaminan lentoasema 20080806T030000 13
 Maarianhaminan lentoasema 20080806T040000 13
 Maarianhaminan lentoasema 20080806T050000 13
@@ -513,7 +513,7 @@ Turun lentoasema 20080805T230000 13
 Turun lentoasema 20080806T000000 13
 Turun lentoasema 20080806T010000 11
 Turun lentoasema 20080806T020000 10
-Turun lentoasema 20080806T030000 9
+Turun lentoasema 20080806T030000 8
 Turun lentoasema 20080806T040000 8
 Turun lentoasema 20080806T050000 8
 Turun lentoasema 20080806T060000 8
@@ -556,7 +556,7 @@ Vaasa Airport 20080805T160000 18
 Vaasa Airport 20080805T170000 18
 Vaasa Airport 20080805T180000 18
 Vaasa Airport 20080805T190000 17
-Vaasa Airport 20080805T200000 17
+Vaasa Airport 20080805T200000 16
 Vaasa Airport 20080805T210000 15
 Vaasa Airport 20080805T220000 14
 Vaasa Airport 20080805T230000 13
@@ -595,6 +595,6 @@ Varkaus Airport 20080806T060000 10
 Varkaus Airport 20080806T070000 11
 Varkaus Airport 20080806T080000 12
 Varkaus Airport 20080806T090000 13
-Varkaus Airport 20080806T100000 14
+Varkaus Airport 20080806T100000 13
 Varkaus Airport 20080806T110000 14
 Varkaus Airport 20080806T120000 15

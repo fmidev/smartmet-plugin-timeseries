@@ -3,7 +3,7 @@ array(
 "Temperature" => "15",
 "Precipitation1h" => "0.7"),
 "20080805T130000" => array(
-"Temperature" => "14",
+"Temperature" => "15",
 "Precipitation1h" => "0.6"),
 "20080805T140000" => array(
 "Temperature" => "15",
@@ -48,13 +48,13 @@ array(
 "Temperature" => "14",
 "Precipitation1h" => "0.0"),
 "20080806T040000" => array(
-"Temperature" => "14",
+"Temperature" => "13",
 "Precipitation1h" => "0.0"),
 "20080806T050000" => array(
 "Temperature" => "13",
 "Precipitation1h" => "0.0"),
 "20080806T060000" => array(
-"Temperature" => "13",
+"Temperature" => "12",
 "Precipitation1h" => "0.0"),
 "20080806T070000" => array(
 "Temperature" => "13",

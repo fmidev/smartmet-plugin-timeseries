@@ -11,7 +11,7 @@
 </forecast>
 <forecast time="2008-08-05T13:00:00" day="tiistai">
 <param name="time" text="2008-08-05T13:00:00"/>
-<param name="Temperature" value="14"/>
+<param name="Temperature" value="15"/>
 <param name="Precipitation1h" value="0.6"/>
 </forecast>
 <forecast time="2008-08-05T14:00:00" day="tiistai">
@@ -86,7 +86,7 @@
 </forecast>
 <forecast time="2008-08-06T04:00:00" day="keskiviikko">
 <param name="time" text="2008-08-06T04:00:00"/>
-<param name="Temperature" value="14"/>
+<param name="Temperature" value="13"/>
 <param name="Precipitation1h" value="0.0"/>
 </forecast>
 <forecast time="2008-08-06T05:00:00" day="keskiviikko">
@@ -96,7 +96,7 @@
 </forecast>
 <forecast time="2008-08-06T06:00:00" day="keskiviikko">
 <param name="time" text="2008-08-06T06:00:00"/>
-<param name="Temperature" value="13"/>
+<param name="Temperature" value="12"/>
 <param name="Precipitation1h" value="0.0"/>
 </forecast>
 <forecast time="2008-08-06T07:00:00" day="keskiviikko">

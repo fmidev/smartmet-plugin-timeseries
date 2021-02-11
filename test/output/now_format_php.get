@@ -6,7 +6,7 @@ array(
 ),
 array(
 "time" => "20080805T130000",
-"Temperature" => "14",
+"Temperature" => "15",
 "Precipitation1h" => "0.6"
 ),
 array(
@@ -81,7 +81,7 @@ array(
 ),
 array(
 "time" => "20080806T040000",
-"Temperature" => "14",
+"Temperature" => "13",
 "Precipitation1h" => "0.0"
 ),
 array(
@@ -91,7 +91,7 @@ array(
 ),
 array(
 "time" => "20080806T060000",
-"Temperature" => "13",
+"Temperature" => "12",
 "Precipitation1h" => "0.0"
 ),
 array(
