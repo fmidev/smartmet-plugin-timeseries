@@ -8,6 +8,7 @@
 #include "Precision.h"
 #include <boost/foreach.hpp>
 #include <macgyver/StringConversion.h>
+#include <ogr_geometry.h>
 #include <macgyver/Exception.h>
 #include <stdexcept>
 

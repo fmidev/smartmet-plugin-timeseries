@@ -7,7 +7,7 @@
 </row>
 <row>
 <time>20080805T130000</time>
-<Temperature>15</Temperature>
+<Temperature>14</Temperature>
 <Precipitation1h>0.6</Precipitation1h>
 </row>
 <row>
@@ -82,7 +82,7 @@
 </row>
 <row>
 <time>20080806T040000</time>
-<Temperature>13</Temperature>
+<Temperature>14</Temperature>
 <Precipitation1h>0.0</Precipitation1h>
 </row>
 <row>
@@ -92,7 +92,7 @@
 </row>
 <row>
 <time>20080806T060000</time>
-<Temperature>12</Temperature>
+<Temperature>13</Temperature>
 <Precipitation1h>0.0</Precipitation1h>
 </row>
 <row>

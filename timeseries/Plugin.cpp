@@ -17,6 +17,28 @@
 #include <spine/Convenience.h>
 #include <spine/ParameterTools.h>
 #include <spine/TableFormatterFactory.h>
+#include <spine/TimeSeriesAggregator.h>
+#include <spine/TimeSeriesOutput.h>
+#include <spine/ValueFormatter.h>
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <functional>
+#include <iostream>
+#include <limits>
+#include <numeric>
+#include <ogr_geometry.h>
+#include <stdexcept>
+
+using boost::numeric_cast;
+using boost::local_time::local_date_time;
+using boost::numeric::bad_numeric_cast;
+using boost::numeric::negative_overflow;
+using boost::numeric::positive_overflow;
+using boost::posix_time::hours;
+using boost::posix_time::minutes;
+using boost::posix_time::ptime;
+using boost::posix_time::seconds;
 
 //#define MYDEBUG ON
 
@@ -1631,6 +1653,8 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
       else
       {
         pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
+        if (!pGeo)
+          pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbPolygon);
 
         if (!pGeo)
           throw Fmi::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");

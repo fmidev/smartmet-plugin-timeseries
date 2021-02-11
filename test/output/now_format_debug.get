@@ -2,7 +2,7 @@
 </head><body>
 <table><tr><th>time</th><th>Temperature</th><th>Precipitation1h</th></tr><tr>
 <td>20080805T120000</td><td>15</td><td>0.7</td></tr><tr>
-<td>20080805T130000</td><td>15</td><td>0.6</td></tr><tr>
+<td>20080805T130000</td><td>14</td><td>0.6</td></tr><tr>
 <td>20080805T140000</td><td>15</td><td>0.3</td></tr><tr>
 <td>20080805T150000</td><td>15</td><td>0.2</td></tr><tr>
 <td>20080805T160000</td><td>15</td><td>0.3</td></tr><tr>
@@ -17,9 +17,9 @@
 <td>20080806T010000</td><td>14</td><td>0.0</td></tr><tr>
 <td>20080806T020000</td><td>14</td><td>0.0</td></tr><tr>
 <td>20080806T030000</td><td>14</td><td>0.0</td></tr><tr>
-<td>20080806T040000</td><td>13</td><td>0.0</td></tr><tr>
+<td>20080806T040000</td><td>14</td><td>0.0</td></tr><tr>
 <td>20080806T050000</td><td>13</td><td>0.0</td></tr><tr>
-<td>20080806T060000</td><td>12</td><td>0.0</td></tr><tr>
+<td>20080806T060000</td><td>13</td><td>0.0</td></tr><tr>
 <td>20080806T070000</td><td>13</td><td>0.0</td></tr><tr>
 <td>20080806T080000</td><td>14</td><td>0.0</td></tr><tr>
 <td>20080806T090000</td><td>14</td><td>0.0</td></tr><tr>

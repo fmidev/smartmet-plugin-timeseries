@@ -188,6 +188,9 @@ observation engine parameter interface changed (INSPIRE-914)
 - Added support for data_quality option (BRAINSTORM-1706)
 - New test cases and corrected test case results
 
+* Sun Apr 26 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.26-1.fmi
+- Repackaged
+
 * Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.fmi
 - Upgraded to Boost 1.69
 
@@ -195,11 +198,17 @@ observation engine parameter interface changed (INSPIRE-914)
 - Using faster algorithm to add missing timesteps to time series (BRAINSTORM-1800)
 - You can now use data_quality field as URL-parameter for NetAtmo producer (BRAINSTORM-1799)
 
+* Mon Mar 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.3.30-1.fmi
+- Full repackaging of the server
+
 * Tue Mar 10 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.3.10-1.fmi
 - Update using parameter tools from smartmet-library-spine (is_time_parameter)
 
 * Thu Mar  5 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.3.5-1.fmi
 - Use parameter tools from smartmet-library-spine and remove local version
+
+* Fri Feb 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.21-1.fmi
+- Upgrade to GDAL 3.0
 
 * Thu Feb 20 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.20-1.fmi
 - Fixed the 1-minute timestep (BRAINSTORM-1767)
@@ -212,6 +221,7 @@ observation engine parameter interface changed (INSPIRE-914)
 
 * Thu Feb 13 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.13-1.fmi
 - Use a system installed observation database in the tests
+- Repackaged due to ABI changes
 
 * Sun Feb  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.9-1.fmi
 - Repackaged due to delfoi/obsengine changes
@@ -230,6 +240,9 @@ observation engine parameter interface changed (INSPIRE-914)
 * Thu Jan 23 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.1.23-2.fmi
 - Configuration file structure and reading changed bacause of gis-engine
 interface changed (BRAINSTORM-1746)
+
+* Fri Dec 13 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.12.13-1.fmi
+- Upgdare to GDAL 3.0
 
 * Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.fmi
 - Rebuilt due to newbase API changes

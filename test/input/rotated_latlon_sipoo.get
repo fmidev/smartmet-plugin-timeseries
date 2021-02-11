@@ -1,0 +1,1 @@
+GET /timeseries?producer=harmonie_hybrid&starttime=data&endtime=data&timestep=data&place=Sipoo&param=time,Temperature,GeomHeight HTTP/1.0
