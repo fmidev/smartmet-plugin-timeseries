@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.2.11
+Version: 21.2.16
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,19 +18,19 @@ BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.1.29
+BuildRequires: smartmet-library-spine-devel >= 21.2.5
 BuildRequires: smartmet-library-locus-devel >= 21.2.2
 BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
-BuildRequires: smartmet-library-newbase-devel >= 21.1.22
-BuildRequires: smartmet-library-gis-devel >= 21.1.22
+BuildRequires: smartmet-library-newbase-devel >= 21.2.15
+BuildRequires: smartmet-library-gis-devel >= 21.2.11
 BuildRequires: smartmet-engine-geonames-devel >= 21.1.25
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.2.3
+BuildRequires: smartmet-engine-observation-devel >= 21.2.11
 %endif
 BuildRequires: smartmet-library-grid-content-devel >= 21.2.3
-BuildRequires: smartmet-library-grid-files-devel >= 21.2.3
-BuildRequires: smartmet-engine-querydata-devel >= 21.1.25
-BuildRequires: smartmet-engine-gis-devel >= 21.1.14
+BuildRequires: smartmet-library-grid-files-devel >= 21.2.15
+BuildRequires: smartmet-engine-querydata-devel >= 21.2.15
+BuildRequires: smartmet-engine-gis-devel >= 21.2.10
 BuildRequires: smartmet-engine-grid-devel >= 21.2.3
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
@@ -38,15 +38,15 @@ BuildRequires: smartmet-engine-grid-devel >= 21.2.3
 #%endif
 Requires: fmt >= 7.1.3
 Requires: libconfig
-Requires: smartmet-library-gis >= 21.1.22
+Requires: smartmet-library-gis >= 21.2.11
 Requires: smartmet-library-locus >= 21.2.2
 Requires: smartmet-library-macgyver >= 21.1.25
-Requires: smartmet-library-newbase >= 21.1.22
-Requires: smartmet-library-spine >= 21.1.29
-Requires: smartmet-library-gis >= 21.1.22
+Requires: smartmet-library-newbase >= 21.2.15
+Requires: smartmet-library-spine >= 21.2.5
+Requires: smartmet-library-gis >= 21.2.11
 Requires: smartmet-engine-geonames >= 21.1.25
-Requires: smartmet-engine-querydata >= 21.1.25
-Requires: smartmet-engine-gis >= 21.1.14
+Requires: smartmet-engine-querydata >= 21.2.15
+Requires: smartmet-engine-gis >= 21.2.10
 Requires: smartmet-engine-grid >= 21.2.3
 Requires: smartmet-server >= 21.1.14
 Requires: boost169-date-time
@@ -61,12 +61,12 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: gcc-c++
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
-#TestRequires: smartmet-library-gis-devel >= 21.1.22
-#TestRequires: smartmet-library-newbase-devel >= 21.1.22
-#TestRequires: smartmet-library-spine-devel >= 21.1.29
+#TestRequires: smartmet-library-gis-devel >= 21.2.11
+#TestRequires: smartmet-library-newbase-devel >= 21.2.15
+#TestRequires: smartmet-library-spine-devel >= 21.2.5
 #TestRequires: smartmet-engine-geonames-devel >= 20.8.23
-#TestRequires: smartmet-engine-gis-devel >= 21.1.14
-#TestRequires: smartmet-engine-querydata-devel >= 21.1.25
+#TestRequires: smartmet-engine-gis-devel >= 21.2.10
+#TestRequires: smartmet-engine-querydata-devel >= 21.2.15
 %if %{with observation}
 #TestRequires: smartmet-engine-observation-devel >= 21.2.10
 %endif
@@ -102,6 +102,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Tue Feb 16 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.16-1.fmi
+- Merged fixes and improvements from master
+
 * Thu Feb 11 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.11-1.fmi
 - Merged WGS84 branch
 
@@ -251,13 +254,11 @@ observation engine parameter interface changed (INSPIRE-914)
 - Added support for data_quality option (BRAINSTORM-1706)
 - New test cases and corrected test case results
 
-<<<<<<< HEAD:smartmet-plugin-gribtimeseries.spec
 * Thu Apr 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.30-1.fmi
 - Repackaged due to base library API changes
-=======
+
 * Sun Apr 26 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.26-1.fmi
 - Repackaged
->>>>>>> master:smartmet-plugin-timeseries.spec
 
 * Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.fmi
 - Upgraded to Boost 1.69
@@ -278,16 +279,14 @@ observation engine parameter interface changed (INSPIRE-914)
 * Thu Mar  5 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.3.5-1.fmi
 - Use parameter tools from smartmet-library-spine and remove local version
 
-<<<<<<< HEAD:smartmet-plugin-gribtimeseries.spec
 * Tue Feb 25 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.25-2.fmi
 - Repackaged due to base library API changes
 
-* Thu Feb 20 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.20-2.fmi
-- Fixed producer parser to check if the producer is known to GRIB-engine
-=======
 * Fri Feb 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.21-1.fmi
 - Upgrade to GDAL 3.0
->>>>>>> master:smartmet-plugin-timeseries.spec
+
+* Thu Feb 20 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.20-2.fmi
+- Fixed producer parser to check if the producer is known to GRIB-engine
 
 * Thu Feb 20 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.20-1.fmi
 - Fixed the 1-minute timestep (BRAINSTORM-1767)
@@ -325,12 +324,14 @@ observation engine parameter interface changed (INSPIRE-914)
 - Configuration file structure and reading changed bacause of gis-engine
 interface changed (BRAINSTORM-1746)
 
-<<<<<<< HEAD:smartmet-plugin-gribtimeseries.spec
 * Tue Jan 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.21-1.fmi
 - Repackaged due to grid-content and grid-engine API changes
 
 * Thu Jan 16 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.16-1.fmi
 - Make sure producer cache is updated frequently
+
+* Fri Dec 13 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.12.13-1.fmi
+- Upgrade to GDAL 3.0
 
 * Wed Dec  4 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.12.4-1.fmi
 - Repackaged due to base library changes
@@ -338,18 +339,12 @@ interface changed (BRAINSTORM-1746)
 * Fri Nov 22 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.22-1.fmi
 - Repackaged due to API changes in grid-content library
 
-* Wed Nov 20 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.20-1.fmi
+* Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.fmi
+- Rebuilt due to newbase API changes
 - More fixes for grid-parameter alias name bug (BRAINSTORM-1726)
 
 * Tue Nov 19 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.19-1.fmi
 - Changes from qd-timeseries imported. Fixed grid-parameter alias name bug (BRAINSTORM-1726)
-=======
-* Fri Dec 13 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.12.13-1.fmi
-- Upgdare to GDAL 3.0
-
-* Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.fmi
-- Rebuilt due to newbase API changes
->>>>>>> master:smartmet-plugin-timeseries.spec
 
 * Thu Nov 14 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.14-1.fmi
 - Refactoring code because textgenplugin must also support bbox and wkt parameters (BRAINSTORM-1720)
