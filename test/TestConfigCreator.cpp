@@ -1,12 +1,8 @@
-#include "grid-files/common/Exception.h"
-#include "grid-files/common/GeneralFunctions.h"
-#include "grid-files/common/ConfigurationFile.h"
-
+#include <grid-files/common/ConfigurationFile.h>
+#include <grid-files/common/GeneralFunctions.h>
+#include <macgyver/Exception.h>
 
 using namespace SmartMet;
-
-
-
 
 int main(int argc, char *argv[])
 {
@@ -14,7 +10,9 @@ int main(int argc, char *argv[])
   {
     if (argc < 4)
     {
-      fprintf(stderr,"USAGE: TestConfigCreator <configurationFile> <inputFile> <outpufFile> [-D attrName attValue ... -D attrName attrValue]\n");
+      fprintf(stderr,
+              "USAGE: TestConfigCreator <configurationFile> <inputFile> <outpufFile> [-D attrName "
+              "attValue ... -D attrName attrValue]\n");
       return -1;
     }
 
@@ -24,23 +22,22 @@ int main(int argc, char *argv[])
 
     ConfigurationFile config(configFile);
 
-    for (int t=4; t<argc; t++)
+    for (int t = 4; t < argc; t++)
     {
-      if (strcmp(argv[t],"-D") == 0  &&  (t+2) < argc)
+      if (strcmp(argv[t], "-D") == 0 && (t + 2) < argc)
       {
-        std::string value = argv[t+2];
-        config.setAttributeValue(argv[t+1],value);
+        std::string value = argv[t + 2];
+        config.setAttributeValue(argv[t + 1], value);
       }
     }
 
-    config.replaceAttributeNamesWithValues(std::string(inputFile),std::string(outputFile));
+    config.replaceAttributeNamesWithValues(std::string(inputFile), std::string(outputFile));
     return 0;
   }
-  catch (SmartMet::Spine::Exception& e)
+  catch (Fmi::Exception &e)
   {
-    SmartMet::Spine::Exception exception(BCP,"Service call failed!",NULL);
+    Fmi::Exception exception(BCP, "Service call failed!", NULL);
     exception.printError();
     return -7;
   }
 }
-
