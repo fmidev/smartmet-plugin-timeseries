@@ -1,0 +1,41 @@
+crsDefinitionDir = "crs";
+
+postgis:
+{
+	# Enter Your postgres database connection data below
+	host		= "smartmet-test";
+	port		= 5444;
+	database	= "gis";
+	username	= "gis_user";
+	password	= "gis_pw";
+	encoding	= "UTF8";
+};
+
+cache:
+{
+	max_size	= 1000;
+};
+
+gdal:
+{
+	# Discard projected points which fall outside the valid area
+	# for the spatial reference. For example eureffin is not valid
+	# in the full area of EC Europe data
+
+	OGR_ENABLE_PARTIAL_REPROJECTION	= "YES";
+
+	# Seems to be the only way to properly disable error messages
+	CPL_LOG	= "/dev/null";
+};
+
+epsg:
+(
+	{
+		id		= 2393
+		bbox		= [ 19.24, 31.59, 59.75, 70.09 ]
+		name		= "KKJ / Finland Uniform Coordinate System"
+		scope		= "Large and medium scale topographic mapping and engineering survey."
+		source		= "National Land Survey of Finland; http://www.maanmittauslaitos.fi"
+		deprecated	= false
+	}
+)

@@ -1,1 +1,4 @@
-database_info.conf
+/database_info.conf
+/local.conf
+/geonames.conf
+/gis.conf

@@ -3,3 +3,4 @@ PluginTest
 PluginTestGrid
 TestConfigCreator
 input/.testignore
+/tmp-geonames-db*

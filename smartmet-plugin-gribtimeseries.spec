@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.2.3
+Version: 21.2.11
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -68,7 +68,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis-devel >= 21.1.14
 #TestRequires: smartmet-engine-querydata-devel >= 21.1.25
 %if %{with observation}
-#TestRequires: smartmet-engine-observation-devel >= 20.10.29
+#TestRequires: smartmet-engine-observation-devel >= 21.2.10
 %endif
 #TestRequires: smartmet-engine-grid-devel >= 21.2.3
 #TestRequires: boost169-devel
@@ -102,11 +102,23 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Thu Feb 11 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.11-1.fmi
+- Merged WGS84 branch
+
+* Tue Feb 9 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.9-1.fmi
+- Return HTTP response status code '408' when database timeout occurs (BRAINSTORM-2002)
+
 * Wed Feb  3 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.3-1.fmi
+- New optional configuration parameter 'prevent_observation_database_query' introduced, 
+observation engine parameter interface changed (INSPIRE-914)
 - Use time_t for speed
 
 * Wed Jan 27 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.27-1.fmi
 - Repackaged due to base library ABI changes
+
+* Mon Jan 25 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.1.25-1.fmi
+- Added inkeyword-parameter (BRAINSTORM-929)
+- Check for duplicate areas in qengine query (BRAINSTORM-1987)
 
 * Tue Jan 19 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.19-1.fmi
 - Performance improvements
@@ -117,8 +129,17 @@ rm -rf $RPM_BUILD_ROOT
 * Mon Jan 11 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.11-1.fmi
 - Repackaged due to grid-files API changes
 
+* Tue Jan  5 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.5-1.fmi
+- Upgrade to fmt 7.1.3
+
 * Mon Jan  4 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.1.4-1.fmi
 - Upgraded to GDAL 3.2
+
+* Thu Dec 17 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.12.17-1.fmi
+- Check for duplicate areas in qengine query (BRAINSTORM-1987)
+
+* Tue Dec 15 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.12.15-1.fmi
+- Upgrade to pgdg12
 
 * Thu Dec  3 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.12.3-1.fmi
 - Repackaged due to library ABI changes
@@ -230,8 +251,13 @@ rm -rf $RPM_BUILD_ROOT
 - Added support for data_quality option (BRAINSTORM-1706)
 - New test cases and corrected test case results
 
+<<<<<<< HEAD:smartmet-plugin-gribtimeseries.spec
 * Thu Apr 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.30-1.fmi
 - Repackaged due to base library API changes
+=======
+* Sun Apr 26 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.26-1.fmi
+- Repackaged
+>>>>>>> master:smartmet-plugin-timeseries.spec
 
 * Sat Apr 18 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.4.18-1.fmi
 - Upgraded to Boost 1.69
@@ -243,17 +269,25 @@ rm -rf $RPM_BUILD_ROOT
 - Using faster algorithm to add missing timesteps to time series (BRAINSTORM-1800)
 - You can now use data_quality field as URL-parameter for NetAtmo producer (BRAINSTORM-1799)
 
+* Mon Mar 30 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.3.30-1.fmi
+- Full repackaging of the server
+
 * Tue Mar 10 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.3.10-1.fmi
 - Update using parameter tools from smartmet-library-spine (is_time_parameter)
 
 * Thu Mar  5 2020 Andris Pavenis <andris.pavenis@fmi.fi> - 20.3.5-1.fmi
 - Use parameter tools from smartmet-library-spine and remove local version
 
+<<<<<<< HEAD:smartmet-plugin-gribtimeseries.spec
 * Tue Feb 25 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.25-2.fmi
 - Repackaged due to base library API changes
 
 * Thu Feb 20 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.20-2.fmi
 - Fixed producer parser to check if the producer is known to GRIB-engine
+=======
+* Fri Feb 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.21-1.fmi
+- Upgrade to GDAL 3.0
+>>>>>>> master:smartmet-plugin-timeseries.spec
 
 * Thu Feb 20 2020 Anssi Reponen <anssi.reponen@fmi.fi> - 20.2.20-1.fmi
 - Fixed the 1-minute timestep (BRAINSTORM-1767)
@@ -266,6 +300,7 @@ rm -rf $RPM_BUILD_ROOT
 
 * Thu Feb 13 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.13-1.fmi
 - Use a system installed observation database in the tests
+- Repackaged due to ABI changes
 
 * Sun Feb  9 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.2.9-1.fmi
 - Repackaged due to delfoi/obsengine changes
@@ -290,6 +325,7 @@ rm -rf $RPM_BUILD_ROOT
 - Configuration file structure and reading changed bacause of gis-engine
 interface changed (BRAINSTORM-1746)
 
+<<<<<<< HEAD:smartmet-plugin-gribtimeseries.spec
 * Tue Jan 21 2020 Mika Heiskanen <mika.heiskanen@fmi.fi> - 20.1.21-1.fmi
 - Repackaged due to grid-content and grid-engine API changes
 
@@ -307,6 +343,13 @@ interface changed (BRAINSTORM-1746)
 
 * Tue Nov 19 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.19-1.fmi
 - Changes from qd-timeseries imported. Fixed grid-parameter alias name bug (BRAINSTORM-1726)
+=======
+* Fri Dec 13 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.12.13-1.fmi
+- Upgdare to GDAL 3.0
+
+* Wed Nov 20 2019 Mika Heiskanen <mika.heiskanen@fmi.fi> - 19.11.20-1.fmi
+- Rebuilt due to newbase API changes
+>>>>>>> master:smartmet-plugin-timeseries.spec
 
 * Thu Nov 14 2019 Anssi Reponen <anssi.reponen@fmi.fi> - 19.11.14-1.fmi
 - Refactoring code because textgenplugin must also support bbox and wkt parameters (BRAINSTORM-1720)

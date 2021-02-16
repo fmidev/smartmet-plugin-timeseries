@@ -6,9 +6,17 @@ include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
 CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
 
-# Unfortunately otlv4.h forces us to define the full oracle include path
+# Boost 1.69
+
+ifneq "$(wildcard /usr/include/boost169)" ""
+  INCLUDES += -isystem /usr/include/boost169
+  LIBS += -L/usr/lib64/boost169
+endif
+
 INCLUDES += \
 	-I ../timeseries \
+	-I /usr/include/smartmet \
+	-isystem /usr/gdal30/include \
 	-isystem /usr/include/mysql \
 	-I /usr/include/smartmet \
 	-I /usr/include/smartmet/grid-files \
@@ -27,7 +35,11 @@ LIBS +=  -lsmartmet-spine  \
 	-lboost_filesystem \
 	-lboost_iostreams \
 	-lboost_system \
-	-lpthread -ldl
+	-L/usr/gdal30/lib -lgdal \
+	-lbz2 -lz -lpthread -ldl
+
+TEST_PREPARE_TARGETS := cnf/geonames.conf cnf/gis.conf
+TEST_FINISH_TARGETS := dummy
 
 all: $(PROG)
 

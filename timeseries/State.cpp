@@ -1,6 +1,7 @@
 #include "State.h"
 #include "Plugin.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <ogr_geometry.h>
 #include <macgyver/Exception.h>
 
 namespace SmartMet

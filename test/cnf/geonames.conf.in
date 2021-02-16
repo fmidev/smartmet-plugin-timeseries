@@ -1,0 +1,174 @@
+# Do not load autocomplete data at all
+mock = false;
+
+# This is mostly for debugging
+
+verbose	= false;
+
+# Fix roadstation names to be splittable into words
+
+remove_underscores = true;
+
+# This affects autocomplete. For example using en_US would mean
+# Ä and A would be considered equivalent.
+
+locale = "fi_FI.UTF-8";
+
+# DEM data. If this is omitted, the dem value will always be NaN
+demdir = "/usr/share/smartmet/test/data/gis/rasters/viewfinder";
+
+# Do not use too high resolution data to avoid page faults
+# 0 meters = allow highest possible resolution
+# 50 meters disables Scandinavian 30 m data.
+# 100 disables global 90 meter data.
+
+maxdemresolution = 0;
+
+# LandCover data
+landcoverdir = "/usr/share/smartmet/test/data/gis/rasters/globcover";
+
+# Database settings.
+
+database:
+{
+	disable  = false;
+	port	 = 5444;
+	host	 = "smartmet-test";
+	user	 = "fminames_user";
+	database = "fminames";
+	pass	 = "fminames_pw";
+
+	overrides =
+	(
+		{
+			name = ["centos7-punkka"];
+			host = "gemini";
+		},
+		{
+			name = ["lavi", "kokis"];
+			host = "gemini";
+		}
+	);
+
+	# For quick memory leak tests with valgrind:
+	where:
+	{
+	#	geonames = "keyword='synop_fi'";
+		alternate_geonames = "a.language in('fi','sv','en','wmo','fmisid','lpnn')";
+	}
+
+};
+
+cache:
+{
+	# Cache maximum size
+	max_size	= 10000000;
+	# Suggest cache size
+	suggest_max_size = 10000;
+};
+
+
+# Priorities
+
+priorities:
+{
+   # Score for an exact name match
+   match = 100;
+
+   # Divide population to get score
+
+   populations:
+   {
+      FI = 2000;	// Finland
+      AX = 2000;	// Aland
+      EE = 10000;	// Estonia
+      SE = 20000;	// Sweden
+      NO = 20000;	// Norway
+      DK = 20000;	// Denmark
+      default = 100000;
+      US = 100000;	// USA. 300000 would be too large!
+      MX = 108000;	// Mexico
+      JP = 128000;	// Japan
+      RU = 142000;	// Russia
+      NG = 155000;	// Nigeria
+      BD = 162000;	// Bangladesh
+      PK = 167000;	// Pakistan
+      BR = 200000;	// Brazil
+      ID = 230000;	// Indonesia
+      IN = 1200000;	// India
+      CN = 1300000;	// China
+   };
+
+   # Feature priorities
+
+   features:
+   {
+	default = "default_features";
+	FI	= "FI_features";
+   };
+
+   default_features:
+   {
+        PPLC    = 35;
+	SKI     = 28;
+	PPLA    = 25;
+	PPLG    = 25;
+	PPLA2	= 25;
+	PPLA3	= 25;
+	PPL     = 20;
+	ADM2    = 20;	# we do not know which ones are municipalities around the world
+	ADM3    = 20;
+	PPLX    = 19;
+	ADMD    = 14;
+	ISL     = 12;
+	POST    = 10;
+	default = 0;
+   };
+
+   FI_features:
+   {
+        PPLC    = 35;
+	SKI     = 28;
+	PPLA    = 25;
+	PPLG    = 25;
+	PPL     = 20;
+	PPLA2   = 20;
+	PPLA3   = 20;
+	PPLX    = 19;
+	ISL     = 12;
+	POST    = 10;
+	ADM1	= 0;	# Åland municipalities
+	ADM2	= 0;	# Obsolete category in Finland (only Åland is ADM2)
+	ADM3	= 2;	# Finland municipalities
+	ADMD    = 1;
+	default = 0;
+   };
+
+
+   # Areas
+
+   areas:
+   {
+	Helsinki = 2;
+	Espoo    = 1;
+	Vantaa   = 1;
+	Turku    = 1;
+	Tampere  = 1;
+	Oulu     = 1;
+	default  = 0;
+   };
+
+   # Countries
+
+   countries:
+   {
+	FI = 15;
+	AX = 15;
+	SE = 12;
+	NO = 10;
+	DK = 10;
+	EE = 9;
+	default = 0;
+   };
+
+};

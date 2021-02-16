@@ -24,6 +24,28 @@
 #include <spine/ParameterTools.h>
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
+#include <spine/TimeSeriesAggregator.h>
+#include <spine/TimeSeriesOutput.h>
+#include <spine/ValueFormatter.h>
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <functional>
+#include <iostream>
+#include <limits>
+#include <numeric>
+#include <ogr_geometry.h>
+#include <stdexcept>
+
+using boost::numeric_cast;
+using boost::local_time::local_date_time;
+using boost::numeric::bad_numeric_cast;
+using boost::numeric::negative_overflow;
+using boost::numeric::positive_overflow;
+using boost::posix_time::hours;
+using boost::posix_time::minutes;
+using boost::posix_time::ptime;
+using boost::posix_time::seconds;
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
@@ -432,6 +454,29 @@ void fix_precisions(Query& masterquery, const ObsParameters& obsParameters)
   }
 }
 #endif
+
+Spine::TaggedLocationList get_locations_inside_geometry(const Spine::LocationList& locations, const OGRGeometry& geom)
+{
+  try
+	{
+	  Spine::TaggedLocationList ret;
+	  
+	  for (auto loc : locations)
+		{
+		  
+		  std::string wkt = ("POINT(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")");
+		  std::unique_ptr<OGRGeometry> location_geom = get_ogr_geometry(wkt);
+		  if(geom.Contains(location_geom.get()))
+			ret.push_back(Spine::TaggedLocation(loc->name, loc));
+		}
+	  
+	  return ret;
+	}
+  catch (...)
+	{
+	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
+	}
+}
 
 }  // namespace
 
@@ -1640,6 +1685,8 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
     settings.useDataCache = query.useDataCache;
     // Data filtering settings
     settings.sqlDataFilter = query.sqlDataFilter;
+	// Option to prevent queries to database
+	settings.preventDatabaseQuery = itsConfig.obsEngineDatabaseQueryPrevented();
   }
   catch (...)
   {
@@ -1751,9 +1798,9 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
       }
       else if (loc->type == Spine::Location::Area)
       {
-  #ifdef MYDEBUG
+#ifdef MYDEBUG
         std::cout << loc_name << " is an Area" << std::endl;
-  #endif
+#endif
 
         const OGRGeometry* pGeo = 0;
 
@@ -2851,13 +2898,20 @@ void Plugin::processQEngineQuery(const State& state,
 
     bool firstProducer = outputData.empty();
 
+	std::set<std::string> processed_locations;
     for (const auto& tloc : masterquery.loptions->locations())
     {
+	  std::string location_id = get_location_id(tloc.loc);
+	  // Data for each location is fetched only once
+	  if(processed_locations.find(location_id) != processed_locations.end())
+		continue;
+	  processed_locations.insert(location_id);
+
       Query query = masterquery;
       QueryLevelDataCache queryLevelDataCache;
 
       std::vector<TimeSeriesData> tsdatavector;
-      outputData.push_back(make_pair(get_location_id(tloc.loc), tsdatavector));
+      outputData.push_back(make_pair(location_id, tsdatavector));
 
       if (masterquery.timezone == LOCALTIME_PARAM)
         query.timezone = tloc.loc->timezone;
@@ -3116,6 +3170,84 @@ bool Plugin::processGridEngineQuery(const State& state,
     throw Fmi::Exception(BCP, "Operation failed!", NULL);
   }
 }
+  
+void Plugin::checkInKeywordLocations(Query& masterquery)
+{
+  //If inkeyword given resolve locations
+  if(!masterquery.inKeywordLocations.empty())
+	{
+	  Spine::TaggedLocationList tloc_list;
+	  for (const auto& tloc : masterquery.loptions->locations())
+		{
+		  if(tloc.loc->type ==  Spine::Location::Wkt)
+			{
+			  // Find locations inside WKT-area
+			  const OGRGeometry* geom = masterquery.wktGeometries.getGeometry(tloc.loc->name);
+			  if(geom)
+				tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+			}
+		  else if(tloc.loc->type == Spine::Location::Area)
+			{
+			  // Find locations inside Area
+			  const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
+			  if(geom)
+				tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+			}
+		  else if(tloc.loc->type ==  Spine::Location::BoundingBox)
+			{
+			  // Find locations inside Bounding Box
+			  Spine::BoundingBox bbox(get_name_base(tloc.loc->name));
+			  
+			  std::string wkt = ("POLYGON((" + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMin) + ","
+								 + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMax) + ","
+								 + Fmi::to_string(bbox.xMax) + " " + Fmi::to_string(bbox.yMax) + ","
+								 + Fmi::to_string(bbox.xMax) + " " + Fmi::to_string(bbox.yMin) + ","
+								 + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMin) + "))");
+			  std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt);
+			  if(geom)
+				tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+			}
+		  else if(tloc.loc->type == Spine::Location::CoordinatePoint || tloc.loc->type == Spine::Location::Place)
+			{
+			  if(tloc.loc->radius == 0)
+				{
+				  // Find nearest location
+				  std::pair<double, double> from_location(tloc.loc->longitude, tloc.loc->latitude);
+				  double distance = -1;
+				  Spine::LocationPtr nearest_loc = nullptr;
+				  for(const auto& loc : masterquery.inKeywordLocations)
+					{
+					  std::pair<double, double> to_location(loc->longitude, loc->latitude);
+					  
+					  double dist = distance_in_kilometers(from_location, to_location);
+					  if(distance == -1 || dist < distance)
+						{
+						  distance = dist;
+						  nearest_loc = loc;
+						}
+					}
+				  if(nearest_loc)
+					{
+					  tloc_list.push_back(Spine::TaggedLocation(nearest_loc->name, nearest_loc));
+					}
+				}
+			  else
+				{
+				  // Find locations inside area
+				  std::string wkt = "POINT(";
+				  wkt += Fmi::to_string(tloc.loc->longitude);
+				  wkt += " ";
+				  wkt += Fmi::to_string(tloc.loc->latitude);
+				  wkt += ")";
+				  std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, tloc.loc->radius);
+				  if(geom)
+					tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+				}
+			}
+		}
+	  masterquery.loptions->setLocations(tloc_list);
+	}
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -3130,6 +3262,8 @@ void Plugin::processQuery(const State& state,
 {
   try
   {
+	checkInKeywordLocations(masterquery);
+
     // if only location related parameters queried, use shortcut
     if (is_plain_location_query(masterquery.poptions.parameters()))
     {
@@ -3522,6 +3656,7 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
     ex.addParameter("ClientIP", theRequest.getClientIP());
     ex.printError();
 
+    std::string firstMessage = ex.what();
     if (isdebug)
     {
       // Delivering the exception information as HTTP content
@@ -3531,12 +3666,13 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
     }
     else
     {
-      theResponse.setStatus(Spine::HTTP::Status::bad_request);
+	  if(firstMessage.find("timeout") != std::string::npos)
+		theResponse.setStatus(Spine::HTTP::Status::request_timeout);
+	  else
+		theResponse.setStatus(Spine::HTTP::Status::bad_request);
     }
 
     // Adding the first exception information into the response header
-
-    std::string firstMessage = ex.what();
     boost::algorithm::replace_all(firstMessage, "\n", " ");
     firstMessage = firstMessage.substr(0, 300);
     theResponse.setHeader("X-TimeSeriesPlugin-Error", firstMessage);

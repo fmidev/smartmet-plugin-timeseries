@@ -10,6 +10,7 @@
 #include <grid-files/common/GeneralFunctions.h>
 #include <grid-files/common/ShowFunction.h>
 #include <macgyver/StringConversion.h>
+#include <ogr_geometry.h>
 #include <macgyver/Exception.h>
 #include <stdexcept>
 
@@ -268,6 +269,7 @@ Config::Config(const string& configfile)
       itsPrecisions(),
       itsObsEngineDisabled(false),
       itsGridEngineDisabled(false),
+      itsPreventObsEngineDatabaseQuery(false),
       itsFilesystemCacheDirectory("/var/smartmet/timeseriescache"),
       itsMaxMemoryCacheSize(104857600)  // 100 MB
       ,
@@ -306,6 +308,7 @@ Config::Config(const string& configfile)
     itsConfig.lookupValue("observation_disabled", itsObsEngineDisabled);
     itsConfig.lookupValue("gridengine_disabled", itsGridEngineDisabled);
     itsConfig.lookupValue("primaryForecastSource", itsPrimaryForecastSource);
+    itsConfig.lookupValue("prevent_observation_database_query", itsPreventObsEngineDatabaseQuery);
 
     itsConfig.lookupValue("cache.memory_bytes", itsMaxMemoryCacheSize);
     itsConfig.lookupValue("cache.filesystem_bytes", itsMaxFilesystemCacheSize);

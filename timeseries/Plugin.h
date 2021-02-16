@@ -204,6 +204,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   Spine::LocationPtr getLocationForArea(const Spine::TaggedLocation& tloc,
                                         const Query& query,
                                         NFmiSvgPath* svgPath = nullptr) const;
+  void checkInKeywordLocations(Query& masterquery);
 
   Spine::LocationPtr getLocationForArea(const Spine::TaggedLocation& tloc,
                                         int radius,
