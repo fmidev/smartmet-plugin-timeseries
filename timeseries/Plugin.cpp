@@ -3093,21 +3093,14 @@ bool Plugin::processGridEngineQuery(const State& state,
               OGRGeometry* newGeom = geom->clone();
               newGeomUptr.reset(newGeom);
 
-              char wkt[1000];
-              char* p = wkt;
-              sprintf(wkt,
-                      "MULTIPOLYGON (((%f %f,%f %f,%f %f,%f %f,%f %f)))",
-                      lon1,
-                      lat1,
-                      lon1,
-                      lat2,
-                      lon2,
-                      lat2,
-                      lon2,
-                      lat1,
-                      lon1,
-                      lat1);
+	      auto wkt = fmt::format("MULTIPOLYGON ((({} {},{} {},{} {},{} {},{} {})))",
+                                     lon1, lat1,
+                                     lon1, lat2,
+                                     lon2, lat2,
+                                     lon2, lat1,
+                                     lon1, lat1);
 
+              const char * p = wkt.c_str();
               newGeom->importFromWkt(&p);
 
               auto expandedGeom = Fmi::OGR::expandGeometry(newGeom, tloc.loc->radius);
