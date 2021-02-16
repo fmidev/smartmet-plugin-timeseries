@@ -1,22 +1,14 @@
-PROG = PluginTest
+PROG = PluginTest PluginTestGrid TestConfigCreator
 
 REQUIRES = gdal configpp
 
 include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
-CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
-
-# Boost 1.69
-
-ifneq "$(wildcard /usr/include/boost169)" ""
-  INCLUDES += -isystem /usr/include/boost169
-  LIBS += -L/usr/lib64/boost169
-endif
+CFLAGS += -DUNIX -O0 -g -Wno-unknown-pragmas
 
 INCLUDES += \
 	-I ../timeseries \
 	-I /usr/include/smartmet \
-	-isystem /usr/gdal30/include \
 	-isystem /usr/include/mysql \
 	-I /usr/include/smartmet \
 	-I /usr/include/smartmet/grid-files \
@@ -24,24 +16,26 @@ INCLUDES += \
 	-isystem /usr/include/soci \
 	-isystem /usr/include/oracle/11.2/client64
 
-LIBS +=  -lsmartmet-spine  \
+LIBS += -L$(libdir) \
+	 $(REQUIRED_LIBS) \
+	-lsmartmet-spine  \
 	-lsmartmet-macgyver \
 	-lsmartmet-newbase \
 	-lsmartmet-grid-files \
 	-lsmartmet-grid-content \
-	$(CONFIGPP_LIBS) \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_filesystem \
 	-lboost_iostreams \
 	-lboost_system \
-	-L/usr/gdal30/lib -lgdal \
 	-lbz2 -lz -lpthread -ldl
 
 TEST_PREPARE_TARGETS := cnf/geonames.conf cnf/gis.conf
 TEST_FINISH_TARGETS := dummy
 
-all: $(PROG)
+CONFIG_FILES = cnf/gis.conf cnf/geonames.conf cnf/querydata.conf cnf/observation.conf cnf/timeseries.conf cnf/timeseries-grid.conf cnf/redis.conf
+
+all:
 
 clean:
 	rm -f $(PROG) *~
