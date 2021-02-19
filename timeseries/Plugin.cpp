@@ -2800,7 +2800,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       {
         // Else accept only the original generated timesteps
         aggregatedData.emplace_back(
-            TimeSeriesData(erase_redundant_timesteps(aggregated_tsg, *tlist)));
+            TimeSeriesData(DataFunctions::erase_redundant_timesteps(aggregated_tsg, *tlist)));
         // store observation data
         DataFunctions::store_data(aggregatedData, query, outputData);
       }
