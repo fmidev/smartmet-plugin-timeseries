@@ -17,28 +17,6 @@
 #include <spine/Convenience.h>
 #include <spine/ParameterTools.h>
 #include <spine/TableFormatterFactory.h>
-#include <spine/TimeSeriesAggregator.h>
-#include <spine/TimeSeriesOutput.h>
-#include <spine/ValueFormatter.h>
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <functional>
-#include <iostream>
-#include <limits>
-#include <numeric>
-#include <ogr_geometry.h>
-#include <stdexcept>
-
-using boost::numeric_cast;
-using boost::local_time::local_date_time;
-using boost::numeric::bad_numeric_cast;
-using boost::numeric::negative_overflow;
-using boost::numeric::positive_overflow;
-using boost::posix_time::hours;
-using boost::posix_time::minutes;
-using boost::posix_time::ptime;
-using boost::posix_time::seconds;
 
 //#define MYDEBUG ON
 
@@ -1203,6 +1181,21 @@ void Plugin::fetchQEngineValues(const State& state,
         {
           querydata_result = queryLevelDataCache.itsTimeSeries[cacheKey];
         }
+		else if(paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo")
+		  {
+			querydata_result = boost::make_shared<ts::TimeSeries>();
+			for(const auto& t : querydata_tlist)
+			  {
+				if(loc->fmisid && paramname == "fmisid")
+				  {
+					querydata_result->push_back(ts::TimedValue(t, *(loc->fmisid)));
+				  }
+				else
+				  {
+					querydata_result->push_back(ts::TimedValue(t, ts::None()));
+				  }
+			  }
+		  }
         else
         {
           Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
@@ -1225,6 +1218,7 @@ void Plugin::fetchQEngineValues(const State& state,
                   ? qi->values(querydata_param, querydata_tlist)
                   : pressure ? qi->valuesAtPressure(querydata_param, querydata_tlist, *pressure)
                              : qi->valuesAtHeight(querydata_param, querydata_tlist, *height);
+
           if (querydata_result->size() > 0)
           {
             queryLevelDataCache.itsTimeSeries.insert(make_pair(cacheKey, querydata_result));
@@ -1653,8 +1647,6 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
       else
       {
         pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
-        if (!pGeo)
-          pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbPolygon);
 
         if (!pGeo)
           throw Fmi::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
@@ -2710,6 +2702,14 @@ void Plugin::processQEngineQuery(const State& state,
 {
   try
   {
+
+	// Resolve locations for FMISDs,WMOs,LPNNs (https://jira.fmi.fi/browse/BRAINSTORM-1848)
+	Engine::Geonames::LocationOptions lopt = itsGeoEngine->parseLocations(masterquery.fmisids, masterquery.lpnns, masterquery.wmos, masterquery.language);
+	const Spine::TaggedLocationList& locations = lopt.locations();
+	Spine::TaggedLocationList tagged_ll = masterquery.loptions->locations();
+	tagged_ll.insert(tagged_ll.end(), locations.begin(), locations.end());
+	masterquery.loptions->setLocations(tagged_ll);
+
     // first timestep is here in utc
     boost::posix_time::ptime first_timestep = masterquery.latestTimestep;
 
