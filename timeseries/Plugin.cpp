@@ -71,7 +71,7 @@ std::string get_parameter_id(const Spine::Parameter& parameter)
   std::string ret = parameter.name();
   if (parameter.getSensorNumber())
     ret += Fmi::to_string(*(parameter.getSensorNumber()));
-  const auto & sensorParameter = parameter.getSensorParameter();
+  const auto& sensorParameter = parameter.getSensorParameter();
   if (sensorParameter == "qc")  // later maybe longitude, latitude
     ret += sensorParameter;
   return ret;
@@ -314,10 +314,8 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
         continue;
 
       end_index = i;
-      location_indexes.emplace_back(
-          std::pair<unsigned int, unsigned int>(start_index, end_index));
+      location_indexes.emplace_back(std::pair<unsigned int, unsigned int>(start_index, end_index));
       start_index = i;
-
     }
     end_index = fmisid_ts.size();
     location_indexes.emplace_back(std::pair<unsigned int, unsigned int>(start_index, end_index));
@@ -379,27 +377,28 @@ void fix_precisions(Query& masterquery, const ObsParameters& obsParameters)
 }
 #endif
 
-Spine::TaggedLocationList get_locations_inside_geometry(const Spine::LocationList& locations, const OGRGeometry& geom)
+Spine::TaggedLocationList get_locations_inside_geometry(const Spine::LocationList& locations,
+                                                        const OGRGeometry& geom)
 {
   try
-	{
-	  Spine::TaggedLocationList ret;
-	  
-	  for (auto loc : locations)
-		{
-		  
-		  std::string wkt = ("POINT(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")");
-		  std::unique_ptr<OGRGeometry> location_geom = get_ogr_geometry(wkt);
-		  if(geom.Contains(location_geom.get()))
-			ret.push_back(Spine::TaggedLocation(loc->name, loc));
-		}
-	  
-	  return ret;
-	}
+  {
+    Spine::TaggedLocationList ret;
+
+    for (auto loc : locations)
+    {
+      std::string wkt =
+          ("POINT(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")");
+      std::unique_ptr<OGRGeometry> location_geom = get_ogr_geometry(wkt);
+      if (geom.Contains(location_geom.get()))
+        ret.push_back(Spine::TaggedLocation(loc->name, loc));
+    }
+
+    return ret;
+  }
   catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
 }
 
 }  // namespace
@@ -895,7 +894,7 @@ void Plugin::fetchStaticLocationValues(Query& query,
     for (const Spine::Parameter& param : query.poptions.parameters())
     {
       row = row_index;
-      const auto & pname = param.name();
+      const auto& pname = param.name();
       for (const auto& tloc : query.loptions->locations())
       {
         Spine::LocationPtr loc = tloc.loc;
@@ -1181,21 +1180,21 @@ void Plugin::fetchQEngineValues(const State& state,
         {
           querydata_result = queryLevelDataCache.itsTimeSeries[cacheKey];
         }
-		else if(paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo")
-		  {
-			querydata_result = boost::make_shared<ts::TimeSeries>();
-			for(const auto& t : querydata_tlist)
-			  {
-				if(loc->fmisid && paramname == "fmisid")
-				  {
-					querydata_result->push_back(ts::TimedValue(t, *(loc->fmisid)));
-				  }
-				else
-				  {
-					querydata_result->push_back(ts::TimedValue(t, ts::None()));
-				  }
-			  }
-		  }
+        else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo")
+        {
+          querydata_result = boost::make_shared<ts::TimeSeries>();
+          for (const auto& t : querydata_tlist)
+          {
+            if (loc->fmisid && paramname == "fmisid")
+            {
+              querydata_result->push_back(ts::TimedValue(t, *(loc->fmisid)));
+            }
+            else
+            {
+              querydata_result->push_back(ts::TimedValue(t, ts::None()));
+            }
+          }
+        }
         else
         {
           Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
@@ -1213,11 +1212,10 @@ void Plugin::fetchQEngineValues(const State& state,
                                                               query.lastpoint);
 
           // one location, list of local times (no radius -> pointforecast)
-          querydata_result =
-              loadDataLevels
-                  ? qi->values(querydata_param, querydata_tlist)
-                  : pressure ? qi->valuesAtPressure(querydata_param, querydata_tlist, *pressure)
-                             : qi->valuesAtHeight(querydata_param, querydata_tlist, *height);
+          querydata_result = loadDataLevels ? qi->values(querydata_param, querydata_tlist)
+                             : pressure
+                                 ? qi->valuesAtPressure(querydata_param, querydata_tlist, *pressure)
+                                 : qi->valuesAtHeight(querydata_param, querydata_tlist, *height);
 
           if (querydata_result->size() > 0)
           {
@@ -1252,7 +1250,7 @@ void Plugin::fetchQEngineValues(const State& state,
               {
                 // OGRMultiLineString -> handle each LineString separately
                 std::list<NFmiSvgPath> svgList = query.wktGeometries.getSvgPaths(tloc.loc->name);
-                for (const auto & svg : svgList)
+                for (const auto& svg : svgList)
                 {
                   Spine::LocationList ll =
                       get_location_list(svg, tloc.tag, query.step, state.getGeoEngine());
@@ -1293,16 +1291,11 @@ void Plugin::fetchQEngineValues(const State& state,
             querydata_result =
                 loadDataLevels
                     ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance)
-                    : pressure ? qi->valuesAtPressure(querydata_param,
-                                                      llist,
-                                                      querydata_tlist,
-                                                      query.maxdistance,
-                                                      *pressure)
-                               : qi->valuesAtHeight(querydata_param,
-                                                    llist,
-                                                    querydata_tlist,
-                                                    query.maxdistance,
-                                                    *height);
+                : pressure
+                    ? qi->valuesAtPressure(
+                          querydata_param, llist, querydata_tlist, query.maxdistance, *pressure)
+                    : qi->valuesAtHeight(
+                          querydata_param, llist, querydata_tlist, query.maxdistance, *height);
             if (querydata_result->size() > 0)
             {
               // if the value is not dependent on location inside area
@@ -1330,8 +1323,8 @@ void Plugin::fetchQEngineValues(const State& state,
               boost::algorithm::split(coordinates, place, boost::algorithm::is_any_of(","));
               if (coordinates.size() != 4)
                 throw Fmi::Exception(BCP,
-                                       "Invalid bbox parameter " + place +
-                                           ", should be in format 'lon,lat,lon,lat[:radius]'!");
+                                     "Invalid bbox parameter " + place +
+                                         ", should be in format 'lon,lat,lon,lat[:radius]'!");
 
               std::string lonstr1 = coordinates[0];
               std::string latstr1 = coordinates[1];
@@ -1374,11 +1367,9 @@ void Plugin::fetchQEngineValues(const State& state,
 
             // indexmask (indexed locations on the area), list of local times
             querydata_result =
-                loadDataLevels
-                    ? qi->values(querydata_param, mask, querydata_tlist)
-                    : pressure
-                          ? qi->valuesAtPressure(querydata_param, mask, querydata_tlist, *pressure)
-                          : qi->valuesAtHeight(querydata_param, mask, querydata_tlist, *height);
+                loadDataLevels ? qi->values(querydata_param, mask, querydata_tlist)
+                : pressure ? qi->valuesAtPressure(querydata_param, mask, querydata_tlist, *pressure)
+                           : qi->valuesAtHeight(querydata_param, mask, querydata_tlist, *height);
 
             if (querydata_result->size() > 0)
             {
@@ -1522,8 +1513,8 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
     settings.useDataCache = query.useDataCache;
     // Data filtering settings
     settings.sqlDataFilter = query.sqlDataFilter;
-	// Option to prevent queries to database
-	settings.preventDatabaseQuery = itsConfig.obsEngineDatabaseQueryPrevented();
+    // Option to prevent queries to database
+    settings.preventDatabaseQuery = itsConfig.obsEngineDatabaseQueryPrevented();
   }
   catch (...)
   {
@@ -1540,7 +1531,7 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
 
 #ifndef WITHOUT_OBSERVATION
 
-bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
+bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
                                  const std::string& producer,
                                  Query& query,
                                  Engine::Observation::Settings& settings,
@@ -1646,7 +1637,9 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr & location,
       }
       else
       {
-        pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
+        pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbPolygon);
+        if (pGeo == nullptr)
+          pGeo = itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
 
         if (!pGeo)
           throw Fmi::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
@@ -1790,7 +1783,7 @@ void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
   {
     const Spine::Parameter& param = obsParameters[i].param;
 
-    const auto & pname = param.name();
+    const auto& pname = param.name();
 
     if (query.maxAggregationIntervals.find(pname) != query.maxAggregationIntervals.end())
     {
@@ -1954,7 +1947,7 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
 
     Engine::Observation::StationSettings stationSettings;
 
-    for (const auto & tloc : query.loptions->locations())
+    for (const auto& tloc : query.loptions->locations())
     {
       Spine::LocationPtr loc = tloc.loc;
       if (!loc)
@@ -2100,8 +2093,8 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     if (!query.toptions.all())
       tlist = itsTimeSeriesCache->generate(query.toptions, tz);
 
-    TimeSeriesByLocation observation_result_by_location = get_timeseries_by_fmisid(
-        producer, observation_result, tlist, fmisid_index);
+    TimeSeriesByLocation observation_result_by_location =
+        get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
 
     // iterate locations
     for (unsigned int i = 0; i < observation_result_by_location.size(); i++)
@@ -2340,8 +2333,8 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       tlist = itsTimeSeriesCache->generate(query.toptions, tz);
 
     // separate timeseries of different locations to their own data structures
-    TimeSeriesByLocation tsv_area = get_timeseries_by_fmisid(
-        producer, observation_result, tlist, fmisid_index);
+    TimeSeriesByLocation tsv_area =
+        get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
     // make sure that all timeseries have the same timesteps
     for (FmisidTSVectorPair& val : tsv_area)
     {
@@ -2616,7 +2609,8 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       else
       {
         // Else accept only the original generated timesteps
-        aggregatedData.emplace_back(TimeSeriesData(erase_redundant_timesteps(aggregated_tsg, *tlist)));
+        aggregatedData.emplace_back(
+            TimeSeriesData(erase_redundant_timesteps(aggregated_tsg, *tlist)));
         // store observation data
         store_data(aggregatedData, query, outputData);
       }
@@ -2702,27 +2696,27 @@ void Plugin::processQEngineQuery(const State& state,
 {
   try
   {
-
-	// Resolve locations for FMISDs,WMOs,LPNNs (https://jira.fmi.fi/browse/BRAINSTORM-1848)
-	Engine::Geonames::LocationOptions lopt = itsGeoEngine->parseLocations(masterquery.fmisids, masterquery.lpnns, masterquery.wmos, masterquery.language);
-	const Spine::TaggedLocationList& locations = lopt.locations();
-	Spine::TaggedLocationList tagged_ll = masterquery.loptions->locations();
-	tagged_ll.insert(tagged_ll.end(), locations.begin(), locations.end());
-	masterquery.loptions->setLocations(tagged_ll);
+    // Resolve locations for FMISDs,WMOs,LPNNs (https://jira.fmi.fi/browse/BRAINSTORM-1848)
+    Engine::Geonames::LocationOptions lopt = itsGeoEngine->parseLocations(
+        masterquery.fmisids, masterquery.lpnns, masterquery.wmos, masterquery.language);
+    const Spine::TaggedLocationList& locations = lopt.locations();
+    Spine::TaggedLocationList tagged_ll = masterquery.loptions->locations();
+    tagged_ll.insert(tagged_ll.end(), locations.begin(), locations.end());
+    masterquery.loptions->setLocations(tagged_ll);
 
     // first timestep is here in utc
     boost::posix_time::ptime first_timestep = masterquery.latestTimestep;
 
     bool firstProducer = outputData.empty();
 
-	std::set<std::string> processed_locations;
+    std::set<std::string> processed_locations;
     for (const auto& tloc : masterquery.loptions->locations())
     {
-	  std::string location_id = get_location_id(tloc.loc);
-	  // Data for each location is fetched only once
-	  if(processed_locations.find(location_id) != processed_locations.end())
-		continue;
-	  processed_locations.insert(location_id);
+      std::string location_id = get_location_id(tloc.loc);
+      // Data for each location is fetched only once
+      if (processed_locations.find(location_id) != processed_locations.end())
+        continue;
+      processed_locations.insert(location_id);
 
       Query query = masterquery;
       QueryLevelDataCache queryLevelDataCache;
@@ -2781,80 +2775,82 @@ void Plugin::processQEngineQuery(const State& state,
 
 void Plugin::checkInKeywordLocations(Query& masterquery)
 {
-  //If inkeyword given resolve locations
-  if(!masterquery.inKeywordLocations.empty())
-	{
-	  Spine::TaggedLocationList tloc_list;
-	  for (const auto& tloc : masterquery.loptions->locations())
-		{
-		  if(tloc.loc->type ==  Spine::Location::Wkt)
-			{
-			  // Find locations inside WKT-area
-			  const OGRGeometry* geom = masterquery.wktGeometries.getGeometry(tloc.loc->name);
-			  if(geom)
-				tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
-			}
-		  else if(tloc.loc->type == Spine::Location::Area)
-			{
-			  // Find locations inside Area
-			  const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
-			  if(geom)
-				tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
-			}
-		  else if(tloc.loc->type ==  Spine::Location::BoundingBox)
-			{
-			  // Find locations inside Bounding Box
-			  Spine::BoundingBox bbox(get_name_base(tloc.loc->name));
-			  
-			  std::string wkt = ("POLYGON((" + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMin) + ","
-								 + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMax) + ","
-								 + Fmi::to_string(bbox.xMax) + " " + Fmi::to_string(bbox.yMax) + ","
-								 + Fmi::to_string(bbox.xMax) + " " + Fmi::to_string(bbox.yMin) + ","
-								 + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMin) + "))");
-			  std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt);
-			  if(geom)
-				tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
-			}
-		  else if(tloc.loc->type == Spine::Location::CoordinatePoint || tloc.loc->type == Spine::Location::Place)
-			{
-			  if(tloc.loc->radius == 0)
-				{
-				  // Find nearest location
-				  std::pair<double, double> from_location(tloc.loc->longitude, tloc.loc->latitude);
-				  double distance = -1;
-				  Spine::LocationPtr nearest_loc = nullptr;
-				  for(const auto& loc : masterquery.inKeywordLocations)
-					{
-					  std::pair<double, double> to_location(loc->longitude, loc->latitude);
-					  
-					  double dist = distance_in_kilometers(from_location, to_location);
-					  if(distance == -1 || dist < distance)
-						{
-						  distance = dist;
-						  nearest_loc = loc;
-						}
-					}
-				  if(nearest_loc)
-					{
-					  tloc_list.push_back(Spine::TaggedLocation(nearest_loc->name, nearest_loc));
-					}
-				}
-			  else
-				{
-				  // Find locations inside area
-				  std::string wkt = "POINT(";
-				  wkt += Fmi::to_string(tloc.loc->longitude);
-				  wkt += " ";
-				  wkt += Fmi::to_string(tloc.loc->latitude);
-				  wkt += ")";
-				  std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, tloc.loc->radius);
-				  if(geom)
-					tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
-				}
-			}
-		}
-	  masterquery.loptions->setLocations(tloc_list);
-	}
+  // If inkeyword given resolve locations
+  if (!masterquery.inKeywordLocations.empty())
+  {
+    Spine::TaggedLocationList tloc_list;
+    for (const auto& tloc : masterquery.loptions->locations())
+    {
+      if (tloc.loc->type == Spine::Location::Wkt)
+      {
+        // Find locations inside WKT-area
+        const OGRGeometry* geom = masterquery.wktGeometries.getGeometry(tloc.loc->name);
+        if (geom)
+          tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+      }
+      else if (tloc.loc->type == Spine::Location::Area)
+      {
+        // Find locations inside Area
+        const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
+        if (geom)
+          tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+      }
+      else if (tloc.loc->type == Spine::Location::BoundingBox)
+      {
+        // Find locations inside Bounding Box
+        Spine::BoundingBox bbox(get_name_base(tloc.loc->name));
+
+        std::string wkt =
+            ("POLYGON((" + Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMin) + "," +
+             Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMax) + "," +
+             Fmi::to_string(bbox.xMax) + " " + Fmi::to_string(bbox.yMax) + "," +
+             Fmi::to_string(bbox.xMax) + " " + Fmi::to_string(bbox.yMin) + "," +
+             Fmi::to_string(bbox.xMin) + " " + Fmi::to_string(bbox.yMin) + "))");
+        std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt);
+        if (geom)
+          tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+      }
+      else if (tloc.loc->type == Spine::Location::CoordinatePoint ||
+               tloc.loc->type == Spine::Location::Place)
+      {
+        if (tloc.loc->radius == 0)
+        {
+          // Find nearest location
+          std::pair<double, double> from_location(tloc.loc->longitude, tloc.loc->latitude);
+          double distance = -1;
+          Spine::LocationPtr nearest_loc = nullptr;
+          for (const auto& loc : masterquery.inKeywordLocations)
+          {
+            std::pair<double, double> to_location(loc->longitude, loc->latitude);
+
+            double dist = distance_in_kilometers(from_location, to_location);
+            if (distance == -1 || dist < distance)
+            {
+              distance = dist;
+              nearest_loc = loc;
+            }
+          }
+          if (nearest_loc)
+          {
+            tloc_list.push_back(Spine::TaggedLocation(nearest_loc->name, nearest_loc));
+          }
+        }
+        else
+        {
+          // Find locations inside area
+          std::string wkt = "POINT(";
+          wkt += Fmi::to_string(tloc.loc->longitude);
+          wkt += " ";
+          wkt += Fmi::to_string(tloc.loc->latitude);
+          wkt += ")";
+          std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, tloc.loc->radius);
+          if (geom)
+            tloc_list = get_locations_inside_geometry(masterquery.inKeywordLocations, *geom);
+        }
+      }
+    }
+    masterquery.loptions->setLocations(tloc_list);
+  }
 }
 
 // ----------------------------------------------------------------------
@@ -2867,7 +2863,7 @@ void Plugin::processQuery(const State& state, Spine::Table& table, Query& master
 {
   try
   {
-	checkInKeywordLocations(masterquery);
+    checkInKeywordLocations(masterquery);
 
     // if only location related parameters queried, use shortcut
     if (is_plain_location_query(masterquery.poptions.parameters()))
@@ -3179,10 +3175,10 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
     }
     else
     {
-	  if(firstMessage.find("timeout") != std::string::npos)
-		theResponse.setStatus(Spine::HTTP::Status::request_timeout);
-	  else
-		theResponse.setStatus(Spine::HTTP::Status::bad_request);
+      if (firstMessage.find("timeout") != std::string::npos)
+        theResponse.setStatus(Spine::HTTP::Status::request_timeout);
+      else
+        theResponse.setStatus(Spine::HTTP::Status::bad_request);
     }
 
     // Adding the first exception information into the response header
@@ -3199,10 +3195,7 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
 // ----------------------------------------------------------------------
 
 Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
-    : SmartMetPlugin(),
-      itsModuleName("TimeSeries"),
-      itsConfig(theConfig),
-      itsReactor(theReactor)
+    : SmartMetPlugin(), itsModuleName("TimeSeries"), itsConfig(theConfig), itsReactor(theReactor)
 {
   try
   {
@@ -3238,7 +3231,7 @@ void Plugin::init()
     itsTimeSeriesCache->resize(itsConfig.maxTimeSeriesCacheSize());
 
     /* GeoEngine */
-    auto * engine = itsReactor->getSingleton("Geonames", nullptr);
+    auto* engine = itsReactor->getSingleton("Geonames", nullptr);
     if (!engine)
       throw Fmi::Exception(BCP, "Geonames engine unavailable");
     itsGeoEngine = reinterpret_cast<Engine::Geonames::Engine*>(engine);
