@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.2.16
+Version: 21.2.19
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -19,17 +19,17 @@ BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 21.2.5
-BuildRequires: smartmet-library-locus-devel >= 21.2.2
+BuildRequires: smartmet-library-locus-devel >= 21.2.18
 BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
-BuildRequires: smartmet-library-newbase-devel >= 21.2.15
+BuildRequires: smartmet-library-grid-content-devel >= 21.2.3
+BuildRequires: smartmet-library-grid-files-devel >= 21.2.15
+BuildRequires: smartmet-library-newbase-devel >= 21.2.18
 BuildRequires: smartmet-library-gis-devel >= 21.2.11
-BuildRequires: smartmet-engine-geonames-devel >= 21.1.25
+BuildRequires: smartmet-engine-geonames-devel >= 21.2.18
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 21.2.11
 %endif
-BuildRequires: smartmet-library-grid-content-devel >= 21.2.3
-BuildRequires: smartmet-library-grid-files-devel >= 21.2.15
-BuildRequires: smartmet-engine-querydata-devel >= 21.2.15
+BuildRequires: smartmet-engine-querydata-devel >= 21.2.18
 BuildRequires: smartmet-engine-gis-devel >= 21.2.10
 BuildRequires: smartmet-engine-grid-devel >= 21.2.3
 # obsengine can be disabled in configuration: not included intentionally
@@ -39,13 +39,13 @@ BuildRequires: smartmet-engine-grid-devel >= 21.2.3
 Requires: fmt >= 7.1.3
 Requires: libconfig
 Requires: smartmet-library-gis >= 21.2.11
-Requires: smartmet-library-locus >= 21.2.2
+Requires: smartmet-library-locus >= 21.2.18
 Requires: smartmet-library-macgyver >= 21.1.25
-Requires: smartmet-library-newbase >= 21.2.15
+Requires: smartmet-library-newbase >= 21.2.18
 Requires: smartmet-library-spine >= 21.2.5
 Requires: smartmet-library-gis >= 21.2.11
-Requires: smartmet-engine-geonames >= 21.1.25
-Requires: smartmet-engine-querydata >= 21.2.15
+Requires: smartmet-engine-geonames >= 21.2.18
+Requires: smartmet-engine-querydata >= 21.2.18
 Requires: smartmet-engine-gis >= 21.2.10
 Requires: smartmet-engine-grid >= 21.2.3
 Requires: smartmet-server >= 21.1.14
@@ -62,13 +62,14 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-library-gis-devel >= 21.2.11
-#TestRequires: smartmet-library-newbase-devel >= 21.2.15
+#TestRequires: smartmet-library-newbase-devel >= 21.2.18
 #TestRequires: smartmet-library-spine-devel >= 21.2.5
-#TestRequires: smartmet-engine-geonames-devel >= 20.8.23
+#TestRequires: smartmet-library-macgyver-devel >= 21.1.25
+#TestRequires: smartmet-engine-geonames-devel >= 21.2.18
 #TestRequires: smartmet-engine-gis-devel >= 21.2.10
-#TestRequires: smartmet-engine-querydata-devel >= 21.2.15
+#TestRequires: smartmet-engine-querydata-devel >= 21.2.18
 %if %{with observation}
-#TestRequires: smartmet-engine-observation-devel >= 21.2.10
+#TestRequires: smartmet-engine-observation-devel >= 21.2.11
 %endif
 #TestRequires: smartmet-engine-grid-devel >= 21.2.3
 #TestRequires: boost169-devel
@@ -102,6 +103,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/gribtimeseries.so
 
 %changelog
+* Fri Feb 19 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.19-1.fmi
+- Added support for FMISIDs,WMOs,LPNNs in forecast queries (BRAINSTORM-1848)
+- Allow areas to be both polygons and multipolygons
+
+* Thu Feb 18 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.18-1.fmi
+- Repackaged due to newbase ABI changes
+
 * Tue Feb 16 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.16-1.fmi
 - Merged fixes and improvements from master
 
