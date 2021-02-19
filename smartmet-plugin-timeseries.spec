@@ -23,7 +23,7 @@ BuildRequires: smartmet-library-locus-devel >= 21.2.18
 BuildRequires: smartmet-library-macgyver-devel >= 21.1.25
 BuildRequires: smartmet-library-newbase-devel >= 21.2.18
 BuildRequires: smartmet-library-gis-devel >= 21.2.11
-BuildRequires: smartmet-engine-geonames-devel >= 21.1.25
+BuildRequires: smartmet-engine-geonames-devel >= 21.2.18
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 21.2.11
 %endif
@@ -61,7 +61,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-newbase-devel >= 21.2.18
 #TestRequires: smartmet-library-spine-devel >= 21.2.5
 #TestRequires: smartmet-library-macgyver-devel >= 21.1.25
-#TestRequires: smartmet-engine-geonames-devel >= 21.1.25
+#TestRequires: smartmet-engine-geonames-devel >= 21.2.18
 #TestRequires: smartmet-engine-gis-devel >= 21.2.10
 #TestRequires: smartmet-engine-querydata-devel >= 21.2.18
 %if %{with observation}
@@ -100,6 +100,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Fri Feb 19 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.19-1.fmi
 - Added support for FMISIDs,WMOs,LPNNs in forecast queries (BRAINSTORM-1848)
+- Allow areas to be both polygons and multipolygons
 
 * Thu Feb 18 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.2.18-1.fmi
 - Repackaged due to newbase ABI changes
