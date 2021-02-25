@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     if(!options.parse(argc, argv))
       exit(1);
 
-    return SmartMet::Spine::PluginTest::test(options, prelude, false, 10);
+    return SmartMet::Spine::PluginTest::test(options, prelude, 10);
   }
   catch (...)
   {
