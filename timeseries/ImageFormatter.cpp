@@ -75,7 +75,9 @@ std::string ImageFormatter::format(const Table& theTable,
 
     // Output headers
 
-    out += "<table><tr>";
+    out += "<table>";
+    /*
+    out += "<tr>";
     for (const auto& nam : cols)
     {
       const std::string& name = theNames[nam];
@@ -84,7 +86,7 @@ std::string ImageFormatter::format(const Table& theTable,
       out += "</th>";
     }
     out += "</tr>";
-
+    */
     for (const auto j : rows)
     {
       out += "<tr>\n";

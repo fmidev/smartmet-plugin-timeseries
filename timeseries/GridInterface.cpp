@@ -440,7 +440,7 @@ void GridInterface::prepareGridQuery(
     T::Attribute* geomId = gridQuery.mAttributeList.getAttribute("grid.geometryId");
     T::Attribute* coordinateType = gridQuery.mAttributeList.getAttribute("contour.coordinateType");
 
-    if (geomId != nullptr && coordinateType == nullptr)
+    if (geomId != nullptr || coordinateType == nullptr)
     {
       gridQuery.mAttributeList.addAttribute("contour.coordinateType", Fmi::to_string(T::CoordinateTypeValue::GRID_COORDINATES));
     }
@@ -757,10 +757,13 @@ void GridInterface::prepareGridQuery(
       std::vector < std::string > partList;
 
       splitString(tmp, ':', partList);
-      if (partList.size() > 2 && (partList[0] == "ISOBANDS" || partList[0] == "ISOLINES"))
+      if (partList.size() > 3 && (partList[0] == "ISOBANDS" || partList[0] == "ISOLINES"))
       {
-        std::vector < std::string > list;
-        splitString(partList[1], ';', list);
+        if (partList[1] == "1")
+          qParam.mFlags |= QueryServer::QueryParameter::Flags::InvisibleParameter;
+
+        std::vector <std::string> list;
+        splitString(partList[2], ';', list);
         size_t len = list.size();
         if (len > 0)
         {
@@ -792,7 +795,7 @@ void GridInterface::prepareGridQuery(
         }
         qParam.mLocationType = QueryServer::QueryParameter::LocationType::Geometry;
 
-        const char* p = tmp.c_str() + partList[0].size() + partList[1].size() + 2;
+        const char* p = tmp.c_str() + partList[0].size() +  partList[1].size() + partList[2].size() + 3;
         qParam.mParam = p;
       }
       else
@@ -1430,16 +1433,26 @@ void GridInterface::processGridQuery(
                     std::string image = fileToBase64(filename);
                     filenameList.emplace_back(std::string(filename));
 
-                    std::string s1 = "<img border=\"5\" src=\"data:image/png;base64,";
+                    if ((gridQuery->mQueryParameterList[pid].mFlags & QueryServer::QueryParameter::Flags::InvisibleParameter) == 0)
+                    {
+                      std::string s1 = "<img border=\"5\" src=\"data:image/png;base64,";
 
-                    Spine::TimeSeries::TimedValue tsValue(queryTime, s1 + image + "\"/>");
-                    tsForNonGridParam->emplace_back(tsValue);
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, s1 + image + "\"/>");
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
                   }
                   else
                   {
-                    Spine::TimeSeries::TimedValue tsValue(queryTime, "Contour");
-                    tsForNonGridParam->emplace_back(tsValue);
+                    if ((gridQuery->mQueryParameterList[pid].mFlags & QueryServer::QueryParameter::Flags::InvisibleParameter) == 0)
+                    {
+                      Spine::TimeSeries::TimedValue tsValue(queryTime, "Contour");
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
                   }
+                }
+                else if ((gridQuery->mQueryParameterList[pid].mFlags & QueryServer::QueryParameter::Flags::InvisibleParameter) != 0)
+                {
+
                 }
                 else if (coordinates.size() > 1 && strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "lat") == 0)
                 {
@@ -1813,7 +1826,7 @@ void GridInterface::processGridQuery(
 
                   if (fileList.size() > 0)
                   {
-                    sprintf(filename, "/tmp/timeseries_contours_%llu_%lu_%lu.png", outputTime, t, t);
+                    sprintf(filename, "/tmp/timeseries_contours_%llu_%d_%lu.png", outputTime, pid, t);
                     mergePngFiles(filename, fileList);
 
                     std::string image = fileToBase64(filename);
@@ -1870,8 +1883,6 @@ void GridInterface::processGridQuery(
                 else
                 {
                   Spine::TimeSeries::TimedValue tsValue(queryTime, missing_value);
-                  // Spine::TimeSeries::TimedValue tsValue(queryTime,
-                  // Spine::TimeSeries::Value(std::numeric_limits<double>::quiet_NaN()));
                   tsForParameter->emplace_back(tsValue);
                 }
                 t++;
