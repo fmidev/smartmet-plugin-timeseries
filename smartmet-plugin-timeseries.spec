@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.2.19
+Version: 21.3.1
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -98,6 +98,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/%{DIRNAME}.so
 
 %changelog
+* Mon Mar 1 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.3.1-1.fmi
+- Added testcases for place with addtional specifier and scandic characters (BRAINSTORM-1999)
+
 * Fri Feb 19 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.19-1.fmi
 - Added support for FMISIDs,WMOs,LPNNs in forecast queries (BRAINSTORM-1848)
 - Allow areas to be both polygons and multipolygons
