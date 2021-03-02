@@ -118,14 +118,14 @@
 20130101T174000 2.5 Kirkkonummi Mäkiluoto
 20130101T054000 -5.5 Kittilä Kenttärova
 20130101T174000 -3.2 Kittilä Kenttärova
+20130101T060000 -4.7 Kittilä kirkonkylä
+20130101T180000 -1.6 Kittilä kirkonkylä
 20130101T054000 -6.4 Kittilä Levitunturi
 20130101T174000 -3.5 Kittilä Levitunturi
 20130101T054000 -5.5 Kittilä Matorova
 20130101T174000 -2.8 Kittilä Matorova
 20130101T060000 -6.4 Kittilä Pokka
 20130101T180000 -3.4 Kittilä Pokka
-20130101T060000 -4.7 Kittilä kirkonkylä
-20130101T180000 -1.6 Kittilä kirkonkylä
 20130101T060000 1.3 Kokemäki Tulkkila
 20130101T180000 2.4 Kokemäki Tulkkila
 20130101T060000 0.8 Kokkola Santahaka
@@ -211,10 +211,10 @@
 20130101T174000 -0.4 Pello kirkonkylä
 20130101T054000 0.5 Pietarsaari Kallan
 20130101T174000 0.6 Pietarsaari Kallan
-20130101T054000 1.0 Pori Tahkoluoto satama
-20130101T174000 1.1 Pori Tahkoluoto satama
 20130101T060000 1.7 Pori rautatieasema
 20130101T180000 2.9 Pori rautatieasema
+20130101T054000 1.0 Pori Tahkoluoto satama
+20130101T174000 1.1 Pori Tahkoluoto satama
 20130101T054000 0.6 Porvoo Emäsalo
 20130101T174000 1.3 Porvoo Emäsalo
 20130101T054000 0.7 Porvoo Harabacka
@@ -249,12 +249,12 @@
 20130101T174000 -1.4 Rovaniemi lentoasema
 20130101T054000 -2.1 Rovaniemi rautatieasema
 20130101T174000 -0.5 Rovaniemi rautatieasema
+20130101T054000 -4.0 Salla kirkonkylä
+20130101T174000 -2.5 Salla kirkonkylä
 20130101T054000 -5.1 Salla Naruska
 20130101T174000 -3.9 Salla Naruska
 20130101T054000 -6.9 Salla Värriötunturi
 20130101T174000 -5.8 Salla Värriötunturi
-20130101T054000 -4.0 Salla kirkonkylä
-20130101T174000 -2.5 Salla kirkonkylä
 20130101T054000 1.2 Salo Kiikala lentokenttä
 20130101T174000 2.6 Salo Kiikala lentokenttä
 20130101T054000 2.2 Salo Kärkkä
