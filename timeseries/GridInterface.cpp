@@ -74,27 +74,6 @@ bool GridInterface::isGridProducer(const std::string& producer)
   try
   {
     return itsGridEngine->isGridProducer(producer);
-/*
-    if ((time(nullptr) - itsProducerList_updateTime) > 60)
-    {
-      itsProducerList_updateTime = time(nullptr);
-      itsGridEngine->getProducerList(itsProducerList);
-    }
-
-    std::string name = itsGridEngine->getProducerName(producer);
-    std::vector < std::string > nameList;
-    itsGridEngine->getProducerNameList(name, nameList);
-    for (auto it = nameList.begin(); it != nameList.end(); ++it)
-    {
-      for (auto itm = itsProducerList.begin(); itm != itsProducerList.end(); ++itm)
-      {
-        if (strcasecmp(it->c_str(), itm->c_str()) == 0)
-          return true;
-      }
-    }
-
-    return false;
-*/
   }
   catch (...)
   {

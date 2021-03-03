@@ -3322,8 +3322,9 @@ void Plugin::processQuery(const State& state,
       else
 #endif
           // Grid-query is executed if the following conditions are fulfilled:
-          //   1. Grid-query is enabled (in the configuration file)
-          //   2. If the one of the following conditions is true:
+          //   1. The usage of Grid-Engine is enabled (=> timeseries configuration file)
+          //   2. The actual Grid-Engine is enabled (=> grid-engine configuration file)
+          //   3. If the one of the following conditions is true:
           //       a) Grid-query is requested by the query parameter (source=grid)
           //       b) Query source is not defined and at least one of the producers is a grid
           //       producer c) Query source is not defined and at least one of the query parameters
@@ -3331,7 +3332,7 @@ void Plugin::processQuery(const State& state,
           //       defined and the primary forecast
           //          source defined in the config file is "grid".
 
-          if (!itsConfig.gridEngineDisabled() &&
+          if (!itsConfig.gridEngineDisabled() && itsGridEngine->isEnabled() &&
               (strcasecmp(masterquery.forecastSource.c_str(), "grid") == 0 ||
                (masterquery.forecastSource == "" &&
                 (((!areaproducers.empty() &&
