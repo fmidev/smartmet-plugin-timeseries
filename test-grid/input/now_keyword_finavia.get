@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&keyword=finavia&param=name,time,Temperature HTTP/1.0

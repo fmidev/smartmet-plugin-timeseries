@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&model=pal_skandinavia&place=Helsinki&param=time,Temperature HTTP/1.0

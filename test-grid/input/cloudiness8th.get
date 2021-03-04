@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&place=Helsinki&timesteps=48&param=time,TotalCloudCover,Cloudiness8th HTTP/1.0

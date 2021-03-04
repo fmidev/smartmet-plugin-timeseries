@@ -1,1 +1,1 @@
-GET /timeseries?now=200808050900&place=Helsinki&hour=15&timesteps=10&model=climate_tmax&param=localtime,NormalMaxTemperatureF12,NormalMaxTemperatureF50,NormalMaxTemperatureF98 HTTP/1.0
+GET /timeseries?now=200808050900&place=Helsinki&hour=15&timesteps=10&model=climate_tmax&param=localtime,NormalMaxTemperatureF12,NormalMaxTemperatureF50,NormalMaxTemperatureF98&source=querydata HTTP/1.0

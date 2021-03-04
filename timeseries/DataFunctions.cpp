@@ -9,6 +9,8 @@ namespace Plugin
 {
 namespace TimeSeries
 {
+namespace DataFunctions
+{
 // ----------------------------------------------------------------------
 /*!
  * \brief
@@ -294,6 +296,7 @@ void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, Outpu
   }
 }
 
+}  // namespace DataFunctions
 }  // namespace TimeSeries
 }  // namespace Plugin
 }  // namespace SmartMet

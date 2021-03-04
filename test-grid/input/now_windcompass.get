@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&place=Helsinki&timesteps=48&param=time,WindSpeedMS,WindDirection,WindCompass8,WindCompass16,WindCompass32 HTTP/1.0

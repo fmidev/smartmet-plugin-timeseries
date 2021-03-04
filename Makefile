@@ -1,5 +1,5 @@
 SUBNAME = timeseries
-SPEC = smartmet-plugin-$(SUBNAME)
+SPEC = smartmet-plugin-grib$(SUBNAME)
 INCDIR = smartmet/plugins/$(SUBNAME)
 
 REQUIRES = gdal
@@ -8,7 +8,7 @@ include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
 # Compiler options
 
-CFLAGS += -Wno-maybe-uninitialized
+CFLAGS += -Wno-maybe-uninitialized -Wno-pedantic
 
 DEFINES = -DUNIX -D_REENTRANT
 
@@ -22,6 +22,7 @@ LIBS += -L$(libdir) \
 	-lsmartmet-locus \
         -lsmartmet-gis \
 	-lsmartmet-macgyver \
+	-lsmartmet-grid-content \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_iostreams \
@@ -29,7 +30,7 @@ LIBS += -L$(libdir) \
 
 # What to install
 
-LIBFILE = $(SUBNAME).so
+LIBFILE = grib$(SUBNAME).so
 
 # Compilation directories
 

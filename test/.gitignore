@@ -1,4 +1,6 @@
-/failures*
-/input/.testignore
+failures*
+PluginTest
+PluginTestGrid
+TestConfigCreator
+input/.testignore
 /tmp-geonames-db*
-

@@ -1,0 +1,14 @@
+# This file is an extension for the 'parameterDef_fmi.csv' file. You can add your
+# own parameter definitions here. They will be not overridden.
+
+# Radon has no mappings for these newbase parameters, so let's create our own "Radon parameters"
+# for them.  
+30682;1;T-MEAN-C;C;AverageTemperature (682);1;;
+30812;1;F02-T-MAX-C;C;NormalMaxTemperatureF02 (812);1;;
+30813;1;F12-T-MAX-C;C;NormalMaxTemperatureF02 (813);1;;
+30814;1;F37-T-MAX-C;C;NormalMaxTemperatureF37 (814);1;;
+30815;1;F50-T-MAX-C;C;NormalMaxTemperatureF50 (815);1;;
+30816;1;F63-T-MAX-C;C;NormalMaxTemperatureF63 (816);1;;
+30817;1;F88-T-MAX-C;C;NormalMaxTemperatureF88 (817);1;;
+30818;1;F98-T-MAX-C;C;NormalMaxTemperatureF98 (818);1;;
+90001;1;FORESST;;FOREST;1;;

@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&timesteps=1&geoid=653282&precision=double&param=name,time,t2m,min_t(t2m:0h:24h) HTTP/1.0

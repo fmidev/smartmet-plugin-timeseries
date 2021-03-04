@@ -1,0 +1,1 @@
+GET /timeseries?starttime=20130501T0000&place=Tokio&format=ascii&param=name,time,sunrise,sunset,daylength&timesteps=92&timestep=1d HTTP/1.0

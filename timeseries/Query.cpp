@@ -15,6 +15,8 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
+#include <grid-files/common/GeneralFunctions.h>
+#include <grid-files/common/ShowFunction.h>
 #include <macgyver/StringConversion.h>
 #include <macgyver/TimeParser.h>
 #include <newbase/NFmiPoint.h>
@@ -40,10 +42,17 @@ void add_sql_data_filter(const Spine::HTTP::Request& req,
                          const std::string& param_name,
                          Engine::Observation::SQLDataFilter& dataFilter)
 {
-  auto param = req.getParameter(param_name);
+  try
+  {
+    auto param = req.getParameter(param_name);
 
-  if (param)
-    dataFilter.setDataFilter(param_name, *param);
+    if (param)
+      dataFilter.setDataFilter(param_name, *param);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
 }
 
 }  // namespace
@@ -59,12 +68,99 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 {
   try
   {
-    toptions = Spine::OptionParsers::parseTimes(req);
+    time_t tt = time(nullptr);
+    if ((config.itsLastAliasCheck + 10) < tt)
+    {
+      config.itsAliasFileCollection.checkUpdates(false);
+      config.itsLastAliasCheck = tt;
+    }
 
-    loptions.reset(new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(req)));
+    itsAliasFileCollectionPtr = &config.itsAliasFileCollection;
+
+    forecastSource = Spine::optional_string(req.getParameter("source"), "");
+
+    // ### Attribute list ( attr=name1:value1,name2:value2,name3:$(alias1) )
+
+    string attr = Spine::optional_string(req.getParameter("attr"), "");
+    if (!attr.empty())
+    {
+      bool ind = true;
+      uint loopCount = 0;
+      while (ind)
+      {
+        loopCount++;
+        if (loopCount > 10)
+          throw Fmi::Exception(BCP, "The alias definitions seem to contain an eternal loop!");
+
+        ind = false;
+        std::string alias;
+        if (itsAliasFileCollectionPtr->replaceAlias(attr, alias))
+        {
+          attr = alias;
+          ind = true;
+        }
+      }
+
+      std::vector<std::string> partList;
+      splitString(attr, ';', partList);
+      for (auto it = partList.begin(); it != partList.end(); ++it)
+      {
+        std::vector<std::string> list;
+        splitString(*it, ':', list);
+        if (list.size() == 2)
+        {
+          std::string name = list[0];
+          std::string value = list[1];
+
+          attributeList.addAttribute(name, value);
+        }
+      }
+    }
+
+    // attributeList.print(std::cout,0,0);
+
+    T::Attribute* v1 = attributeList.getAttributeByNameEnd("Grib1.IndicatorSection.EditionNumber");
+    T::Attribute* v2 = attributeList.getAttributeByNameEnd("Grib2.IndicatorSection.EditionNumber");
+
+    T::Attribute* lat = attributeList.getAttributeByNameEnd("LatitudeOfFirstGridPoint");
+    T::Attribute* lon = attributeList.getAttributeByNameEnd("LongitudeOfFirstGridPoint");
+
+    if (v1 != nullptr && lat != nullptr && lon != nullptr)
+    {
+      // Using coordinate that is inside the GRIB1 grid
+
+      double latitude = toDouble(lat->mValue.c_str()) / 1000;
+      double longitude = toDouble(lon->mValue.c_str()) / 1000;
+
+      std::string val = std::to_string(latitude) + "," + std::to_string(longitude);
+      Spine::HTTP::Request tmpReq;
+      tmpReq.addParameter("latlon", val);
+      loptions.reset(
+          new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(tmpReq)));
+    }
+    else if (v2 != nullptr && lat != nullptr && lon != nullptr)
+    {
+      // Using coordinate that is inside the GRIB2 grid
+
+      double latitude = toDouble(lat->mValue.c_str()) / 1000000;
+      double longitude = toDouble(lon->mValue.c_str()) / 1000000;
+
+      std::string val = std::to_string(latitude) + "," + std::to_string(longitude);
+      Spine::HTTP::Request tmpReq;
+      tmpReq.addParameter("latlon", val);
+      loptions.reset(
+          new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(tmpReq)));
+    }
+    else
+    {
+      loptions.reset(
+          new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(req)));
+    }
 
     // Store WKT-geometries
     wktGeometries = state.getGeoEngine().getWktGeometries(*loptions, language);
+
+    toptions = Spine::OptionParsers::parseTimes(req);
 
 #ifdef MYDEBUG
     std::cout << "Time options: " << std::endl << toptions << std::endl;
@@ -136,9 +232,9 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     }
 
 #ifndef WITHOUT_OBSERVARION
-    Query::parse_producers(req, state.getQEngine(), state.getObsEngine());
+    Query::parse_producers(req, state.getQEngine(), state.getGridEngine(), state.getObsEngine());
 #else
-    Query::parse_producers(req, state.getQEngine());
+    Query::parse_producers(req, state.getQEngine(), state.getGridEngine());
 #endif
 
 #ifndef WITHOUT_OBSERVATION
@@ -318,10 +414,12 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 #ifndef WITHOUT_OBSERVATION
 void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
                             const SmartMet::Engine::Querydata::Engine& theQEngine,
+                            const SmartMet::Engine::Grid::Engine* theGridEngine,
                             const SmartMet::Engine::Observation::Engine* theObsEngine)
 #else
 void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
-                            const SmartMet::Engine::Querydata::Engine& theQEngine)
+                            const SmartMet::Engine::Querydata::Engine& theQEngine,
+                            const SmartMet::Engine::Grid::Engine& theGridEngine)
 #endif
 {
   try
@@ -373,6 +471,9 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
       if (!ok)
         ok = (observations.find(p) != observations.end());
 #endif
+      if (!ok && theGridEngine)
+        ok = theGridEngine->isGridProducer(p);
+
       if (!ok)
         throw Fmi::Exception(BCP, "Unknown producer name '" + p + "'");
     }
@@ -519,9 +620,53 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
       throw Fmi::Exception(BCP, "The 'param' option is empty!");
 
     // Split
-    using Names = list<string>;
+    typedef list<string> Names;
+    Names tmpNames;
+    boost::algorithm::split(tmpNames, opt, boost::algorithm::is_any_of(","));
+
     Names names;
-    boost::algorithm::split(names, opt, boost::algorithm::is_any_of(","));
+    bool ind = true;
+    uint loopCount = 0;
+    while (ind)
+    {
+      loopCount++;
+      if (loopCount > 10)
+        throw Fmi::Exception(BCP, "The alias definitions seem to contain an eternal loop!");
+
+      ind = false;
+      names.clear();
+      for (auto it = tmpNames.begin(); it != tmpNames.end(); ++it)
+      {
+        std::string alias;
+        if (itsAliasFileCollectionPtr->getAlias(*it, alias))
+        {
+          Names tmp;
+          boost::algorithm::split(tmp, alias, boost::algorithm::is_any_of(","));
+          for (auto tt = tmp.begin(); tt != tmp.end(); ++tt)
+          {
+            names.push_back(*tt);
+          }
+          ind = true;
+        }
+        else if (itsAliasFileCollectionPtr->replaceAlias(*it, alias))
+        {
+          Names tmp;
+          boost::algorithm::split(tmp, alias, boost::algorithm::is_any_of(","));
+          for (auto tt = tmp.begin(); tt != tmp.end(); ++tt)
+          {
+            names.push_back(*tt);
+          }
+          ind = true;
+        }
+        else
+        {
+          names.push_back(*it);
+        }
+      }
+
+      if (ind)
+        tmpNames = names;
+    }
 
 #ifndef WITHOUT_OBSERVATION
 
@@ -552,10 +697,18 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     // Validate and convert
     for (const string& paramname : names)
     {
-      Spine::ParameterAndFunctions paramfuncs =
-          Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
+      try
+      {
+        Spine::ParameterAndFunctions paramfuncs =
+            Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
 
-      poptions.add(paramfuncs.parameter, paramfuncs.functions);
+        poptions.add(paramfuncs.parameter, paramfuncs.functions);
+      }
+      catch (...)
+      {
+        Fmi::Exception exception(BCP, "Parameter parsing failed for '" + paramname + "'!", NULL);
+        throw exception;
+      }
     }
     poptions.expandParameter("data_source");
 

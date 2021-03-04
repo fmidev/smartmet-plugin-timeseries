@@ -15,6 +15,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <engines/gis/GeometryStorage.h>
+#include <engines/grid/Engine.h>
+#include <grid-content/queryServer/definition/QueryStreamer.h>
 #include <macgyver/TimeZones.h>
 #include <newbase/NFmiPoint.h>
 #include <newbase/NFmiSvgPath.h>
@@ -43,6 +45,10 @@ namespace Gis
 {
 class Engine;
 }
+namespace Grid
+{
+class Engine;
+}
 }  // namespace Engine
 
 namespace Plugin
@@ -51,6 +57,7 @@ namespace TimeSeries
 {
 class State;
 class PluginImpl;
+class GridInterface;
 
 struct SettingsInfo
 {
@@ -81,6 +88,8 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   // Get the engines
   const Engine::Querydata::Engine& getQEngine() const { return *itsQEngine; }
   const Engine::Geonames::Engine& getGeoEngine() const { return *itsGeoEngine; }
+  const Engine::Grid::Engine* getGridEngine() const { return itsGridEngine; }
+
 #ifndef WITHOUT_OBSERVATION
   // May return null
   Engine::Observation::Engine* getObsEngine() const { return itsObsEngine; }
@@ -104,7 +113,10 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
              const Spine::HTTP::Request& req,
              Spine::HTTP::Response& response);
 
-  void processQuery(const State& state, Spine::Table& data, Query& masterquery);
+  void processQuery(const State& state,
+                    Spine::Table& data,
+                    Query& masterquery,
+                    const QueryServer::QueryStreamer_sptr& queryStreamer);
 
   void processQEngineQuery(const State& state,
                            Query& query,
@@ -124,6 +136,13 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                           const ProducerDataPeriod& producerDataPeriod,
                           QueryLevelDataCache& queryLevelDataCache,
                           OutputData& outputData);
+
+  bool processGridEngineQuery(const State& state,
+                              Query& masterquery,
+                              OutputData& outputData,
+                              QueryServer::QueryStreamer_sptr queryStreamer,
+                              const AreaProducers& areaproducers,
+                              const ProducerDataPeriod& producerDataPeriod);
 
 #ifndef WITHOUT_OBSERVATION
   bool isObsProducer(const std::string& producer) const;
@@ -158,7 +177,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                       const ObsParameters& obsParameters,
                       Query& query) const;
 
-  bool resolveAreaStations(const Spine::LocationPtr & location,
+  bool resolveAreaStations(const Spine::LocationPtr& location,
                            const std::string& producer,
                            Query& query,
                            Engine::Observation::Settings& settings,
@@ -187,6 +206,11 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                                         NFmiSvgPath* svgPath = nullptr) const;
   void checkInKeywordLocations(Query& masterquery);
 
+  Spine::LocationPtr getLocationForArea(const Spine::TaggedLocation& tloc,
+                                        int radius,
+                                        const Query& query,
+                                        NFmiSvgPath* svgPath = nullptr) const;
+
   const std::string itsModuleName;
   Config itsConfig;
   bool itsReady = false;
@@ -195,6 +219,8 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   Engine::Querydata::Engine* itsQEngine = nullptr;
   Engine::Geonames::Engine* itsGeoEngine = nullptr;
   Engine::Gis::Engine* itsGisEngine = nullptr;
+  Engine::Grid::Engine* itsGridEngine = nullptr;
+  std::unique_ptr<GridInterface> itsGridInterface;
 #ifndef WITHOUT_OBSERVATION
   Engine::Observation::Engine* itsObsEngine = nullptr;
 #endif

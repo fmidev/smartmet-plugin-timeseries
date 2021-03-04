@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200809091200&model=ecmwf_skandinavia_painepinta&place=Helsinki&param=time,level,Temperature&level=850&heights=1000,3000,5000&pressures=825,850,875 HTTP/1.0

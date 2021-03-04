@@ -1,0 +1,1 @@
+GET /timeseries?timestep=data&starttime=data&place=Helsinki&param=time,Temperature&timesteps=5 HTTP/1.0

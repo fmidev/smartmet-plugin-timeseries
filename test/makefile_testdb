@@ -1,0 +1,43 @@
+REDIS = -redis 127.0.0.1 6380 test.
+TOOLS_DIR = $(HOME)/workspace/smartmet-tools-grid
+CLEAR_DB = $(TOOLS_DIR)/bin/clients/cs_clear
+ADD_PRODUCER = $(TOOLS_DIR)/bin/clients/cs_addProducerInfo
+ADD_FILE = $(TOOLS_DIR)/bin/files/grid_add 
+DATA_DIR = $(HOME)/workspace/smartmet-test-data
+
+clear:
+	$(CLEAR_DB) 0 $(REDIS)
+
+all:
+	-$(ADD_PRODUCER) 0 1 200 0 pal_skandinavia pal_skandinavia pal_skandinavia
+	-$(ADD_PRODUCER) 0 2 200 0 pal_skandinavia2 pal_skandinavia2 pal_skandinavia2
+	-$(ADD_PRODUCER) 0 3 200 0 ecmwf_skandinavia_painepinta ecmwf_skandinavia_painepinta ecmwf_skandinavia_painepinta
+	-$(ADD_PRODUCER) 0 4 200 0 tosummertime tosummertime tosummertime
+	-$(ADD_PRODUCER) 0 5 200 0 tutka_suomi_rr tutka_suomi_rr tutka_suomi_rr
+	-$(ADD_PRODUCER) 0 6 200 0 towintertime towintertime towintertime
+	-$(ADD_PRODUCER) 0 7 200 0 ecmwf_eurooppa_pinta ecmwf_eurooppa_pinta ecmwf_eurooppa_pinta
+	-$(ADD_PRODUCER) 0 8 200 0 weeklyclimatology weeklyclimatology weeklyclimatology
+	-$(ADD_PRODUCER) 0 9 200 0 hirlam hirlam hirlam
+	-$(ADD_PRODUCER) 0 10 200 0 climate_tmax climate_tmax climate_tmax
+	-$(ADD_PRODUCER) 0 11 200 0 ecmwf_maailma_pinta ecmwf_maailma_pinta ecmwf_maailma_pinta
+	-$(ADD_FILE) $(DATA_DIR)/grib/pal/200808050933_pal_skandinavia_pinta.grib -producer pal_skandinavia -analysisTime 20080805T030000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/pal/200808050729_pal_skandinavia_pinta.grib -producer pal_skandinavia -analysisTime 20080805T050000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/pal/20130318/201303180158_pal_skandinavia_pinta_cropped.grib -producer pal_skandinavia2 -analysisTime 20130317T220000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/ecpainepinta/200809090714_ecmwf_skandinavia_painepinta240h.grib -producer ecmwf_skandinavia_painepinta -analysisTime 20080909T000000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/tosummertime/201203240143_pal_skandinavia_pinta.grib -producer tosummertime -analysisTime 20120323T220000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/tutka_suomi_rr/201309101035_tutka_suomi_rr.grib -producer tutka_suomi_rr -analysisTime 20130910T100000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/tutka_suomi_rr/201309101020_tutka_suomi_rr.grib -producer tutka_suomi_rr -analysisTime 20130910T100000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/tutka_suomi_rr/201309101005_tutka_suomi_rr.grib -producer tutka_suomi_rr -analysisTime 20130910T100000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/tutka_suomi_rr/201309101030_tutka_suomi_rr.grib -producer tutka_suomi_rr -analysisTime 20130910T100000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/tutka_suomi_rr/201309101000_tutka_suomi_rr.grib -producer tutka_suomi_rr -analysisTime 20130910T100000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/tutka_suomi_rr/201309101015_tutka_suomi_rr.grib -producer tutka_suomi_rr -analysisTime 20130910T100000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/tutka_suomi_rr/201309101010_tutka_suomi_rr.grib -producer tutka_suomi_rr -analysisTime 20130910T100000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/tutka_suomi_rr/201309101025_tutka_suomi_rr.grib -producer tutka_suomi_rr -analysisTime 20130910T100000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/towintertime/201210270251_pal_skandinavia_pinta.grib -producer towintertime -analysisTime 20121026T220000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/ecpinta/200808041930_ecmwf_eurooppa_pinta.grib -producer ecmwf_eurooppa_pinta -analysisTime 20080804T120000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/weekly/201606141602_ecmwf_eurooppa_clim_weekly.grib -producer weeklyclimatology -analysisTime 20160627T000000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/hirlam/201303180352_hirlam_eurooppa_pinta_cropped.grib -producer hirlam -analysisTime 20130318T000000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/climate/tmax.grib -producer climate_tmax -analysisTime 20010101T120000 -delPath $(DATA_DIR) $(REDIS)
+	-$(ADD_FILE) $(DATA_DIR)/grib/ecworld/201503131200_ecmwf_maailma_pinta.grib -producer ecmwf_maailma_pinta.grib -analysisTime 20150313T120000 -delPath $(DATA_DIR) $(REDIS)
+
+

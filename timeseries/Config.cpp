@@ -7,10 +7,14 @@
 #include "Config.h"
 #include "Precision.h"
 #include <boost/foreach.hpp>
+#include <grid-files/common/GeneralFunctions.h>
+#include <grid-files/common/ShowFunction.h>
 #include <macgyver/StringConversion.h>
 #include <ogr_geometry.h>
 #include <macgyver/Exception.h>
 #include <stdexcept>
+
+#define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
 using namespace std;
 
@@ -264,6 +268,7 @@ Config::Config(const string& configfile)
       itsFormatterOptions(),
       itsPrecisions(),
       itsObsEngineDisabled(false),
+      itsGridEngineDisabled(false),
       itsPreventObsEngineDatabaseQuery(false),
       itsFilesystemCacheDirectory("/var/smartmet/timeseriescache"),
       itsMaxMemoryCacheSize(104857600)  // 100 MB
@@ -274,6 +279,8 @@ Config::Config(const string& configfile)
 {
   try
   {
+    itsIgnoreGridGeometriesWhenPreloadReady = true;
+
     if (configfile.empty())
       throw Fmi::Exception(BCP, "TimeSeries configuration file cannot be empty");
 
@@ -299,18 +306,18 @@ Config::Config(const string& configfile)
     itsConfig.lookupValue("maxdistance", itsDefaultMaxDistance);
     itsConfig.lookupValue("expires", itsExpirationTime);
     itsConfig.lookupValue("observation_disabled", itsObsEngineDisabled);
+    itsConfig.lookupValue("gridengine_disabled", itsGridEngineDisabled);
+    itsConfig.lookupValue("primaryForecastSource", itsPrimaryForecastSource);
     itsConfig.lookupValue("prevent_observation_database_query", itsPreventObsEngineDatabaseQuery);
 
     itsConfig.lookupValue("cache.memory_bytes", itsMaxMemoryCacheSize);
     itsConfig.lookupValue("cache.filesystem_bytes", itsMaxFilesystemCacheSize);
     itsConfig.lookupValue("cache.directory", itsFilesystemCacheDirectory);
     itsConfig.lookupValue("cache.timeseries_size", itsMaxTimeSeriesCacheSize);
-
     itsFormatterOptions = Spine::TableFormatterOptions(itsConfig);
 
     parse_config_precisions();
 
-    // PostGIS
     if (itsConfig.exists("geometry_tables"))
     {
       Engine::Gis::postgis_identifier default_postgis_id;
@@ -363,10 +370,51 @@ Config::Config(const string& configfile)
         }
       }
     }
-
     // We construct the default locale only once from the string,
     // creating it from scratch for every request is very expensive
     itsDefaultLocale.reset(new std::locale(itsDefaultLocaleName.c_str()));
+
+    itsLastAliasCheck = time(nullptr);
+    try
+    {
+      const libconfig::Setting& gridGeometries = itsConfig.lookup("defaultGridGeometries");
+      if (!gridGeometries.isArray())
+        throw Fmi::Exception(BCP, "Configured value of 'defaultGridGeometries' must be an array");
+
+      for (int i = 0; i < gridGeometries.getLength(); ++i)
+      {
+        uint geomId = gridGeometries[i];
+        itsDefaultGridGeometries.push_back(geomId);
+      }
+
+      itsConfig.lookupValue("ignoreGridGeometriesWhenPreloadReady", itsIgnoreGridGeometriesWhenPreloadReady);
+      itsConfig.lookupValue("defaultProducerMappingName", itsDefaultProducerMappingName);
+
+      const libconfig::Setting& aliasFiles = itsConfig.lookup("parameterAliasFiles");
+
+      if (!aliasFiles.isArray())
+        throw Fmi::Exception(BCP, "Configured value of 'parameterAliasFiles' must be an array");
+
+      boost::filesystem::path path(configfile);
+
+      for (int i = 0; i < aliasFiles.getLength(); ++i)
+      {
+        std::string st = aliasFiles[i];
+        if (!st.empty())
+        {
+          if (st[0] == '/')
+            itsParameterAliasFiles.push_back(st);
+          else
+            itsParameterAliasFiles.push_back(path.parent_path().string() + "/" + st);
+        }
+      }
+
+      itsAliasFileCollection.init(itsParameterAliasFiles);
+    }
+    catch (const libconfig::SettingNotFoundException& e)
+    {
+      // throw Fmi::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
+    }
   }
   catch (const libconfig::SettingNotFoundException& e)
   {

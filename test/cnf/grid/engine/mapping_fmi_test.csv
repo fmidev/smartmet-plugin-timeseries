@@ -1,0 +1,275 @@
+# FIELDS:
+#  1) Producer name
+#  2) Mapping name
+#  3) Parameter id type:
+#         1 = FMI_ID
+#         2 = FMI_NAME
+#         3 = GRIB_ID
+#         4 = NEWBASE_ID
+#         5 = NEWBASE_NAME
+#         6 = CDM_ID
+#         7 = CDM_NAME
+#  4) Parameter id / name
+#  5) Geometry id
+#  6) Parameter level id type:
+#         1 = FMI
+#         2 = GRIB1
+#         3 = GRIB2
+#  7) Level id
+#         FMI level identifiers:
+#            1 Gound or water surface
+#            2 Pressure level
+#            3 Hybrid level
+#            4 Altitude
+#            5 Top of atmosphere
+#            6 Height above ground in meters
+#            7 Mean sea level
+#            8 Entire atmosphere
+#            9 Depth below land surface
+#            10 Depth below some surface
+#            11 Level at specified pressure difference from ground to level
+#            12 Max equivalent potential temperature level
+#            13 Layer between two metric heights above ground
+#            14 Layer between two depths below land surface
+#            15 Isothermal level, temperature in 1/100 K
+#  8) Level
+#  9) Area interpolation method
+#         0 = None
+#         1 = Linear
+#         2 = Nearest
+#         3 = Min
+#         4 = Max
+#         500..999 = List
+#         1000..65535 = External (interpolated by an external function)
+# 10) Time interpolation method
+#         0 = None
+#         1 = Linear
+#         2 = Nearest
+#         3 = Min
+#         4 = Max
+#         1000..65535 = External (interpolated by an external function)
+# 11) Level interpolation method
+#         0 = None
+#         1 = Linear
+#         2 = Nearest
+#         3 = Min
+#         4 = Max
+#         5 = Logarithmic
+#         1000..65535 = External (interpolated by an external function)
+# 12) Group flags
+#         bit 0 = Climatological parameter (=> ignore year when searching) 
+# 13) Search match (Can this mapping used when searching mappings for incomplete parameters)
+#         E = Enabled
+#         D = Disabled
+#         I = Ignore
+# 14) Mapping function (enables data conversions during the mapping)
+# 15) Reverse mapping function
+# 16) Default precision
+# 
+climate_tmax;F02-T-MAX-C;2;F02-T-MAX-C;5909;1;0;00000;1;;;0;E;;;;
+climate_tmax;F12-T-MAX-C;2;F12-T-MAX-C;5909;1;0;00000;1;;;0;E;;;;
+climate_tmax;F37-T-MAX-C;2;F37-T-MAX-C;5909;1;0;00000;1;;;0;E;;;;
+climate_tmax;F50-T-MAX-C;2;F50-T-MAX-C;5909;1;0;00000;1;;;0;E;;;;
+climate_tmax;F63-T-MAX-C;2;F63-T-MAX-C;5909;1;0;00000;1;;;0;E;;;;
+climate_tmax;F88-T-MAX-C;2;F88-T-MAX-C;5909;1;0;00000;1;;;0;E;;;;
+climate_tmax;F98-T-MAX-C;2;F98-T-MAX-C;5909;1;0;00000;1;;;0;E;;;;
+ecmwf_eurooppa_pinta;DD-D;2;DD-D;5903;1;0;00000;1;1;1;0;E;;;;
+ecmwf_eurooppa_pinta;DF-MS;2;DF-MS;5903;1;0;00000;1;1;1;0;E;;;1;
+ecmwf_eurooppa_pinta;FF-MS;2;FF-MS;5903;1;0;00000;1;1;1;0;E;;;1;
+ecmwf_eurooppa_pinta;FOGINT-N;2;FOGINT-N;5903;1;0;00000;2;2;2;0;E;;;;
+ecmwf_eurooppa_pinta;HESSAA-N;2;HESSAA-N;5903;1;0;00000;2;2;2;0;E;;;;
+ecmwf_eurooppa_pinta;HSADE1-N;2;HSADE1-N;5903;1;0;00000;2;2;2;0;E;;;;
+ecmwf_eurooppa_pinta;N-PRCNT;2;N-PRCNT;5903;1;0;00000;1;1;1;0;E;;;;
+ecmwf_eurooppa_pinta;NH-PRCNT;2;NH-PRCNT;5903;1;0;00000;1;1;1;0;E;;;;
+ecmwf_eurooppa_pinta;NL-PRCNT;2;NL-PRCNT;5903;1;0;00000;1;1;1;0;E;;;;
+ecmwf_eurooppa_pinta;NLM-PRCNT;2;NLM-PRCNT;5903;1;0;00000;1;1;1;0;E;;;;
+ecmwf_eurooppa_pinta;NM-PRCNT;2;NM-PRCNT;5903;1;0;00000;1;1;1;0;E;;;;
+ecmwf_eurooppa_pinta;P-PA;2;P-PA;5903;1;0;00000;1;1;1;0;E;;;;
+ecmwf_eurooppa_pinta;POT-PRCNT;2;POT-PRCNT;5903;1;0;00000;1;1;1;0;E;;;;
+ecmwf_eurooppa_pinta;PRECFORM-N;2;PRECFORM-N;5903;1;0;00000;2;2;2;0;E;;;;
+ecmwf_eurooppa_pinta;PRECTYPE-N;2;PRECTYPE-N;5903;1;0;00000;2;2;2;0;E;;;;
+ecmwf_eurooppa_pinta;RRR-KGM2;2;RRR-KGM2;5903;1;0;00000;1;1;1;0;E;;;;
+ecmwf_eurooppa_pinta;T-K;2;T-K;5903;1;0;00000;1;1;1;0;E;;;1;
+ecmwf_eurooppa_pinta;TD-C;2;TD-C;5903;1;0;00000;1;1;1;0;E;;;1;
+ecmwf_eurooppa_pinta;U-MS;2;U-MS;5903;1;0;00000;2;2;2;0;E;;;1;
+ecmwf_eurooppa_pinta;V-MS;2;V-MS;5903;1;0;00000;2;2;2;0;E;;;1;
+ecmwf_skandinavia_painepinta;DD-D;2;DD-D;5901;1;2;100000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;DD-D;2;DD-D;5901;1;2;30000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;DD-D;2;DD-D;5901;1;2;50000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;DD-D;2;DD-D;5901;1;2;70000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;DD-D;2;DD-D;5901;1;2;85000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;DD-D;2;DD-D;5901;1;2;92500;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;DF-MS;2;DF-MS;5901;1;2;100000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;DF-MS;2;DF-MS;5901;1;2;30000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;DF-MS;2;DF-MS;5901;1;2;50000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;DF-MS;2;DF-MS;5901;1;2;70000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;DF-MS;2;DF-MS;5901;1;2;85000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;DF-MS;2;DF-MS;5901;1;2;92500;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;FF-MS;2;FF-MS;5901;1;2;100000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;FF-MS;2;FF-MS;5901;1;2;30000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;FF-MS;2;FF-MS;5901;1;2;50000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;FF-MS;2;FF-MS;5901;1;2;70000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;FF-MS;2;FF-MS;5901;1;2;85000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;FF-MS;2;FF-MS;5901;1;2;92500;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;RH-PRCNT;2;RH-PRCNT;5901;1;2;100000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;RH-PRCNT;2;RH-PRCNT;5901;1;2;30000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;RH-PRCNT;2;RH-PRCNT;5901;1;2;50000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;RH-PRCNT;2;RH-PRCNT;5901;1;2;70000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;RH-PRCNT;2;RH-PRCNT;5901;1;2;85000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;RH-PRCNT;2;RH-PRCNT;5901;1;2;92500;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;T-K;2;T-K;5901;1;2;100000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;T-K;2;T-K;5901;1;2;30000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;T-K;2;T-K;5901;1;2;50000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;T-K;2;T-K;5901;1;2;70000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;T-K;2;T-K;5901;1;2;85000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;T-K;2;T-K;5901;1;2;92500;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TP-K;2;TP-K;5901;1;2;100000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TP-K;2;TP-K;5901;1;2;30000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TP-K;2;TP-K;5901;1;2;50000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TP-K;2;TP-K;5901;1;2;70000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TP-K;2;TP-K;5901;1;2;85000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TP-K;2;TP-K;5901;1;2;92500;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TPW-K;2;TPW-K;5901;1;2;100000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TPW-K;2;TPW-K;5901;1;2;30000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TPW-K;2;TPW-K;5901;1;2;50000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TPW-K;2;TPW-K;5901;1;2;70000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TPW-K;2;TPW-K;5901;1;2;85000;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;TPW-K;2;TPW-K;5901;1;2;92500;1;1;1;0;D;;;1;
+ecmwf_skandinavia_painepinta;U-MS;2;U-MS;5901;1;2;100000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;U-MS;2;U-MS;5901;1;2;30000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;U-MS;2;U-MS;5901;1;2;50000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;U-MS;2;U-MS;5901;1;2;70000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;U-MS;2;U-MS;5901;1;2;85000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;U-MS;2;U-MS;5901;1;2;92500;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;V-MS;2;V-MS;5901;1;2;100000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;V-MS;2;V-MS;5901;1;2;30000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;V-MS;2;V-MS;5901;1;2;50000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;V-MS;2;V-MS;5901;1;2;70000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;V-MS;2;V-MS;5901;1;2;85000;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;V-MS;2;V-MS;5901;1;2;92500;2;2;2;0;D;;;1;
+ecmwf_skandinavia_painepinta;VV-MMS;2;VV-MMS;5901;1;2;100000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;VV-MMS;2;VV-MMS;5901;1;2;30000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;VV-MMS;2;VV-MMS;5901;1;2;50000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;VV-MMS;2;VV-MMS;5901;1;2;70000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;VV-MMS;2;VV-MMS;5901;1;2;85000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;VV-MMS;2;VV-MMS;5901;1;2;92500;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;ZH-GPM;2;ZH-GPM;5901;1;2;100000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;ZH-GPM;2;ZH-GPM;5901;1;2;30000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;ZH-GPM;2;ZH-GPM;5901;1;2;50000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;ZH-GPM;2;ZH-GPM;5901;1;2;70000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;ZH-GPM;2;ZH-GPM;5901;1;2;85000;1;1;1;0;D;;;;
+ecmwf_skandinavia_painepinta;ZH-GPM;2;ZH-GPM;5901;1;2;92500;1;1;1;0;D;;;;
+hirlam;CLDSYM-N;2;CLDSYM-N;5201;1;0;00000;2;2;2;0;E;;;;
+hirlam;DD-D;2;DD-D;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;DF-MS;2;DF-MS;5201;1;0;00000;1;1;1;0;E;;;1;
+hirlam;FF-MS;2;FF-MS;5201;1;0;00000;1;1;1;0;E;;;1;
+hirlam;FOGINT-N;2;FOGINT-N;5201;1;0;00000;2;2;2;0;E;;;;
+hirlam;HESSAA-N;2;HESSAA-N;5201;1;0;00000;2;2;2;0;E;;;;
+hirlam;HSADE1-N;2;HSADE1-N;5201;1;0;00000;2;2;2;0;E;;;;
+hirlam;KINDEX-N;2;KINDEX-N;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;N-PRCNT;2;N-PRCNT;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;NH-PRCNT;2;NH-PRCNT;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;NL-PRCNT;2;NL-PRCNT;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;NLM-PRCNT;2;NLM-PRCNT;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;NM-PRCNT;2;NM-PRCNT;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;P-PA;2;P-PA;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;POT-PRCNT;2;POT-PRCNT;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;PRECFORM-N;2;PRECFORM-N;5201;1;0;00000;2;2;2;0;E;;;;
+hirlam;PRECTYPE-N;2;PRECTYPE-N;5201;1;0;00000;2;2;2;0;E;;;;
+hirlam;RADGLO-WM2;2;RADGLO-WM2;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;RADLW-WM2;2;RADLW-WM2;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;RH-PRCNT;2;RH-PRCNT;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;RRC-MM10;2;RRC-MM10;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;RRL-MM10;2;RRL-MM10;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;RRR-KGM2;2;RRR-KGM2;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;RTOPLW-WM2;2;RTOPLW-WM2;5201;1;0;00000;1;1;1;0;E;;;;
+hirlam;T-K;2;T-K;5201;1;0;00000;1;1;1;0;E;;;1;
+hirlam;TD-C;2;TD-C;5201;1;0;00000;1;1;1;0;E;;;1;
+hirlam;U-MS;2;U-MS;5201;1;0;00000;2;2;2;0;E;;;1;
+hirlam;V-MS;2;V-MS;5201;1;0;00000;2;2;2;0;E;;;1;
+hirlam;VV-M;2;VV-M;5201;1;0;00000;1;1;1;0;E;;;2;
+hirlam;ZH-GPM;2;ZH-GPM;5201;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia2;T-K;2;T-K;5908;1;0;00000;1;1;1;0;E;;;1;
+pal_skandinavia;DD-D;2;DD-D;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;DF-MS;2;DF-MS;5900;1;0;00000;1;1;1;0;E;;;1;
+pal_skandinavia;FF-MS;2;FF-MS;5900;1;0;00000;1;1;1;0;E;;;1;
+pal_skandinavia;FOGINT-N;2;FOGINT-N;5900;1;0;00000;2;2;2;0;E;;;;
+pal_skandinavia;HESSAA-N;2;HESSAA-N;5900;1;0;00000;2;2;2;0;E;;;;
+pal_skandinavia;HSADE1-N;2;HSADE1-N;5900;1;0;00000;2;2;2;0;E;;;;
+pal_skandinavia;KINDEX-N;2;KINDEX-N;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;N-PRCNT;2;N-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;NH-PRCNT;2;NH-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;NL-PRCNT;2;NL-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;NLM-PRCNT;2;NLM-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;NM-PRCNT;2;NM-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;P-PA;2;P-PA;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;POP-PRCNT;2;POP-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;POT-PRCNT;2;POT-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;PRECFORM-N;2;PRECFORM-N;5900;1;0;00000;2;2;2;0;E;;;;
+pal_skandinavia;PRECTYPE-N;2;PRECTYPE-N;5900;1;0;00000;2;2;2;0;E;;;;
+pal_skandinavia;RADGLO-WM2;2;RADGLO-WM2;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;RADLW-WM2;2;RADLW-WM2;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;RH-PRCNT;2;RH-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;RRR-KGM2;2;RRR-KGM2;5900;1;0;00000;1;1;1;0;E;;;;
+pal_skandinavia;T-K;2;T-K;5900;1;0;00000;1;1;1;0;E;;;1;
+pal_skandinavia;TD-C;2;TD-C;5900;1;0;00000;1;1;1;0;E;;;1;
+pal_skandinavia;U-MS;2;U-MS;5900;1;0;00000;2;2;2;0;E;;;1;
+pal_skandinavia;V-MS;2;V-MS;5900;1;0;00000;2;2;2;0;E;;;1;
+tosummertime;DD-D;2;DD-D;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;DF-MS;2;DF-MS;5900;1;0;00000;1;1;1;0;E;;;1;
+tosummertime;FF-MS;2;FF-MS;5900;1;0;00000;1;1;1;0;E;;;1;
+tosummertime;FOGINT-N;2;FOGINT-N;5900;1;0;00000;2;2;2;0;E;;;;
+tosummertime;HESSAA-N;2;HESSAA-N;5900;1;0;00000;2;2;2;0;E;;;;
+tosummertime;HSADE1-N;2;HSADE1-N;5900;1;0;00000;2;2;2;0;E;;;;
+tosummertime;KINDEX-N;2;KINDEX-N;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;N-PRCNT;2;N-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;NH-PRCNT;2;NH-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;NL-PRCNT;2;NL-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;NLM-PRCNT;2;NLM-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;NM-PRCNT;2;NM-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;P-PA;2;P-PA;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;POP-PRCNT;2;POP-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;POT-PRCNT;2;POT-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;PRECFORM-N;2;PRECFORM-N;5900;1;0;00000;2;2;2;0;E;;;;
+tosummertime;PRECTYPE-N;2;PRECTYPE-N;5900;1;0;00000;2;2;2;0;E;;;;
+tosummertime;RADGLO-WM2;2;RADGLO-WM2;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;RADLW-WM2;2;RADLW-WM2;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;RH-PRCNT;2;RH-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;RRR-KGM2;2;RRR-KGM2;5900;1;0;00000;1;1;1;0;E;;;;
+tosummertime;T-K;2;T-K;5900;1;0;00000;1;1;1;0;E;;;1;
+tosummertime;TD-C;2;TD-C;5900;1;0;00000;1;1;1;0;E;;;1;
+tosummertime;U-MS;2;U-MS;5900;1;0;00000;2;2;2;0;E;;;1;
+tosummertime;V-MS;2;V-MS;5900;1;0;00000;2;2;2;0;E;;;1;
+towintertime;DD-D;2;DD-D;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;DF-MS;2;DF-MS;5900;1;0;00000;1;1;1;0;E;;;1;
+towintertime;FF-MS;2;FF-MS;5900;1;0;00000;1;1;1;0;E;;;1;
+towintertime;FOGINT-N;2;FOGINT-N;5900;1;0;00000;2;2;2;0;E;;;;
+towintertime;HESSAA-N;2;HESSAA-N;5900;1;0;00000;2;2;2;0;E;;;;
+towintertime;HSADE1-N;2;HSADE1-N;5900;1;0;00000;2;2;2;0;E;;;;
+towintertime;KINDEX-N;2;KINDEX-N;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;N-PRCNT;2;N-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;NH-PRCNT;2;NH-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;NL-PRCNT;2;NL-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;NLM-PRCNT;2;NLM-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;NM-PRCNT;2;NM-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;P-PA;2;P-PA;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;POP-PRCNT;2;POP-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;POT-PRCNT;2;POT-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;PRECFORM-N;2;PRECFORM-N;5900;1;0;00000;2;2;2;0;E;;;;
+towintertime;PRECTYPE-N;2;PRECTYPE-N;5900;1;0;00000;2;2;2;0;E;;;;
+towintertime;RADGLO-WM2;2;RADGLO-WM2;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;RADLW-WM2;2;RADLW-WM2;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;RH-PRCNT;2;RH-PRCNT;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;RRR-KGM2;2;RRR-KGM2;5900;1;0;00000;1;1;1;0;E;;;;
+towintertime;T-K;2;T-K;5900;1;0;00000;1;1;1;0;E;;;1;
+towintertime;TD-C;2;TD-C;5900;1;0;00000;1;1;1;0;E;;;1;
+towintertime;U-MS;2;U-MS;5900;1;0;00000;2;2;2;0;E;;;1;
+towintertime;V-MS;2;V-MS;5900;1;0;00000;2;2;2;0;E;;;1;
+tutka_suomi_rr;RRR-KGM2;2;RRR-KGM2;5907;1;0;00000;1;1;1;0;E;;;;
+weeklyclimatology;F50-T-K;2;F50-T-K;5202;1;0;00000;1;1;1;0;E;;;1;
+weeklyclimatology;N-PRCNT;2;N-PRCNT;5202;1;0;00000;1;1;1;0;E;;;;
+weeklyclimatology;RR-MM10;2;RR-MM10;5202;1;0;00000;1;1;1;0;E;;;1;
+weeklyclimatology;SNR-KGM2;2;SNR-KGM2;5202;1;0;00000;1;1;1;0;E;;;;
+weeklyclimatology;TMAX-C;2;TMAX-C;5202;1;0;00000;1;1;1;0;E;;;1;
+weeklyclimatology;TMIN-C;2;TMIN-C;5202;1;0;00000;1;1;1;0;E;;;1;
+weeklyclimatology;WATLEV-CM;2;WATLEV-CM;5202;1;0;00000;1;1;1;0;E;;;1;

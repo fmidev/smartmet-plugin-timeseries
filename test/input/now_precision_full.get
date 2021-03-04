@@ -1,1 +1,1 @@
-GET /timeseries?now=200808050900&precision=full&param=time,Temperature,Precipitation1h,PrecipitationType,sunelevation,longitude,latitude&place=Helsinki HTTP/1.0
+GET /timeseries?now=200808050900&precision=full&param=time,Temperature,Precipitation1h,PrecipitationType,sunelevation,longitude,latitude&place=Helsinki&source=querydata HTTP/1.0

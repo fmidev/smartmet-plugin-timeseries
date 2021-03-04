@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&timestep=graph&tz=UTC&model=ec&places=Helsinki,Rooma&param=name,lat,lon,time,Temperature HTTP/1.0

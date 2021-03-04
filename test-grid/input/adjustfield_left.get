@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&place=Helsinki&param=time,Temperature,Precipitation1h,PrecipitationForm&width=10&adjustfield=left HTTP/1.0

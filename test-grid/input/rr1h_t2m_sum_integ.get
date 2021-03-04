@@ -1,0 +1,1 @@
+GET /timeseries?missingtext=*&starttime=200808051300&place=Helsinki&precision=double&param=name,time,rr1h,sum_t(rr1h:2h:2h),integ_t(rr1h:2h:2h),t2m,sum_t(t2m:2h:2h),integ_t(t2m:2h:2h) HTTP/1.0

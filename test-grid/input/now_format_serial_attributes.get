@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&attributes=time&place=Helsinki&param=time,Temperature,Precipitation1h&format=serial HTTP/1.0

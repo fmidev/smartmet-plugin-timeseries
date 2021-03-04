@@ -11,6 +11,7 @@
 
 #include <boost/utility.hpp>
 #include <engines/gis/GeometryStorage.h>
+#include <engines/grid/Engine.h>
 #include <spine/Parameter.h>
 #include <spine/TableFormatterOptions.h>
 #include <libconfig.h++>
@@ -33,6 +34,7 @@ class Config : private boost::noncopyable
   const Precision& getPrecision(const std::string& name) const;
 
   const std::string& defaultPrecision() const { return itsDefaultPrecision; }
+  const std::string& defaultProducerMappingName() const { return itsDefaultProducerMappingName; }
   const std::string& defaultLanguage() const { return itsDefaultLanguage; }
   // You can copy the locale, not modify it!
   const std::locale& defaultLocale() const { return *itsDefaultLocale; }
@@ -45,6 +47,9 @@ class Config : private boost::noncopyable
     return itsFormatterOptions.defaultWxmlTimeString();
   }
 
+  const std::vector<uint>& defaultGridGeometries() { return itsDefaultGridGeometries; }
+  bool ignoreGridGeometriesWhenPreloadReady() { return itsIgnoreGridGeometriesWhenPreloadReady; }
+
   const std::string& defaultWxmlVersion() const { return itsFormatterOptions.defaultWxmlVersion(); }
   const std::string& wxmlSchema() const { return itsFormatterOptions.wxmlSchema(); }
   const SmartMet::Spine::TableFormatterOptions& formatterOptions() const
@@ -55,6 +60,8 @@ class Config : private boost::noncopyable
   Engine::Gis::PostGISIdentifierVector getPostGISIdentifiers() const;
 
   bool obsEngineDisabled() const { return itsObsEngineDisabled; }
+  bool gridEngineDisabled() const { return itsGridEngineDisabled; }
+  std::string primaryForecastSource() const { return itsPrimaryForecastSource; }
   bool obsEngineDatabaseQueryPrevented() const { return itsPreventObsEngineDatabaseQuery; }
   unsigned long long maxMemoryCacheSize() const;
   unsigned long long maxFilesystemCacheSize() const;
@@ -64,9 +71,13 @@ class Config : private boost::noncopyable
 
   unsigned int expirationTime() const { return itsExpirationTime; }
 
+  QueryServer::AliasFileCollection itsAliasFileCollection;
+  time_t itsLastAliasCheck;
+
  private:
   libconfig::Config itsConfig;
   std::string itsDefaultPrecision;
+  std::string itsDefaultProducerMappingName;
   std::string itsDefaultLanguage;
   std::string itsDefaultLocaleName;
   std::unique_ptr<std::locale> itsDefaultLocale;
@@ -74,6 +85,9 @@ class Config : private boost::noncopyable
   std::string itsDefaultUrl;
   double itsDefaultMaxDistance;
   unsigned int itsExpirationTime;
+  std::vector<std::string> itsParameterAliasFiles;
+  std::vector<uint> itsDefaultGridGeometries;
+  bool itsIgnoreGridGeometriesWhenPreloadReady;
 
   SmartMet::Spine::TableFormatterOptions itsFormatterOptions;
   Precisions itsPrecisions;
@@ -81,6 +95,8 @@ class Config : private boost::noncopyable
   std::map<std::string, Engine::Gis::postgis_identifier> postgis_identifiers;
   std::string itsDefaultPostGISIdentifierKey;
   bool itsObsEngineDisabled;
+  bool itsGridEngineDisabled;
+  std::string itsPrimaryForecastSource;
   bool itsPreventObsEngineDatabaseQuery;
 
   std::string itsFilesystemCacheDirectory;

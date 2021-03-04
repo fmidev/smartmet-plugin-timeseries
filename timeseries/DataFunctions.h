@@ -34,6 +34,8 @@ using ParameterTimeSeriesGroupMap =
 using ObsParameters = std::vector<ObsParameter>;
 using FmisidTSVectorPair = std::pair<int, Spine::TimeSeries::TimeSeriesVectorPtr>;
 using TimeSeriesByLocation = std::vector<FmisidTSVectorPair>;
+namespace DataFunctions
+{
 /*** functions ***/
 Spine::TimeSeries::TimeSeriesPtr erase_redundant_timesteps(
     Spine::TimeSeries::TimeSeriesPtr ts,
@@ -66,6 +68,7 @@ T aggregate(const T& raw_data, const Spine::ParameterFunctions& pf)
   }
 }
 
+}  // namespace DataFunctions
 }  // namespace TimeSeries
 }  // namespace Plugin
 }  // namespace SmartMet

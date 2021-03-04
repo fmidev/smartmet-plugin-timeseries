@@ -1,0 +1,1 @@
+GET /timeseries?param=name,lat,lon,localtime,utctime,NormalMaxTemperatureF50&place=Kajaani&format=ascii&producer=climate_tmax&endtime=data&starttime=data&timestep=data HTTP/1.0

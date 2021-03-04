@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&endtime=2008-08-07%2000:00:00&places=Helsinki,Tukholma&param=name,time,utctime,Temperature HTTP/1.0

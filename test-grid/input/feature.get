@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&lonlat=24.96420,60.20890&feature=SYNOP&param=time,Temperature,geoid,feature,name,longitude,latitude HTTP/1.0

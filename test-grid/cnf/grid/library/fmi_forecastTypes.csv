@@ -1,0 +1,10 @@
+# FIELDS:
+# 1) forecastTypeId
+# 2) Name
+# 3) Description
+#
+1;Deterministic forecast;Deterministic forecast
+2;Analysis;Analysis
+3;Ensemble forecast (perturbation);Ensemble forecast, perturbation
+4;Ensemble forecast (control);Ensemble forecast, control forecast
+5;Statistical post processing;Statistical post processing
