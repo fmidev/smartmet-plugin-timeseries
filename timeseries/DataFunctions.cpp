@@ -47,11 +47,15 @@ void erase_redundant_timesteps(Spine::TimeSeries::TimeSeries& ts,
 {
   try
   {
+    // TODO: This should be rewritten to use a hash_map instead of std::set. Also, this should be
+    // optimized for the case when there are no redundant timesteps, and the input can be
+    // unmodified.
+
     Spine::TimeSeries::TimeSeries no_redundant;
     no_redundant.reserve(ts.size());
     std::set<boost::local_time::local_date_time> timestep_set(timesteps.begin(), timesteps.end());
 
-    for(const auto & data : ts)
+    for (const auto& data : ts)
     {
       if (timestep_set.find(data.time) != timestep_set.end())
         no_redundant.push_back(data);

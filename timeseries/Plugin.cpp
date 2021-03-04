@@ -312,7 +312,7 @@ void add_missing_timesteps(ts::TimeSeries& ts,
     // Add missing timesteps
     while (it != tlist->end() && *it < value.time)
     {
-      ts2.push_back(ts::TimedValue(*it, ts::None()));
+      ts2.emplace_back(ts::TimedValue(*it, ts::None()));
       ++it;
     }
     ts2.emplace_back(value);
@@ -324,7 +324,7 @@ void add_missing_timesteps(ts::TimeSeries& ts,
   // If there are requested timesteps after last value, add them
   while (it != tlist->end())
   {
-    ts2.push_back(ts::TimedValue(*it, ts::None()));
+    ts2.emplace_back(ts::TimedValue(*it, ts::None()));
     ++it;
   }
   ts = ts2;
@@ -444,7 +444,7 @@ Spine::TaggedLocationList get_locations_inside_geometry(const Spine::LocationLis
           ("POINT(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")");
       std::unique_ptr<OGRGeometry> location_geom = get_ogr_geometry(wkt);
       if (geom.Contains(location_geom.get()))
-        ret.push_back(Spine::TaggedLocation(loc->name, loc));
+        ret.emplace_back(Spine::TaggedLocation(loc->name, loc));
     }
 
     return ret;
@@ -562,7 +562,7 @@ std::size_t Plugin::hash_value(const State& state,
 
     if (producerMissing)
     {
-      masterquery.timeproducers.push_back(AreaProducers());
+      masterquery.timeproducers.emplace_back(AreaProducers());
     }
 
 #ifndef WITHOUT_OBSERVATION
@@ -1341,11 +1341,11 @@ void Plugin::fetchQEngineValues(const State& state,
           {
             if (loc->fmisid && paramname == "fmisid")
             {
-              querydata_result->push_back(ts::TimedValue(t, *(loc->fmisid)));
+              querydata_result->emplace_back(ts::TimedValue(t, *(loc->fmisid)));
             }
             else
             {
-              querydata_result->push_back(ts::TimedValue(t, ts::None()));
+              querydata_result->emplace_back(ts::TimedValue(t, ts::None()));
             }
           }
         }
@@ -2215,7 +2215,7 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
     if (query.toptions.timeList.size() > 0)
     {
       std::cout << "query.toptions.timeList: " << std::endl;
-      for (auto t : query.toptions.timeList)
+      for (const auto& t : query.toptions.timeList)
         std::cout << t << std::endl;
     }
 #endif
@@ -2338,10 +2338,10 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                                  query.timezone,
                                                  query.precisions[i]);
 
-            timeseries.push_back(ts::TimedValue(timestep_vector[j], value));
+            timeseries.emplace_back(ts::TimedValue(timestep_vector[j], value));
           }
 
-          observationResult2->push_back(timeseries);
+          observationResult2->emplace_back(timeseries);
           parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
         }
         else if (SmartMet::Spine::is_time_parameter(paramname))
@@ -2360,9 +2360,9 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                              query.outlocale,
                                              *query.timeformatter,
                                              query.timestring);
-            timeseries.push_back(ts::TimedValue(timestep_vector[j], value));
+            timeseries.emplace_back(ts::TimedValue(timestep_vector[j], value));
           }
-          observationResult2->push_back(timeseries);
+          observationResult2->emplace_back(timeseries);
           parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
         }
         else if (!obsParameters[i].duplicate)
@@ -2536,7 +2536,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           boost::local_time::local_date_time lt(ts_vector[k]);
           ts::Value val("");
           if (ts.size() == k)
-            ts.push_back(ts::TimedValue(lt, val));
+            ts.emplace_back(ts::TimedValue(lt, val));
           else if (ts[k].time != lt)
           {
             ts.insert(ts.begin() + k, ts::TimedValue(lt, val));
@@ -2582,7 +2582,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
                                                  query.timezone,
                                                  query.precisions[i]);
 
-            location_ts.push_back(ts::TimedValue(ts_vector[j], value));
+            location_ts.emplace_back(ts::TimedValue(ts_vector[j], value));
           }
           observation_result_with_added_fields->push_back(location_ts);
         }
@@ -2605,7 +2605,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
                                              *query.timeformatter,
                                              query.timestring);
 
-            time_ts.push_back(ts::TimedValue(ts_vector[j], value));
+            time_ts.emplace_back(ts::TimedValue(ts_vector[j], value));
           }
           observation_result_with_added_fields->push_back(time_ts);
         }
@@ -2653,7 +2653,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
     std::vector<ts::TimeSeriesGroupPtr> tsg_vector;
     for (unsigned int i = 0; i < obsParameters.size(); i++)
-      tsg_vector.push_back(ts::TimeSeriesGroupPtr(new ts::TimeSeriesGroup));
+      tsg_vector.emplace_back(ts::TimeSeriesGroupPtr(new ts::TimeSeriesGroup));
 
     // iterate locations
     for (unsigned int i = 0; i < tsv_area_with_added_fields.size(); i++)
@@ -2854,7 +2854,7 @@ void Plugin::processObsEngineQuery(const State& state,
 #endif
 
         std::vector<TimeSeriesData> tsdatavector;
-        outputData.push_back(make_pair("_obs_", tsdatavector));
+        outputData.emplace_back(make_pair("_obs_", tsdatavector));
 
         if (!item.is_area || is_flash_or_mobile_producer(producer))
           fetchObsEngineValuesForPlaces(
@@ -2912,7 +2912,7 @@ void Plugin::processQEngineQuery(const State& state,
       QueryLevelDataCache queryLevelDataCache;
 
       std::vector<TimeSeriesData> tsdatavector;
-      outputData.push_back(make_pair(location_id, tsdatavector));
+      outputData.emplace_back(make_pair(location_id, tsdatavector));
 
       if (masterquery.timezone == LOCALTIME_PARAM)
         query.timezone = tloc.loc->timezone;
@@ -3229,7 +3229,7 @@ void Plugin::checkInKeywordLocations(Query& masterquery)
           }
           if (nearest_loc)
           {
-            tloc_list.push_back(Spine::TaggedLocation(nearest_loc->name, nearest_loc));
+            tloc_list.emplace_back(Spine::TaggedLocation(nearest_loc->name, nearest_loc));
           }
         }
         else
@@ -3286,7 +3286,7 @@ void Plugin::processQuery(const State& state,
 
     const bool producerMissing = masterquery.timeproducers.empty();
     if (producerMissing)
-      masterquery.timeproducers.push_back(AreaProducers());
+      masterquery.timeproducers.emplace_back(AreaProducers());
 
 #ifndef WITHOUT_OBSERVATION
     const ObsParameters obsParameters = getObsParameters(masterquery);

@@ -21,8 +21,8 @@ BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 21.3.1
 BuildRequires: smartmet-library-locus-devel >= 21.2.18
 BuildRequires: smartmet-library-macgyver-devel >= 21.2.25
-BuildRequires: smartmet-library-grid-content-devel >= 21.3.3
-BuildRequires: smartmet-library-grid-files-devel >= 21.2.25
+BuildRequires: smartmet-library-grid-content-devel >= 21.3.4
+BuildRequires: smartmet-library-grid-files-devel >= 21.3.4
 BuildRequires: smartmet-library-newbase-devel >= 21.3.2
 BuildRequires: smartmet-library-gis-devel >= 21.2.26
 BuildRequires: smartmet-engine-geonames-devel >= 21.2.18
@@ -105,6 +105,9 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Wed Mar  3 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.3.3-1.fmi
 - Grid-engine may now be disabled
+
+* Mon Mar  1 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.3.1-1.fmi
+- Prefer emplace_back over push_back when possible for speed
 
 * Fri Feb 19 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.2.19-1.fmi
 - Added support for FMISIDs,WMOs,LPNNs in forecast queries (BRAINSTORM-1848)
