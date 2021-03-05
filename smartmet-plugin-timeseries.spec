@@ -1,5 +1,5 @@
 %bcond_without observation
-%define DIRNAME gribtimeseries
+%define DIRNAME timeseries
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
@@ -100,7 +100,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(0775,root,root,0775)
-%{_datadir}/smartmet/plugins/gribtimeseries.so
+%{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
 * Fri Mar  5 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.3.5-1.fmi
