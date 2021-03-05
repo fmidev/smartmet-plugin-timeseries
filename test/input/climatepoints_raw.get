@@ -1,1 +1,1 @@
-GET /timeseries?param=name,localtime,utctime,NormalMaxTemperature&place=Kajaani&format=ascii&producer=climatepoints&endtime=data&starttime=data&timestep=data&source=querydata HTTP/1.0
+GET /timeseries?param=name,localtime,utctime,NormalMaxTemperature&place=Kajaani&format=ascii&producer=climatepoints&endtime=data&starttime=data&timestep=data HTTP/1.0

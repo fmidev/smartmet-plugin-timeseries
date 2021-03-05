@@ -1,114 +1,122 @@
-PROG = PluginTest PluginTestGrid TestConfigCreator
+PROG = PluginTest
 
 REQUIRES = gdal configpp
 
 include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
-CFLAGS += -DUNIX -O0 -g -Wno-unknown-pragmas
+CFLAGS = -DUNIX -O0 -g $(FLAGS) -Wno-unknown-pragmas
+
+# Boost 1.69
+
+ifneq "$(wildcard /usr/include/boost169)" ""
+  INCLUDES += -isystem /usr/include/boost169
+  LIBS += -L/usr/lib64/boost169
+endif
 
 INCLUDES += \
 	-I ../timeseries \
 	-I /usr/include/smartmet \
+	-isystem /usr/gdal30/include \
 	-isystem /usr/include/mysql \
-	-I /usr/include/smartmet \
-	-I /usr/include/smartmet/grid-files \
-	-I /usr/include/smartmet/grid-content \
 	-isystem /usr/include/soci \
 	-isystem /usr/include/oracle/11.2/client64
 
-LIBS += -L$(libdir) \
-	 $(REQUIRED_LIBS) \
-	-lsmartmet-spine  \
+LIBS +=  -lsmartmet-spine  \
 	-lsmartmet-macgyver \
 	-lsmartmet-newbase \
-	-lsmartmet-grid-files \
-	-lsmartmet-grid-content \
+	$(CONFIGPP_LIBS) \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_filesystem \
 	-lboost_iostreams \
 	-lboost_system \
+	-L/usr/gdal30/lib -lgdal \
 	-lbz2 -lz -lpthread -ldl
 
 TEST_PREPARE_TARGETS := cnf/geonames.conf cnf/gis.conf
 TEST_FINISH_TARGETS := dummy
 
-CONFIG_FILES = cnf/gis.conf cnf/geonames.conf cnf/querydata.conf cnf/observation.conf cnf/timeseries.conf cnf/timeseries-grid.conf cnf/redis.conf
+
+ifdef CI
+GEONAMES_HOST_EDIT := sed -e 's/"smartmet-test"/"localhost"/g'
+TEST_PREPARE_TARGETS += start-geonames-db
+TEST_FINISH_TARGETS += stop-test-db
+TEST_TARGETS := test-sqlite
+EXTRA_IGNORE := input/.testignore_circle-ci
+else
+GEONAMES_HOST_EDIT := cat
+TEST_TARGETS := test-sqlite test-oracle test-postgresql
+EXTRA_IGNORE :=
+endif
+
+TEST_DB_DIR := $(shell pwd)/tmp-geonames-db
+TEST_RUNNER :=
 
 all:
 
 clean:
-	rm -f $(PROG) *~
-	rm -f cnf/gis.conf cnf/geonames.conf cnf/querydata.conf cnf/observation.conf cnf/timeseries.conf cnf/timeseries-grid.conf cnf/redis.conf
-	rm -rf failures
-	rm -rf failures-grid
+	-$(MAKE) $(TEST_FINISH_TARGETS)
+	rm -rf failed-sqlite failed-oracle failed-postgresql
+	rm -rf tmp-geonames-db
 
-test: 
-	@make grid-test
-	@make qd-test
+test:
+	@ok=true; failed=; \
+	for test in $(TEST_TARGETS); do \
+	  if ! $(MAKE) $$test; then ok=false; failed="$$failed $$test"; fi; \
+        done; \
+	if ! $$ok ; then \
+	  echo "======================================================================="; \
+	  echo "Failed: $$failed"; \
+	  echo "======================================================================="; \
+        fi; \
+        $$ok
 
-qd-test: $(PROG) $(CONFIG_FILES)
-	@mkdir -p failures
-	@rm -f failures/*
-	@echo 
-	@echo "*************************************************************"
-	@echo "*********** Running timeseries querydata tests **************"
-	@echo "*************************************************************"
-	@echo 
-	@./PluginTest -c cnf/reactor.conf
+PRE_TEST :=
+POST_TEST :=
 
-grid-test: $(PROG) $(CONFIG_FILES)
-	@mkdir -p failures-grid
-	@rm -f failures-grid/*
-	@echo 
-	@echo "*************************************************************"
-	@echo "*********** Running timeseries grid tests *******************"
-	@echo "*************************************************************"
-	@echo 
-	@echo "*** Starting the Redis database."
-	@redis-server cnf/redis.conf
-	@echo "*** Executing plugin tests."
-	@echo 
-	@./PluginTestGrid -c cnf/reactor-grid.conf
-	@echo 
-	@echo "*** Shutting down the Redis database and removing useless files." 
-	@echo 
-	@cat cnf/grid/redis/redis-server.pid | xargs kill -9
-	@rm -f cnf/grid/redis/redis-server.pid
-	@rm -f cnf/grid/redis/redis-server.log
+test-oracle:		DB_TYPE := oracle
+test-postgresql:	DB_TYPE := postgresql
+test-sqlite:		DB_TYPE := sqlite
 
-config: $(CONFIG_FILES)
+test-sqlite test-oracle test-postgresql: $(TEST_PREPARE_TARGETS)
+	rm -rf failures-$(DB_TYPE)
+	mkdir -p failures-$(DB_TYPE)
+	ok=true; $(TEST_RUNNER) smartmet-plugin-test --handler /timeseries \
+		--reactor-config cnf/reactor_$(DB_TYPE).conf \
+		--failures-dir failures-$(DB_TYPE) \
+		$(foreach fn, input/.testignore_$(DB_TYPE) $(EXTRA_IGNORE), --ignore $(fn)) \
+		--timeout 300 || ok=false; \
+	$(MAKE) $(TEST_FINISH_TARGETS); \
+	$$ok
 
-clear-config:
-	rm -f  cnf/gis.conf cnf/geonames.conf cnf/querydata.conf cnf/observation.conf cnf/timeseries.conf cnf/timeseries-grid.conf cnf/redis.conf
+testdatabase:
+	@printf "CREATING TEST DATABASE:\n\n"
+	@ls -1 input > input/.testignore
+	@rm -f test_cache.sqlite
+	@$(TEST_RUNNER) smartmet-plugin-test --handler /timeseries \
+		--reactor-config cnf/reactor_testdb.conf \
+		--ignore input/.testignore \
+		&& \
+	echo .quit | spatialite -silent test_cache.sqlite
+	@rm -f input/.testignore
 
-cnf/gis.conf: cnf/templates/gis.conf $(ENV_FILE)
-	@echo "*** Creating configuration file for the gis engine." 
-	@./TestConfigCreator $(ENV_FILE) cnf/templates/gis.conf cnf/gis.conf
+geonames-database:
+	@-$(MAKE) stop-test-db
+	rm -rf tmp-geonames-db
+	if ! /usr/share/smartmet/test/db/create-local-db.sh $(TEST_DB_DIR) >tmp-geonames-db.log 2>&1 ; then \
+	    cat tmp-geonames-db.log; \
+	    false; \
+	fi
 
-cnf/geonames.conf: cnf/templates/geonames.conf $(ENV_FILE)
-	@echo "*** Creating configuration file for the geonames engine." 
-	@./TestConfigCreator $(ENV_FILE) cnf/templates/geonames.conf cnf/geonames.conf
+start-geonames-db: geonames-database
+	/usr/share/smartmet/test/db/test-db-ctl.sh $(TEST_DB_DIR) start -w
 
-cnf/querydata.conf: cnf/templates/querydata.conf $(ENV_FILE)
-	@echo "*** Creating configuration file for the querydata engine." 
-	@./TestConfigCreator $(ENV_FILE) cnf/templates/querydata.conf cnf/querydata.conf
+stop-test-db:
+	-/usr/share/smartmet/test/db/test-db-ctl.sh $(TEST_DB_DIR) stop
 
-cnf/observation.conf: cnf/templates/observation.conf $(ENV_FILE)
-	@echo "*** Creating configuration file for the observation engine." 
-	@./TestConfigCreator $(ENV_FILE) cnf/templates/observation.conf cnf/observation.conf
+cnf/geonames.conf cnf/gis.conf:
+	$(GEONAMES_HOST_EDIT) $@.in >$@
 
-cnf/timeseries.conf: cnf/templates/timeseries.conf $(ENV_FILE)
-	@echo "*** Creating configuration file for the timeseries plugin with querydata support." 
-	@./TestConfigCreator $(ENV_FILE) cnf/templates/timeseries.conf cnf/timeseries.conf -D PRIMARY_FORECAST_SOURCE querydata -D GRID_ENGINE_DISABLED true
+dummy:
 
-cnf/timeseries-grid.conf: cnf/templates/timeseries.conf $(ENV_FILE)
-	@echo "*** Creating configuration file for the timeseries plugin with grib support." 
-	@./TestConfigCreator $(ENV_FILE) cnf/templates/timeseries.conf cnf/timeseries-grid.conf -D PRIMARY_FORECAST_SOURCE grid -D GRID_ENGINE_DISABLED false
-
-cnf/redis.conf: cnf/templates/redis.conf $(ENV_FILE)
-	@echo "*** Creating configuration file for the redis database." 
-	@./TestConfigCreator $(ENV_FILE) cnf/templates/redis.conf cnf/redis.conf
-
-$(PROG) : % : %.cpp Makefile ../gribtimeseries.so
-	$(CXX) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
+.PHONY: cnf/geonames.conf cnf/gis.conf

@@ -1,5 +1,5 @@
 SUBNAME = timeseries
-SPEC = smartmet-plugin-grib$(SUBNAME)
+SPEC = smartmet-plugin-$(SUBNAME)
 INCDIR = smartmet/plugins/$(SUBNAME)
 
 REQUIRES = gdal
@@ -30,7 +30,7 @@ LIBS += -L$(libdir) \
 
 # What to install
 
-LIBFILE = grib$(SUBNAME).so
+LIBFILE = $(SUBNAME).so
 
 # Compilation directories
 
@@ -74,8 +74,15 @@ install:
 	@mkdir -p $(plugindir)
 	$(INSTALL_PROG) $(LIBFILE) $(plugindir)/$(LIBFILE)
 
-test test-sqlite test-oracle test-postgresql:
+test:
+	$(MAKE) -C test test
+	$(MAKE) -C test-grid test
+
+test-sqlite test-oracle test-postgresql:
 	$(MAKE) -C test $@
+
+test-grid:
+	$(MAKE) -C test-grid test
 
 objdir:
 	@mkdir -p $(objdir)

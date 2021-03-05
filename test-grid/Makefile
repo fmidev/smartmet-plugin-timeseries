@@ -58,5 +58,5 @@ test: $(PROG) $(CONFIG_FILES)
 #	@rm -f cnf/grid/redis/redis-server.pid
 #	@rm -f cnf/grid/redis/redis-server.log
 
-$(PROG) : % : %.cpp Makefile ../gribtimeseries.so
+$(PROG) : % : %.cpp Makefile ../timeseries.so
 	$(CXX) $(CFLAGS) -o $@ $@.cpp $(INCLUDES) $(LIBS)
