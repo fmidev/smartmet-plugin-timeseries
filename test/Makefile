@@ -36,9 +36,10 @@ LIBS +=  -lsmartmet-spine  \
 TEST_PREPARE_TARGETS := cnf/geonames.conf cnf/gis.conf
 TEST_FINISH_TARGETS := dummy
 
+TEST_DB_DIR := $(shell pwd)/tmp-geonames-db
 
 ifdef CI
-GEONAMES_HOST_EDIT := sed -e 's/"smartmet-test"/"localhost"/g'
+GEONAMES_HOST_EDIT := sed -e 's|"smartmet-test"|"$(TEST_DB_DIR)"|g'
 TEST_PREPARE_TARGETS += start-geonames-db
 TEST_FINISH_TARGETS += stop-test-db
 TEST_TARGETS := test-sqlite
@@ -49,7 +50,6 @@ TEST_TARGETS := test-sqlite test-oracle test-postgresql
 EXTRA_IGNORE :=
 endif
 
-TEST_DB_DIR := $(shell pwd)/tmp-geonames-db
 TEST_RUNNER :=
 
 all:
