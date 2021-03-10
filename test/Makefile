@@ -58,9 +58,11 @@ clean:
 	-$(MAKE) $(TEST_FINISH_TARGETS)
 	rm -rf failed-sqlite failed-oracle failed-postgresql
 	rm -rf tmp-geonames-db
+	rm -rf tmp
 
 test:
 	@ok=true; failed=; \
+	@mkdir -p tmp; \
 	for test in $(TEST_TARGETS); do \
 	  if ! $(MAKE) $$test; then ok=false; failed="$$failed $$test"; fi; \
         done; \
@@ -80,7 +82,7 @@ test-sqlite:		DB_TYPE := sqlite
 
 test-sqlite test-oracle test-postgresql: $(TEST_PREPARE_TARGETS)
 	rm -rf failures-$(DB_TYPE)
-	mkdir -p failures-$(DB_TYPE)
+	mkdir -p failures-$(DB_TYPE) tmp
 	ok=true; $(TEST_RUNNER) smartmet-plugin-test --handler /timeseries \
 		--reactor-config cnf/reactor_$(DB_TYPE).conf \
 		--failures-dir failures-$(DB_TYPE) \

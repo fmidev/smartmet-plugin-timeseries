@@ -36,7 +36,7 @@ clean:
 	rm -rf failures
 
 test: $(PROG) $(CONFIG_FILES)
-	@mkdir -p failures
+	@mkdir -p failures tmp
 	@rm -f failures/*
 	@echo 
 	@echo "*************************************************************"

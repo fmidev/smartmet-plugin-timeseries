@@ -76,7 +76,3 @@
 # 15) Reverse mapping function
 # 16) Default precision
 # 
-ecmwf_maailma_pinta.grib;DewPoint;2;TD-C;5100;1;0;00000;1;1;1;0;E;;;1;
-ecmwf_maailma_pinta.grib;GeopHeight;2;ZH-GPM;5100;1;0;00000;1;1;1;0;E;;;;
-ecmwf_maailma_pinta.grib;LandSeaMask;2;LC-0TO1;5100;1;0;00000;1;1;1;0;E;;;;
-ecmwf_maailma_pinta.grib;Temperature;2;T-K;5100;1;0;00000;1;1;1;0;E;SUM{$,-273.15};SUM{$,273.15};1;
