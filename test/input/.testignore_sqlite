@@ -4,3 +4,6 @@ sounding_observations_selected_sounding_type.get
 netatmo_observations.get
 netatmo_observations_selected_stations.get
 netatmo_observations_uusimaa.get
+fmi_iot_observations.get
+fmi_iot_observations_selected_stations.get
+fmi_iot_observations_uusimaa.get

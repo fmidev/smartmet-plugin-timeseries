@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.3.5
+Version: 21.3.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,7 +27,7 @@ BuildRequires: smartmet-library-newbase-devel >= 21.3.2
 BuildRequires: smartmet-library-gis-devel >= 21.2.26
 BuildRequires: smartmet-engine-geonames-devel >= 21.2.18
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.3.2
+BuildRequires: smartmet-engine-observation-devel >= 21.3.18
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.3.4
 BuildRequires: smartmet-engine-gis-devel >= 21.2.26
@@ -103,6 +103,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Mar 18 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.3.18-1.fmi
+- Database table name configurable for mobile observations (BRAINSTORM-2022)
+- Mobile observation testcases use cloud database
+- Added testcases for fmi_iot producer
+
 * Fri Mar  5 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.3.5-1.fmi
 - Merged master and grid branches
 
