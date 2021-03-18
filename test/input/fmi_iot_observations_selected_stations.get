@@ -1,0 +1,1 @@
+GET /timeseries?format=ascii&param=localtime,longitude,latitude,altitude,stationid,RH,TA,PA&producer=fmi_iot&starttime=20210303150000&endtime=20210303152000&station_id=1401881683,1401881644,1401881603,1401881596,1401881631  HTTP/1.0
