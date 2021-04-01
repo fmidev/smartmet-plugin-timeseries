@@ -45,7 +45,7 @@ OBJS = $(patsubst %.cpp, obj/%.o, $(notdir $(SRCS)))
 
 INCLUDES := -I$(SUBNAME) $(INCLUDES)
 
-.PHONY: test rpm
+.PHONY: test test-grid rpm
 
 # The rules
 
@@ -76,13 +76,9 @@ install:
 
 test:
 	$(MAKE) -C test test
-	$(MAKE) -C test-grid test
 
-test-sqlite test-oracle test-postgresql:
+test-sqlite test-oracle test-postgresql test-grid:
 	$(MAKE) -C test $@
-
-test-grid:
-	$(MAKE) -C test-grid test
 
 objdir:
 	@mkdir -p $(objdir)

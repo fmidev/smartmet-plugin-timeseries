@@ -1,4 +1,4 @@
 /failures*
 /input/.testignore
 /tmp-geonames-db*
-
+/tmp
