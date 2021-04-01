@@ -57,23 +57,19 @@ Requires: boost169-thread
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
-#TestRequires: libconfig-devel
-#TestRequires: gcc-c++
+#TestRequires: redis
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
-#TestRequires: smartmet-library-gis-devel >= 21.2.26
-#TestRequires: smartmet-library-newbase-devel >= 21.3.2
-#TestRequires: smartmet-library-spine-devel >= 21.3.1
-#TestRequires: smartmet-library-macgyver-devel >= 21.2.25
-#TestRequires: smartmet-engine-geonames-devel >= 21.2.18
-#TestRequires: smartmet-engine-gis-devel >= 21.2.26
-#TestRequires: smartmet-engine-querydata-devel >= 21.3.4
+#TestRequires: smartmet-test-grid
+#TestRequires: smartmet-library-gis >= 21.2.26
+#TestRequires: smartmet-engine-geonames >= 21.2.18
+#TestRequires: smartmet-engine-gis >= 21.2.26
+#TestRequires: smartmet-engine-querydata >= 21.3.4
 %if %{with observation}
-#TestRequires: smartmet-engine-observation-devel >= 21.3.2
+#TestRequires: smartmet-engine-observation >= 21.3.2
 %endif
-#TestRequires: smartmet-engine-grid-devel >= 21.3.3
-#TestRequires: boost169-devel
-#TestRequires: gdal32-devel
+#TestRequires: smartmet-engine-grid >= 21.3.3
+#TestRequires: gdal32
 #TestRequires: boost169-date-time
 #TestRequires: boost169-filesystem
 #TestRequires: boost169-iostreams
