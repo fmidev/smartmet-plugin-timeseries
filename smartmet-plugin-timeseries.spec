@@ -57,6 +57,7 @@ Requires: boost169-thread
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
+#TestRequires: gcc-c++
 #TestRequires: smartmet-library-macgyver-devel >= 21.2.25
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 20.6.9
