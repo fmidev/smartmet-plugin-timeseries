@@ -25,7 +25,7 @@ BuildRequires: smartmet-library-grid-content-devel >= 21.3.29
 BuildRequires: smartmet-library-grid-files-devel >= 21.3.31
 BuildRequires: smartmet-library-newbase-devel >= 21.3.20
 BuildRequires: smartmet-library-gis-devel >= 21.3.29
-BuildRequires: smartmet-engine-geonames-devel >= 21.2.18
+BuildRequires: smartmet-engine-geonames-devel >= 21.4.12
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 21.3.31
 %endif
@@ -44,7 +44,7 @@ Requires: smartmet-library-macgyver >= 21.2.25
 Requires: smartmet-library-newbase >= 21.3.20
 Requires: smartmet-library-spine >= 21.3.27
 Requires: smartmet-library-gis >= 21.3.29
-Requires: smartmet-engine-geonames >= 21.2.18
+Requires: smartmet-engine-geonames >= 21.4.12
 Requires: smartmet-engine-querydata >= 21.3.4
 Requires: smartmet-engine-gis >= 21.3.23
 Requires: smartmet-engine-grid >= 21.3.29
