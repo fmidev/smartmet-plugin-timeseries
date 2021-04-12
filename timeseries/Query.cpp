@@ -396,6 +396,8 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 
     startrow = Spine::optional_size(req.getParameter("startrow"), 0);
     maxresults = Spine::optional_size(req.getParameter("maxresults"), 0);
+	groupareas = Spine::optional_bool(req.getParameter("groupareas"), true);
+
   }
   catch (...)
   {

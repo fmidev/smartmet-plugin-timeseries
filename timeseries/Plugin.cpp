@@ -142,6 +142,25 @@ bool is_flash_or_mobile_producer(const std::string& producer)
   }
 }
 
+std::unique_ptr<Spine::Location> get_bbox_location(const std::string& bbox_string,
+												   const std::string& language,
+												   const Engine::Geonames::Engine& geoengine)
+{
+  std::vector<std::string> parts;
+  boost::algorithm::split(parts, bbox_string, boost::algorithm::is_any_of(","));
+  
+  double lon1 = Fmi::stod(parts[0]);
+  double lat1 = Fmi::stod(parts[1]);
+  double lon2 = Fmi::stod(parts[2]);
+  double lat2 = Fmi::stod(parts[3]);
+  
+  // get location info for center coordinates
+  double lon = (lon1 + lon2) / 2.0;
+  double lat = (lat1 + lat2) / 2.0;
+
+  return get_coordinate_location(lon, lat, language, geoengine);
+}
+
 // ----------------------------------------------------------------------
 /*!
  * \brief Find producer data with matching coordinates
@@ -263,11 +282,11 @@ void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
 {
   try
   {
-    ts::TableFeeder tf(table, query.valueformatter, query.precisions);
-    int startRow = tf.getCurrentRow();
-
     if (outputData.empty())
       return;
+
+    ts::TableFeeder tf(table, query.valueformatter, query.precisions);
+    int startRow = tf.getCurrentRow();
 
     std::string locationName(outputData[0].first);
 
@@ -652,20 +671,8 @@ std::size_t Plugin::hash_value(const State& state,
             }
             else if (loc->type == Spine::Location::BoundingBox)
             {
-              // find geoinfo for the corner coordinate
-              std::vector<std::string> parts;
-              boost::algorithm::split(parts, place, boost::algorithm::is_any_of(","));
-
-              double lon1 = Fmi::stod(parts[0]);
-              double lat1 = Fmi::stod(parts[1]);
-              double lon2 = Fmi::stod(parts[2]);
-              double lat2 = Fmi::stod(parts[3]);
-
               // get location info for center coordinates
-              double lon = (lon1 + lon2) / 2.0;
-              double lat = (lat1 + lat2) / 2.0;
-              std::unique_ptr<Spine::Location> tmp =
-                  get_coordinate_location(lon, lat, query.language, *itsGeoEngine);
+			  std::unique_ptr<Spine::Location> tmp = get_bbox_location(place, query.language, *itsGeoEngine);
 
               tmp->name = tloc.tag;
               tmp->type = tloc.loc->type;
@@ -790,42 +797,43 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
   {
     double bottom = 0.0, top = 0.0, left = 0.0, right = 0.0;
 
-    const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
-
-    if (geom)
-    {
-      OGREnvelope envelope;
-      geom->getEnvelope(&envelope);
-      top = envelope.MaxY;
-      bottom = envelope.MinY;
-      left = envelope.MinX;
-      right = envelope.MaxX;
-    }
-    if (svgPath != nullptr)
-    {
-      get_svg_path(tloc, itsGeometryStorage, *svgPath);
-
-      if (!geom)
-      {
-        // get location info for center coordinate
-        bottom = svgPath->begin()->itsY;
-        top = svgPath->begin()->itsY;
-        left = svgPath->begin()->itsX;
-        right = svgPath->begin()->itsX;
-
-        for (NFmiSvgPath::const_iterator it = svgPath->begin(); it != svgPath->end(); ++it)
-        {
-          if (it->itsX < left)
-            left = it->itsX;
-          if (it->itsX > right)
-            right = it->itsX;
-          if (it->itsY < bottom)
-            bottom = it->itsY;
-          if (it->itsY > top)
-            top = it->itsY;
-        }
-      }
-    }
+	const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
+	
+	if (geom)
+	  {
+		OGREnvelope envelope;
+		geom->getEnvelope(&envelope);
+		top = envelope.MaxY;
+		bottom = envelope.MinY;
+		left = envelope.MinX;
+		right = envelope.MaxX;
+	  }
+	
+	if (svgPath != nullptr)
+	  {
+		get_svg_path(tloc, itsGeometryStorage, *svgPath);
+		
+		if (!geom)
+		  {
+			// get location info for center coordinate
+			bottom = svgPath->begin()->itsY;
+			top = svgPath->begin()->itsY;
+			left = svgPath->begin()->itsX;
+			right = svgPath->begin()->itsX;
+			
+			for (NFmiSvgPath::const_iterator it = svgPath->begin(); it != svgPath->end(); ++it)
+			  {
+				if (it->itsX < left)
+				  left = it->itsX;
+				if (it->itsX > right)
+				  right = it->itsX;
+				if (it->itsY < bottom)
+				  bottom = it->itsY;
+				if (it->itsY > top)
+				  top = it->itsY;
+			  }
+		  }
+	  }
 
     double lon = (right + left) / 2.0;
     double lat = (top + bottom) / 2.0;
@@ -1069,6 +1077,119 @@ void Plugin::fetchStaticLocationValues(Query& query,
   }
 }
 
+Spine::LocationList get_indexmask_locations(const NFmiIndexMask& indexmask,
+												  const Spine::LocationPtr& loc,
+												  const SmartMet::Engine::Querydata::Q& qi,
+												  const Engine::Geonames::Engine& geoengine)
+{
+  Spine::LocationList loclist;
+
+  for (const auto &mask : indexmask)
+	{
+	  NFmiPoint coord = qi->latLon(mask);
+	  Spine::Location location(*loc);
+	  location.longitude = coord.X();
+	  location.latitude = coord.Y();
+	  location.dem = geoengine.demHeight(location.longitude, location.latitude);
+	  location.covertype = geoengine.coverType(location.longitude, location.latitude);
+	  location.type = Spine::Location::CoordinatePoint;
+	  Spine::LocationPtr locPtr = boost::make_shared<Spine::Location>(location);
+	  loclist.emplace_back(locPtr);
+	}
+
+  return loclist;
+}
+
+// If query.groupareas is false, find out locations inside area and process them individaually
+void Plugin::resolveAreaLocations(Query& query, const State& state, const AreaProducers& areaproducers)
+{
+  if(query.groupareas == true)
+	return;
+
+  Spine::TaggedLocationList tloclist;
+  for (const auto& tloc : query.loptions->locations())
+    {
+	  Spine::LocationPtr loc = tloc.loc;
+	  Spine::LocationPtr  area_loc;
+	  if(tloc.loc->type == Spine::Location::BoundingBox)
+		area_loc = get_bbox_location(get_name_base(tloc.loc->name), query.language, *itsGeoEngine);
+	  else
+		area_loc = getLocationForArea(tloc, query);
+	  auto producer = select_producer(*itsQEngine, *area_loc, query, areaproducers);
+	  if(producer.empty())
+		return;
+	  auto qi = (query.origintime ? state.get(producer, *query.origintime) : state.get(producer));
+	  
+	  if (qi->isGrid() &&
+		  (loc->type == Spine::Location::BoundingBox ||
+		   loc->type == Spine::Location::Area || ((loc->type == Spine::Location::Place ||
+												   loc->type == Spine::Location::CoordinatePoint) && loc->radius > 0)))
+		{
+		  NFmiSvgPath svgPath;
+		  if (loc->type == Spine::Location::Wkt)
+			svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+		  else if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
+			getLocationForArea(tloc, query, &svgPath);
+		  
+		  NFmiIndexMask indexmask;
+		  if (loc->type == Spine::Location::BoundingBox)
+            {
+              std::vector<std::string> coordinates;
+			  std::string place = get_name_base(loc->name);
+              boost::algorithm::split(coordinates, place, boost::algorithm::is_any_of(","));
+              if (coordinates.size() != 4)
+                throw Fmi::Exception(BCP,
+                                     "Invalid bbox parameter " + place +
+									 ", should be in format 'lon,lat,lon,lat[:radius]'!");
+			  
+              std::string lonstr1 = coordinates[0];
+              std::string latstr1 = coordinates[1];
+              std::string lonstr2 = coordinates[2];
+              std::string latstr2 = coordinates[3];
+			  
+              if (latstr2.find(':') != std::string::npos)
+                latstr2.erase(latstr2.begin() + latstr2.find(':'), latstr2.end());
+			  
+              double lon1 = Fmi::stod(lonstr1);
+              double lat1 = Fmi::stod(latstr1);
+              double lon2 = Fmi::stod(lonstr2);
+              double lat2 = Fmi::stod(latstr2);
+			  
+              NFmiSvgPath boundingBoxPath;
+              NFmiSvgTools::BBoxToSvgPath(boundingBoxPath, lon1, lat1, lon2, lat2);
+              indexmask = NFmiIndexMaskTools::MaskExpand(qi->grid(), boundingBoxPath, loc->radius);
+            }
+		  else if (loc->type == Spine::Location::Area || loc->type == Spine::Location::Place ||
+				   loc->type == Spine::Location::CoordinatePoint)
+            {
+              if (loc->type != Spine::Location::Wkt)  // SVG for WKT has been extracted earlier
+                get_svg_path(tloc, itsGeometryStorage, svgPath);
+              indexmask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, loc->radius);
+            }
+
+		  for (const auto &mask : indexmask)
+			{
+			  NFmiPoint coord = qi->latLon(mask);
+			  Spine::Location location(*area_loc);
+			  location.longitude = coord.X();
+			  location.latitude = coord.Y();
+			  location.dem = itsGeoEngine->demHeight(location.longitude, location.latitude);
+			  location.covertype = itsGeoEngine->coverType(location.longitude, location.latitude);
+			  location.type = Spine::Location::CoordinatePoint;
+			  Spine::LocationPtr locPtr = boost::make_shared<Spine::Location>(location);
+			  Spine::TaggedLocation new_tloc(tloc.tag, locPtr);
+			  tloclist.emplace_back(new_tloc);
+			}
+		}
+	  else
+		{
+		  tloclist.emplace_back(tloc);
+		}
+	}
+
+  query.loptions->setLocations(tloclist);
+}
+
 // ----------------------------------------------------------------------
 /*!
  * \brief
@@ -1105,20 +1226,8 @@ void Plugin::fetchQEngineValues(const State& state,
     }
     else if (loc->type == Spine::Location::BoundingBox)
     {
-      // find geoinfo for the corner coordinate
-      std::vector<std::string> parts;
-      boost::algorithm::split(parts, place, boost::algorithm::is_any_of(","));
-
-      double lon1 = Fmi::stod(parts[0]);
-      double lat1 = Fmi::stod(parts[1]);
-      double lon2 = Fmi::stod(parts[2]);
-      double lat2 = Fmi::stod(parts[3]);
-
       // get location info for center coordinate
-      double lon = (lon1 + lon2) / 2.0;
-      double lat = (lat1 + lat2) / 2.0;
-      std::unique_ptr<Spine::Location> tmp =
-          get_coordinate_location(lon, lat, query.language, state.getGeoEngine());
+	  std::unique_ptr<Spine::Location> tmp = get_bbox_location(place, query.language, *itsGeoEngine);
 
       tmp->name = tloc.tag;
       tmp->type = tloc.loc->type;
@@ -1519,13 +1628,22 @@ void Plugin::fetchQEngineValues(const State& state,
                                                                 nearestpoint,
                                                                 query.lastpoint);
 
-            // indexmask (indexed locations on the area), list of local times
+            // Indexmask (indexed locations on the area)
+			Spine::LocationList llist = get_indexmask_locations(mask, 
+																loc,
+																qi,
+																*itsGeoEngine);
+			
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
             querydata_result =
-                loadDataLevels ? qi->values(querydata_param, mask, querydata_tlist)
-                : pressure ? qi->valuesAtPressure(querydata_param, mask, querydata_tlist, *pressure)
-                           : qi->valuesAtHeight(querydata_param, mask, querydata_tlist, *height);
+			  loadDataLevels
+			  ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance)
+			  : pressure
+			  ? qi->valuesAtPressure(
+									 querydata_param, llist, querydata_tlist, query.maxdistance, *pressure)
+			  : qi->valuesAtHeight(
+								   querydata_param, llist, querydata_tlist, query.maxdistance, *height);
 #pragma GCC diagnostic pop
 
             if (querydata_result->size() > 0)
@@ -2160,7 +2278,7 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
 
         std::string name;
         if (resolveAreaStations(loc, producer, query, areaSettings, name))
-          settingsVector.emplace_back(areaSettings, true, name);
+          settingsVector.emplace_back(areaSettings, query.groupareas, name);
         else if (!areaSettings.wktArea.empty())
           settings.wktArea = areaSettings.wktArea;
       }
@@ -2894,6 +3012,10 @@ void Plugin::processQEngineQuery(const State& state,
     tagged_ll.insert(tagged_ll.end(), locations.begin(), locations.end());
     masterquery.loptions->setLocations(tagged_ll);
 
+	// If user wants to get grid points of area to separate lines, resolve coordinates inside area
+	if(masterquery.groupareas == false)
+	  resolveAreaLocations(masterquery, state, areaproducers);
+
     // first timestep is here in utc
     boost::posix_time::ptime first_timestep = masterquery.latestTimestep;
 
@@ -2984,7 +3106,6 @@ bool Plugin::processGridEngineQuery(const State& state,
 
       Spine::LocationPtr loc = tloc.loc;
       std::string place = get_name_base(loc->name);
-      // std::cout << "------- PLACE " << place << " : " << query.latestTimestep << "\n";
 
       std::vector<std::vector<T::Coordinate>> polygonPath;
 
@@ -3024,7 +3145,6 @@ bool Plugin::processGridEngineQuery(const State& state,
           std::vector<T::Coordinate> coordinates;
           for (auto ll = locationList.begin(); ll != locationList.end(); ++ll)
           {
-            // std::cout << formatLocation(*(*ll)) << endl;
             coordinates.emplace_back(T::Coordinate((*ll)->longitude, (*ll)->latitude));
           }
           polygonPath.emplace_back(coordinates);
@@ -3034,7 +3154,6 @@ bool Plugin::processGridEngineQuery(const State& state,
         case Spine::Location::BoundingBox:
         {
           // Split bounding box coordinates from the query string
-
           std::vector<std::string> parts;
           boost::algorithm::split(parts, place, boost::algorithm::is_any_of(","));
 
@@ -3044,12 +3163,7 @@ bool Plugin::processGridEngineQuery(const State& state,
           double lat2 = Fmi::stod(parts[3]);
 
           // Get location info by the center coordinates
-
-          double centerLon = (lon1 + lon2) / 2.0;
-          double centerLat = (lat1 + lat2) / 2.0;
-
-          Spine::LocationPtr locCenter =
-              itsGeoEngine->lonlatSearch(centerLon, centerLat, query.language);
+		  Spine::LocationPtr locCenter = get_bbox_location(place, query.language, *itsGeoEngine);
 
           std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
                                                                    tloc.tag,

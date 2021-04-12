@@ -210,6 +210,9 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                                         int radius,
                                         const Query& query,
                                         NFmiSvgPath* svgPath = nullptr) const;
+  void resolveAreaLocations(Query& query,
+							const State& state,
+							const AreaProducers& areaproducers);
 
   const std::string itsModuleName;
   Config itsConfig;
