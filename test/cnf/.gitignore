@@ -2,5 +2,7 @@
 /local.conf
 /geonames.conf
 /gis.conf
+
+# Remove later following 2 lines
 /grid
 /redis.conf
