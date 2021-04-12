@@ -51,13 +51,6 @@ test-grid:	$(TEST_PREPARE_TARGETS)
 testdatabase:
 	@printf "CREATING TEST DATABASE:\n\n"
 
-PRE_TEST :=
-POST_TEST :=
-
-test-oracle:		DB_TYPE := oracle
-test-postgresql:	DB_TYPE := postgresql
-test-sqlite:		DB_TYPE := sqlite
-
 geonames-database:
 	@-$(MAKE) stop-test-db
 	rm -rf tmp-geonames-db
