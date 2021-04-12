@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.4.1
+Version: 21.4.12
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -101,6 +101,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon Apr 12 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.4.12-1.fmi
+- Support for groupareas option added (BRAINSTORM-2040)
+
 * Thu Apr  1 2021 Pertti Kinnia <pertti.kinnia@fmi.fi> - 21.4.1-1.fmi
 - Repackaged due to grid-files API changes
 

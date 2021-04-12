@@ -148,6 +148,7 @@ struct Query
   bool useDataCache;
 #endif
   Spine::LocationList inKeywordLocations;
+  bool groupareas{true};
 
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
