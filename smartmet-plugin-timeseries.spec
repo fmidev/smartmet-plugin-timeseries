@@ -22,16 +22,16 @@ BuildRequires: smartmet-library-spine-devel >= 21.3.27
 BuildRequires: smartmet-library-locus-devel >= 21.2.18
 BuildRequires: smartmet-library-macgyver-devel >= 21.2.25
 BuildRequires: smartmet-library-grid-content-devel >= 21.3.29
-BuildRequires: smartmet-library-grid-files-devel >= 21.3.31
+BuildRequires: smartmet-library-grid-files-devel >= 21.4.9
 BuildRequires: smartmet-library-newbase-devel >= 21.3.20
 BuildRequires: smartmet-library-gis-devel >= 21.3.29
 BuildRequires: smartmet-engine-geonames-devel >= 21.4.12
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.3.31
+BuildRequires: smartmet-engine-observation-devel >= 21.4.6
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.3.4
 BuildRequires: smartmet-engine-gis-devel >= 21.3.23
-BuildRequires: smartmet-engine-grid-devel >= 21.3.29
+BuildRequires: smartmet-engine-grid-devel >= 21.4.2
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.10.22
@@ -47,7 +47,7 @@ Requires: smartmet-library-gis >= 21.3.29
 Requires: smartmet-engine-geonames >= 21.4.12
 Requires: smartmet-engine-querydata >= 21.3.4
 Requires: smartmet-engine-gis >= 21.3.23
-Requires: smartmet-engine-grid >= 21.3.29
+Requires: smartmet-engine-grid >= 21.4.2
 Requires: smartmet-server >= 21.1.14
 Requires: boost169-date-time
 Requires: boost169-filesystem
@@ -70,7 +70,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 21.3.2
 %endif
-#TestRequires: smartmet-engine-grid >= 21.3.29
+#TestRequires: smartmet-engine-grid >= 21.4.2
 #TestRequires: gdal32
 #TestRequires: boost169-date-time
 #TestRequires: boost169-filesystem
