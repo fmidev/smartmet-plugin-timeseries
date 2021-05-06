@@ -2390,12 +2390,22 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     if (observation_result->empty())
       return;
 
+	ts::Value missing_value = Spine::TimeSeries::None();
     int fmisid_index = get_fmisid_index(settings);
 
     Spine::TimeSeriesGeneratorCache::TimeList tlist;
     auto tz = getTimeZones().time_zone_from_string(query.timezone);
+	// If query.toptions.startTime == query.toptions.endTime and timestep is missing
+	// use minutes as timestep
+	if(!query.toptions.timeStep && query.toptions.startTime == query.toptions.endTime)
+	  {
+		query.toptions.timeStep = query.toptions.startTime.time_of_day().minutes();
+		if(*query.toptions.timeStep == 0)
+		  query.toptions.timeStep = 60;
+	  }
+
     if (!query.toptions.all())
-      tlist = itsTimeSeriesCache->generate(query.toptions, tz);
+	  tlist = itsTimeSeriesCache->generate(query.toptions, tz);
 
     TimeSeriesByLocation observation_result_by_location =
         get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
@@ -2492,6 +2502,28 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
             continue;
           }
           auto result_at_index = result[obs_result_field_index];
+		  // If special parameter contains missing values in some timesteps, replace them with exsisting values
+		  if(SmartMet::Spine::is_special_parameter(paramname))
+			{
+			  ts::Value actual_value = missing_value;
+			  bool missing_values_exists = false;
+			  for(const auto& item : result_at_index)
+				{
+				  if(item.value == missing_value)
+					missing_values_exists = true;
+				  else 
+					actual_value = item.value;
+				  if(actual_value != missing_value && missing_values_exists)
+					break;
+				}			  			  
+			  if(actual_value != missing_value && missing_values_exists)
+				{
+				  for(auto& item : result_at_index)
+					if(item.value == missing_value)
+					  item.value = actual_value;
+				}
+			}
+
           observationResult2->push_back(result_at_index);
           std::string pname_plus_snumber = get_parameter_id(obsParameters[i].param);
           parameterResultIndexes.insert(
@@ -2503,7 +2535,6 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       // Finally do aggregation if requested and remove reduntant timesteps
       observation_result = observationResult2;
 
-      ts::Value missing_value = Spine::TimeSeries::None();
       ts::TimeSeriesVectorPtr aggregated_observation_result(new ts::TimeSeriesVector());
       std::vector<TimeSeriesData> aggregatedData;
       // iterate parameters and do aggregation

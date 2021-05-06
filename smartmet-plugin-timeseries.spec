@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.4.12
+Version: 21.5.6
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -101,6 +101,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu May 6 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.5.6-1.fmi
+- Fixed output of aggregation of observations (BRAINSTORM-2055)
+- If starttime and endtime are same and timestep has not been given, use minutes 
+from starttime/endtime as timestep
+- Time-independent special parameters (like stationname) must not be missing 
+even if aggregation is done on a timestep with no data in database
+
 * Mon Apr 12 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.4.12-1.fmi
 - Support for groupareas option added (BRAINSTORM-2040)
 
