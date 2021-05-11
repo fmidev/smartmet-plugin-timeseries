@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.5.6
+Version: 21.5.11
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -101,6 +101,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue May 11 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.11-1.fmi
+- A negative precision setting now implies {fmt} is allowed to find the best precision setting
+
 * Thu May 6 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.5.6-1.fmi
 - Fixed output of aggregation of observations (BRAINSTORM-2055)
 - If starttime and endtime are same and timestep has not been given, use minutes 

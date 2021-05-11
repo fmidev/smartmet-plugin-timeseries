@@ -144,11 +144,6 @@ void Config::parse_config_precision(const string& name)
       try
       {
         int value = settings[i];
-        if (value < 0)
-          throw Fmi::Exception(
-              BCP,
-              "Precision settings must be nonnegative in pointforecast configuration for " +
-                  string(name) + "." + paramname);
 
         if (paramname == "default")
           prec.default_precision = value;
