@@ -1,8 +1,8 @@
 #include "ProducerDataPeriod.h"
 #include "State.h"
 
-#include <macgyver/TimeZones.h>
 #include <macgyver/Exception.h>
+#include <macgyver/TimeZones.h>
 
 #include <boost/date_time/local_time/local_time.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -38,8 +38,8 @@ boost::local_time::local_date_time ProducerDataPeriod::getTime(const std::string
       if (time_enum == STARTTIME)
         return local_date_time(itsDataPeriod.at(producer).begin(), tz);
 
-      return local_date_time(
-          itsDataPeriod.at(producer).last() + boost::posix_time::microseconds(1), tz);
+      return local_date_time(itsDataPeriod.at(producer).last() + boost::posix_time::microseconds(1),
+                             tz);
     }
     catch (...)
     {

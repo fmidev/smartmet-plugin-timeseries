@@ -33,7 +33,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
                                       const double& stepInKm,
                                       const Engine::Geonames::Engine& geonames);
 
-std::string get_location_id(const Spine::LocationPtr&loc);
+std::string get_location_id(const Spine::LocationPtr& loc);
 
 Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
                                 const int id,

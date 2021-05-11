@@ -17,11 +17,11 @@
 #include <boost/foreach.hpp>
 #include <grid-files/common/GeneralFunctions.h>
 #include <grid-files/common/ShowFunction.h>
+#include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <macgyver/TimeParser.h>
 #include <newbase/NFmiPoint.h>
 #include <spine/Convenience.h>
-#include <macgyver/Exception.h>
 #include <spine/ParameterFactory.h>
 #include <algorithm>
 #include <ogr_geometry.h>
@@ -203,20 +203,19 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
         Spine::optional_double(req.getParameter("maxdistance"), config.defaultMaxDistance());
 
     keyword = Spine::optional_string(req.getParameter("keyword"), "");
-	auto searchName = req.getParameterList("inkeyword");
-	if (!searchName.empty())
-	  {
-		for (const std::string& keyword : searchName)
-		  {
-			Locus::QueryOptions opts;
-			opts.SetLanguage(language);
-			Spine::LocationList places = state.getGeoEngine().keywordSearch(opts, keyword);
-			if (places.empty())
-			  throw Fmi::Exception(BCP,
-								   "No locations for keyword " + std::string(keyword) + " found");
-			inKeywordLocations.insert(inKeywordLocations.end(),places.begin(),places.end());
-		  }
-	  }
+    auto searchName = req.getParameterList("inkeyword");
+    if (!searchName.empty())
+    {
+      for (const std::string& keyword : searchName)
+      {
+        Locus::QueryOptions opts;
+        opts.SetLanguage(language);
+        Spine::LocationList places = state.getGeoEngine().keywordSearch(opts, keyword);
+        if (places.empty())
+          throw Fmi::Exception(BCP, "No locations for keyword " + std::string(keyword) + " found");
+        inKeywordLocations.insert(inKeywordLocations.end(), places.begin(), places.end());
+      }
+    }
 
     findnearestvalidpoint = Spine::optional_bool(req.getParameter("findnearestvalid"), false);
 
@@ -396,8 +395,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 
     startrow = Spine::optional_size(req.getParameter("startrow"), 0);
     maxresults = Spine::optional_size(req.getParameter("maxresults"), 0);
-	groupareas = Spine::optional_bool(req.getParameter("groupareas"), true);
-
+    groupareas = Spine::optional_bool(req.getParameter("groupareas"), true);
   }
   catch (...)
   {

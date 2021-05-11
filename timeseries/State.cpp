@@ -1,8 +1,8 @@
 #include "State.h"
 #include "Plugin.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <ogr_geometry.h>
 #include <macgyver/Exception.h>
+#include <ogr_geometry.h>
 
 namespace SmartMet
 {
@@ -39,9 +39,6 @@ const Engine::Querydata::Engine& State::getQEngine() const
   }
 }
 
-
-
-
 const Engine::Grid::Engine* State::getGridEngine() const
 {
   try
@@ -53,7 +50,6 @@ const Engine::Grid::Engine* State::getGridEngine() const
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
-
 
 // ----------------------------------------------------------------------
 /*!

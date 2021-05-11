@@ -12,9 +12,9 @@
 #include "Producers.h"
 #include <engines/geonames/WktGeometry.h>
 
-#include <engines/grid/Engine.h>
 #include <engines/geonames/Engine.h>
 #include <engines/geonames/WktGeometry.h>
+#include <engines/grid/Engine.h>
 
 #include <grid-content/queryServer/definition/AliasFileCollection.h>
 #include <grid-files/common/AdditionalParameters.h>
@@ -61,9 +61,14 @@ struct Query
   Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Config& config);
 
   // Note: Data members ordered according to the advice of Clang Analyzer to avoid excessive padding
-  
-  // iot_producer_specifier, latestTimestep, origintime, timeproducers, loptions, timeformatter, lastpoint, weekdays, wmos, lpnns, fmisids, precisions, valueformatter, boundingBox, sqlDataFilter, levels, pressures, heights, poptions, maxAggregationIntervals, wktGeometries, toptions, numberofstations, maxdistanceOptionGiven, findnearestvalidpoint, debug, allplaces, latestObservation, useDataCache, starttimeOptionGiven, endtimeOptionGiven, timeAggregationRequested,
-  
+
+  // iot_producer_specifier, latestTimestep, origintime, timeproducers, loptions, timeformatter,
+  // lastpoint, weekdays, wmos, lpnns, fmisids, precisions, valueformatter, boundingBox,
+  // sqlDataFilter, levels, pressures, heights, poptions, maxAggregationIntervals, wktGeometries,
+  // toptions, numberofstations, maxdistanceOptionGiven, findnearestvalidpoint, debug, allplaces,
+  // latestObservation, useDataCache, starttimeOptionGiven, endtimeOptionGiven,
+  // timeAggregationRequested,
+
   using ParamPrecisions = std::vector<int>;
   using Levels = std::set<int>;
   using Pressures = std::set<double>;
@@ -103,7 +108,7 @@ struct Query
 
   // last coordinate used while forming the output
   mutable NFmiPoint lastpoint;
-  
+
   std::vector<int> weekdays;
 
 #ifndef WITHOUT_OBSERVATION
@@ -128,7 +133,7 @@ struct Query
   MaxAggregationIntervals maxAggregationIntervals;
   Engine::Geonames::WktGeometries wktGeometries;
   SmartMet::Spine::TimeSeriesGeneratorOptions toptions;
-  
+
 #ifndef WITHOUT_OBSERVATION
   int numberofstations;
 #endif

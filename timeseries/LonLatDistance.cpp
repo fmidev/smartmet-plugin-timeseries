@@ -141,18 +141,19 @@ std::pair<double, double> destination_point(const std::pair<double, double>& fro
   try
   {
     double brng(initial_bearing(from, to));
-    
-    double dist =
-        distance / (EARTH_RADIUS_IN_METERS / 1000.0);  // convert dist to angular distance in radians
+
+    double dist = distance /
+                  (EARTH_RADIUS_IN_METERS / 1000.0);  // convert dist to angular distance in radians
     brng = deg_to_rad(brng);
     double lat1 = deg_to_rad(from.second);
     double lon1 = deg_to_rad(from.first);
-    
+
     double lat2 = asin(sin(lat1) * cos(dist) + cos(lat1) * sin(dist) * cos(brng));
-    double lon2 = lon1 + atan2(sin(brng) * sin(dist) * cos(lat1), cos(dist) - sin(lat1) * sin(lat2));
+    double lon2 =
+        lon1 + atan2(sin(brng) * sin(dist) * cos(lat1), cos(dist) - sin(lat1) * sin(lat2));
     double pi(boost::math::constants::pi<double>());
     lon2 = fmod(lon2 + 3 * pi, 2 * pi) - pi;  // normalise to -180..+180º
-    
+
     return {rad_to_deg(lon2), rad_to_deg(lat2)};
   }
   catch (...)

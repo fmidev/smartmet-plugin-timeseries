@@ -5,12 +5,12 @@
 // ======================================================================
 
 #include "ImageFormatter.h"
-#include <spine/Convenience.h>
-#include <spine/HTTP.h>
-#include <macgyver/Exception.h>
-#include <spine/Table.h>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <macgyver/Exception.h>
+#include <spine/Convenience.h>
+#include <spine/HTTP.h>
+#include <spine/Table.h>
 #include <iostream>
 #include <set>
 #include <stdexcept>
@@ -63,15 +63,16 @@ std::string ImageFormatter::format(const Table& theTable,
     const Table::Indexes cols = theTable.columns();
     const Table::Indexes rows = theTable.rows();
 
-    std::string out= "<!DOCTYPE html><html><head><title>Debug mode output</title>"
-                     "<style>"
-                     "table {border-collapse: collapse;}"
-                     "th, td {border-bottom: 1px solid black; padding: 3px 0.5em 3px 0.5em; "
-                     "text-align: center;}"
-                     "tr:nth-child(even) {background-color: #f2f2f2;}"
-                     "tr:hover {background-color: #e2e2e2;}"
-                     "</style>\n"
-                     "</head><body>\n";
+    std::string out =
+        "<!DOCTYPE html><html><head><title>Debug mode output</title>"
+        "<style>"
+        "table {border-collapse: collapse;}"
+        "th, td {border-bottom: 1px solid black; padding: 3px 0.5em 3px 0.5em; "
+        "text-align: center;}"
+        "tr:nth-child(even) {background-color: #f2f2f2;}"
+        "tr:hover {background-color: #e2e2e2;}"
+        "</style>\n"
+        "</head><body>\n";
 
     // Output headers
 
@@ -92,7 +93,7 @@ std::string ImageFormatter::format(const Table& theTable,
       out += "<tr>\n";
       for (const auto i : cols)
       {
-        //std::string value = htmlescape(theTable.get(i, j));
+        // std::string value = htmlescape(theTable.get(i, j));
         std::string value = theTable.get(i, j);
         out += "<td>";
         out += (value.empty() ? miss : value);

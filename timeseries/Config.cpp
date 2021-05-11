@@ -9,9 +9,9 @@
 #include <boost/foreach.hpp>
 #include <grid-files/common/GeneralFunctions.h>
 #include <grid-files/common/ShowFunction.h>
+#include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <ogr_geometry.h>
-#include <macgyver/Exception.h>
 #include <stdexcept>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
@@ -124,8 +124,8 @@ void Config::parse_config_precision(const string& name)
 
     if (!itsConfig.exists(optname))
       throw Fmi::Exception(BCP,
-                             string("Precision settings for ") + name +
-                                 " are missing from pointforecast configuration");
+                           string("Precision settings for ") + name +
+                               " are missing from pointforecast configuration");
 
     libconfig::Setting& settings = itsConfig.lookup(optname);
 
@@ -158,22 +158,21 @@ void Config::parse_config_precision(const string& name)
       catch (const libconfig::ParseException& e)
       {
         throw Fmi::Exception(BCP,
-                               string("TimeSeries configuration error ' ") + e.getError() +
-                                   "' with variable '" + paramname + "' on line " +
-                                   Fmi::to_string(e.getLine()));
+                             string("TimeSeries configuration error ' ") + e.getError() +
+                                 "' with variable '" + paramname + "' on line " +
+                                 Fmi::to_string(e.getLine()));
       }
       catch (const libconfig::ConfigException&)
       {
         throw Fmi::Exception(BCP,
-                               string("TimeSeries configuration error with variable '") +
-                                   paramname + "' on line " +
-                                   Fmi::to_string(settings[i].getSourceLine()));
+                             string("TimeSeries configuration error with variable '") + paramname +
+                                 "' on line " + Fmi::to_string(settings[i].getSourceLine()));
       }
       catch (const std::exception& e)
       {
         throw Fmi::Exception(BCP,
-                               e.what() + string(" (line number ") +
-                                   Fmi::to_string(settings[i].getSourceLine()) + ")");
+                             e.what() + string(" (line number ") +
+                                 Fmi::to_string(settings[i].getSourceLine()) + ")");
       }
     }
 
@@ -206,7 +205,7 @@ void Config::parse_config_precisions()
 
       if (!itsConfig.exists("precision.enabled"))
         throw Fmi::Exception(BCP,
-                               "precision.enabled missing from pointforecast congiguration file");
+                             "precision.enabled missing from pointforecast congiguration file");
 
       libconfig::Setting& enabled = itsConfig.lookup("precision.enabled");
       if (!enabled.isArray())
@@ -235,7 +234,9 @@ void Config::parse_config_precisions()
   }
 }
 
-string parse_config_key(const char* str1 = nullptr, const char* str2 = nullptr, const char* str3 = nullptr)
+string parse_config_key(const char* str1 = nullptr,
+                        const char* str2 = nullptr,
+                        const char* str3 = nullptr)
 {
   try
   {
@@ -287,7 +288,7 @@ Config::Config(const string& configfile)
     boost::filesystem::path p = configfile;
     p.remove_filename();
     itsConfig.setIncludeDir(p.c_str());
-    
+
     itsConfig.readFile(configfile.c_str());
 
     // Obligatory settings
@@ -363,8 +364,8 @@ Config::Config(const string& configfile)
 
           if (schema.empty() || table.empty() || field.empty())
             throw Fmi::Exception(BCP,
-                                   "Configuration file error. Some of the following fields "
-                                   "missing: server, schema, table, field!");
+                                 "Configuration file error. Some of the following fields "
+                                 "missing: server, schema, table, field!");
 
           postgis_identifiers.insert(std::make_pair(postgis_id.key(), postgis_id));
         }
@@ -387,7 +388,8 @@ Config::Config(const string& configfile)
         itsDefaultGridGeometries.push_back(geomId);
       }
 
-      itsConfig.lookupValue("ignoreGridGeometriesWhenPreloadReady", itsIgnoreGridGeometriesWhenPreloadReady);
+      itsConfig.lookupValue("ignoreGridGeometriesWhenPreloadReady",
+                            itsIgnoreGridGeometriesWhenPreloadReady);
       itsConfig.lookupValue("defaultProducerMappingName", itsDefaultProducerMappingName);
 
       const libconfig::Setting& aliasFiles = itsConfig.lookup("parameterAliasFiles");
@@ -451,7 +453,7 @@ const Precision& Config::getPrecision(const string& name) const
 Engine::Gis::PostGISIdentifierVector Config::getPostGISIdentifiers() const
 {
   Engine::Gis::PostGISIdentifierVector ret;
-  for (const auto & item : postgis_identifiers)
+  for (const auto& item : postgis_identifiers)
     ret.push_back(item.second);
 
   return ret;

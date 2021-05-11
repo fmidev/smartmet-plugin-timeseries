@@ -1,8 +1,8 @@
 #include "LocationTools.h"
 #include "LonLatDistance.h"
 #include <engines/observation/Keywords.h>
-#include <newbase/NFmiSvgTools.h>
 #include <macgyver/Exception.h>
+#include <newbase/NFmiSvgTools.h>
 
 namespace ts = SmartMet::Spine::TimeSeries;
 
@@ -311,7 +311,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
  */
 // ----------------------------------------------------------------------
 
-std::string get_location_id(const Spine::LocationPtr & loc)
+std::string get_location_id(const Spine::LocationPtr& loc)
 {
   try
   {
