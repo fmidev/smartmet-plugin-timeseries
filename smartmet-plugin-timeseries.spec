@@ -4,7 +4,7 @@
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
 Version: 21.5.19
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -101,7 +101,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
-* Wed May 19 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.19-1.fmi
+* Wed May 19 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.19-2.fmi
 - Use FMI hash functions, boost::hash_combine produces too many collisions
 
 * Tue May 11 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.11-1.fmi
