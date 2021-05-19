@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.5.11
+Version: 21.5.19
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,16 +18,16 @@ BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.4.16
+BuildRequires: smartmet-library-spine-devel >= 21.5.11
 BuildRequires: smartmet-library-locus-devel >= 21.2.18
-BuildRequires: smartmet-library-macgyver-devel >= 21.2.25
+BuildRequires: smartmet-library-macgyver-devel >= 21.5.19
 BuildRequires: smartmet-library-grid-content-devel >= 21.3.29
 BuildRequires: smartmet-library-grid-files-devel >= 21.4.13
 BuildRequires: smartmet-library-newbase-devel >= 21.5.6
 BuildRequires: smartmet-library-gis-devel >= 21.5.5
 BuildRequires: smartmet-engine-geonames-devel >= 21.4.12
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.4.20
+BuildRequires: smartmet-engine-observation-devel >= 21.5.17
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.5.6
 BuildRequires: smartmet-engine-gis-devel >= 21.3.23
@@ -40,9 +40,9 @@ Requires: fmt >= 7.1.3
 Requires: libconfig
 Requires: smartmet-library-gis >= 21.5.5
 Requires: smartmet-library-locus >= 21.2.18
-Requires: smartmet-library-macgyver >= 21.2.25
+Requires: smartmet-library-macgyver >= 21.5.19
 Requires: smartmet-library-newbase >= 21.5.6
-Requires: smartmet-library-spine >= 21.4.16
+Requires: smartmet-library-spine >= 21.5.11
 Requires: smartmet-library-gis >= 21.5.5
 Requires: smartmet-engine-geonames >= 21.4.12
 Requires: smartmet-engine-querydata >= 21.5.6
@@ -58,7 +58,7 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-macgyver-devel >= 21.2.25
+#TestRequires: smartmet-library-macgyver-devel >= 21.5.19
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
@@ -101,6 +101,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed May 19 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.19-1.fmi
+- Use FMI hash functions, boost::hash_combine produces too many collisions
+
 * Tue May 11 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.11-1.fmi
 - A negative precision setting now implies {fmt} is allowed to find the best precision setting
 

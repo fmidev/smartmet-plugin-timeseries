@@ -18,6 +18,7 @@
 #include <grid-files/common/GraphFunctions.h>
 #include <grid-files/common/ShowFunction.h>
 #include <macgyver/Exception.h>
+#include <macgyver/Hash.h>
 #include <newbase/NFmiIndexMaskTools.h>
 #include <newbase/NFmiSvgTools.h>
 #include <spine/Convenience.h>
@@ -527,16 +528,14 @@ std::size_t Plugin::hash_value(const State& state,
     // In particular this permits us to ignore the endtime=x setting, which
     // Ilmanet sets to a precision of one second.
 
-    // Using all options would be done like this:
-    // boost::hash_combine( hash, boost::hash_value(request.getParameterMap()) );
-
     for (const auto& name_value : request.getParameterMap())
     {
       const auto& name = name_value.first;
       if (name != "hour" && name != "time" && name != "timestep" && name != "timesteps" &&
           name != "starttime" && name != "startstep" && name != "endtime")
       {
-        boost::hash_combine(hash, boost::hash_value(name_value.second));
+        Fmi::hash_combine(hash, Fmi::hash_value(name_value.first));
+        Fmi::hash_combine(hash, Fmi::hash_value(name_value.second));
       }
     }
     // If the query depends on locations only, that's it!
@@ -554,7 +553,7 @@ std::size_t Plugin::hash_value(const State& state,
       for (const auto& areaproducer : areaproducers)
       {
         if (isObsProducer(areaproducer))
-          return 0;
+          return Fmi::bad_hash;
       }
     }
 #endif
@@ -706,8 +705,8 @@ std::size_t Plugin::hash_value(const State& state,
             // we use the hash of the generated timeseries itself.
 
             auto timeseries_hash = querydata_hash;
-            boost::hash_combine(timeseries_hash, boost::hash_value(subquery.timezone));
-            boost::hash_combine(timeseries_hash, subquery.toptions.hash_value());
+            Fmi::hash_combine(timeseries_hash, Fmi::hash_value(subquery.timezone));
+            Fmi::hash_combine(timeseries_hash, subquery.toptions.hash_value());
 
             if (handled_timeseries.find(timeseries_hash) == handled_timeseries.end())
             {
@@ -758,8 +757,8 @@ std::size_t Plugin::hash_value(const State& state,
               // though the timesteps may not be exactly the same as those used
               // in generating the result.
 
-              boost::hash_combine(hash, querydata_hash);
-              boost::hash_combine(hash, SmartMet::Plugin::TimeSeries::hash_value(*tlist));
+              Fmi::hash_combine(hash, querydata_hash);
+              Fmi::hash_combine(hash, Fmi::hash_value(*tlist));
             }
           }
 
@@ -3589,10 +3588,9 @@ void Plugin::query(const State& state,
     std::string mime = formatter->mimetype() + "; charset=UTF-8";
     response.setHeader("Content-Type", mime);
 
-    // Calculate the hash value for the product. Zero value implies
-    // the product is not cacheable.
+    // Calculate the hash value for the product.
 
-    auto product_hash = 0;
+    std::size_t product_hash = Fmi::bad_hash;
 
     try
     {
@@ -3607,7 +3605,7 @@ void Plugin::query(const State& state,
     if (gridEnabled)
     {
       // We need different hash calculcations for the grid requests.
-      product_hash = 0;
+      product_hash = Fmi::bad_hash;
     }
 
     high_resolution_clock::time_point t3 = high_resolution_clock::now();
@@ -3615,7 +3613,7 @@ void Plugin::query(const State& state,
     std::string timeheader = Fmi::to_string(duration_cast<microseconds>(t2 - t1).count()) + '+' +
                              Fmi::to_string(duration_cast<microseconds>(t3 - t2).count());
 
-    if (product_hash != 0)
+    if (product_hash != Fmi::bad_hash)
     {
       response.setHeader("ETag", fmt::format("\"{:x}-timeseries\"", product_hash));
 
@@ -3723,7 +3721,7 @@ void Plugin::query(const State& state,
     std::cout << "Output:" << std::endl << *result << std::endl;
 #endif
 
-    if (product_hash != 0)
+    if (product_hash != Fmi::bad_hash)
       itsCache->insert(product_hash, result);
 
     response.setHeader("X-Duration", timeheader);
