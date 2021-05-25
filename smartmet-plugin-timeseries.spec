@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.5.21
+Version: 21.5.25
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -21,33 +21,33 @@ BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 21.5.21
 BuildRequires: smartmet-library-locus-devel >= 21.5.20
 BuildRequires: smartmet-library-macgyver-devel >= 21.5.21
-BuildRequires: smartmet-library-grid-content-devel >= 21.3.29
-BuildRequires: smartmet-library-grid-files-devel >= 21.4.13
+BuildRequires: smartmet-library-grid-content-devel >= 21.5.25
+BuildRequires: smartmet-library-grid-files-devel >= 21.5.25
 BuildRequires: smartmet-library-newbase-devel >= 21.5.6
-BuildRequires: smartmet-library-gis-devel >= 21.5.20
+BuildRequires: smartmet-library-gis-devel >= 21.5.24
 BuildRequires: smartmet-engine-geonames-devel >= 21.5.20
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 21.5.20
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.5.21
 BuildRequires: smartmet-engine-gis-devel >= 21.5.20
-BuildRequires: smartmet-engine-grid-devel >= 21.4.27
+BuildRequires: smartmet-engine-grid-devel >= 21.5.25
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 20.10.22
 #%endif
 Requires: fmt >= 7.1.3
 Requires: libconfig
-Requires: smartmet-library-gis >= 21.5.20
+Requires: smartmet-library-gis >= 21.5.24
 Requires: smartmet-library-locus >= 21.5.20
 Requires: smartmet-library-macgyver >= 21.5.21
 Requires: smartmet-library-newbase >= 21.5.6
 Requires: smartmet-library-spine >= 21.5.21
-Requires: smartmet-library-gis >= 21.5.20
+Requires: smartmet-library-gis >= 21.5.24
 Requires: smartmet-engine-geonames >= 21.5.20
 Requires: smartmet-engine-querydata >= 21.5.21
 Requires: smartmet-engine-gis >= 21.5.20
-Requires: smartmet-engine-grid >= 21.4.27
+Requires: smartmet-engine-grid >= 21.5.25
 Requires: smartmet-server >= 21.1.14
 Requires: boost169-date-time
 Requires: boost169-filesystem
@@ -63,14 +63,14 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-engine-grid-test
-#TestRequires: smartmet-library-gis >= 21.5.20
+#TestRequires: smartmet-library-gis >= 21.5.24
 #TestRequires: smartmet-engine-geonames >= 21.2.18
 #TestRequires: smartmet-engine-gis >= 21.5.20
 #TestRequires: smartmet-engine-querydata >= 21.5.21
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 21.3.2
 %endif
-#TestRequires: smartmet-engine-grid >= 21.4.27
+#TestRequires: smartmet-engine-grid >= 21.5.25
 #TestRequires: gdal32
 #TestRequires: boost169-date-time
 #TestRequires: boost169-filesystem
@@ -101,6 +101,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue May 25 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.25-1.fmi
+- Improved parameter alias handling
+
 * Fri May 21 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.21-1.fmi
 - Repackaged due to QEngine API change
 
