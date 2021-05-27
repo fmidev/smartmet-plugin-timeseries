@@ -747,11 +747,12 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       if (geometryId > 0)
         qParam.mGeometryId = geometryId;
 
-      const std::string& tmp = param.originalName();
+      std::string pname = param.originalName();
+      itsGridEngine->getParameterAlias(pname,pname);
 
       std::vector<std::string> partList;
 
-      splitString(tmp, ':', partList);
+      splitString(pname, ':', partList);
       if (partList.size() > 3 && (partList[0] == "ISOBANDS" || partList[0] == "ISOLINES"))
       {
         if (partList[1] == "1")
@@ -791,12 +792,12 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
         qParam.mLocationType = QueryServer::QueryParameter::LocationType::Geometry;
 
         const char* p =
-            tmp.c_str() + partList[0].size() + partList[1].size() + partList[2].size() + 3;
+            pname.c_str() + partList[0].size() + partList[1].size() + partList[2].size() + 3;
         qParam.mParam = p;
       }
       else
       {
-        qParam.mParam = param.originalName();
+        qParam.mParam = pname;
       }
 
       auto pos = qParam.mParam.find(".raw");
@@ -1456,7 +1457,7 @@ void GridInterface::processGridQuery(const State& state,
                     int imageWidth = width * mp;
                     int imageHeight = height * mp;
 
-                    ImagePaint imagePaint(imageWidth, imageHeight, 0xFFFFFFFF, false, !rotate);
+                    ImagePaint imagePaint(imageWidth, imageHeight, 0xFFFFFFFF,0x000000,0xFFFF00,false, !rotate);
 
                     for (size_t s = 0; s < size; s++)
                     {
@@ -1473,13 +1474,14 @@ void GridInterface::processGridQuery(const State& state,
                         col = (r << 16) + (r << 8) + r;
                       }
 
+                      imagePaint.setDrawColor(col);
+                      imagePaint.setFillColor(col);
                       imagePaint.paintWkb(
                           mp,
                           mp,
                           0,
                           0,
-                          gridQuery->mQueryParameterList[pid].mValueList[t]->mValueData[s],
-                          col);
+                          gridQuery->mQueryParameterList[pid].mValueList[t]->mValueData[s]);
                     }
 
                     char filename[100];
