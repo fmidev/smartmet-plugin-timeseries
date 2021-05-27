@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.5.25
+Version: 21.5.27
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -30,7 +30,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 21.5.20
 BuildRequires: smartmet-engine-observation-devel >= 21.5.20
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.5.21
-BuildRequires: smartmet-engine-gis-devel >= 21.5.20
+BuildRequires: smartmet-engine-gis-devel >= 21.5.27
 BuildRequires: smartmet-engine-grid-devel >= 21.5.25
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
@@ -46,7 +46,7 @@ Requires: smartmet-library-spine >= 21.5.21
 Requires: smartmet-library-gis >= 21.5.24
 Requires: smartmet-engine-geonames >= 21.5.20
 Requires: smartmet-engine-querydata >= 21.5.21
-Requires: smartmet-engine-gis >= 21.5.20
+Requires: smartmet-engine-gis >= 21.5.27
 Requires: smartmet-engine-grid >= 21.5.25
 Requires: smartmet-server >= 21.1.14
 Requires: boost169-date-time
@@ -101,6 +101,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu May 27 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.5.27-1.fmi
+- Added support for areasource query option in order to handle geometries with the same name (BRAINSTORM-2073): 
+Optional geometry_tables.additional_tables.name configuration parameter identifies a database schema/table/field. 
+If the name has been defined it must be used in areasource URL-parameter in order to use geometries defined in 
+that database schema/table/field.
+
 * Tue May 25 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.5.25-1.fmi
 - Improved parameter alias handling
 

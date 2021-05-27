@@ -1818,7 +1818,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
       return false;
 
     std::string loc_name_original = location->name;
-    std::string loc_name = get_name_base(location->name);
+    std::string loc_name = (get_name_base(location->name) + query.areasource);
 
     Spine::LocationPtr loc = location;
     bool isWkt = (loc->type == Spine::Location::Wkt);

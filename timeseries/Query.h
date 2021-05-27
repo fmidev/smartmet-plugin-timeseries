@@ -94,6 +94,7 @@ struct Query
   std::string timestring;
   std::string localename;
   std::locale outlocale;
+  std::string areasource;
 
 #ifndef WITHOUT_OBSERVATION
   std::string iot_producer_specifier{""};

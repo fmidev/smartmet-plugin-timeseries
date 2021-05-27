@@ -317,16 +317,19 @@ Config::Config(const string& configfile)
     if (itsConfig.exists("geometry_tables"))
     {
       Engine::Gis::postgis_identifier default_postgis_id;
+      std::string default_source_name;
       std::string default_server;
       std::string default_schema;
       std::string default_table;
       std::string default_field;
+      itsConfig.lookupValue("geometry_tables.name", default_source_name);
       itsConfig.lookupValue("geometry_tables.server", default_server);
       itsConfig.lookupValue("geometry_tables.schema", default_schema);
       itsConfig.lookupValue("geometry_tables.table", default_table);
       itsConfig.lookupValue("geometry_tables.field", default_field);
       if (!default_schema.empty() && !default_table.empty() && !default_field.empty())
       {
+        default_postgis_id.source_name = default_source_name;
         default_postgis_id.pgname = default_server;
         default_postgis_id.schema = default_schema;
         default_postgis_id.table = default_table;
@@ -342,16 +345,19 @@ Config::Config(const string& configfile)
         for (int i = 0; i < additionalTables.getLength(); i++)
         {
           libconfig::Setting& tableConfig = additionalTables[i];
+          std::string source_name;
           std::string server = (default_server.empty() ? "" : default_server);
           std::string schema = (default_schema.empty() ? "" : default_schema);
           std::string table = (default_table.empty() ? "" : default_table);
           std::string field = (default_field.empty() ? "" : default_field);
+          tableConfig.lookupValue("name", source_name);
           tableConfig.lookupValue("server", server);
           tableConfig.lookupValue("schema", schema);
           tableConfig.lookupValue("table", table);
           tableConfig.lookupValue("field", field);
 
           Engine::Gis::postgis_identifier postgis_id;
+          postgis_id.source_name = source_name;
           postgis_id.pgname = server;
           postgis_id.schema = schema;
           postgis_id.table = table;
