@@ -1787,7 +1787,7 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
     settings.latest = query.latestObservation;
     settings.useDataCache = query.useDataCache;
     // Data filtering settings
-    settings.sqlDataFilter = query.sqlDataFilter;
+    settings.dataFilter = query.dataFilter;
     // Option to prevent queries to database
     settings.preventDatabaseQuery = itsConfig.obsEngineDatabaseQueryPrevented();
   }

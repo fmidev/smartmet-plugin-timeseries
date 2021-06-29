@@ -64,7 +64,7 @@ struct Query
 
   // iot_producer_specifier, latestTimestep, origintime, timeproducers, loptions, timeformatter,
   // lastpoint, weekdays, wmos, lpnns, fmisids, precisions, valueformatter, boundingBox,
-  // sqlDataFilter, levels, pressures, heights, poptions, maxAggregationIntervals, wktGeometries,
+  // dataFilter, levels, pressures, heights, poptions, maxAggregationIntervals, wktGeometries,
   // toptions, numberofstations, maxdistanceOptionGiven, findnearestvalidpoint, debug, allplaces,
   // latestObservation, useDataCache, starttimeOptionGiven, endtimeOptionGiven,
   // timeAggregationRequested,
@@ -123,7 +123,7 @@ struct Query
 
 #ifndef WITHOUT_OBSERVATION
   std::map<std::string, double> boundingBox;
-  Engine::Observation::SQLDataFilter sqlDataFilter;
+  Engine::Observation::DataFilter dataFilter;
 #endif
 
   Levels levels;

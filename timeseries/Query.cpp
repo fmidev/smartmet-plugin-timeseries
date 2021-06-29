@@ -40,7 +40,7 @@ namespace
 {
 void add_sql_data_filter(const Spine::HTTP::Request& req,
                          const std::string& param_name,
-                         Engine::Observation::SQLDataFilter& dataFilter)
+                         Engine::Observation::DataFilter& dataFilter)
 {
   try
   {
@@ -370,11 +370,11 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       }
     }
     // Data filter options
-    add_sql_data_filter(req, "station_id", sqlDataFilter);
-    add_sql_data_filter(req, "data_quality", sqlDataFilter);
+    add_sql_data_filter(req, "station_id", dataFilter);
+    add_sql_data_filter(req, "data_quality", dataFilter);
     // Sounding filtering options
-    add_sql_data_filter(req, "sounding_type", sqlDataFilter);
-    add_sql_data_filter(req, "significance", sqlDataFilter);
+    add_sql_data_filter(req, "sounding_type", dataFilter);
+    add_sql_data_filter(req, "significance", dataFilter);
 
     std::string dataCache = Spine::optional_string(req.getParameter("useDataCache"), "true");
     useDataCache = (dataCache == "true" || dataCache == "1");
