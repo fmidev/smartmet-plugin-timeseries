@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.6.22
+BuildRequires: smartmet-library-spine-devel >= 21.7.5
 BuildRequires: smartmet-library-locus-devel >= 21.6.21
 BuildRequires: smartmet-library-macgyver-devel >= 21.6.18
 BuildRequires: smartmet-library-grid-content-devel >= 21.6.8
@@ -27,14 +27,14 @@ BuildRequires: smartmet-library-newbase-devel >= 21.6.16
 BuildRequires: smartmet-library-gis-devel >= 21.6.18
 BuildRequires: smartmet-engine-geonames-devel >= 21.6.22
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.6.28
+BuildRequires: smartmet-engine-observation-devel >= 21.7.5
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.6.3
 BuildRequires: smartmet-engine-gis-devel >= 21.6.17
 BuildRequires: smartmet-engine-grid-devel >= 21.6.8
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 20.10.22
+#Requires: smartmet-engine-observation
 #%endif
 Requires: fmt >= 7.1.3
 Requires: libconfig
@@ -42,7 +42,7 @@ Requires: smartmet-library-gis >= 21.6.18
 Requires: smartmet-library-locus >= 21.6.21
 Requires: smartmet-library-macgyver >= 21.6.18
 Requires: smartmet-library-newbase >= 21.6.16
-Requires: smartmet-library-spine >= 21.6.22
+Requires: smartmet-library-spine >= 21.7.5
 Requires: smartmet-library-gis >= 21.6.18
 Requires: smartmet-engine-geonames >= 21.6.22
 Requires: smartmet-engine-querydata >= 21.6.3
@@ -68,7 +68,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 21.5.20
 #TestRequires: smartmet-engine-querydata >= 21.6.3
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 21.3.2
+#TestRequires: smartmet-engine-observation >= 21.7.5
 %endif
 #TestRequires: smartmet-engine-grid >= 21.6.8
 #TestRequires: gdal32

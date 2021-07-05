@@ -40,7 +40,7 @@ namespace
 {
 void add_sql_data_filter(const Spine::HTTP::Request& req,
                          const std::string& param_name,
-                         Engine::Observation::DataFilter& dataFilter)
+                         Spine::DataFilter& dataFilter)
 {
   try
   {

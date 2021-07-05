@@ -19,6 +19,7 @@
 #include <grid-content/queryServer/definition/AliasFileCollection.h>
 #include <grid-files/common/AdditionalParameters.h>
 #include <grid-files/common/AttributeList.h>
+#include <spine/DataFilter.h>
 #include <spine/HTTP.h>
 #include <spine/Location.h>
 #include <spine/OptionParsers.h>
@@ -123,7 +124,7 @@ struct Query
 
 #ifndef WITHOUT_OBSERVATION
   std::map<std::string, double> boundingBox;
-  Engine::Observation::DataFilter dataFilter;
+  Spine::DataFilter dataFilter;
 #endif
 
   Levels levels;
