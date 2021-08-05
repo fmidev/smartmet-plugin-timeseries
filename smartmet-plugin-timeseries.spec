@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.7.5
+Version: 21.8.5
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,7 +27,7 @@ BuildRequires: smartmet-library-newbase-devel >= 21.6.16
 BuildRequires: smartmet-library-gis-devel >= 21.6.18
 BuildRequires: smartmet-engine-geonames-devel >= 21.6.22
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.7.5
+BuildRequires: smartmet-engine-observation-devel >= 21.8.5
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.6.3
 BuildRequires: smartmet-engine-gis-devel >= 21.6.17
@@ -68,7 +68,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 21.5.20
 #TestRequires: smartmet-engine-querydata >= 21.6.3
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 21.7.5
+#TestRequires: smartmet-engine-observation >= 21.8.5
 %endif
 #TestRequires: smartmet-engine-grid >= 21.6.8
 #TestRequires: gdal32
@@ -101,6 +101,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Aug 5 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.8.5-1.fmi
+- Added support for new mobile producer 'bk_hydrometa' (BRAINSTORM-2125)
+
 * Mon Jul  5 2021 Andris Pavēnis <andris.pavenis@fmi.fi> 21.7.5-1.fmi
 - Update after moving DataFilter from obsengine to spine
 

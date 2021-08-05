@@ -111,7 +111,8 @@ bool is_mobile_producer(const std::string& producer)
     return (producer == SmartMet::Engine::Observation::ROADCLOUD_PRODUCER ||
             producer == SmartMet::Engine::Observation::TECONER_PRODUCER ||
             producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER ||
-            producer == SmartMet::Engine::Observation::NETATMO_PRODUCER);
+            producer == SmartMet::Engine::Observation::NETATMO_PRODUCER ||
+            producer == SmartMet::Engine::Observation::BK_HYDROMETA_PRODUCER);
   }
   catch (...)
   {
