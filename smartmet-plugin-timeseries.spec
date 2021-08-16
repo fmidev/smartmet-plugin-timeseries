@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.8.5
+Version: 21.8.17
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.7.28
+BuildRequires: smartmet-library-spine-devel >= 21.8.17
 BuildRequires: smartmet-library-locus-devel >= 21.7.8
 BuildRequires: smartmet-library-macgyver-devel >= 21.7.28
 BuildRequires: smartmet-library-grid-content-devel >= 21.8.2
@@ -27,7 +27,7 @@ BuildRequires: smartmet-library-newbase-devel >= 21.6.16
 BuildRequires: smartmet-library-gis-devel >= 21.7.27
 BuildRequires: smartmet-engine-geonames-devel >= 21.8.2
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.8.5
+BuildRequires: smartmet-engine-observation-devel >= 21.8.17
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.8.2
 BuildRequires: smartmet-engine-gis-devel >= 21.7.28
@@ -42,7 +42,7 @@ Requires: smartmet-library-gis >= 21.7.27
 Requires: smartmet-library-locus >= 21.7.8
 Requires: smartmet-library-macgyver >= 21.7.28
 Requires: smartmet-library-newbase >= 21.6.16
-Requires: smartmet-library-spine >= 21.7.28
+Requires: smartmet-library-spine >= 21.8.17
 Requires: smartmet-library-gis >= 21.7.27
 Requires: smartmet-engine-geonames >= 21.8.2
 Requires: smartmet-engine-querydata >= 21.8.2
@@ -68,7 +68,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 21.5.20
 #TestRequires: smartmet-engine-querydata >= 21.8.2
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 21.8.5
+#TestRequires: smartmet-engine-observation >= 21.8.17
 %endif
 #TestRequires: smartmet-engine-grid >= 21.7.8
 #TestRequires: gdal32
@@ -101,6 +101,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Aug 17 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.8.17-1.fmi
+- Start using local time pool to avoid unnecessary allocations of local_date_time objects (BRAINSTORM-2122)
+
 * Thu Aug 5 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.8.5-1.fmi
 - Added support for new mobile producer 'bk_hydrometa' (BRAINSTORM-2125)
 

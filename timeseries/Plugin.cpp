@@ -39,7 +39,6 @@ using boost::posix_time::ptime;
 using boost::posix_time::seconds;
 
 //#define MYDEBUG ON
-
 namespace ts = SmartMet::Spine::TimeSeries;
 
 namespace SmartMet
@@ -50,7 +49,7 @@ namespace TimeSeries
 {
 namespace
 {
-#if 0
+#ifdef MYDEBUG
 void print_settings(const Engine::Observation::Settings& settings)
 {
   std::cout << "settings.taggedFMISIDs: " << settings.taggedFMISIDs.size() << " kpl" << std::endl;
@@ -324,7 +323,7 @@ void add_missing_timesteps(ts::TimeSeries& ts,
   if (!tlist || tlist->empty())
     return;
 
-  ts::TimeSeries ts2;
+  ts::TimeSeries ts2(ts.getLocalTimePool());
 
   SmartMet::Spine::TimeSeriesGenerator::LocalTimeList::const_iterator it = tlist->begin();
 
@@ -392,7 +391,6 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
     for (unsigned int i = 0; i < location_indexes.size(); i++)
     {
       ts::TimeSeriesVectorPtr tsv(new ts::TimeSeriesVector());
-      ts::TimeSeries ts;
       start_index = location_indexes[i].first;
       end_index = location_indexes[i].second;
       for (unsigned int k = 0; k < observation_result->size(); k++)
@@ -402,7 +400,8 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
           tsv->push_back(ts_k);
         else
         {
-          ts::TimeSeries ts_ik(ts_k.begin() + start_index, ts_k.begin() + end_index);
+          ts::TimeSeries ts_ik(fmisid_ts.getLocalTimePool());
+		  ts_ik.insert(ts_ik.begin(), ts_k.begin() + start_index, ts_k.begin() + end_index);
           // Add missing timesteps
           add_missing_timesteps(ts_ik, tlist);
           tsv->emplace_back(ts_ik);
@@ -1449,7 +1448,7 @@ void Plugin::fetchQEngineValues(const State& state,
         }
         else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo")
         {
-          querydata_result = boost::make_shared<ts::TimeSeries>();
+          querydata_result = boost::make_shared<ts::TimeSeries>(state.getLocalTimePool());
           for (const auto& t : querydata_tlist)
           {
             if (loc->fmisid && paramname == "fmisid")
@@ -1476,7 +1475,8 @@ void Plugin::fetchQEngineValues(const State& state,
                                                               query.timezone,
                                                               query.findnearestvalidpoint,
                                                               nearestpoint,
-                                                              query.lastpoint);
+                                                              query.lastpoint,
+															  state.getLocalTimePool());
 
           // one location, list of local times (no radius -> pointforecast)
           querydata_result = loadDataLevels ? qi->values(querydata_param, querydata_tlist)
@@ -1552,7 +1552,8 @@ void Plugin::fetchQEngineValues(const State& state,
                                                                 query.timezone,
                                                                 query.findnearestvalidpoint,
                                                                 nearestpoint,
-                                                                query.lastpoint);
+                                                                query.lastpoint,
+																state.getLocalTimePool());
 
             // list of locations, list of local times
             querydata_result =
@@ -1630,7 +1631,8 @@ void Plugin::fetchQEngineValues(const State& state,
                                                                 query.timezone,
                                                                 query.findnearestvalidpoint,
                                                                 nearestpoint,
-                                                                query.lastpoint);
+                                                                query.lastpoint,
+																state.getLocalTimePool());
 
             // Indexmask (indexed locations on the area)
             Spine::LocationList llist = get_indexmask_locations(mask, loc, qi, *itsGeoEngine);
@@ -2458,7 +2460,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
             !is_flash_or_mobile_producer(producer))
         {
           // add data for location field
-          ts::TimeSeries timeseries;
+          ts::TimeSeries timeseries(state.getLocalTimePool());
           for (unsigned int j = 0; j < timestep_vector.size(); j++)
           {
             ts::Value value = location_parameter(loc,
@@ -2477,7 +2479,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         {
           // add data for time fields
           Spine::Location location(0, 0, "", query.timezone);
-          ts::TimeSeries timeseries;
+          ts::TimeSeries timeseries(state.getLocalTimePool());
           for (unsigned int j = 0; j < timestep_vector.size(); j++)
           {
             ts::Value value = time_parameter(paramname,
@@ -2563,7 +2565,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         }
         else
         {
-          tsptr = boost::make_shared<ts::TimeSeries>();
+          tsptr = boost::make_shared<ts::TimeSeries>(state.getLocalTimePool());
           *tsptr = ts;
         }
         aggregated_observation_result->push_back(*tsptr);
@@ -2615,7 +2617,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       }
       else
       {
-        // Else accept only the originally generated timesteps
+		// Else accept only the originally generated timesteps
         DataFunctions::store_data(
             DataFunctions::erase_redundant_timesteps(aggregated_observation_result, *tlist),
             query,
@@ -2723,7 +2725,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         if (SmartMet::Spine::is_location_parameter(paramname) &&
             !is_flash_or_mobile_producer(producer))
         {
-          ts::TimeSeries location_ts;
+          ts::TimeSeries location_ts(state.getLocalTimePool());
 
           for (unsigned int j = 0; j < ts_vector.size(); j++)
           {
@@ -2743,7 +2745,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           Spine::Location dummyloc(0, 0, "", query.timezone);
 
           ts::TimeSeriesGroupPtr grp(new ts::TimeSeriesGroup);
-          ts::TimeSeries time_ts;
+          ts::TimeSeries time_ts(state.getLocalTimePool());
           for (unsigned int j = 0; j < ts_vector.size(); j++)
           {
             ts::Value value = time_parameter(paramname,
@@ -2996,6 +2998,7 @@ void Plugin::processObsEngineQuery(const State& state,
       for (auto& item : settingsVector)
       {
         Engine::Observation::Settings& settings = item.settings;
+		settings.localTimePool = state.getLocalTimePool();
 
         if (query.debug)
           settings.debug_options = Engine::Observation::Settings::DUMP_SETTINGS;

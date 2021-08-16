@@ -20,6 +20,7 @@
 #include <engines/querydata/OriginTime.h>
 #include <engines/querydata/Producer.h>
 #include <engines/querydata/Q.h>
+#include <spine/TimeSeries.h>
 
 namespace Fmi
 {
@@ -86,10 +87,12 @@ class State
   SmartMet::Engine::Querydata::Q get(
       const SmartMet::Engine::Querydata::Producer& theProducer,
       const SmartMet::Engine::Querydata::OriginTime& theOriginTime) const;
+  SmartMet::Spine::TimeSeries::LocalTimePoolPtr getLocalTimePool() const;
 
  private:
   const Plugin& itsPlugin;
   boost::posix_time::ptime itsTime;
+  SmartMet::Spine::TimeSeries::LocalTimePoolPtr itsLocalTimePool{nullptr};
 
   // Querydata caches - always make the same choice for same locations and producers
   typedef std::map<SmartMet::Engine::Querydata::Producer, SmartMet::Engine::Querydata::Q> QCache;

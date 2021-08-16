@@ -51,7 +51,7 @@ void erase_redundant_timesteps(Spine::TimeSeries::TimeSeries& ts,
     // optimized for the case when there are no redundant timesteps, and the input can be
     // unmodified.
 
-    Spine::TimeSeries::TimeSeries no_redundant;
+    Spine::TimeSeries::TimeSeries no_redundant(ts.getLocalTimePool());
     no_redundant.reserve(ts.size());
     std::set<boost::local_time::local_date_time> timestep_set(timesteps.begin(), timesteps.end());
 
@@ -259,7 +259,9 @@ void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, Outpu
     TimeSeriesData tsdata;
     if (boost::get<Spine::TimeSeries::TimeSeriesPtr>(&aggregatedData[0]))
     {
-      Spine::TimeSeries::TimeSeriesPtr ts_result(new Spine::TimeSeries::TimeSeries);
+	  Spine::TimeSeries::TimeSeriesPtr ts_first =
+            *(boost::get<Spine::TimeSeries::TimeSeriesPtr>(&aggregatedData[0]));
+      Spine::TimeSeries::TimeSeriesPtr ts_result(new Spine::TimeSeries::TimeSeries(ts_first->getLocalTimePool()));
       // first merge timeseries of all levels of one parameter
       for (unsigned int i = 0; i < aggregatedData.size(); i++)
       {

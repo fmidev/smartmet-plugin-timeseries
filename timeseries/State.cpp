@@ -17,7 +17,7 @@ namespace TimeSeries
 // ----------------------------------------------------------------------
 
 State::State(const Plugin& thePlugin)
-    : itsPlugin(thePlugin), itsTime(boost::posix_time::second_clock::universal_time())
+  : itsPlugin(thePlugin), itsTime(boost::posix_time::second_clock::universal_time()), itsLocalTimePool(boost::make_shared<SmartMet::Spine::TimeSeries::LocalTimePool>())
 {
 }
 
@@ -196,6 +196,11 @@ Engine::Querydata::Q State::get(const Engine::Querydata::Producer& theProducer,
     throw Fmi::Exception::Trace(BCP, "Failed to get querydata for the requested origintime")
         .disableStackTrace();
   }
+}
+
+SmartMet::Spine::TimeSeries::LocalTimePoolPtr State::getLocalTimePool() const
+{
+  return itsLocalTimePool;
 }
 
 }  // namespace TimeSeries
