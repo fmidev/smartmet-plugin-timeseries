@@ -70,11 +70,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 21.8.17
 %endif
-<<<<<<< HEAD
 #TestRequires: smartmet-engine-grid >= 21.8.18
-=======
-#TestRequires: smartmet-engine-grid >= 21.8.17
->>>>>>> master
 #TestRequires: gdal32
 #TestRequires: boost169-date-time
 #TestRequires: boost169-filesystem
