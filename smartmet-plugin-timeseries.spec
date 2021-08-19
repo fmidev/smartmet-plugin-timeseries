@@ -70,7 +70,11 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 21.8.17
 %endif
+<<<<<<< HEAD
 #TestRequires: smartmet-engine-grid >= 21.8.18
+=======
+#TestRequires: smartmet-engine-grid >= 21.8.17
+>>>>>>> master
 #TestRequires: gdal32
 #TestRequires: boost169-date-time
 #TestRequires: boost169-filesystem
@@ -103,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Thu Aug 19 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.8.19-1.fmi
 - Start using local time pool to avoid unnecessary allocations of local_date_time objects (BRAINSTORM-2122)
+
+* Tue Aug 17 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.8.17-1.fmi
+- Use the new shutdown API
 
 * Thu Aug 5 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.8.5-1.fmi
 - Added support for new mobile producer 'bk_hydrometa' (BRAINSTORM-2125)
