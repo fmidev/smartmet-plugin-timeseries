@@ -6,6 +6,7 @@
 #include "GridInterface.h"
 #include "DataFunctions.h"
 #include "LocationTools.h"
+#include "State.h"
 
 #include <spine/TimeSeriesGeneratorCache.h>
 
@@ -1272,8 +1273,8 @@ void GridInterface::processGridQuery(const State& state,
           {
             std::vector<TimeSeriesData> aggregatedData;
 
-            Spine::TimeSeries::TimeSeriesPtr tsForParameter(new Spine::TimeSeries::TimeSeries());
-            Spine::TimeSeries::TimeSeriesPtr tsForNonGridParam(new Spine::TimeSeries::TimeSeries());
+            Spine::TimeSeries::TimeSeriesPtr tsForParameter(new Spine::TimeSeries::TimeSeries(state.getLocalTimePool()));
+            Spine::TimeSeries::TimeSeriesPtr tsForNonGridParam(new Spine::TimeSeries::TimeSeries(state.getLocalTimePool()));
             Spine::TimeSeries::TimeSeriesGroupPtr tsForGroup(
                 new Spine::TimeSeries::TimeSeriesGroup());
 
@@ -1336,7 +1337,7 @@ void GridInterface::processGridQuery(const State& state,
 
               for (uint v = 0; v < vLen; v++)
               {
-                Spine::TimeSeries::TimeSeries ts;
+                Spine::TimeSeries::TimeSeries ts(state.getLocalTimePool());
 
                 for (uint t = 0; t < tLen; t++)
                 {
@@ -2091,7 +2092,7 @@ void GridInterface::erase_redundant_timesteps(
   FUNCTION_TRACE
   try
   {
-    ts::TimeSeries no_redundant;
+    ts::TimeSeries no_redundant(ts.getLocalTimePool());
     no_redundant.reserve(ts.size());
     std::set<boost::local_time::local_date_time> newTimes;
 

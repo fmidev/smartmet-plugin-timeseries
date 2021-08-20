@@ -36,7 +36,7 @@ test:	$(TEST_PREPARE_TARGETS)
 	-$(MAKE) $(TEST_FINISH_TARGETS); \
 	$$ok
 
-test-sqlite test-oracle test-posgresql: $(TEST_PREPARE_TARGETS)
+test-sqlite test-oracle test-postgresql: $(TEST_PREPARE_TARGETS)
 	ok=true
 	if $(MAKE) -C base $@; then ok=true; else ok=false; fi; \
 	-$(MAKE) $(TEST_FINISH_TARGETS); \

@@ -1,5 +1,4 @@
 #include "DataFunctions.h"
-
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -47,21 +46,52 @@ void erase_redundant_timesteps(Spine::TimeSeries::TimeSeries& ts,
 {
   try
   {
-    // TODO: This should be rewritten to use a hash_map instead of std::set. Also, this should be
-    // optimized for the case when there are no redundant timesteps, and the input can be
-    // unmodified.
+    // Fast special case exit
+    if (ts.empty())
+      return;
 
-    Spine::TimeSeries::TimeSeries no_redundant;
-    no_redundant.reserve(ts.size());
-    std::set<boost::local_time::local_date_time> timestep_set(timesteps.begin(), timesteps.end());
+    // First check if all the timesteps are relevant. We assume both TimeSeries and LocalTimeList
+    // are in sorted order.
 
-    for (const auto& data : ts)
+    const auto n = ts.size();
+    std::size_t valid_count = 0;
+    std::vector<bool> keep_timestep(n, true);
+
+    auto next_valid_time = timesteps.cbegin();
+    const auto& last_valid_time = timesteps.cend();
+    for (std::size_t i = 0; i < n; i++)
     {
-      if (timestep_set.find(data.time) != timestep_set.end())
-        no_redundant.push_back(data);
+      const auto& data = ts[i];
+
+      // Skip valid times until data_time is greater than or equal to it
+      while (next_valid_time != last_valid_time && data.time > *next_valid_time)
+        ++next_valid_time;
+
+      // Now the time is either valid (==) or not needed
+      if (next_valid_time == last_valid_time || *next_valid_time != data.time)
+        keep_timestep[i] = false;
+      else
+      {
+        ++valid_count;
+        ++next_valid_time;
+      }
     }
 
-    ts = no_redundant;
+    // Quick exit if nothing needs to be erased
+    if (valid_count == n)
+      return;
+
+    // Create reduced timeseries and swap it with the input
+    Spine::TimeSeries::TimeSeries output(ts.getLocalTimePool());
+    output.reserve(valid_count);
+
+    for (std::size_t i = 0; i < n; i++)
+    {
+      if (keep_timestep[i])
+        output.push_back(ts[i]);
+    }
+
+    std::swap(ts, output);
   }
   catch (...)
   {
@@ -259,7 +289,10 @@ void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, Outpu
     TimeSeriesData tsdata;
     if (boost::get<Spine::TimeSeries::TimeSeriesPtr>(&aggregatedData[0]))
     {
-      Spine::TimeSeries::TimeSeriesPtr ts_result(new Spine::TimeSeries::TimeSeries);
+      Spine::TimeSeries::TimeSeriesPtr ts_first =
+          *(boost::get<Spine::TimeSeries::TimeSeriesPtr>(&aggregatedData[0]));
+      Spine::TimeSeries::TimeSeriesPtr ts_result(
+          new Spine::TimeSeries::TimeSeries(ts_first->getLocalTimePool()));
       // first merge timeseries of all levels of one parameter
       for (unsigned int i = 0; i < aggregatedData.size(); i++)
       {
