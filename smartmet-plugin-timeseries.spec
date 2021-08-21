@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.8.19
+Version: 21.8.21
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,18 +18,18 @@ BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.8.19
+BuildRequires: smartmet-library-spine-devel >= 21.8.21
 BuildRequires: smartmet-library-locus-devel >= 21.8.11
-BuildRequires: smartmet-library-macgyver-devel >= 21.8.5
+BuildRequires: smartmet-library-macgyver-devel >= 21.8.20
 BuildRequires: smartmet-library-grid-content-devel >= 21.8.18
 BuildRequires: smartmet-library-grid-files-devel >= 21.6.8
 BuildRequires: smartmet-library-newbase-devel >= 21.6.16
 BuildRequires: smartmet-library-gis-devel >= 21.8.3
 BuildRequires: smartmet-engine-geonames-devel >= 21.8.17
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.8.19
+BuildRequires: smartmet-engine-observation-devel >= 21.8.21
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 21.8.19
+BuildRequires: smartmet-engine-querydata-devel >= 21.8.21
 BuildRequires: smartmet-engine-gis-devel >= 21.8.17
 BuildRequires: smartmet-engine-grid-devel >= 21.8.18
 # obsengine can be disabled in configuration: not included intentionally
@@ -40,12 +40,12 @@ Requires: fmt >= 7.1.3
 Requires: libconfig
 Requires: smartmet-library-gis >= 21.8.3
 Requires: smartmet-library-locus >= 21.8.11
-Requires: smartmet-library-macgyver >= 21.8.5
+Requires: smartmet-library-macgyver >= 21.8.20
 Requires: smartmet-library-newbase >= 21.6.16
-Requires: smartmet-library-spine >= 21.8.19
+Requires: smartmet-library-spine >= 21.8.21
 Requires: smartmet-library-gis >= 21.8.3
 Requires: smartmet-engine-geonames >= 21.8.17
-Requires: smartmet-engine-querydata >= 21.8.19
+Requires: smartmet-engine-querydata >= 21.8.21
 Requires: smartmet-engine-gis >= 21.8.17
 Requires: smartmet-engine-grid >= 21.8.18
 Requires: smartmet-server >= 21.6.3
@@ -58,7 +58,7 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-macgyver-devel >= 21.8.5
+#TestRequires: smartmet-library-macgyver-devel >= 21.8.20
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
@@ -66,7 +66,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis >= 21.8.3
 #TestRequires: smartmet-engine-geonames >= 21.2.18
 #TestRequires: smartmet-engine-gis >= 21.5.20
-#TestRequires: smartmet-engine-querydata >= 21.8.19
+#TestRequires: smartmet-engine-querydata >= 21.8.21
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 21.8.17
 %endif
@@ -101,6 +101,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Sat Aug 21 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.8.21-1.fmi
+- Repackaged due to LocalTimePool ABI changes
+
 * Thu Aug 19 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.8.19-1.fmi
 - Start using local time pool to avoid unnecessary allocations of local_date_time objects (BRAINSTORM-2122)
 
