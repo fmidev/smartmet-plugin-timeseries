@@ -212,6 +212,8 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                                         NFmiSvgPath* svgPath = nullptr) const;
   void resolveAreaLocations(Query& query, const State& state, const AreaProducers& areaproducers);
 
+  Fmi::Cache::CacheStatistics getCacheStats() const override;
+
   const std::string itsModuleName;
   Config itsConfig;
   bool itsReady = false;
