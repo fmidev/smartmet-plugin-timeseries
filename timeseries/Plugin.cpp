@@ -538,6 +538,7 @@ std::size_t Plugin::hash_value(const State& state,
         Fmi::hash_combine(hash, Fmi::hash_value(name_value.second));
       }
     }
+
     // If the query depends on locations only, that's it!
 
     if (is_plain_location_query(masterquery.poptions.parameters()))
@@ -3726,7 +3727,7 @@ void Plugin::query(const State& state,
 #endif
 
     if (product_hash != Fmi::bad_hash)
-      itsCache->insert(product_hash, result);
+	  itsCache->insert(product_hash, result);
 
     response.setHeader("X-Duration", timeheader);
 
@@ -4051,6 +4052,18 @@ bool Plugin::isObsProducer(const std::string& producer) const
   return (itsObsEngineStationTypes.find(producer) != itsObsEngineStationTypes.end());
 }
 #endif
+
+Fmi::Cache::CacheStatistics Plugin::getCacheStats() const
+{
+  Fmi::Cache::CacheStatistics ret;
+
+  ret.insert(std::make_pair("Timeseries::query_result_cache::memory_cache", itsCache->getMemoryCacheStats()));
+  ret.insert(std::make_pair("Timeseries::query_result_cache::file_cache", itsCache->getFileCacheStats()));
+  ret.insert(std::make_pair("Timeseries::timeseries_generator_cache", itsTimeSeriesCache->getCacheStats()));
+
+  return ret;
+}
+
 
 }  // namespace TimeSeries
 }  // namespace Plugin

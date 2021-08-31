@@ -209,6 +209,10 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
   {
     Spine::LocationList locationList;
 
+	double step = stepInKm;
+	if(step < 0.01)
+	  step = 0.01;
+
     std::pair<double, double> from(thePath.begin()->itsX, thePath.begin()->itsY);
     std::pair<double, double> to(thePath.begin()->itsX, thePath.begin()->itsY);
 
@@ -246,7 +250,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
       {
         // Each path-element is handled separately
         if (it->itsType == NFmiSvgPath::kElementMoveto &&
-            distance_in_kilometers(from, to) > stepInKm)
+            distance_in_kilometers(from, to) > step)
         {
           // Start the new leg
           locationList.push_back(Spine::LocationPtr(
@@ -257,22 +261,22 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
         }
 
         double intermediateDistance = distance_in_kilometers(from, to);
-        if ((intermediateDistance + leftoverDistanceKmFromPreviousLeg) <= stepInKm)
+        if ((intermediateDistance + leftoverDistanceKmFromPreviousLeg) <= step)
         {
           leftoverDistanceKmFromPreviousLeg += intermediateDistance;
         }
         else
         {
           // missing distance from step
-          double missingDistance = stepInKm - leftoverDistanceKmFromPreviousLeg;
+          double missingDistance = step - leftoverDistanceKmFromPreviousLeg;
           std::pair<double, double> intermediatePoint =
               destination_point(from, to, missingDistance);
           locationList.push_back(Spine::LocationPtr(new Spine::Location(
               intermediatePoint.first, intermediatePoint.second, thePathName, theTimezone)));
           from = intermediatePoint;
-          while (distance_in_kilometers(from, to) > stepInKm)
+          while (distance_in_kilometers(from, to) > step)
           {
-            intermediatePoint = destination_point(from, to, stepInKm);
+            intermediatePoint = destination_point(from, to, step);
             locationList.push_back(Spine::LocationPtr(new Spine::Location(
                 intermediatePoint.first, intermediatePoint.second, thePathName, theTimezone)));
             from = intermediatePoint;
