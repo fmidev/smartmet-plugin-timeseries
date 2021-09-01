@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808050900&endtime=200808051200&latlons=60.1695213,24.9354496,66.5000000,25.7166691,61.4991112,23.7871208&param=time,lon,lat,Temperature&grouplocations=1 HTTP/1.0
+

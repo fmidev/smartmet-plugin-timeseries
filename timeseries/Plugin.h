@@ -214,6 +214,8 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
 
   Fmi::Cache::CacheStatistics getCacheStats() const override;
 
+  void grouplocations(Spine::HTTP::Request& theRequest);
+
   const std::string itsModuleName;
   Config itsConfig;
   bool itsReady = false;

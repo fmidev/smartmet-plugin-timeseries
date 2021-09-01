@@ -3750,6 +3750,121 @@ void Plugin::query(const State& state,
   }
 }
 
+void Plugin::grouplocations(Spine::HTTP::Request& theRequest)
+{
+  try
+	{
+	  auto lonlats = theRequest.getParameter("lonlats");
+	  if(!lonlats)
+		lonlats = theRequest.getParameter("lonlat");
+	  auto latlons = theRequest.getParameter("latlons");
+	  if(!latlons)
+		latlons = theRequest.getParameter("latlon");
+	  auto places = theRequest.getParameter("places");
+	  auto fmisid = theRequest.getParameter("fmisid");
+	  auto lpnn = theRequest.getParameter("lpnn");
+	  auto wmo = theRequest.getParameter("wmo");
+	  	  
+	  std::string wkt_multipoint = "MULTIPOINT(";
+	  if(lonlats)
+		{			  
+		  theRequest.removeParameter("lonlat");
+		  theRequest.removeParameter("lonlats");
+		  std::vector<std::string> parts;
+		  boost::algorithm::split(parts, *lonlats, boost::algorithm::is_any_of(","));
+		  if (parts.size() % 2 != 0)
+			throw Fmi::Exception(BCP, "Invalid lonlats list: " + *lonlats);
+		  
+		  for (unsigned int j = 0; j < parts.size(); j += 2)
+			{
+			  if(wkt_multipoint != "MULTIPOINT(")
+				wkt_multipoint += ",";
+			  wkt_multipoint += "(" + parts[j] + " " + parts[j + 1] + ")";
+			}
+		}
+	  if(latlons)
+		{			  
+		  theRequest.removeParameter("latlon");
+		  theRequest.removeParameter("latlons");
+		  std::vector<std::string> parts;
+		  boost::algorithm::split(parts, *latlons, boost::algorithm::is_any_of(","));
+		  if (parts.size() % 2 != 0)
+			throw Fmi::Exception(BCP, "Invalid latlons list: " + *latlons);
+		  
+		  for (unsigned int j = 0; j < parts.size(); j += 2)
+			{
+			  if(wkt_multipoint != "MULTIPOINT(")
+				wkt_multipoint += ",";
+			  wkt_multipoint += "(" + parts[j + 1] + " " + parts[j] + ")";
+			}
+		}
+	  if(places)
+		{
+		  theRequest.removeParameter("places");
+		  std::vector<std::string> parts;
+		  boost::algorithm::split(parts, *places, boost::algorithm::is_any_of(","));
+		  for(const auto& place : parts)
+			{
+			  Spine::LocationPtr loc =	itsGeoEngine->nameSearch(place, "fi");
+			  if(loc)
+				{
+				  if(wkt_multipoint != "MULTIPOINT(")
+					wkt_multipoint += ",";
+				  wkt_multipoint += "(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")";
+				}
+			}
+		  
+		}
+	  std::vector<int> fmisids;
+	  std::vector<int> lpnns;
+	  std::vector<int> wmos;
+	  if(fmisid)
+		{
+		  theRequest.removeParameter("fmisid");
+		  std::vector<std::string> parts;
+		  boost::algorithm::split(parts, *fmisid, boost::algorithm::is_any_of(","));
+		  for(const auto& id : parts)
+			fmisids.push_back(Fmi::stoi(id));
+		}
+	  
+	  if(lpnn)
+		{
+		  theRequest.removeParameter("lpnn");
+		  std::vector<std::string> parts;
+		  boost::algorithm::split(parts, *lpnn, boost::algorithm::is_any_of(","));
+		  for(const auto& id : parts)
+			lpnns.push_back(Fmi::stoi(id));
+		}
+	  
+	  if(wmo)
+		{
+		  theRequest.removeParameter("wmo");
+		  std::vector<std::string> parts;
+		  boost::algorithm::split(parts, *wmo, boost::algorithm::is_any_of(","));
+		  for(const auto& id : parts)
+			wmos.push_back(Fmi::stoi(id));
+		}
+	  
+	  Engine::Geonames::LocationOptions lopts = itsGeoEngine->parseLocations(fmisids, lpnns, wmos, "fi");
+	  for(const auto& lopt : lopts.locations())
+		{
+		  if(lopt.loc)
+			{
+			  if(wkt_multipoint != "MULTIPOINT(")
+				wkt_multipoint += ",";
+			  wkt_multipoint += "(" + Fmi::to_string(lopt.loc->longitude) + " " + Fmi::to_string(lopt.loc->latitude) + ")";
+			}
+		}
+
+	  wkt_multipoint += ")";
+	  theRequest.addParameter("wkt", wkt_multipoint);
+	}
+  catch (...)
+	{
+	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
+	}
+}
+
 // ----------------------------------------------------------------------
 /*!
  * \brief Main content handler
@@ -3765,6 +3880,9 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
 
   try
   {
+	if(Spine::optional_bool(theRequest.getParameter("grouplocations"), false))
+	  grouplocations(const_cast<Spine::HTTP::Request&>(theRequest));
+
     isdebug = ("debug" == Spine::optional_string(theRequest.getParameter("format"), ""));
 
     theResponse.setHeader("Access-Control-Allow-Origin", "*");
