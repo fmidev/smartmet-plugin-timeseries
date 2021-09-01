@@ -209,9 +209,9 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
   {
     Spine::LocationList locationList;
 
-	double step = stepInKm;
-	if(step < 0.01)
-	  step = 0.01;
+    double step = stepInKm;
+    if (step < 0.01)
+      step = 0.01;
 
     std::pair<double, double> from(thePath.begin()->itsX, thePath.begin()->itsY);
     std::pair<double, double> to(thePath.begin()->itsX, thePath.begin()->itsY);
@@ -249,8 +249,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
       else
       {
         // Each path-element is handled separately
-        if (it->itsType == NFmiSvgPath::kElementMoveto &&
-            distance_in_kilometers(from, to) > step)
+        if (it->itsType == NFmiSvgPath::kElementMoveto && distance_in_kilometers(from, to) > step)
         {
           // Start the new leg
           locationList.push_back(Spine::LocationPtr(

@@ -749,7 +749,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
         qParam.mGeometryId = geometryId;
 
       std::string pname = param.originalName();
-      itsGridEngine->getParameterAlias(pname,pname);
+      itsGridEngine->getParameterAlias(pname, pname);
 
       std::vector<std::string> partList;
 
@@ -1273,8 +1273,10 @@ void GridInterface::processGridQuery(const State& state,
           {
             std::vector<TimeSeriesData> aggregatedData;
 
-            Spine::TimeSeries::TimeSeriesPtr tsForParameter(new Spine::TimeSeries::TimeSeries(state.getLocalTimePool()));
-            Spine::TimeSeries::TimeSeriesPtr tsForNonGridParam(new Spine::TimeSeries::TimeSeries(state.getLocalTimePool()));
+            Spine::TimeSeries::TimeSeriesPtr tsForParameter(
+                new Spine::TimeSeries::TimeSeries(state.getLocalTimePool()));
+            Spine::TimeSeries::TimeSeriesPtr tsForNonGridParam(
+                new Spine::TimeSeries::TimeSeries(state.getLocalTimePool()));
             Spine::TimeSeries::TimeSeriesGroupPtr tsForGroup(
                 new Spine::TimeSeries::TimeSeriesGroup());
 
@@ -1458,7 +1460,8 @@ void GridInterface::processGridQuery(const State& state,
                     int imageWidth = width * mp;
                     int imageHeight = height * mp;
 
-                    ImagePaint imagePaint(imageWidth, imageHeight, 0xFFFFFFFF,0x000000,0xFFFF00,false, !rotate);
+                    ImagePaint imagePaint(
+                        imageWidth, imageHeight, 0xFFFFFFFF, 0x000000, 0xFFFF00, false, !rotate);
 
                     for (size_t s = 0; s < size; s++)
                     {

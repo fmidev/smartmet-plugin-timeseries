@@ -17,7 +17,9 @@ namespace TimeSeries
 // ----------------------------------------------------------------------
 
 State::State(const Plugin& thePlugin)
-  : itsPlugin(thePlugin), itsTime(boost::posix_time::second_clock::universal_time()), itsLocalTimePool(boost::make_shared<SmartMet::Spine::TimeSeries::LocalTimePool>())
+    : itsPlugin(thePlugin),
+      itsTime(boost::posix_time::second_clock::universal_time()),
+      itsLocalTimePool(boost::make_shared<SmartMet::Spine::TimeSeries::LocalTimePool>())
 {
 }
 

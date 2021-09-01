@@ -401,7 +401,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
         else
         {
           ts::TimeSeries ts_ik(fmisid_ts.getLocalTimePool());
-		  ts_ik.insert(ts_ik.begin(), ts_k.begin() + start_index, ts_k.begin() + end_index);
+          ts_ik.insert(ts_ik.begin(), ts_k.begin() + start_index, ts_k.begin() + end_index);
           // Add missing timesteps
           add_missing_timesteps(ts_ik, tlist);
           tsv->emplace_back(ts_ik);
@@ -1477,7 +1477,7 @@ void Plugin::fetchQEngineValues(const State& state,
                                                               query.findnearestvalidpoint,
                                                               nearestpoint,
                                                               query.lastpoint,
-															  state.getLocalTimePool());
+                                                              state.getLocalTimePool());
 
           // one location, list of local times (no radius -> pointforecast)
           querydata_result = loadDataLevels ? qi->values(querydata_param, querydata_tlist)
@@ -1554,7 +1554,7 @@ void Plugin::fetchQEngineValues(const State& state,
                                                                 query.findnearestvalidpoint,
                                                                 nearestpoint,
                                                                 query.lastpoint,
-																state.getLocalTimePool());
+                                                                state.getLocalTimePool());
 
             // list of locations, list of local times
             querydata_result =
@@ -1633,7 +1633,7 @@ void Plugin::fetchQEngineValues(const State& state,
                                                                 query.findnearestvalidpoint,
                                                                 nearestpoint,
                                                                 query.lastpoint,
-																state.getLocalTimePool());
+                                                                state.getLocalTimePool());
 
             // Indexmask (indexed locations on the area)
             Spine::LocationList llist = get_indexmask_locations(mask, loc, qi, *itsGeoEngine);
@@ -2618,7 +2618,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       }
       else
       {
-		// Else accept only the originally generated timesteps
+        // Else accept only the originally generated timesteps
         DataFunctions::store_data(
             DataFunctions::erase_redundant_timesteps(aggregated_observation_result, *tlist),
             query,
@@ -2999,7 +2999,7 @@ void Plugin::processObsEngineQuery(const State& state,
       for (auto& item : settingsVector)
       {
         Engine::Observation::Settings& settings = item.settings;
-		settings.localTimePool = state.getLocalTimePool();
+        settings.localTimePool = state.getLocalTimePool();
 
         if (query.debug)
           settings.debug_options = Engine::Observation::Settings::DUMP_SETTINGS;
@@ -3727,7 +3727,7 @@ void Plugin::query(const State& state,
 #endif
 
     if (product_hash != Fmi::bad_hash)
-	  itsCache->insert(product_hash, result);
+      itsCache->insert(product_hash, result);
 
     response.setHeader("X-Duration", timeheader);
 
@@ -4057,13 +4057,15 @@ Fmi::Cache::CacheStatistics Plugin::getCacheStats() const
 {
   Fmi::Cache::CacheStatistics ret;
 
-  ret.insert(std::make_pair("Timeseries::query_result_cache::memory_cache", itsCache->getMemoryCacheStats()));
-  ret.insert(std::make_pair("Timeseries::query_result_cache::file_cache", itsCache->getFileCacheStats()));
-  ret.insert(std::make_pair("Timeseries::timeseries_generator_cache", itsTimeSeriesCache->getCacheStats()));
+  ret.insert(std::make_pair("Timeseries::query_result_cache::memory_cache",
+                            itsCache->getMemoryCacheStats()));
+  ret.insert(
+      std::make_pair("Timeseries::query_result_cache::file_cache", itsCache->getFileCacheStats()));
+  ret.insert(std::make_pair("Timeseries::timeseries_generator_cache",
+                            itsTimeSeriesCache->getCacheStats()));
 
   return ret;
 }
-
 
 }  // namespace TimeSeries
 }  // namespace Plugin
