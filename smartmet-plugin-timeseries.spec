@@ -16,10 +16,9 @@ BuildRequires: gcc-c++
 BuildRequires: make
 BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
-BuildRequires: libconfig-devel
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.8.30
+BuildRequires: smartmet-library-spine-devel >= 21.9.7
 BuildRequires: smartmet-library-locus-devel >= 21.8.11
 BuildRequires: smartmet-library-macgyver-devel >= 21.8.30
 BuildRequires: smartmet-library-grid-content-devel >= 21.8.18
@@ -28,28 +27,27 @@ BuildRequires: smartmet-library-newbase-devel >= 21.6.16
 BuildRequires: smartmet-library-gis-devel >= 21.8.30
 BuildRequires: smartmet-engine-geonames-devel >= 21.8.30
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.8.30
+BuildRequires: smartmet-engine-observation-devel >= 21.9.7
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 21.8.30
-BuildRequires: smartmet-engine-gis-devel >= 21.8.30
-BuildRequires: smartmet-engine-grid-devel >= 21.8.30
+BuildRequires: smartmet-engine-querydata-devel >= 21.9.7
+BuildRequires: smartmet-engine-gis-devel >= 21.9.7
+BuildRequires: smartmet-engine-grid-devel >= 21.9.7
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation
 #%endif
 Requires: fmt >= 7.1.3
-Requires: libconfig
 Requires: smartmet-library-gis >= 21.8.30
 Requires: smartmet-library-locus >= 21.8.11
 Requires: smartmet-library-macgyver >= 21.8.30
 Requires: smartmet-library-newbase >= 21.6.16
-Requires: smartmet-library-spine >= 21.8.30
+Requires: smartmet-library-spine >= 21.9.7
 Requires: smartmet-library-gis >= 21.8.30
 Requires: smartmet-engine-geonames >= 21.8.30
-Requires: smartmet-engine-querydata >= 21.8.30
-Requires: smartmet-engine-gis >= 21.8.30
-Requires: smartmet-engine-grid >= 21.8.18
-Requires: smartmet-server >= 21.6.3
+Requires: smartmet-engine-querydata >= 21.9.7
+Requires: smartmet-engine-gis >= 21.9.7
+Requires: smartmet-engine-grid >= 21.9.7
+Requires: smartmet-server >= 21.9.7
 Requires: boost169-date-time
 Requires: boost169-filesystem
 Requires: boost169-iostreams
@@ -60,6 +58,7 @@ Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: gcc-c++
 #TestRequires: smartmet-library-macgyver-devel >= 21.8.30
+#TestRequires: smartmet-library-spine-devel >= 21.9.7
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
@@ -102,11 +101,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+
 * Thu Sep 9 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.9.9-1.fmi
 - Fixed a timestep handling bug in observation query (BRAINSTORM-2146)
 
 * Wed Sep 1 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.9.1-1.fmi
 - New option 'grouplocations' added (BRAINSTORM-2135)
+
+* Tue Sep  7 2021 Andris Pavēnis <andris.pavenis@fmi.fi> 21.9.7-1.fmi
+- Repackaged due to dependency changes (libconfig -> libconfig17)
 
 * Mon Aug 30 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.8.30-1.fmi
 - Cache counters added (BRAINSTORM-1005)
