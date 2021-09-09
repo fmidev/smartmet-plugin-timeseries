@@ -102,6 +102,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Thu Sep 9 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.9.9-1.fmi
+- Fixed a timestep handling bug in observation query (BRAINSTORM-2146)
 - New option 'grouplocations' added (BRAINSTORM-2135)
 
 * Tue Sep  7 2021 Andris Pavēnis <andris.pavenis@fmi.fi> 21.9.7-1.fmi

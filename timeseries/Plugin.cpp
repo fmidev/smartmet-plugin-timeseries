@@ -2670,34 +2670,14 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
     int fmisid_index = get_fmisid_index(settings);
 
-    // first generate timesteps
-    Spine::TimeSeriesGeneratorCache::TimeList tlist;
-    auto tz = getTimeZones().time_zone_from_string(query.timezone);
-    if (!query.toptions.all())
-      tlist = itsTimeSeriesCache->generate(query.toptions, tz);
+    // All timesteps from result set
+    Spine::TimeSeriesGeneratorCache::TimeList tlist_all = std::make_shared<Spine::TimeSeriesGenerator::LocalTimeList>(Spine::TimeSeriesGenerator::LocalTimeList());
+	for(const auto t : ts_vector)
+	  tlist_all->push_back(t);
 
-    // separate timeseries of different locations to their own data structures
+    // Separate timeseries of different locations to their own data structures and add missing timesteps
     TimeSeriesByLocation tsv_area =
-        get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
-    // make sure that all timeseries have the same timesteps
-    for (FmisidTSVectorPair& val : tsv_area)
-    {
-      ts::TimeSeriesVector* tsv = val.second.get();
-      for (ts::TimeSeries& ts : *tsv)
-      {
-        for (unsigned int k = 0; k < ts_vector.size(); k++)
-        {
-          boost::local_time::local_date_time lt(ts_vector[k]);
-          ts::Value val("");
-          if (ts.size() == k)
-            ts.emplace_back(ts::TimedValue(lt, val));
-          else if (ts[k].time != lt)
-          {
-            ts.insert(ts.begin() + k, ts::TimedValue(lt, val));
-          }
-        }
-      }
-    }
+        get_timeseries_by_fmisid(producer, observation_result, tlist_all, fmisid_index);
 
     std::vector<FmisidTSVectorPair> tsv_area_with_added_fields;
     // add data for location- and time-related fields; these fields are added by timeseries
@@ -2953,6 +2933,12 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       else
       {
         // Else accept only the original generated timesteps
+		// Generate requested timesteps
+		Spine::TimeSeriesGeneratorCache::TimeList tlist;
+		auto tz = getTimeZones().time_zone_from_string(query.timezone);
+		if (!query.toptions.all())
+		  tlist = itsTimeSeriesCache->generate(query.toptions, tz);
+
         aggregatedData.emplace_back(
             TimeSeriesData(DataFunctions::erase_redundant_timesteps(aggregated_tsg, *tlist)));
         // store observation data
