@@ -4,7 +4,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.9.1
+Version: 21.9.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -102,6 +102,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Sep 9 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.9.9-1.fmi
+- Fixed a timestep handling bug in observation query (BRAINSTORM-2146)
+
 * Wed Sep 1 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.9.1-1.fmi
 - New option 'grouplocations' added (BRAINSTORM-2135)
 
