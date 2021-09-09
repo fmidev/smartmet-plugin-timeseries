@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808050900&endtime=200808051200&places=Helsinki,Rovaniemi,Tampere&param=time,lon,lat,Temperature&grouplocations=1 HTTP/1.0
