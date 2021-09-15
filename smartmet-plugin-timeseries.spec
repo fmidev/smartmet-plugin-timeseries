@@ -1,10 +1,9 @@
-
 %bcond_without observation
 %define DIRNAME timeseries
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.9.9
+Version: 21.9.15
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,35 +17,35 @@ BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.9.7
+BuildRequires: smartmet-library-spine-devel >= 21.9.13
 BuildRequires: smartmet-library-locus-devel >= 21.8.11
-BuildRequires: smartmet-library-macgyver-devel >= 21.8.30
-BuildRequires: smartmet-library-grid-content-devel >= 21.8.31
-BuildRequires: smartmet-library-grid-files-devel >= 21.8.31
-BuildRequires: smartmet-library-newbase-devel >= 21.6.16
-BuildRequires: smartmet-library-gis-devel >= 21.9.2
-BuildRequires: smartmet-engine-geonames-devel >= 21.8.30
+BuildRequires: smartmet-library-macgyver-devel >= 21.9.13
+BuildRequires: smartmet-library-grid-content-devel >= 21.9.15
+BuildRequires: smartmet-library-grid-files-devel >= 21.9.15
+BuildRequires: smartmet-library-newbase-devel >= 21.9.14
+BuildRequires: smartmet-library-gis-devel >= 21.9.13
+BuildRequires: smartmet-engine-geonames-devel >= 21.9.13
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.9.7
+BuildRequires: smartmet-engine-observation-devel >= 21.9.13
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 21.9.7
-BuildRequires: smartmet-engine-gis-devel >= 21.9.7
-BuildRequires: smartmet-engine-grid-devel >= 21.9.7
+BuildRequires: smartmet-engine-querydata-devel >= 21.9.13
+BuildRequires: smartmet-engine-gis-devel >= 21.9.13
+BuildRequires: smartmet-engine-grid-devel >= 21.9.15
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation
 #%endif
 Requires: fmt >= 7.1.3
-Requires: smartmet-library-gis >= 21.9.2
+Requires: smartmet-library-gis >= 21.9.13
 Requires: smartmet-library-locus >= 21.8.11
-Requires: smartmet-library-macgyver >= 21.8.30
-Requires: smartmet-library-newbase >= 21.6.16
-Requires: smartmet-library-spine >= 21.9.7
-Requires: smartmet-library-gis >= 21.9.2
-Requires: smartmet-engine-geonames >= 21.8.30
-Requires: smartmet-engine-querydata >= 21.9.7
-Requires: smartmet-engine-gis >= 21.9.7
-Requires: smartmet-engine-grid >= 21.9.7
+Requires: smartmet-library-macgyver >= 21.9.13
+Requires: smartmet-library-newbase >= 21.9.14
+Requires: smartmet-library-spine >= 21.9.13
+Requires: smartmet-library-gis >= 21.9.13
+Requires: smartmet-engine-geonames >= 21.9.13
+Requires: smartmet-engine-querydata >= 21.9.13
+Requires: smartmet-engine-gis >= 21.9.13
+Requires: smartmet-engine-grid >= 21.9.15
 Requires: smartmet-server >= 21.9.7
 Requires: boost169-date-time
 Requires: boost169-filesystem
@@ -57,13 +56,13 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: gcc-c++
-#TestRequires: smartmet-library-macgyver-devel >= 21.8.30
-#TestRequires: smartmet-library-spine-devel >= 21.9.7
+#TestRequires: smartmet-library-macgyver-devel >= 21.9.13
+#TestRequires: smartmet-library-spine-devel >= 21.9.13
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-engine-grid-test
-#TestRequires: smartmet-library-gis >= 21.9.2
+#TestRequires: smartmet-library-gis >= 21.9.13
 #TestRequires: smartmet-engine-geonames >= 21.2.18
 #TestRequires: smartmet-engine-gis >= 21.5.20
 #TestRequires: smartmet-engine-querydata >= 21.8.30
@@ -101,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Sep 15 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.9.15-1.fmi
+- Repackaged due to NetCDF related ABI changes in base libraries
+
 * Thu Sep 9 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.9.9-1.fmi
 - Fixed a timestep handling bug in observation query (BRAINSTORM-2146)
 - New option 'grouplocations' added (BRAINSTORM-2135)
