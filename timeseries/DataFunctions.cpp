@@ -131,8 +131,8 @@ Spine::TimeSeries::TimeSeriesVectorPtr erase_redundant_timesteps(
 {
   try
   {
-    for (unsigned int i = 0; i < tsv->size(); i++)
-      erase_redundant_timesteps(tsv->at(i), timesteps);
+    for (auto& tv : *tsv)
+      erase_redundant_timesteps(tv, timesteps);
 
     return tsv;
   }
@@ -294,10 +294,10 @@ void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, Outpu
       Spine::TimeSeries::TimeSeriesPtr ts_result(
           new Spine::TimeSeries::TimeSeries(ts_first->getLocalTimePool()));
       // first merge timeseries of all levels of one parameter
-      for (unsigned int i = 0; i < aggregatedData.size(); i++)
+      for (const auto& data : aggregatedData)
       {
         Spine::TimeSeries::TimeSeriesPtr ts =
-            *(boost::get<Spine::TimeSeries::TimeSeriesPtr>(&aggregatedData[i]));
+            *(boost::get<Spine::TimeSeries::TimeSeriesPtr>(&data));
         ts_result->insert(ts_result->end(), ts->begin(), ts->end());
       }
       // update the latest timestep, so that next query (if exists) knows from where to continue
@@ -308,10 +308,10 @@ void store_data(std::vector<TimeSeriesData>& aggregatedData, Query& query, Outpu
     {
       Spine::TimeSeries::TimeSeriesGroupPtr tsg_result(new Spine::TimeSeries::TimeSeriesGroup);
       // first merge timeseries of all levels of one parameter
-      for (unsigned int i = 0; i < aggregatedData.size(); i++)
+      for (const auto& data : aggregatedData)
       {
         Spine::TimeSeries::TimeSeriesGroupPtr tsg =
-            *(boost::get<Spine::TimeSeries::TimeSeriesGroupPtr>(&aggregatedData[i]));
+            *(boost::get<Spine::TimeSeries::TimeSeriesGroupPtr>(&data));
         tsg_result->insert(tsg_result->end(), tsg->begin(), tsg->end());
       }
       // update the latest timestep, so that next query (if exists) knows from where to continue

@@ -18,12 +18,12 @@ namespace TimeSeries
 {
 struct Precision
 {
-  typedef std::map<std::string, int> Map;
+  using Map = std::map<std::string, int>;
 
-  int default_precision;
+  int default_precision = 0;
   Map parameter_precisions;
 
-  Precision() : default_precision(0), parameter_precisions() {}
+  Precision() = default;
 };
 
 }  // namespace TimeSeries

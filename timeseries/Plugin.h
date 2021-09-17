@@ -62,8 +62,8 @@ class GridInterface;
 struct SettingsInfo
 {
   Engine::Observation::Settings settings;
-  bool is_area{false};
-  std::string area_name{""};
+  bool is_area = false;
+  std::string area_name;
 
   SettingsInfo(const Engine::Observation::Settings& s, bool isa, const std::string& an)
       : settings(s), is_area(isa), area_name(an)

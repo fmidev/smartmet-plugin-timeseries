@@ -103,10 +103,10 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 
       std::vector<std::string> partList;
       splitString(attr, ';', partList);
-      for (auto it = partList.begin(); it != partList.end(); ++it)
+      for (const auto& part : partList)
       {
         std::vector<std::string> list;
-        splitString(*it, ':', list);
+        splitString(part, ':', list);
         if (list.size() == 2)
         {
           std::string name = list[0];
@@ -621,7 +621,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
       throw Fmi::Exception(BCP, "The 'param' option is empty!");
 
     // Split
-    typedef list<string> Names;
+    using Names = list<string>;
     Names tmpNames;
     boost::algorithm::split(tmpNames, opt, boost::algorithm::is_any_of(","));
 
@@ -636,10 +636,11 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
 
       ind = false;
       names.clear();
-      for (auto it = tmpNames.begin(); it != tmpNames.end(); ++it)
+
+      for (const auto& tmpName : tmpNames)
       {
         std::string alias;
-        if (itsAliasFileCollectionPtr->getAlias(*it, alias))
+        if (itsAliasFileCollectionPtr->getAlias(tmpName, alias))
         {
           Names tmp;
           boost::algorithm::split(tmp, alias, boost::algorithm::is_any_of(","));
@@ -649,19 +650,18 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
           }
           ind = true;
         }
-        else if (itsAliasFileCollectionPtr->replaceAlias(*it, alias))
+        else if (itsAliasFileCollectionPtr->replaceAlias(tmpName, alias))
         {
           Names tmp;
           boost::algorithm::split(tmp, alias, boost::algorithm::is_any_of(","));
-          for (auto tt = tmp.begin(); tt != tmp.end(); ++tt)
-          {
-            names.push_back(*tt);
-          }
+          for (const auto& tt : tmp)
+            names.push_back(tt);
+
           ind = true;
         }
         else
         {
-          names.push_back(*it);
+          names.push_back(tmpName);
         }
       }
 

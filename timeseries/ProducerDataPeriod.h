@@ -31,7 +31,7 @@ class State;
 class ProducerDataPeriod
 {
  private:
-  typedef std::map<std::string, boost::posix_time::time_period> DataPeriod;
+  using DataPeriod = std::map<std::string, boost::posix_time::time_period>;
 
   enum eTime
   {

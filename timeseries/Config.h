@@ -23,7 +23,7 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-typedef std::map<std::string, Precision> Precisions;
+using Precisions = std::map<std::string, Precision>;
 
 class Config : private boost::noncopyable
 {

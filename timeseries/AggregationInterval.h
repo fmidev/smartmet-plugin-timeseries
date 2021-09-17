@@ -25,7 +25,7 @@ struct AggregationInterval
   friend std::ostream& operator<<(std::ostream& out, const AggregationInterval& interval);
 };
 
-typedef std::map<std::string, AggregationInterval> MaxAggregationIntervals;
+using MaxAggregationIntervals = std::map<std::string, AggregationInterval>;
 
 std::ostream& operator<<(std::ostream& out, const AggregationInterval& interval);
 

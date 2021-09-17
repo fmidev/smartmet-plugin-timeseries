@@ -46,7 +46,7 @@ std::set<std::string> parse_debug_attributes(const std::string& theStr)
 // ----------------------------------------------------------------------
 
 std::string ImageFormatter::format(const Table& theTable,
-                                   const TableFormatter::Names& theNames,
+                                   const TableFormatter::Names& /* theNames */,
                                    const HTTP::Request& theReq,
                                    const TableFormatterOptions& /* theConfig */) const
 {

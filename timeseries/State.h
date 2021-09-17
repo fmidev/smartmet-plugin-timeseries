@@ -95,8 +95,8 @@ class State
   SmartMet::Spine::TimeSeries::LocalTimePoolPtr itsLocalTimePool{nullptr};
 
   // Querydata caches - always make the same choice for same locations and producers
-  typedef std::map<SmartMet::Engine::Querydata::Producer, SmartMet::Engine::Querydata::Q> QCache;
-  typedef std::map<SmartMet::Engine::Querydata::OriginTime, QCache> TimedQCache;
+  using QCache = std::map<SmartMet::Engine::Querydata::Producer, SmartMet::Engine::Querydata::Q>;
+  using TimedQCache = std::map<SmartMet::Engine::Querydata::OriginTime, QCache>;
 
   mutable QCache itsQCache;
   mutable TimedQCache itsTimedQCache;

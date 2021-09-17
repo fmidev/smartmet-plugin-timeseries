@@ -11,8 +11,8 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-typedef std::list<std::string> AreaProducers;
-typedef std::list<AreaProducers> TimeProducers;
+using AreaProducers = std::list<std::string>;
+using TimeProducers = std::list<AreaProducers>;
 
 }  // namespace TimeSeries
 }  // namespace Plugin

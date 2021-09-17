@@ -28,18 +28,13 @@
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
-using boost::numeric_cast;
 using boost::local_time::local_date_time;
-using boost::numeric::bad_numeric_cast;
-using boost::numeric::negative_overflow;
-using boost::numeric::positive_overflow;
 using boost::posix_time::hours;
 using boost::posix_time::minutes;
 using boost::posix_time::ptime;
 using boost::posix_time::seconds;
 
 //#define MYDEBUG ON
-namespace ts = SmartMet::Spine::TimeSeries;
 
 namespace SmartMet
 {
@@ -388,11 +383,11 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
     location_indexes.emplace_back(std::pair<unsigned int, unsigned int>(start_index, end_index));
 
     // Iterate through locations
-    for (unsigned int i = 0; i < location_indexes.size(); i++)
+    for (const auto& location_index : location_indexes)
     {
       ts::TimeSeriesVectorPtr tsv(new ts::TimeSeriesVector());
-      start_index = location_indexes[i].first;
-      end_index = location_indexes[i].second;
+      start_index = location_index.first;
+      end_index = location_index.second;
       for (unsigned int k = 0; k < observation_result->size(); k++)
       {
         const ts::TimeSeries& ts_k = observation_result->at(k);
@@ -822,16 +817,16 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
         left = svgPath->begin()->itsX;
         right = svgPath->begin()->itsX;
 
-        for (NFmiSvgPath::const_iterator it = svgPath->begin(); it != svgPath->end(); ++it)
+        for (const auto& element : *svgPath)
         {
-          if (it->itsX < left)
-            left = it->itsX;
-          if (it->itsX > right)
-            right = it->itsX;
-          if (it->itsY < bottom)
-            bottom = it->itsY;
-          if (it->itsY > top)
-            top = it->itsY;
+          if (element.itsX < left)
+            left = element.itsX;
+          if (element.itsX > right)
+            right = element.itsX;
+          if (element.itsY < bottom)
+            bottom = element.itsY;
+          if (element.itsY > top)
+            top = element.itsY;
         }
       }
     }
@@ -910,16 +905,16 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
         left = svgPath->begin()->itsX;
         right = svgPath->begin()->itsX;
 
-        for (NFmiSvgPath::const_iterator it = svgPath->begin(); it != svgPath->end(); ++it)
+        for (const auto& element : *svgPath)
         {
-          if (it->itsX < left)
-            left = it->itsX;
-          if (it->itsX > right)
-            right = it->itsX;
-          if (it->itsY < bottom)
-            bottom = it->itsY;
-          if (it->itsY > top)
-            top = it->itsY;
+          if (element.itsX < left)
+            left = element.itsX;
+          if (element.itsX > right)
+            right = element.itsX;
+          if (element.itsY < bottom)
+            bottom = element.itsY;
+          if (element.itsY > top)
+            top = element.itsY;
         }
       }
     }
@@ -1313,8 +1308,8 @@ void Plugin::fetchQEngineValues(const State& state,
     bool loadDataLevels =
         (!query.levels.empty() || (query.pressures.empty() && query.heights.empty()));
     std::string levelType(loadDataLevels ? "data:" : "");
-    Query::Pressures::const_iterator itPressure = query.pressures.begin();
-    Query::Heights::const_iterator itHeight = query.heights.begin();
+    auto itPressure = query.pressures.begin();
+    auto itHeight = query.heights.begin();
 
     // Loop over the levels
     for (qi->resetLevel();;)
@@ -1953,15 +1948,15 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         NFmiSvgTools::BBoxToSvgPath(svgPath, bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
 
         std::string wkt;
-        for (NFmiSvgPath::const_iterator iter = svgPath.begin(); iter != svgPath.end(); iter++)
+        for (const auto& element : svgPath)
         {
           if (wkt.empty())
             wkt += "POLYGON((";
           else
             wkt += ", ";
-          wkt += Fmi::to_string(iter->itsX);
+          wkt += Fmi::to_string(element.itsX);
           wkt += " ";
-          wkt += Fmi::to_string(iter->itsY);
+          wkt += Fmi::to_string(element.itsY);
         }
         if (!wkt.empty())
           wkt += "))";
@@ -2073,9 +2068,9 @@ void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
   {
     int fmisid_index = -1;
 
-    for (unsigned int i = 0; i < obsParameters.size(); i++)
+    for (const auto& obsparam : obsParameters)
     {
-      const Spine::Parameter& param = obsParameters[i].param;
+      const Spine::Parameter& param = obsparam.param;
       const auto& pname = param.name();
 
       if (query.maxAggregationIntervals.find(pname) != query.maxAggregationIntervals.end())
@@ -2089,7 +2084,7 @@ void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
       // prevent passing duplicate parameters to observation (for example temperature,
       // max_t(temperature))
       // location parameters are handled in timeseries plugin
-      if (obsParameters[i].duplicate ||
+      if (obsparam.duplicate ||
           (SmartMet::Spine::is_location_parameter(pname) &&
            !is_flash_or_mobile_producer(producer)) ||
           SmartMet::Spine::is_time_parameter(pname))
@@ -2415,10 +2410,10 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
 
     // iterate locations
-    for (unsigned int i = 0; i < observation_result_by_location.size(); i++)
+    for (const auto& observation_result_location : observation_result_by_location)
     {
-      observation_result = observation_result_by_location[i].second;
-      int fmisid = observation_result_by_location[i].first;
+      observation_result = observation_result_location.second;
+      int fmisid = observation_result_location.first;
 
       // get location
 
@@ -2442,8 +2437,8 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       // lets find out actual timesteps
       std::vector<boost::local_time::local_date_time> timestep_vector;
       const ts::TimeSeries& ts = observation_result->at(0);
-      for (unsigned int i = 0; i < ts.size(); i++)
-        timestep_vector.push_back(ts[i].time);
+      for (const auto& value : ts)
+        timestep_vector.push_back(value.time);
 
       unsigned int obs_result_field_index = 0;
       ts::TimeSeriesVectorPtr observationResult2(new ts::TimeSeriesVector());
@@ -2462,7 +2457,8 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
         {
           // add data for location field
           ts::TimeSeries timeseries(state.getLocalTimePool());
-          for (unsigned int j = 0; j < timestep_vector.size(); j++)
+
+          for (const auto& timestep : timestep_vector)
           {
             ts::Value value = location_parameter(loc,
                                                  obsParam.param.name(),
@@ -2470,7 +2466,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                                  query.timezone,
                                                  query.precisions[i]);
 
-            timeseries.emplace_back(ts::TimedValue(timestep_vector[j], value));
+            timeseries.emplace_back(ts::TimedValue(timestep, value));
           }
 
           observationResult2->emplace_back(timeseries);
@@ -2481,10 +2477,10 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           // add data for time fields
           Spine::Location location(0, 0, "", query.timezone);
           ts::TimeSeries timeseries(state.getLocalTimePool());
-          for (unsigned int j = 0; j < timestep_vector.size(); j++)
+          for (const auto& timestep : timestep_vector)
           {
             ts::Value value = time_parameter(paramname,
-                                             timestep_vector[j],
+                                             timestep,
                                              state.getTime(),
                                              *loc,
                                              query.timezone,
@@ -2492,7 +2488,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                              query.outlocale,
                                              *query.timeformatter,
                                              query.timestring);
-            timeseries.emplace_back(ts::TimedValue(timestep_vector[j], value));
+            timeseries.emplace_back(ts::TimedValue(timestep, value));
           }
           observationResult2->emplace_back(timeseries);
           parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
@@ -2671,11 +2667,14 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     int fmisid_index = get_fmisid_index(settings);
 
     // All timesteps from result set
-    Spine::TimeSeriesGeneratorCache::TimeList tlist_all = std::make_shared<Spine::TimeSeriesGenerator::LocalTimeList>(Spine::TimeSeriesGenerator::LocalTimeList());
-	for(const auto t : ts_vector)
-	  tlist_all->push_back(t);
+    Spine::TimeSeriesGeneratorCache::TimeList tlist_all =
+        std::make_shared<Spine::TimeSeriesGenerator::LocalTimeList>(
+            Spine::TimeSeriesGenerator::LocalTimeList());
+    for (const auto t : ts_vector)
+      tlist_all->push_back(t);
 
-    // Separate timeseries of different locations to their own data structures and add missing timesteps
+    // Separate timeseries of different locations to their own data structures and add missing
+    // timesteps
     TimeSeriesByLocation tsv_area =
         get_timeseries_by_fmisid(producer, observation_result, tlist_all, fmisid_index);
 
@@ -2708,7 +2707,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         {
           ts::TimeSeries location_ts(state.getLocalTimePool());
 
-          for (unsigned int j = 0; j < ts_vector.size(); j++)
+          for (const auto& ts : ts_vector)
           {
             ts::Value value = location_parameter(loc,
                                                  obsParameters[i].param.name(),
@@ -2716,7 +2715,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
                                                  query.timezone,
                                                  query.precisions[i]);
 
-            location_ts.emplace_back(ts::TimedValue(ts_vector[j], value));
+            location_ts.emplace_back(ts::TimedValue(ts, value));
           }
           observation_result_with_added_fields->push_back(location_ts);
         }
@@ -2727,10 +2726,11 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
           ts::TimeSeriesGroupPtr grp(new ts::TimeSeriesGroup);
           ts::TimeSeries time_ts(state.getLocalTimePool());
-          for (unsigned int j = 0; j < ts_vector.size(); j++)
+
+          for (const auto& ts : ts_vector)
           {
             ts::Value value = time_parameter(paramname,
-                                             ts_vector[j],
+                                             ts,
                                              state.getTime(),
                                              (loc ? *loc : dummyloc),
                                              query.timezone,
@@ -2739,7 +2739,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
                                              *query.timeformatter,
                                              query.timestring);
 
-            time_ts.emplace_back(ts::TimedValue(ts_vector[j], value));
+            time_ts.emplace_back(ts::TimedValue(ts, value));
           }
           observation_result_with_added_fields->push_back(time_ts);
         }
@@ -2790,9 +2790,10 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       tsg_vector.emplace_back(ts::TimeSeriesGroupPtr(new ts::TimeSeriesGroup));
 
     // iterate locations
-    for (unsigned int i = 0; i < tsv_area_with_added_fields.size(); i++)
+
+    for (const auto& tsv_area : tsv_area_with_added_fields)
     {
-      const ts::TimeSeriesVector* tsv = tsv_area_with_added_fields[i].second.get();
+      const ts::TimeSeriesVector* tsv = tsv_area.second.get();
 
       // iterate fields
       for (unsigned int k = 0; k < tsv->size(); k++)
@@ -2815,40 +2816,34 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
     ts::Value missing_value = Spine::TimeSeries::None();
     // iterate parameters, aggregate, and store aggregated result
-    for (unsigned int i = 0; i < obsParameters.size(); i++)
+
+    for (const auto& obsparam : obsParameters)
     {
-      unsigned int data_column = obsParameters[i].data_column;
+      unsigned int data_column = obsparam.data_column;
       ts::TimeSeriesGroupPtr tsg = tsg_vector.at(data_column);
 
       if (tsg->empty())
         continue;
 
-      if (special(obsParameters[i].param))
+      if (special(obsparam.param))
       {
         // value of these special fields is different in different locations,
-        if (obsParameters[i].param.name() != STATIONNAME_PARAM &&
-            obsParameters[i].param.name() != STATION_NAME_PARAM &&
-            obsParameters[i].param.name() != LON_PARAM &&
-            obsParameters[i].param.name() != LAT_PARAM &&
-            obsParameters[i].param.name() != LATLON_PARAM &&
-            obsParameters[i].param.name() != LONLAT_PARAM &&
-            obsParameters[i].param.name() != PLACE_PARAM &&
-            obsParameters[i].param.name() != STATIONLON_PARAM &&
-            obsParameters[i].param.name() != STATIONLAT_PARAM &&
-            obsParameters[i].param.name() != STATIONLONGITUDE_PARAM &&
-            obsParameters[i].param.name() != STATIONLATITUDE_PARAM &&
-            obsParameters[i].param.name() != STATION_ELEVATION_PARAM &&
-            obsParameters[i].param.name() != STATIONARY_PARAM &&
-            // obsParameters[i].param.name() != DISTANCE_PARAM &&
-            // obsParameters[i].param.name() != DIRECTION_PARAM &&
-            obsParameters[i].param.name() != FMISID_PARAM &&
-            obsParameters[i].param.name() != WMO_PARAM &&
-            obsParameters[i].param.name() != GEOID_PARAM &&
-            obsParameters[i].param.name() != LPNN_PARAM &&
-            obsParameters[i].param.name() != RWSID_PARAM &&
-            obsParameters[i].param.name() != SENSOR_NO_PARAM &&
-            obsParameters[i].param.name() != LONGITUDE_PARAM &&
-            obsParameters[i].param.name() != LATITUDE_PARAM)
+        if (obsparam.param.name() != STATIONNAME_PARAM &&
+            obsparam.param.name() != STATION_NAME_PARAM && obsparam.param.name() != LON_PARAM &&
+            obsparam.param.name() != LAT_PARAM && obsparam.param.name() != LATLON_PARAM &&
+            obsparam.param.name() != LONLAT_PARAM && obsparam.param.name() != PLACE_PARAM &&
+            obsparam.param.name() != STATIONLON_PARAM &&
+            obsparam.param.name() != STATIONLAT_PARAM &&
+            obsparam.param.name() != STATIONLONGITUDE_PARAM &&
+            obsparam.param.name() != STATIONLATITUDE_PARAM &&
+            obsparam.param.name() != STATION_ELEVATION_PARAM &&
+            obsparam.param.name() != STATIONARY_PARAM &&
+            // obsparam.param.name() != DISTANCE_PARAM &&
+            // obsparam.param.name() != DIRECTION_PARAM &&
+            obsparam.param.name() != FMISID_PARAM && obsparam.param.name() != WMO_PARAM &&
+            obsparam.param.name() != GEOID_PARAM && obsparam.param.name() != LPNN_PARAM &&
+            obsparam.param.name() != RWSID_PARAM && obsparam.param.name() != SENSOR_NO_PARAM &&
+            obsparam.param.name() != LONGITUDE_PARAM && obsparam.param.name() != LATITUDE_PARAM)
         {
           // handle possible empty fields to avoid spaces in
           // the beginning and end of output vector
@@ -2876,7 +2871,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           tsg->erase(tsg->begin() + 1, tsg->end());
 
           // area name is replaced with the name given in URL
-          if (obsParameters[i].param.name() == NAME_PARAM)
+          if (obsparam.param.name() == NAME_PARAM)
           { /*
              std::string place = (loc ? loc->name : "");
              ts::LonLatTimeSeries& llts = tsg->at(0);
@@ -2897,7 +2892,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         }
       }
 
-      Spine::ParameterFunctions pfunc = obsParameters[i].functions;
+      Spine::ParameterFunctions pfunc = obsparam.functions;
       // Do the aggregation if requasted
       ts::TimeSeriesGroupPtr aggregated_tsg(new ts::TimeSeriesGroup);
       if (pfunc.innerFunction.exists())
@@ -2933,11 +2928,11 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       else
       {
         // Else accept only the original generated timesteps
-		// Generate requested timesteps
-		Spine::TimeSeriesGeneratorCache::TimeList tlist;
-		auto tz = getTimeZones().time_zone_from_string(query.timezone);
-		if (!query.toptions.all())
-		  tlist = itsTimeSeriesCache->generate(query.toptions, tz);
+        // Generate requested timesteps
+        Spine::TimeSeriesGeneratorCache::TimeList tlist;
+        auto tz = getTimeZones().time_zone_from_string(query.timezone);
+        if (!query.toptions.all())
+          tlist = itsTimeSeriesCache->generate(query.toptions, tz);
 
         aggregatedData.emplace_back(
             TimeSeriesData(DataFunctions::erase_redundant_timesteps(aggregated_tsg, *tlist)));
@@ -3166,9 +3161,9 @@ bool Plugin::processGridEngineQuery(const State& state,
           Spine::LocationList locationList =
               get_location_list(svgPath, tloc.tag, query.step, *itsGeoEngine);
           std::vector<T::Coordinate> coordinates;
-          for (auto ll = locationList.begin(); ll != locationList.end(); ++ll)
+          for (const auto& ll : locationList)
           {
-            coordinates.emplace_back(T::Coordinate((*ll)->longitude, (*ll)->latitude));
+            coordinates.emplace_back(T::Coordinate(ll->longitude, ll->latitude));
           }
           polygonPath.emplace_back(coordinates);
         }
@@ -3561,7 +3556,7 @@ void Plugin::query(const State& state,
     else if (strcasecmp(query.format.c_str(), "FILE") == 0)
     {
       fmt = new Spine::ImageFormatter();
-      QueryServer::QueryStreamer* qStreamer = new QueryServer::QueryStreamer();
+      auto* qStreamer = new QueryServer::QueryStreamer();
       queryStreamer.reset(qStreamer);
     }
     else if (strcasecmp(query.format.c_str(), "INFO") == 0)
@@ -3722,7 +3717,7 @@ void Plugin::query(const State& state,
       std::string filename =
           "attachement; filename=timeseries_" + std::to_string(getTime()) + ".grib";
       response.setHeader("Content-type", "application/octet-stream");
-      response.setHeader("Content-Disposition", filename.c_str());
+      response.setHeader("Content-Disposition", filename);
       response.setContent(queryStreamer);
     }
     else
@@ -3739,116 +3734,118 @@ void Plugin::query(const State& state,
 void Plugin::grouplocations(Spine::HTTP::Request& theRequest)
 {
   try
-	{
-	  auto lonlats = theRequest.getParameter("lonlats");
-	  if(!lonlats)
-		lonlats = theRequest.getParameter("lonlat");
-	  auto latlons = theRequest.getParameter("latlons");
-	  if(!latlons)
-		latlons = theRequest.getParameter("latlon");
-	  auto places = theRequest.getParameter("places");
-	  auto fmisid = theRequest.getParameter("fmisid");
-	  auto lpnn = theRequest.getParameter("lpnn");
-	  auto wmo = theRequest.getParameter("wmo");
-	  	  
-	  std::string wkt_multipoint = "MULTIPOINT(";
-	  if(lonlats)
-		{			  
-		  theRequest.removeParameter("lonlat");
-		  theRequest.removeParameter("lonlats");
-		  std::vector<std::string> parts;
-		  boost::algorithm::split(parts, *lonlats, boost::algorithm::is_any_of(","));
-		  if (parts.size() % 2 != 0)
-			throw Fmi::Exception(BCP, "Invalid lonlats list: " + *lonlats);
-		  
-		  for (unsigned int j = 0; j < parts.size(); j += 2)
-			{
-			  if(wkt_multipoint != "MULTIPOINT(")
-				wkt_multipoint += ",";
-			  wkt_multipoint += "(" + parts[j] + " " + parts[j + 1] + ")";
-			}
-		}
-	  if(latlons)
-		{			  
-		  theRequest.removeParameter("latlon");
-		  theRequest.removeParameter("latlons");
-		  std::vector<std::string> parts;
-		  boost::algorithm::split(parts, *latlons, boost::algorithm::is_any_of(","));
-		  if (parts.size() % 2 != 0)
-			throw Fmi::Exception(BCP, "Invalid latlons list: " + *latlons);
-		  
-		  for (unsigned int j = 0; j < parts.size(); j += 2)
-			{
-			  if(wkt_multipoint != "MULTIPOINT(")
-				wkt_multipoint += ",";
-			  wkt_multipoint += "(" + parts[j + 1] + " " + parts[j] + ")";
-			}
-		}
-	  if(places)
-		{
-		  theRequest.removeParameter("places");
-		  std::vector<std::string> parts;
-		  boost::algorithm::split(parts, *places, boost::algorithm::is_any_of(","));
-		  for(const auto& place : parts)
-			{
-			  Spine::LocationPtr loc =	itsGeoEngine->nameSearch(place, "fi");
-			  if(loc)
-				{
-				  if(wkt_multipoint != "MULTIPOINT(")
-					wkt_multipoint += ",";
-				  wkt_multipoint += "(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")";
-				}
-			}
-		  
-		}
-	  std::vector<int> fmisids;
-	  std::vector<int> lpnns;
-	  std::vector<int> wmos;
-	  if(fmisid)
-		{
-		  theRequest.removeParameter("fmisid");
-		  std::vector<std::string> parts;
-		  boost::algorithm::split(parts, *fmisid, boost::algorithm::is_any_of(","));
-		  for(const auto& id : parts)
-			fmisids.push_back(Fmi::stoi(id));
-		}
-	  
-	  if(lpnn)
-		{
-		  theRequest.removeParameter("lpnn");
-		  std::vector<std::string> parts;
-		  boost::algorithm::split(parts, *lpnn, boost::algorithm::is_any_of(","));
-		  for(const auto& id : parts)
-			lpnns.push_back(Fmi::stoi(id));
-		}
-	  
-	  if(wmo)
-		{
-		  theRequest.removeParameter("wmo");
-		  std::vector<std::string> parts;
-		  boost::algorithm::split(parts, *wmo, boost::algorithm::is_any_of(","));
-		  for(const auto& id : parts)
-			wmos.push_back(Fmi::stoi(id));
-		}
-	  
-	  Engine::Geonames::LocationOptions lopts = itsGeoEngine->parseLocations(fmisids, lpnns, wmos, "fi");
-	  for(const auto& lopt : lopts.locations())
-		{
-		  if(lopt.loc)
-			{
-			  if(wkt_multipoint != "MULTIPOINT(")
-				wkt_multipoint += ",";
-			  wkt_multipoint += "(" + Fmi::to_string(lopt.loc->longitude) + " " + Fmi::to_string(lopt.loc->latitude) + ")";
-			}
-		}
+  {
+    auto lonlats = theRequest.getParameter("lonlats");
+    if (!lonlats)
+      lonlats = theRequest.getParameter("lonlat");
+    auto latlons = theRequest.getParameter("latlons");
+    if (!latlons)
+      latlons = theRequest.getParameter("latlon");
+    auto places = theRequest.getParameter("places");
+    auto fmisid = theRequest.getParameter("fmisid");
+    auto lpnn = theRequest.getParameter("lpnn");
+    auto wmo = theRequest.getParameter("wmo");
 
-	  wkt_multipoint += ")";
-	  theRequest.addParameter("wkt", wkt_multipoint);
-	}
+    std::string wkt_multipoint = "MULTIPOINT(";
+    if (lonlats)
+    {
+      theRequest.removeParameter("lonlat");
+      theRequest.removeParameter("lonlats");
+      std::vector<std::string> parts;
+      boost::algorithm::split(parts, *lonlats, boost::algorithm::is_any_of(","));
+      if (parts.size() % 2 != 0)
+        throw Fmi::Exception(BCP, "Invalid lonlats list: " + *lonlats);
+
+      for (unsigned int j = 0; j < parts.size(); j += 2)
+      {
+        if (wkt_multipoint != "MULTIPOINT(")
+          wkt_multipoint += ",";
+        wkt_multipoint += "(" + parts[j] + " " + parts[j + 1] + ")";
+      }
+    }
+    if (latlons)
+    {
+      theRequest.removeParameter("latlon");
+      theRequest.removeParameter("latlons");
+      std::vector<std::string> parts;
+      boost::algorithm::split(parts, *latlons, boost::algorithm::is_any_of(","));
+      if (parts.size() % 2 != 0)
+        throw Fmi::Exception(BCP, "Invalid latlons list: " + *latlons);
+
+      for (unsigned int j = 0; j < parts.size(); j += 2)
+      {
+        if (wkt_multipoint != "MULTIPOINT(")
+          wkt_multipoint += ",";
+        wkt_multipoint += "(" + parts[j + 1] + " " + parts[j] + ")";
+      }
+    }
+    if (places)
+    {
+      theRequest.removeParameter("places");
+      std::vector<std::string> parts;
+      boost::algorithm::split(parts, *places, boost::algorithm::is_any_of(","));
+      for (const auto& place : parts)
+      {
+        Spine::LocationPtr loc = itsGeoEngine->nameSearch(place, "fi");
+        if (loc)
+        {
+          if (wkt_multipoint != "MULTIPOINT(")
+            wkt_multipoint += ",";
+          wkt_multipoint +=
+              "(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")";
+        }
+      }
+    }
+    std::vector<int> fmisids;
+    std::vector<int> lpnns;
+    std::vector<int> wmos;
+    if (fmisid)
+    {
+      theRequest.removeParameter("fmisid");
+      std::vector<std::string> parts;
+      boost::algorithm::split(parts, *fmisid, boost::algorithm::is_any_of(","));
+      for (const auto& id : parts)
+        fmisids.push_back(Fmi::stoi(id));
+    }
+
+    if (lpnn)
+    {
+      theRequest.removeParameter("lpnn");
+      std::vector<std::string> parts;
+      boost::algorithm::split(parts, *lpnn, boost::algorithm::is_any_of(","));
+      for (const auto& id : parts)
+        lpnns.push_back(Fmi::stoi(id));
+    }
+
+    if (wmo)
+    {
+      theRequest.removeParameter("wmo");
+      std::vector<std::string> parts;
+      boost::algorithm::split(parts, *wmo, boost::algorithm::is_any_of(","));
+      for (const auto& id : parts)
+        wmos.push_back(Fmi::stoi(id));
+    }
+
+    Engine::Geonames::LocationOptions lopts =
+        itsGeoEngine->parseLocations(fmisids, lpnns, wmos, "fi");
+    for (const auto& lopt : lopts.locations())
+    {
+      if (lopt.loc)
+      {
+        if (wkt_multipoint != "MULTIPOINT(")
+          wkt_multipoint += ",";
+        wkt_multipoint += "(" + Fmi::to_string(lopt.loc->longitude) + " " +
+                          Fmi::to_string(lopt.loc->latitude) + ")";
+      }
+    }
+
+    wkt_multipoint += ")";
+    theRequest.addParameter("wkt", wkt_multipoint);
+  }
   catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
 }
 
 // ----------------------------------------------------------------------
@@ -3866,8 +3863,8 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
 
   try
   {
-	if(Spine::optional_bool(theRequest.getParameter("grouplocations"), false))
-	  grouplocations(const_cast<Spine::HTTP::Request&>(theRequest));
+    if (Spine::optional_bool(theRequest.getParameter("grouplocations"), false))
+      grouplocations(const_cast<Spine::HTTP::Request&>(theRequest));
 
     isdebug = ("debug" == Spine::optional_string(theRequest.getParameter("format"), ""));
 

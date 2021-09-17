@@ -98,7 +98,7 @@ struct Query
   std::string areasource;
 
 #ifndef WITHOUT_OBSERVATION
-  std::string iot_producer_specifier{""};
+  std::string iot_producer_specifier;
 #endif
 
   boost::posix_time::ptime latestTimestep;

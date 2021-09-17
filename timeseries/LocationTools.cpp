@@ -219,16 +219,17 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
     double leftoverDistanceKmFromPreviousLeg = 0.0;
     std::string theTimezone;
 
-    for (NFmiSvgPath::const_iterator it = thePath.begin(); it != thePath.end(); ++it)
+    std::size_t i = 0;
+    for (const auto& element : thePath)
     {
-      to = std::pair<double, double>(it->itsX, it->itsY);
+      to = std::pair<double, double>(element.itsX, element.itsY);
 
       // first round
-      if (it == thePath.begin())
+      if (i++ == 0)
       {
         // fetch geoinfo only for the first coordinate, because geosearch is so slow
         // reuse name and timezone for rest of the locations
-        Spine::LocationPtr locFirst = geonames.lonlatSearch(it->itsX, it->itsY, "");
+        Spine::LocationPtr locFirst = geonames.lonlatSearch(element.itsX, element.itsY, "");
 
         Spine::LocationPtr loc = Spine::LocationPtr(new Spine::Location(locFirst->geoid,
                                                                         thePathName,
@@ -249,7 +250,8 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
       else
       {
         // Each path-element is handled separately
-        if (it->itsType == NFmiSvgPath::kElementMoveto && distance_in_kilometers(from, to) > step)
+        if (element.itsType == NFmiSvgPath::kElementMoveto &&
+            distance_in_kilometers(from, to) > step)
         {
           // Start the new leg
           locationList.push_back(Spine::LocationPtr(
@@ -351,8 +353,8 @@ std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
     Spine::Stations stations;
 
     observation->getStationsByArea(stations, producer, starttime, endtime, wktstring);
-    for (unsigned int i = 0; i < stations.size(); i++)
-      fmisids.push_back(stations[i].fmisid);
+    for (const auto& station : stations)
+      fmisids.push_back(station.fmisid);
 
     return fmisids;
   }
@@ -478,11 +480,11 @@ int get_fmisid_value(const ts::Value& value)
 
 int get_fmisid_value(const ts::TimeSeries& ts)
 {
-  for (std::size_t i = 0; i < ts.size(); i++)
+  for (const auto& tv : ts)
   {
     try
     {
-      return get_fmisid_value(ts[i].value);
+      return get_fmisid_value(tv.value);
     }
     catch (...)
     {

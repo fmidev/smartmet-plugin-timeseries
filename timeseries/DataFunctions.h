@@ -20,11 +20,10 @@ namespace Plugin
 namespace TimeSeries
 {
 /*** typedefs ***/
-typedef boost::variant<Spine::TimeSeries::TimeSeriesPtr,
-                       Spine::TimeSeries::TimeSeriesVectorPtr,
-                       Spine::TimeSeries::TimeSeriesGroupPtr>
-    TimeSeriesData;
-// typedef std::vector<std::pair<std::string, std::vector<TimeSeriesData> > > OutputData;
+using TimeSeriesData = boost::variant<Spine::TimeSeries::TimeSeriesPtr,
+                                      Spine::TimeSeries::TimeSeriesVectorPtr,
+                                      Spine::TimeSeries::TimeSeriesGroupPtr>;
+
 using OutputData = std::vector<std::pair<std::string, std::vector<TimeSeriesData> > >;
 using PressureLevelParameterPair = std::pair<int, std::string>;
 using ParameterTimeSeriesMap =
