@@ -113,10 +113,11 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
              const Spine::HTTP::Request& req,
              Spine::HTTP::Response& response);
 
-  void processQuery(const State& state,
-                    Spine::Table& data,
-                    Query& masterquery,
-                    const QueryServer::QueryStreamer_sptr& queryStreamer);
+  boost::shared_ptr<std::string> processQuery(const State& state,
+											  Spine::Table& data,
+											  Query& masterquery,
+											  const QueryServer::QueryStreamer_sptr& queryStreamer,
+											  size_t& product_hash);
 
   void processQEngineQuery(const State& state,
                            Query& query,
