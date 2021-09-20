@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.9.15
+Version: 21.9.20
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -100,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Sep 20 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.9.20-1.fmi
+- Fixed QEngine query cache bug (BRAINSTORM-2143)
+
 * Wed Sep 15 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.9.15-1.fmi
 - Repackaged due to NetCDF related ABI changes in base libraries
 
