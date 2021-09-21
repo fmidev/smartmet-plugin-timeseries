@@ -63,9 +63,6 @@ class Config : private boost::noncopyable
   bool gridEngineDisabled() const { return itsGridEngineDisabled; }
   std::string primaryForecastSource() const { return itsPrimaryForecastSource; }
   bool obsEngineDatabaseQueryPrevented() const { return itsPreventObsEngineDatabaseQuery; }
-  unsigned long long maxMemoryCacheSize() const;
-  unsigned long long maxFilesystemCacheSize() const;
-  const std::string& filesystemCacheDirectory() const;
 
   unsigned long long maxTimeSeriesCacheSize() const;
 
@@ -99,9 +96,6 @@ class Config : private boost::noncopyable
   std::string itsPrimaryForecastSource;
   bool itsPreventObsEngineDatabaseQuery;
 
-  std::string itsFilesystemCacheDirectory;
-  unsigned long long itsMaxMemoryCacheSize;
-  unsigned long long itsMaxFilesystemCacheSize;
   unsigned long long itsMaxTimeSeriesCacheSize;
 
  private:

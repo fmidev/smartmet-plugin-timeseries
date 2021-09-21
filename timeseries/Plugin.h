@@ -22,7 +22,6 @@
 #include <newbase/NFmiSvgPath.h>
 #include <spine/HTTP.h>
 #include <spine/Reactor.h>
-#include <spine/SmartMetCache.h>
 #include <spine/SmartMetPlugin.h>
 #include <spine/TimeSeriesGeneratorCache.h>
 #include <map>
@@ -234,8 +233,6 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   // station types (producers) supported by observation
   std::set<std::string> itsObsEngineStationTypes;
 
-  // Cached results
-  mutable std::unique_ptr<Spine::SmartMetCache> itsCache;
   // Cached time series
   mutable std::unique_ptr<Spine::TimeSeriesGeneratorCache> itsTimeSeriesCache;
 

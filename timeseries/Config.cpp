@@ -11,6 +11,7 @@
 #include <grid-files/common/ShowFunction.h>
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
+#include <spine/Convenience.h>
 #include <ogr_geometry.h>
 #include <stdexcept>
 
@@ -290,9 +291,15 @@ Config::Config(const string& configfile)
     itsConfig.lookupValue("primaryForecastSource", itsPrimaryForecastSource);
     itsConfig.lookupValue("prevent_observation_database_query", itsPreventObsEngineDatabaseQuery);
 
-    itsConfig.lookupValue("cache.memory_bytes", itsMaxMemoryCacheSize);
-    itsConfig.lookupValue("cache.filesystem_bytes", itsMaxFilesystemCacheSize);
-    itsConfig.lookupValue("cache.directory", itsFilesystemCacheDirectory);
+    // TODO: Remove deprecated settings detection
+    using Spine::log_time_str;
+    if (itsConfig.exists("cache.memory_bytes"))
+      std::cerr << log_time_str() << " Warning: cache.memory_bytes setting is deprecated\n";
+    if (itsConfig.exists("cache.filesystem_bytes"))
+      std::cerr << log_time_str() << " Warning: cache.filesystem_bytes setting is deprecated\n";
+    if (itsConfig.exists("cache.directory"))
+      std::cerr << log_time_str() << " Warning: cache.directory setting is deprecated\n";
+
     itsConfig.lookupValue("cache.timeseries_size", itsMaxTimeSeriesCacheSize);
     itsFormatterOptions = Spine::TableFormatterOptions(itsConfig);
 
@@ -442,21 +449,6 @@ Engine::Gis::PostGISIdentifierVector Config::getPostGISIdentifiers() const
     ret.push_back(item.second);
 
   return ret;
-}
-
-const std::string& Config::filesystemCacheDirectory() const
-{
-  return itsFilesystemCacheDirectory;
-}
-
-unsigned long long Config::maxMemoryCacheSize() const
-{
-  return itsMaxMemoryCacheSize;
-}
-
-unsigned long long Config::maxFilesystemCacheSize() const
-{
-  return itsMaxFilesystemCacheSize;
 }
 
 unsigned long long Config::maxTimeSeriesCacheSize() const

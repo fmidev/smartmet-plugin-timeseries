@@ -3402,14 +3402,8 @@ boost::shared_ptr<std::string> Plugin::processQuery(
     // if only location related parameters queried, use shortcut
     if (is_plain_location_query(masterquery.poptions.parameters()))
     {
-      if (product_hash != Fmi::bad_hash)
-      {
-        auto obj = itsCache->find(product_hash);
-        if (obj)
-          return obj;
-      }
       fetchStaticLocationValues(masterquery, table, 0, 0);
-      return nullptr;
+      return {};
     }
 
     ProducerDataPeriod producerDataPeriod;
@@ -3492,23 +3486,11 @@ boost::shared_ptr<std::string> Plugin::processQuery(
         // If the query was not processed then we should call the QEngine instead.
         else
         {
-          if (product_hash != Fmi::bad_hash)
-          {
-            auto obj = itsCache->find(product_hash);
-            if (obj)
-              return obj;
-          }
           processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
         }
       }
       else
       {
-        if (product_hash != Fmi::bad_hash)
-        {
-          auto obj = itsCache->find(product_hash);
-          if (obj)
-            return obj;
-        }
         processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
       }
 
@@ -3722,9 +3704,6 @@ void Plugin::query(const State& state,
 #ifdef MYDEBUG
     std::cout << "Output:" << std::endl << *result << std::endl;
 #endif
-
-    if (product_hash != Fmi::bad_hash)
-      itsCache->insert(product_hash, result);
 
     response.setHeader("X-Duration", timeheader);
 
@@ -3981,11 +3960,6 @@ void Plugin::init()
 {
   try
   {
-    // Result cache
-    itsCache.reset(new Spine::SmartMetCache(itsConfig.maxMemoryCacheSize(),
-                                            itsConfig.maxFilesystemCacheSize(),
-                                            itsConfig.filesystemCacheDirectory()));
-
     // Time series cache
     itsTimeSeriesCache.reset(new Spine::TimeSeriesGeneratorCache);
     itsTimeSeriesCache->resize(itsConfig.maxTimeSeriesCacheSize());
@@ -4073,8 +4047,6 @@ void Plugin::shutdown()
   try
   {
     std::cout << "  -- Shutdown requested (timeseries)\n";
-    if (itsCache != nullptr)
-      itsCache->shutdown();
   }
   catch (...)
   {
@@ -4126,11 +4098,7 @@ bool Plugin::queryIsFast(const Spine::HTTP::Request& theRequest) const
  */
 // ----------------------------------------------------------------------
 
-Plugin::~Plugin()
-{
-  if (itsCache != nullptr)
-    itsCache->shutdown();
-}
+Plugin::~Plugin() {}
 
 // ----------------------------------------------------------------------
 /*!
@@ -4174,10 +4142,6 @@ Fmi::Cache::CacheStatistics Plugin::getCacheStats() const
 {
   Fmi::Cache::CacheStatistics ret;
 
-  ret.insert(std::make_pair("Timeseries::query_result_cache::memory_cache",
-                            itsCache->getMemoryCacheStats()));
-  ret.insert(
-      std::make_pair("Timeseries::query_result_cache::file_cache", itsCache->getFileCacheStats()));
   ret.insert(std::make_pair("Timeseries::timeseries_generator_cache",
                             itsTimeSeriesCache->getCacheStats()));
 
