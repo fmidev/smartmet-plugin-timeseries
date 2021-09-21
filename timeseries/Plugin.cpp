@@ -3388,11 +3388,12 @@ void Plugin::checkInKeywordLocations(Query& masterquery)
  */
 // ----------------------------------------------------------------------
 
-boost::shared_ptr<std::string> Plugin::processQuery(const State& state,
-													Spine::Table& table,
-													Query& masterquery,
-													const QueryServer::QueryStreamer_sptr& queryStreamer,
-													size_t& product_hash)
+boost::shared_ptr<std::string> Plugin::processQuery(
+    const State& state,
+    Spine::Table& table,
+    Query& masterquery,
+    const QueryServer::QueryStreamer_sptr& queryStreamer,
+    size_t& product_hash)
 {
   try
   {
@@ -3401,13 +3402,13 @@ boost::shared_ptr<std::string> Plugin::processQuery(const State& state,
     // if only location related parameters queried, use shortcut
     if (is_plain_location_query(masterquery.poptions.parameters()))
     {
-  	  if(product_hash != Fmi::bad_hash)
-		{
-		  auto obj = itsCache->find(product_hash);
-		  if(obj)
-			return obj;
-		}			  
-	  fetchStaticLocationValues(masterquery, table, 0, 0);
+      if (product_hash != Fmi::bad_hash)
+      {
+        auto obj = itsCache->find(product_hash);
+        if (obj)
+          return obj;
+      }
+      fetchStaticLocationValues(masterquery, table, 0, 0);
       return nullptr;
     }
 
@@ -3483,31 +3484,31 @@ boost::shared_ptr<std::string> Plugin::processQuery(const State& state,
         bool processed = processGridEngineQuery(
             state, query, outputData, queryStreamer, areaproducers, producerDataPeriod);
 
-		if(processed)
-		  {
-			// We need different hash calculcations for the grid requests.
-			product_hash = Fmi::bad_hash;
-		  }
+        if (processed)
+        {
+          // We need different hash calculcations for the grid requests.
+          product_hash = Fmi::bad_hash;
+        }
         // If the query was not processed then we should call the QEngine instead.
         else
         {
-		  if(product_hash != Fmi::bad_hash)
-			{
-			  auto obj = itsCache->find(product_hash);
-			  if(obj)
-				return obj;
-			}
+          if (product_hash != Fmi::bad_hash)
+          {
+            auto obj = itsCache->find(product_hash);
+            if (obj)
+              return obj;
+          }
           processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
         }
       }
       else
       {
-		if(product_hash != Fmi::bad_hash)
-		  {
-			auto obj = itsCache->find(product_hash);
-			if(obj)
-			  return obj;
-		  }		
+        if (product_hash != Fmi::bad_hash)
+        {
+          auto obj = itsCache->find(product_hash);
+          if (obj)
+            return obj;
+        }
         processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
       }
 
@@ -3524,7 +3525,7 @@ boost::shared_ptr<std::string> Plugin::processQuery(const State& state,
     // insert data into the table
     fill_table(masterquery, outputData, table);
 
-	return nullptr;
+    return nullptr;
   }
   catch (...)
   {
@@ -3619,7 +3620,6 @@ void Plugin::query(const State& state,
     std::string timeheader = Fmi::to_string(duration_cast<microseconds>(t2 - t1).count()) + '+' +
                              Fmi::to_string(duration_cast<microseconds>(t3 - t2).count());
 
-
     if (product_hash != Fmi::bad_hash)
     {
       response.setHeader("ETag", fmt::format("\"{:x}-timeseries\"", product_hash));
@@ -3631,19 +3631,19 @@ void Plugin::query(const State& state,
         response.setStatus(Spine::HTTP::Status::no_content);
         return;
       }
-	}
-	// If obj is not nullptr it is from cache
+    }
+    // If obj is not nullptr it is from cache
     auto obj = processQuery(state, data, query, queryStreamer, product_hash);
 
-	if(obj)
-	  {
-        response.setHeader("X-Duration", timeheader);
-        response.setHeader("X-TimeSeries-Cache", "yes");
-        response.setContent(obj);
-        return;
-	  }
+    if (obj)
+    {
+      response.setHeader("X-Duration", timeheader);
+      response.setHeader("X-TimeSeries-Cache", "yes");
+      response.setContent(obj);
+      return;
+    }
 
-	// Must generate the result from scratch
+    // Must generate the result from scratch
     response.setHeader("X-TimeSeries-Cache", "no");
 
     high_resolution_clock::time_point t4 = high_resolution_clock::now();
