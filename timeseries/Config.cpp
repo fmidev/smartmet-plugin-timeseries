@@ -62,45 +62,34 @@ Spine::FunctionId get_function_id(const string& configName)
   try
   {
     if (configName == "mean")
-    {
       return Spine::FunctionId::Mean;
-    }
-    else if (configName == "max")
-    {
+
+    if (configName == "max")
       return Spine::FunctionId::Maximum;
-    }
-    else if (configName == "min")
-    {
+
+    if (configName == "min")
       return Spine::FunctionId::Minimum;
-    }
-    else if (configName == "median")
-    {
+
+    if (configName == "median")
       return Spine::FunctionId::Median;
-    }
-    else if (configName == "sum")
-    {
+
+    if (configName == "sum")
       return Spine::FunctionId::Sum;
-    }
-    else if (configName == "sdev")
-    {
+
+    if (configName == "sdev")
       return Spine::FunctionId::StandardDeviation;
-    }
-    else if (configName == "trend")
-    {
+
+    if (configName == "trend")
       return Spine::FunctionId::Trend;
-    }
-    else if (configName == "change")
-    {
+
+    if (configName == "change")
       return Spine::FunctionId::Change;
-    }
-    else if (configName == "count")
-    {
+
+    if (configName == "count")
       return Spine::FunctionId::Count;
-    }
-    else if (configName == "percentage")
-    {
+
+    if (configName == "percentage")
       return Spine::FunctionId::Percentage;
-    }
 
     return Spine::FunctionId::NullFunction;
   }
@@ -266,11 +255,6 @@ Config::Config(const string& configfile)
       itsObsEngineDisabled(false),
       itsGridEngineDisabled(false),
       itsPreventObsEngineDatabaseQuery(false),
-      itsFilesystemCacheDirectory("/var/smartmet/timeseriescache"),
-      itsMaxMemoryCacheSize(104857600)  // 100 MB
-      ,
-      itsMaxFilesystemCacheSize(0)  // off by default
-      ,
       itsMaxTimeSeriesCacheSize(10000)
 {
   try
