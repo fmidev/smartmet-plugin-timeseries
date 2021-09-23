@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.9.21
+Version: 21.9.23
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -100,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Sep 23 2021 Andris Pavēnis <andris.pavenis@fmi.fi> 21.9.23-1.fmi
+- Repackage to prepare for installing libconfig in different directory
+
 * Tue Sep 21 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.9.21-1.fmi
 - Removed internal query caching as ineffective and error prone, rely on ETag based frontend caching instead
 
