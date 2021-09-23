@@ -2,7 +2,7 @@ SUBNAME = timeseries
 SPEC = smartmet-plugin-$(SUBNAME)
 INCDIR = smartmet/plugins/$(SUBNAME)
 
-REQUIRES = gdal
+REQUIRES = gdal configpp
 
 include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
@@ -26,6 +26,7 @@ LIBS += -L$(libdir) \
 	-lboost_date_time \
 	-lboost_thread \
 	-lboost_iostreams \
+	$(REQUIRED_LIBS) \
 	-lbz2 -lz
 
 # What to install
