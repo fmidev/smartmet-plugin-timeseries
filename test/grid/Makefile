@@ -12,7 +12,7 @@ clean:
 test-impl:
 	smartmet-plugin-test \
 		--handler /timeseries \
-		--reactor-config cnf/reactor.conf
+		--reactor-config cnf/reactor.conf \
 		--timeout 300
 
 start-redis-db:
