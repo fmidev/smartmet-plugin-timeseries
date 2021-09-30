@@ -55,9 +55,8 @@ Requires: boost169-thread
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
-#TestRequires: gcc-c++
-#TestRequires: smartmet-library-macgyver-devel >= 21.9.13
-#TestRequires: smartmet-library-spine-devel >= 21.9.17
+#TestRequires: smartmet-utils-devel
+#TestRequires: smartmet-library-spine-plugin-test
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
@@ -71,11 +70,6 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 %endif
 #TestRequires: smartmet-engine-grid >= 21.8.18
 #TestRequires: gdal32
-#TestRequires: boost169-date-time
-#TestRequires: boost169-filesystem
-#TestRequires: boost169-iostreams
-#TestRequires: boost169-system
-#TestRequires: boost169-thread
 
 %description
 SmartMet timeseries plugin
