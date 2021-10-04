@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.9.23
+Version: 21.10.4
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -19,33 +19,33 @@ BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 21.9.17
 BuildRequires: smartmet-library-locus-devel >= 21.8.11
-BuildRequires: smartmet-library-macgyver-devel >= 21.9.13
-BuildRequires: smartmet-library-grid-content-devel >= 21.9.15
-BuildRequires: smartmet-library-grid-files-devel >= 21.9.15
-BuildRequires: smartmet-library-newbase-devel >= 21.9.20
-BuildRequires: smartmet-library-gis-devel >= 21.9.13
-BuildRequires: smartmet-engine-geonames-devel >= 21.9.13
+BuildRequires: smartmet-library-macgyver-devel >= 21.9.21
+BuildRequires: smartmet-library-grid-content-devel >= 21.10.4
+BuildRequires: smartmet-library-grid-files-devel >= 21.10.4
+BuildRequires: smartmet-library-newbase-devel >= 21.9.22
+BuildRequires: smartmet-library-gis-devel >= 21.9.24
+BuildRequires: smartmet-engine-geonames-devel >= 21.9.28
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.9.16
+BuildRequires: smartmet-engine-observation-devel >= 21.9.20
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.9.13
 BuildRequires: smartmet-engine-gis-devel >= 21.9.13
-BuildRequires: smartmet-engine-grid-devel >= 21.9.15
+BuildRequires: smartmet-engine-grid-devel >= 21.10.4
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation
 #%endif
 Requires: fmt >= 7.1.3
-Requires: smartmet-library-gis >= 21.9.13
+Requires: smartmet-library-gis >= 21.9.24
 Requires: smartmet-library-locus >= 21.8.11
-Requires: smartmet-library-macgyver >= 21.9.13
-Requires: smartmet-library-newbase >= 21.9.20
+Requires: smartmet-library-macgyver >= 21.9.21
+Requires: smartmet-library-newbase >= 21.9.22
 Requires: smartmet-library-spine >= 21.9.17
-Requires: smartmet-library-gis >= 21.9.13
-Requires: smartmet-engine-geonames >= 21.9.13
+Requires: smartmet-library-gis >= 21.9.24
+Requires: smartmet-engine-geonames >= 21.9.28
 Requires: smartmet-engine-querydata >= 21.9.13
 Requires: smartmet-engine-gis >= 21.9.13
-Requires: smartmet-engine-grid >= 21.9.15
+Requires: smartmet-engine-grid >= 21.10.4
 Requires: smartmet-server >= 21.9.7
 Requires: boost169-date-time
 Requires: boost169-filesystem
@@ -61,7 +61,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-db >= 20.6.9
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-engine-grid-test
-#TestRequires: smartmet-library-gis >= 21.9.13
+#TestRequires: smartmet-library-gis >= 21.9.24
 #TestRequires: smartmet-engine-geonames >= 21.2.18
 #TestRequires: smartmet-engine-gis >= 21.5.20
 #TestRequires: smartmet-engine-querydata >= 21.8.30
@@ -94,6 +94,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon Oct  4 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.10.4-1.fmi
+- Repackaged due to grid-files ABI changes
+
 * Thu Sep 23 2021 Andris Pavēnis <andris.pavenis@fmi.fi> 21.9.23-1.fmi
 - Repackage to prepare for installing libconfig in different directory
 
