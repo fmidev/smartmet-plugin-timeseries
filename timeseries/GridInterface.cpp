@@ -295,7 +295,7 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
         newParam.mParameterKey = (*val)->mParameterKey;
         newParam.mProducerName = param->mProducerName;
         newParam.mGeometryId = (*val)->mGeometryId;
-        newParam.mParameterLevelIdType = (*val)->mParameterLevelIdType;
+        //newParam.mParameterLevelIdType = (*val)->mParameterLevelIdType;
         newParam.mParameterLevelId = (*val)->mParameterLevelId;
         newParam.mParameterLevel = (*val)->mParameterLevel;
         newParam.mForecastType = (*val)->mForecastType;
@@ -1643,11 +1643,7 @@ void GridInterface::processGridQuery(const State& state,
                       levelValue =
                           gridQuery->mQueryParameterList[idx].mValueList[t]->mParameterLevel;
                       if (levelValue < 0)
-                        if (gridQuery->mQueryParameterList[idx]
-                                    .mValueList[t]
-                                    ->mParameterLevelIdType == T::ParamLevelIdTypeValue::FMI &&
-                            gridQuery->mQueryParameterList[idx].mValueList[t]->mParameterLevelId ==
-                                2)
+                        if (gridQuery->mQueryParameterList[idx].mValueList[t]->mParameterLevelId == 2)
                           levelValue = levelValue / 100;
                     }
                     idx++;
