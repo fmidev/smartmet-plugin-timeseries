@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.10.11
+Version: 21.10.12
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -17,7 +17,7 @@ BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.10.11
+BuildRequires: smartmet-library-spine-devel >= 21.10.12
 BuildRequires: smartmet-library-locus-devel >= 21.8.11
 BuildRequires: smartmet-library-macgyver-devel >= 21.10.4
 BuildRequires: smartmet-library-grid-content-devel >= 21.10.11
@@ -40,7 +40,7 @@ Requires: smartmet-library-gis >= 21.9.24
 Requires: smartmet-library-locus >= 21.8.11
 Requires: smartmet-library-macgyver >= 21.10.4
 Requires: smartmet-library-newbase >= 21.9.22
-Requires: smartmet-library-spine >= 21.10.11
+Requires: smartmet-library-spine >= 21.10.12
 Requires: smartmet-library-gis >= 21.9.24
 Requires: smartmet-engine-geonames >= 21.9.28
 Requires: smartmet-engine-querydata >= 21.9.13
@@ -94,6 +94,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+
+* Tue Oct 12 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.10.12-1.fmi
+- DEM-height added to location object in observation query (BRAINSTORM-2169)
+
 * Mon Oct 11 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.10.11-1.fmi
 - Simplified grid storage structures
 
