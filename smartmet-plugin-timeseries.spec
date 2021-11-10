@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.10.29
+Version: 21.11.10
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -17,7 +17,7 @@ BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 21.10.18
+BuildRequires: smartmet-library-spine-devel >= 21.11.10
 BuildRequires: smartmet-library-locus-devel >= 21.8.11
 BuildRequires: smartmet-library-macgyver-devel >= 21.10.4
 BuildRequires: smartmet-library-grid-content-devel >= 21.10.29
@@ -40,7 +40,7 @@ Requires: smartmet-library-gis >= 21.9.24
 Requires: smartmet-library-locus >= 21.8.11
 Requires: smartmet-library-macgyver >= 21.10.4
 Requires: smartmet-library-newbase >= 21.10.13
-Requires: smartmet-library-spine >= 21.10.18
+Requires: smartmet-library-spine >= 21.11.10
 Requires: smartmet-library-gis >= 21.9.24
 Requires: smartmet-engine-geonames >= 21.9.28
 Requires: smartmet-engine-querydata >= 21.9.13
@@ -95,6 +95,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+
+* Wed Nov 10 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.11.10-1.fmi
+- Use double-conversion library in ValueFormatter (BRAINSTORM-2166)
+- Some options deprecated and corresponding tests removed
+
 * Fri Oct 29 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.10.29-1.fmi
 - Repackaged due to base grid library ABI changes
 
