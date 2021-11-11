@@ -26,7 +26,7 @@ BuildRequires: smartmet-library-newbase-devel >= 21.10.13
 BuildRequires: smartmet-library-gis-devel >= 21.9.24
 BuildRequires: smartmet-engine-geonames-devel >= 21.9.28
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 21.9.20
+BuildRequires: smartmet-engine-observation-devel >= 21.11.4
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 21.9.13
 BuildRequires: smartmet-engine-gis-devel >= 21.9.13
