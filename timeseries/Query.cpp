@@ -20,6 +20,7 @@
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <macgyver/TimeParser.h>
+#include <macgyver/AnsiEscapeCodes.h>
 #include <newbase/NFmiPoint.h>
 #include <spine/Convenience.h>
 #include <spine/ParameterFactory.h>
@@ -55,6 +56,12 @@ void add_sql_data_filter(const Spine::HTTP::Request& req,
   }
 }
 
+void report_unsupported_option(const std::string& name, const boost::optional<std::string>& value)
+{
+  if(value)
+	std::cerr << (Spine::log_time_str() + ANSI_FG_RED + " [timeseries] Deprecated option '" + name + ANSI_FG_DEFAULT) << std::endl;
+}
+
 }  // namespace
 
 // ----------------------------------------------------------------------
@@ -68,6 +75,12 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 {
   try
   {
+	report_unsupported_option("adjustfield", req.getParameter("adjustfield"));
+	report_unsupported_option("width", req.getParameter("width"));
+	report_unsupported_option("fill", req.getParameter("fill"));
+	report_unsupported_option("showpos", req.getParameter("showpos"));
+	report_unsupported_option("uppercase", req.getParameter("uppercase"));
+
     time_t tt = time(nullptr);
     if ((config.itsLastAliasCheck + 10) < tt)
     {
