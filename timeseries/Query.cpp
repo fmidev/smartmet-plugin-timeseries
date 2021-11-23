@@ -24,8 +24,8 @@
 #include <newbase/NFmiPoint.h>
 #include <spine/Convenience.h>
 #include <spine/ParameterFactory.h>
+#include <gis/CoordinateTransformation.h>
 #include <algorithm>
-#include <ogr_geometry.h>
 
 using namespace std;
 
@@ -168,6 +168,23 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     {
       loptions.reset(
           new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(req)));
+
+	  auto lon_coord = Spine::optional_double(req.getParameter("x"), kFloatMissing);
+	  auto lat_coord = Spine::optional_double(req.getParameter("y"), kFloatMissing);
+	  auto source_crs = Spine::optional_string(req.getParameter("crs"), "");
+	  
+	  if(lon_coord != kFloatMissing && lat_coord != kFloatMissing && !source_crs.empty())
+		{
+		  // Transform lon_coord, lat_coord to lonlat parameter
+		  if(source_crs != "ESPG:4326")
+			{
+			  Fmi::CoordinateTransformation transformation(source_crs, "WGS84");
+			  transformation.transform(lon_coord, lat_coord);
+			}
+		  auto tmpReq = req;
+		  tmpReq.addParameter("lonlat", (Fmi::to_string(lon_coord) + "," + Fmi::to_string(lat_coord)));
+		  loptions.reset(new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(tmpReq)));
+		}
     }
 
     // Store WKT-geometries
@@ -198,6 +215,8 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     leveltype = Spine::optional_string(req.getParameter("leveltype"), "");
     format = Spine::optional_string(req.getParameter("format"), "ascii");
     areasource = Spine::optional_string(req.getParameter("areasource"), "");
+    crs = Spine::optional_string(req.getParameter("crs"), "");
+
 
     // Either create the requested locale or use the default one constructed
     // by the Config parser. TODO: If constructing from strings is slow, we should cache locales

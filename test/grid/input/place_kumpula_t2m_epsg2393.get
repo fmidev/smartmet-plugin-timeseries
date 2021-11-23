@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&place=Kumpula&precision=double&param=name,time,lon,lat,x,y,Temperature&crs=EPSG:2393 HTTP/1.0
