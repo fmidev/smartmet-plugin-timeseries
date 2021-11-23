@@ -21,6 +21,7 @@
 #include <macgyver/TimeParser.h>
 #include <macgyver/TimeZoneFactory.h>
 #include <spine/TimeSeriesGeneratorCache.h>
+#include <gis/CoordinateTransformation.h>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
@@ -1508,6 +1509,86 @@ void GridInterface::processGridQuery(const State& state,
                 else if ((gridQuery->mQueryParameterList[pid].mFlags &
                           QueryServer::QueryParameter::Flags::InvisibleParameter) != 0)
                 {
+                }
+                else if (strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "y") == 0)
+                {
+                  uint len = coordinates.size();
+                  std::ostringstream output;
+                  if (coordinates.size() > 1)
+                    output << "[";
+
+         		  if(masterquery.crs.empty() || masterquery.crs == "EPSG:4326")
+                  {
+                     for (uint i = 0; i < len; i++)
+                     {
+                       output << masterquery.valueformatter.format(
+                           coordinates[i].y(), gridQuery->mQueryParameterList[pid].mPrecision);
+                       if ((i + 1) < len)
+                         output << " ";
+                     }
+                  }
+                  else
+                  {
+	                 Fmi::CoordinateTransformation transformation("WGS84", masterquery.crs);
+
+                     for (uint i = 0; i < len; i++)
+                     {
+	                   double lon = coordinates[i].x();
+	                   double lat = coordinates[i].y();
+	                   transformation.transform(lon, lat);
+
+                       output << masterquery.valueformatter.format(lat, gridQuery->mQueryParameterList[pid].mPrecision);
+                       if ((i + 1) < len)
+                         output << " ";
+                     }
+                  }
+
+                  if (coordinates.size() > 1)
+                    output << "]";
+
+                  Spine::TimeSeries::TimedValue tsValue(queryTime,
+                                                        Spine::TimeSeries::Value(output.str()));
+                  tsForNonGridParam->emplace_back(tsValue);
+                }
+                else if (strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "x") == 0)
+                {
+                  uint len = coordinates.size();
+                  std::ostringstream output;
+                  if (coordinates.size() > 1)
+                    output << "[";
+
+         		  if(masterquery.crs.empty() || masterquery.crs == "EPSG:4326")
+                  {
+                     for (uint i = 0; i < len; i++)
+                     {
+                       output << masterquery.valueformatter.format(
+                           coordinates[i].x(), gridQuery->mQueryParameterList[pid].mPrecision);
+                       if ((i + 1) < len)
+                         output << " ";
+                     }
+                  }
+                  else
+                  {
+	                 Fmi::CoordinateTransformation transformation("WGS84", masterquery.crs);
+
+                     for (uint i = 0; i < len; i++)
+                     {
+	                   double lon = coordinates[i].x();
+	                   double lat = coordinates[i].y();
+	                   transformation.transform(lon, lat);
+
+                       output << masterquery.valueformatter.format(lon, gridQuery->mQueryParameterList[pid].mPrecision);
+                       if ((i + 1) < len)
+                         output << " ";
+                     }
+                  }
+
+                  if (coordinates.size() > 1)
+                    output << "]";
+
+                  Spine::TimeSeries::TimedValue tsValue(queryTime,
+                                                        Spine::TimeSeries::Value(output.str()));
+                  tsForNonGridParam->emplace_back(tsValue);
                 }
                 else if (coordinates.size() > 1 &&
                          strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "lat") == 0)

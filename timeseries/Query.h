@@ -96,6 +96,7 @@ struct Query
   std::string localename;
   std::locale outlocale;
   std::string areasource;
+  std::string crs;
 
 #ifndef WITHOUT_OBSERVATION
   std::string iot_producer_specifier;

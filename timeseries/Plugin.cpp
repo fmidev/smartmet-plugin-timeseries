@@ -25,6 +25,7 @@
 #include <spine/ParameterTools.h>
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
+#include <gis/CoordinateTransformation.h>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
@@ -79,6 +80,62 @@ void print_settings(const Engine::Observation::Settings& settings)
   std::cout << "settings.wktArea: " << wktString << std::endl;
 }
 #endif
+
+
+Spine::Parameter get_query_param(const Spine::Parameter& parameter)
+{
+  std::string paramname = parameter.name();
+  std::string alias = parameter.alias();
+  Spine::Parameter::Type type = parameter.type();
+  FmiParameterName number = parameter.number();
+  if(paramname == "x")
+	{
+	  paramname = "lon";
+	  alias = "lon";
+	  type = Spine::Parameter::Type::DataDerived;
+	  number = kFmiLongitude;
+	}
+  else if(paramname == "y")
+	{
+	  paramname = "lat";
+	  alias = "lat";
+	  type = Spine::Parameter::Type::DataDerived;
+	  number = kFmiLatitude;
+	}
+
+  return Spine::Parameter(paramname, alias, type, number);  
+}
+
+void transform_wgs84_coordinates(const std::string& name, const std::string& target_crs, const Spine::Location& loc, Spine::TimeSeries::TimeSeries& tseries)
+{
+  if(target_crs.empty() || target_crs == "EPSG:4326")
+	return;
+
+  double longitude = loc.longitude;
+  double latitude = loc.latitude;
+  Fmi::CoordinateTransformation transformation("WGS84", target_crs);
+  transformation.transform(longitude, latitude);
+
+  if(name == "x")
+	{
+	  for(auto& item : tseries)
+		item.value = longitude;
+	}
+  else if(name == "y")
+	{
+	  for(auto& item : tseries)
+		item.value = latitude;
+	}
+}
+
+void transform_wgs84_coordinates(const std::string& name, const std::string& crs, Spine::TimeSeries::TimeSeriesGroup& tsg)
+{
+  for(auto& item : tsg)
+	{
+	  Spine::Location loc(item.lonlat.lon, item.lonlat.lat);
+	  transform_wgs84_coordinates(name, crs, loc, item.timeseries);
+	}
+}
 
 std::string get_parameter_id(const Spine::Parameter& parameter)
 {
@@ -1061,7 +1118,7 @@ void Plugin::fetchStaticLocationValues(Query& query,
           loc = query.wktGeometries.getLocation(tloc.loc->name);
 
         std::string val = location_parameter(
-            loc, pname, query.valueformatter, query.timezone, query.precisions[column]);
+											 loc, pname, query.valueformatter, query.timezone, query.precisions[column], query.crs);
         data.set(column, row++, val);
       }
       column++;
@@ -1459,7 +1516,9 @@ void Plugin::fetchQEngineValues(const State& state,
         }
         else
         {
-          Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
+		  Spine::Parameter param = get_query_param(paramfunc.parameter);
+
+          Engine::Querydata::ParameterOptions querydata_param(param,
                                                               producer,
                                                               *loc,
                                                               country,
@@ -1482,6 +1541,9 @@ void Plugin::fetchQEngineValues(const State& state,
 
           if (querydata_result->size() > 0)
           {
+			if(paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
+			  transform_wgs84_coordinates(paramfunc.parameter.name(), query.crs, *loc, *querydata_result);
+
             queryLevelDataCache.itsTimeSeries.insert(make_pair(cacheKey, querydata_result));
           }
         }
@@ -1536,7 +1598,9 @@ void Plugin::fetchQEngineValues(const State& state,
               llist = get_location_list(svgPath, tloc.tag, query.step, state.getGeoEngine());
             }
 
-            Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
+			Spine::Parameter param = get_query_param(paramfunc.parameter);
+
+            Engine::Querydata::ParameterOptions querydata_param(param,
                                                                 producer,
                                                                 *loc,
                                                                 country,
@@ -1570,6 +1634,9 @@ void Plugin::fetchQEngineValues(const State& state,
                 querydata_result->clear();
                 querydata_result->push_back(dataIndependentValue);
               }
+
+			  if(paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
+				transform_wgs84_coordinates(paramfunc.parameter.name(), query.crs, *querydata_result);
 
               queryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(cacheKey, querydata_result));
             }
@@ -1615,7 +1682,9 @@ void Plugin::fetchQEngineValues(const State& state,
               mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, loc->radius);
             }
 
-            Engine::Querydata::ParameterOptions querydata_param(paramfunc.parameter,
+			Spine::Parameter param = get_query_param(paramfunc.parameter);
+
+            Engine::Querydata::ParameterOptions querydata_param(param,
                                                                 producer,
                                                                 *loc,
                                                                 country,
@@ -1655,6 +1724,9 @@ void Plugin::fetchQEngineValues(const State& state,
                 querydata_result->clear();
                 querydata_result->push_back(dataIndependentValue);
               }
+
+			  if(paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
+				transform_wgs84_coordinates(paramfunc.parameter.name(), query.crs, *querydata_result);
 
               queryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(cacheKey, querydata_result));
             }
@@ -2464,7 +2536,8 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                                  obsParam.param.name(),
                                                  query.valueformatter,
                                                  query.timezone,
-                                                 query.precisions[i]);
+                                                 query.precisions[i],
+												 query.crs);
 
             timeseries.emplace_back(ts::TimedValue(timestep, value));
           }
@@ -2713,7 +2786,8 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
                                                  obsParameters[i].param.name(),
                                                  query.valueformatter,
                                                  query.timezone,
-                                                 query.precisions[i]);
+                                                 query.precisions[i],
+												 query.crs);
 
             location_ts.emplace_back(ts::TimedValue(ts, value));
           }

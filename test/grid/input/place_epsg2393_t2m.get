@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&x=3387300.5433359&y=6679219.8109545&precision=double&param=name,time,lon,lat,x,y,Temperature&crs=EPSG:2393 HTTP/1.0
