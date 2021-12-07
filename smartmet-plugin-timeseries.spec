@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.12.3
+Version: 21.12.7
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -95,6 +95,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Dec  7 2021 Andris Pavēnis <andris.pavenis@fmi.fi> 21.12.7-1.fmi
+- Upgrade to PostgreSQL 13 and GDAL-3.3
+
 
 * Tue Nov 23 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.11.23-1.fmi
 - Support for coordinate transformations by using x- and y-parameters (BRAINSTORM-2091)
