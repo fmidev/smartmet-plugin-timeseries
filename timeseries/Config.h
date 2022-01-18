@@ -41,7 +41,7 @@ class Config : private boost::noncopyable
   const std::string& defaultLocaleName() const { return itsDefaultLocaleName; }
   const std::string& defaultTimeFormat() const { return itsDefaultTimeFormat; }
   const std::string& defaultUrl() const { return itsDefaultUrl; }
-  double defaultMaxDistance() const { return itsDefaultMaxDistance; }
+  const std::string& defaultMaxDistance() const { return itsDefaultMaxDistance; }
   const std::string& defaultWxmlTimeString() const
   {
     return itsFormatterOptions.defaultWxmlTimeString();
@@ -80,7 +80,7 @@ class Config : private boost::noncopyable
   std::unique_ptr<std::locale> itsDefaultLocale;
   std::string itsDefaultTimeFormat;
   std::string itsDefaultUrl;
-  double itsDefaultMaxDistance;
+  std::string itsDefaultMaxDistance;
   unsigned int itsExpirationTime;
   std::vector<std::string> itsParameterAliasFiles;
   std::vector<uint> itsDefaultGridGeometries;

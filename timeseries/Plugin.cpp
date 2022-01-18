@@ -227,16 +227,17 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
 {
   try
   {
+
     // Allow querydata to use data specific max distances if the maxdistance option
     // was not given in the query string
 
     bool use_data_max_distance = !query.maxdistanceOptionGiven;
 
     if (areaproducers.empty())
-    {
+    {	  
       return querydata.find(location.longitude,
                             location.latitude,
-                            query.maxdistance,
+                            query.maxdistance_kilometers(),
                             use_data_max_distance,
                             query.leveltype);
     }
@@ -245,7 +246,7 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
     return querydata.find(areaproducers,
                           location.longitude,
                           location.latitude,
-                          query.maxdistance,
+						  query.maxdistance_kilometers(),
                           use_data_max_distance,
                           query.leveltype);
   }
@@ -1350,7 +1351,7 @@ void Plugin::fetchQEngineValues(const State& state,
     if (query.findnearestvalidpoint)
     {
       NFmiPoint latlon(loc->longitude, loc->latitude);
-      nearestpoint = qi->validPoint(latlon, query.maxdistance);
+      nearestpoint = qi->validPoint(latlon, query.maxdistance_kilometers());
     }
 
     std::string country = state.getGeoEngine().countryName(loc->iso2, query.language);
@@ -1492,6 +1493,7 @@ void Plugin::fetchQEngineValues(const State& state,
       if ((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
           loc->radius == 0)
       {
+
         ts::TimeSeriesPtr querydata_result;
         // if we have fetched the data for this parameter earlier, use it
         if (queryLevelDataCache.itsTimeSeries.find(cacheKey) !=
@@ -1618,12 +1620,12 @@ void Plugin::fetchQEngineValues(const State& state,
             // list of locations, list of local times
             querydata_result =
                 loadDataLevels
-                    ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance)
+			  ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
                 : pressure
                     ? qi->valuesAtPressure(
-                          querydata_param, llist, querydata_tlist, query.maxdistance, *pressure)
+                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers(), *pressure)
                     : qi->valuesAtHeight(
-                          querydata_param, llist, querydata_tlist, query.maxdistance, *height);
+                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers(), *height);
             if (querydata_result->size() > 0)
             {
               // if the value is not dependent on location inside area
@@ -1706,12 +1708,12 @@ void Plugin::fetchQEngineValues(const State& state,
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
             querydata_result =
                 loadDataLevels
-                    ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance)
+                    ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
                 : pressure
                     ? qi->valuesAtPressure(
-                          querydata_param, llist, querydata_tlist, query.maxdistance, *pressure)
+                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers(), *pressure)
                     : qi->valuesAtHeight(
-                          querydata_param, llist, querydata_tlist, query.maxdistance, *height);
+                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers(), *height);
 #pragma GCC diagnostic pop
 
             if (querydata_result->size() > 0)
@@ -1843,9 +1845,10 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
     settings.stationtype = producer;
     if (producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER)
       settings.stationtype_specifier = query.iot_producer_specifier;
-    settings.maxdistance = query.maxdistance;
+    settings.maxdistance = query.maxdistance_meters();
     if (!query.maxdistanceOptionGiven)
       settings.maxdistance = 60000;
+
     settings.allplaces = query.allplaces;
 
     settings.timeformat = query.timeformat;
@@ -1968,8 +1971,6 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         if (!is_flash_or_mobile_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-
-        query.maxdistance = 0;
       }
       else if (loc->type == Spine::Location::Area)
       {
@@ -2006,7 +2007,6 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         if (!is_flash_or_mobile_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-        query.maxdistance = 0;
       }
       else if (loc->type == Spine::Location::BoundingBox && !is_flash_producer(producer))
       {
@@ -2038,8 +2038,6 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         if (!is_flash_or_mobile_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-
-        query.maxdistance = 0;
       }
       else if (!is_flash_producer(producer) && loc->type == Spine::Location::Place &&
                loc->radius > 0)
@@ -2059,7 +2057,6 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         if (!is_flash_or_mobile_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-        query.maxdistance = 0;
       }
       else if (!is_flash_producer(producer) && loc->type == Spine::Location::CoordinatePoint &&
                loc->radius > 0)
@@ -2092,7 +2089,6 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         if (!is_flash_or_mobile_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
-        query.maxdistance = 0;
       }
 
 #ifdef MYDEBUG
