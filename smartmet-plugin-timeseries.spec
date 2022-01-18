@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 21.12.7
+Version: 22.1.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -19,12 +19,12 @@ BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 21.12.2
 BuildRequires: smartmet-library-locus-devel >= 21.12.2
-BuildRequires: smartmet-library-macgyver-devel >= 21.12.1
+BuildRequires: smartmet-library-macgyver-devel >= 22.1.18
 BuildRequires: smartmet-library-grid-content-devel >= 21.12.2
 BuildRequires: smartmet-library-grid-files-devel >= 21.12.2
 BuildRequires: smartmet-library-newbase-devel >= 21.12.1
 BuildRequires: smartmet-library-gis-devel >= 21.12.1
-BuildRequires: smartmet-engine-geonames-devel >= 21.12.2
+BuildRequires: smartmet-engine-geonames-devel >= 22.1.18
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 22.1.14
 %endif
@@ -38,11 +38,11 @@ BuildRequires: smartmet-engine-grid-devel >= 21.12.2
 Requires: fmt >= 7.1.3
 Requires: smartmet-library-gis >= 21.12.1
 Requires: smartmet-library-locus >= 21.12.2
-Requires: smartmet-library-macgyver >= 21.12.1
+Requires: smartmet-library-macgyver >= 22.1.18
 Requires: smartmet-library-newbase >= 21.12.1
 Requires: smartmet-library-spine >= 21.12.2
 Requires: smartmet-library-gis >= 21.12.1
-Requires: smartmet-engine-geonames >= 21.12.2
+Requires: smartmet-engine-geonames >= 22.1.18
 Requires: smartmet-engine-querydata >= 21.12.2
 Requires: smartmet-engine-gis >= 21.12.2
 Requires: smartmet-engine-grid >= 21.12.2
@@ -95,9 +95,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Jan 18 2022 Anssi Reponen <anssi.reponen@fmi.fi> - 22.1.18-1.fmi
+- Use DistanceParser for maxdistance URL-parameter (BRAINSTORM-605)
+
 * Tue Dec  7 2021 Andris Pavēnis <andris.pavenis@fmi.fi> 21.12.7-1.fmi
 - Upgrade to PostgreSQL 13 and GDAL-3.3
-
 
 * Tue Nov 23 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.11.23-1.fmi
 - Support for coordinate transformations by using x- and y-parameters (BRAINSTORM-2091)

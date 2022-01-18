@@ -16,13 +16,12 @@
 #include <stdexcept>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
+#define DEFAULT_MAXDISTANCE "60.0km"
 
 using namespace std;
 
 const char* default_url = "/timeseries";
 const char* default_timeformat = "iso";
-
-double default_maxdistance = 60.0;  // km
 
 unsigned int default_expires = 60;  // seconds
 
@@ -249,7 +248,7 @@ Config::Config(const string& configfile)
     : itsDefaultPrecision("normal"),
       itsDefaultTimeFormat(default_timeformat),
       itsDefaultUrl(default_url),
-      itsDefaultMaxDistance(default_maxdistance),
+      itsDefaultMaxDistance(DEFAULT_MAXDISTANCE),
       itsExpirationTime(default_expires),
       itsFormatterOptions(),
       itsPrecisions(),

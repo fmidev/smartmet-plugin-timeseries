@@ -77,7 +77,6 @@ struct Query
 
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
-  double maxdistance;
   double step;  // used with path geometry
 
   std::size_t startrow;    // Paging; first (0-) row to return; default 0
@@ -158,6 +157,8 @@ struct Query
   Spine::LocationList inKeywordLocations;
   bool groupareas{true};
 
+  double maxdistance_kilometers() const;
+  double maxdistance_meters() const;
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
  private:
@@ -182,6 +183,8 @@ struct Query
 
 #endif
   QueryServer::AliasFileCollection* itsAliasFileCollectionPtr;
+
+  std::string maxdistance;
 };
 
 }  // namespace TimeSeries

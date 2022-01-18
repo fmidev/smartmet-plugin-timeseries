@@ -17,6 +17,7 @@
 #include <boost/foreach.hpp>
 #include <grid-files/common/GeneralFunctions.h>
 #include <grid-files/common/ShowFunction.h>
+#include <macgyver/DistanceParser.h>
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <macgyver/TimeParser.h>
@@ -174,7 +175,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 	  auto source_crs = Spine::optional_string(req.getParameter("crs"), "");
 	  
 	  if(lon_coord != kFloatMissing && lat_coord != kFloatMissing && !source_crs.empty())
-		{
+		{	
 		  // Transform lon_coord, lat_coord to lonlat parameter
 		  if(source_crs != "ESPG:4326")
 			{
@@ -217,7 +218,6 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     areasource = Spine::optional_string(req.getParameter("areasource"), "");
     crs = Spine::optional_string(req.getParameter("crs"), "");
 
-
     // Either create the requested locale or use the default one constructed
     // by the Config parser. TODO: If constructing from strings is slow, we should cache locales
     // instead.
@@ -233,7 +233,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     language = Spine::optional_string(req.getParameter("lang"), config.defaultLanguage());
     maxdistanceOptionGiven = !!req.getParameter("maxdistance");
     maxdistance =
-        Spine::optional_double(req.getParameter("maxdistance"), config.defaultMaxDistance());
+        Spine::optional_string(req.getParameter("maxdistance"), config.defaultMaxDistance());
 
     keyword = Spine::optional_string(req.getParameter("keyword"), "");
     auto searchName = req.getParameterList("inkeyword");
@@ -826,6 +826,16 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
+}
+
+double Query::maxdistance_kilometers() const
+{
+  return Fmi::DistanceParser::parse_kilometer(maxdistance);
+}
+
+double Query::maxdistance_meters() const
+{
+  return Fmi::DistanceParser::parse_meter(maxdistance);
 }
 
 }  // namespace TimeSeries
