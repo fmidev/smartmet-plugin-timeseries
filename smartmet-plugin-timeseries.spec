@@ -135,7 +135,7 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Sep 21 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.9.21-1.fmi
 - Removed internal query caching as ineffective and error prone, rely on ETag based frontend caching instead
 
-* Thu Sep 20 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.9.20-1.fmi
+* Mon Sep 20 2021 Anssi Reponen <anssi.reponen@fmi.fi> - 21.9.20-1.fmi
 - Fixed QEngine query cache bug (BRAINSTORM-2143)
 
 * Wed Sep 15 2021 Mika Heiskanen <mika.heiskanen@fmi.fi> - 21.9.15-1.fmi
