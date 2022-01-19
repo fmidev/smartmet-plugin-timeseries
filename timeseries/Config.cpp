@@ -283,12 +283,18 @@ Config::Config(const string& configfile)
     // Optional settings
     itsConfig.lookupValue("timeformat", itsDefaultTimeFormat);
     itsConfig.lookupValue("url", itsDefaultUrl);
-    itsConfig.lookupValue("maxdistance", itsDefaultMaxDistance);
     itsConfig.lookupValue("expires", itsExpirationTime);
     itsConfig.lookupValue("observation_disabled", itsObsEngineDisabled);
     itsConfig.lookupValue("gridengine_disabled", itsGridEngineDisabled);
     itsConfig.lookupValue("primaryForecastSource", itsPrimaryForecastSource);
     itsConfig.lookupValue("prevent_observation_database_query", itsPreventObsEngineDatabaseQuery);
+
+    if (itsConfig.exists("maxdistance"))
+    {
+      double value = 0;
+      itsConfig.lookupValue("maxdistance", value);
+      itsDefaultMaxDistance = std::to_string(value) + "km";
+    }
 
     // TODO: Remove deprecated settings detection
     using Spine::log_time_str;
