@@ -17,35 +17,35 @@ BuildRequires: boost169-devel
 BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-spine-devel >= 22.1.5
+BuildRequires: smartmet-library-spine-devel >= 21.1.21
 BuildRequires: smartmet-library-locus-devel >= 21.12.7
-BuildRequires: smartmet-library-macgyver-devel >= 22.1.18
-BuildRequires: smartmet-library-grid-content-devel >= 22.1.13
-BuildRequires: smartmet-library-grid-files-devel >= 22.1.13
-BuildRequires: smartmet-library-newbase-devel >= 21.12.7
-BuildRequires: smartmet-library-gis-devel >= 21.12.7
-BuildRequires: smartmet-engine-geonames-devel >= 22.1.18
+BuildRequires: smartmet-library-macgyver-devel >= 21.1.21
+BuildRequires: smartmet-library-grid-content-devel >= 21.1.21
+BuildRequires: smartmet-library-grid-files-devel >= 21.1.21
+BuildRequires: smartmet-library-newbase-devel >= 21.1.21
+BuildRequires: smartmet-library-gis-devel >= 21.1.21
+BuildRequires: smartmet-engine-geonames-devel >= 21.1.21
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 22.1.14
+BuildRequires: smartmet-engine-observation-devel >= 21.1.21
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 22.1.3
-BuildRequires: smartmet-engine-gis-devel >= 21.12.7
-BuildRequires: smartmet-engine-grid-devel >= 22.1.13
+BuildRequires: smartmet-engine-querydata-devel >= 21.1.21
+BuildRequires: smartmet-engine-gis-devel >= 21.1.21
+BuildRequires: smartmet-engine-grid-devel >= 21.1.21
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 22.1.14
+#Requires: smartmet-engine-observation >= 21.1.21
 #%endif
 Requires: fmt >= 7.1.3
-Requires: smartmet-library-gis >= 21.12.7
+Requires: smartmet-library-gis >= 21.1.21
 Requires: smartmet-library-locus >= 21.12.7
-Requires: smartmet-library-macgyver >= 22.1.18
-Requires: smartmet-library-newbase >= 21.12.7
-Requires: smartmet-library-spine >= 22.1.5
-Requires: smartmet-library-gis >= 21.12.7
-Requires: smartmet-engine-geonames >= 22.1.18
-Requires: smartmet-engine-querydata >= 22.1.3
-Requires: smartmet-engine-gis >= 21.12.7
-Requires: smartmet-engine-grid >= 22.1.13
+Requires: smartmet-library-macgyver >= 21.1.21
+Requires: smartmet-library-newbase >= 21.1.21
+Requires: smartmet-library-spine >= 21.1.21
+Requires: smartmet-library-gis >= 21.1.21
+Requires: smartmet-engine-geonames >= 21.1.21
+Requires: smartmet-engine-querydata >= 21.1.21
+Requires: smartmet-engine-gis >= 21.1.21
+Requires: smartmet-engine-grid >= 21.1.21
 Requires: smartmet-server >= 21.11.25
 Requires: boost169-date-time
 Requires: boost169-filesystem
@@ -55,22 +55,22 @@ Requires: boost169-thread
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
-#TestRequires: smartmet-utils-devel >= 21.11.23
-#TestRequires: smartmet-library-spine-plugin-test >= 21.12.2
-#TestRequires: smartmet-library-newbase-devel >= 21.12.7
+#TestRequires: smartmet-utils-devel >= 22.1.20
+#TestRequires: smartmet-library-spine-plugin-test >= 21.1.21
+#TestRequires: smartmet-library-newbase-devel >= 21.1.21
 #TestRequires: redis
-#TestRequires: smartmet-test-db >= 20.6.9
+#TestRequires: smartmet-test-db >= 21.1.21
 #TestRequires: smartmet-test-data >= 20.6.30
-#TestRequires: smartmet-engine-grid-test >= 21.12.2
-#TestRequires: smartmet-library-gis >= 21.12.7
-#TestRequires: smartmet-engine-geonames >= 21.12.2
-#TestRequires: smartmet-engine-gis >= 21.12.7
-#TestRequires: smartmet-engine-querydata >= 22.1.3
+#TestRequires: smartmet-engine-grid-test >= 21.1.21
+#TestRequires: smartmet-library-gis >= 21.1.21
+#TestRequires: smartmet-engine-geonames >= 21.1.21
+#TestRequires: smartmet-engine-gis >= 21.1.21
+#TestRequires: smartmet-engine-querydata >= 21.1.21
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 22.1.14
+#TestRequires: smartmet-engine-observation >= 21.1.21
 %endif
-#TestRequires: smartmet-engine-grid >= 22.1.13
-#TestRequires: gdal33
+#TestRequires: smartmet-engine-grid >= 21.1.21
+#TestRequires: gdal34
 
 %description
 SmartMet timeseries plugin
