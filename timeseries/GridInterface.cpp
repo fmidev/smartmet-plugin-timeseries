@@ -639,6 +639,15 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
       }
     }
 
+    attr = masterquery.attributeList.getAttribute("analysisTime.status");
+    if (attr != nullptr)
+    {
+      if (strcasecmp(attr->mValue.c_str(), "any") == 0)
+      {
+        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::AcceptNotReadyGenerations;
+      }
+    }
+
     gridQuery.mRadius = loc->radius;
 
     int levelId = origLevelId;
