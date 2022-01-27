@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.1.25
+Version: 22.1.27
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -26,14 +26,14 @@ BuildRequires: smartmet-library-newbase-devel >= 22.1.21
 BuildRequires: smartmet-library-gis-devel >= 22.1.24
 BuildRequires: smartmet-engine-geonames-devel >= 22.1.21
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 22.1.21
+BuildRequires: smartmet-engine-observation-devel >= 22.1.27
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.1.21
 BuildRequires: smartmet-engine-gis-devel >= 22.1.21
 BuildRequires: smartmet-engine-grid-devel >= 22.1.25
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 21.1.21
+#Requires: smartmet-engine-observation >= 21.1.27
 #%endif
 Requires: fmt >= 7.1.3
 Requires: smartmet-library-gis >= 22.1.24
@@ -67,7 +67,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 22.1.21
 #TestRequires: smartmet-engine-querydata >= 22.1.21
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 21.1.21
+#TestRequires: smartmet-engine-observation >= 21.1.27
 %endif
 #TestRequires: smartmet-engine-grid >= 22.1.25
 #TestRequires: gdal34
@@ -95,6 +95,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Jan 27 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.1.27-1.fmi
+- Test observation engine configuration file updated to contain default number for temperature-parameter (BRAINSTORM-2243)
+
 * Tue Jan 25 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.1.25-1.fmi
 - Added possibility to request data from unfinished generations by using analysistime 'any'
 
