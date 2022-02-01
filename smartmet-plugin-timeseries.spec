@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.1.27
+Version: 22.2.1
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -18,34 +18,34 @@ BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 22.1.21
-BuildRequires: smartmet-library-locus-devel >= 21.12.7
+BuildRequires: smartmet-library-locus-devel >= 22.1.31
 BuildRequires: smartmet-library-macgyver-devel >= 22.1.21
 BuildRequires: smartmet-library-grid-content-devel >= 22.1.25
 BuildRequires: smartmet-library-grid-files-devel >= 22.1.25
 BuildRequires: smartmet-library-newbase-devel >= 22.1.21
 BuildRequires: smartmet-library-gis-devel >= 22.1.24
-BuildRequires: smartmet-engine-geonames-devel >= 22.1.21
+BuildRequires: smartmet-engine-geonames-devel >= 22.1.31
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 22.1.27
+BuildRequires: smartmet-engine-observation-devel >= 22.2.1
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.1.21
 BuildRequires: smartmet-engine-gis-devel >= 22.1.21
-BuildRequires: smartmet-engine-grid-devel >= 22.1.25
+BuildRequires: smartmet-engine-grid-devel >= 22.1.27
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 21.1.27
 #%endif
 Requires: fmt >= 7.1.3
 Requires: smartmet-library-gis >= 22.1.24
-Requires: smartmet-library-locus >= 21.12.7
+Requires: smartmet-library-locus >= 22.1.31
 Requires: smartmet-library-macgyver >= 22.1.21
 Requires: smartmet-library-newbase >= 22.1.21
 Requires: smartmet-library-spine >= 22.1.21
 Requires: smartmet-library-gis >= 22.1.24
-Requires: smartmet-engine-geonames >= 22.1.21
+Requires: smartmet-engine-geonames >= 22.1.31
 Requires: smartmet-engine-querydata >= 22.1.21
 Requires: smartmet-engine-gis >= 22.1.21
-Requires: smartmet-engine-grid >= 22.1.25
+Requires: smartmet-engine-grid >= 22.1.27
 Requires: smartmet-server >= 21.11.25
 Requires: boost169-date-time
 Requires: boost169-filesystem
@@ -63,13 +63,13 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-data >= 20.6.30
 #TestRequires: smartmet-engine-grid-test >= 21.1.21
 #TestRequires: smartmet-library-gis >= 22.1.24
-#TestRequires: smartmet-engine-geonames >= 22.1.21
+#TestRequires: smartmet-engine-geonames >= 22.1.31
 #TestRequires: smartmet-engine-gis >= 22.1.21
 #TestRequires: smartmet-engine-querydata >= 22.1.21
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 21.1.27
 %endif
-#TestRequires: smartmet-engine-grid >= 22.1.25
+#TestRequires: smartmet-engine-grid >= 22.1.27
 #TestRequires: gdal34
 
 %description
@@ -95,7 +95,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
-* Thu Jan 27 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.1.27-1.fmi
+* Tue Feb 1 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.2.1-1.fmi
 - Test observation engine configuration file updated to contain default number for temperature-parameter (BRAINSTORM-2243)
 
 * Tue Jan 25 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.1.25-1.fmi
