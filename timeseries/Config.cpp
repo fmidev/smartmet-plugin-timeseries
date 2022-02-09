@@ -293,7 +293,7 @@ Config::Config(const string& configfile)
     {
       double value = 0;
       itsConfig.lookupValue("maxdistance", value);
-      itsDefaultMaxDistance = std::to_string(value) + "km";
+      itsDefaultMaxDistance = Fmi::to_string(value) + "km";
     }
 
     // TODO: Remove deprecated settings detection
