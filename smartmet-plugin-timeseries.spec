@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.2.28
+Version: 22.3.2
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -20,17 +20,17 @@ BuildRequires: zlib-devel
 BuildRequires: smartmet-library-spine-devel >= 22.2.10
 BuildRequires: smartmet-library-locus-devel >= 22.1.31
 BuildRequires: smartmet-library-macgyver-devel >= 22.2.24
-BuildRequires: smartmet-library-grid-content-devel >= 22.2.28
+BuildRequires: smartmet-library-grid-content-devel >= 22.3.1
 BuildRequires: smartmet-library-grid-files-devel >= 22.2.28
 BuildRequires: smartmet-library-newbase-devel >= 22.1.21
 BuildRequires: smartmet-library-gis-devel >= 22.1.24
 BuildRequires: smartmet-engine-geonames-devel >= 22.1.31
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 22.2.15
+BuildRequires: smartmet-engine-observation-devel >= 22.2.28
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.1.21
 BuildRequires: smartmet-engine-gis-devel >= 22.2.10
-BuildRequires: smartmet-engine-grid-devel >= 22.2.28
+BuildRequires: smartmet-engine-grid-devel >= 22.3.2
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 21.1.27
@@ -45,7 +45,7 @@ Requires: smartmet-library-gis >= 22.1.24
 Requires: smartmet-engine-geonames >= 22.1.31
 Requires: smartmet-engine-querydata >= 22.1.21
 Requires: smartmet-engine-gis >= 22.2.10
-Requires: smartmet-engine-grid >= 22.2.28
+Requires: smartmet-engine-grid >= 22.3.2
 Requires: smartmet-server >= 21.11.25
 Requires: boost169-date-time
 Requires: boost169-filesystem
@@ -69,7 +69,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 21.1.27
 %endif
-#TestRequires: smartmet-engine-grid >= 22.2.28
+#TestRequires: smartmet-engine-grid >= 22.3.2
 #TestRequires: gdal34
 
 %description
@@ -95,6 +95,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Mar  2 2022 Pertti Kinnia <pertti.kinnia@fmi.fi> - 22.3.2-1.fmi
+- Bug fix, repackaged (BRAINSTORM-2268)
+
 * Mon Feb 28 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.2.28-1.fmi
 - Repackaged due to base library/engine ABI changes
 
