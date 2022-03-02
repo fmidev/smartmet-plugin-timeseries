@@ -3340,7 +3340,10 @@ bool Plugin::processGridEngineQuery(const State& state,
                                                    itsConfig.ignoreGridGeometriesWhenPreloadReady(),
                                                    polygonPath,
                                                    geometryIdList))
+      {
+        outputData.clear();
         return false;
+      }
 
       std::string country = itsGeoEngine->countryName(loc->iso2, query.language);
       // std::cout << formatLocation(*loc) << endl;
