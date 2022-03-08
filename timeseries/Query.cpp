@@ -15,17 +15,17 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
+#include <gis/CoordinateTransformation.h>
 #include <grid-files/common/GeneralFunctions.h>
 #include <grid-files/common/ShowFunction.h>
+#include <macgyver/AnsiEscapeCodes.h>
 #include <macgyver/DistanceParser.h>
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <macgyver/TimeParser.h>
-#include <macgyver/AnsiEscapeCodes.h>
 #include <newbase/NFmiPoint.h>
 #include <spine/Convenience.h>
 #include <spine/ParameterFactory.h>
-#include <gis/CoordinateTransformation.h>
 #include <algorithm>
 
 using namespace std;
@@ -59,8 +59,21 @@ void add_sql_data_filter(const Spine::HTTP::Request& req,
 
 void report_unsupported_option(const std::string& name, const boost::optional<std::string>& value)
 {
-  if(value)
-	std::cerr << (Spine::log_time_str() + ANSI_FG_RED + " [timeseries] Deprecated option '" + name + ANSI_FG_DEFAULT) << std::endl;
+  if (value)
+    std::cerr << (Spine::log_time_str() + ANSI_FG_RED + " [timeseries] Deprecated option '" + name +
+                  ANSI_FG_DEFAULT)
+              << std::endl;
+}
+
+Fmi::ValueFormatterParam valueformatter_params(const Spine::HTTP::Request& req)
+{
+  Fmi::ValueFormatterParam opt;
+  opt.missingText = Spine::optional_string(req.getParameter("missingtext"), "nan");
+  opt.floatField = Spine::optional_string(req.getParameter("floatfield"), "fixed");
+
+  if (Spine::optional_string(req.getParameter("format"), "") == "WXML")
+    opt.missingText = "NaN";
+  return opt;
 }
 
 }  // namespace
@@ -72,15 +85,15 @@ void report_unsupported_option(const std::string& name, const boost::optional<st
 // ----------------------------------------------------------------------
 
 Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config)
-    : valueformatter(req), timeAggregationRequested(false)
+    : valueformatter(valueformatter_params(req)), timeAggregationRequested(false)
 {
   try
   {
-	report_unsupported_option("adjustfield", req.getParameter("adjustfield"));
-	report_unsupported_option("width", req.getParameter("width"));
-	report_unsupported_option("fill", req.getParameter("fill"));
-	report_unsupported_option("showpos", req.getParameter("showpos"));
-	report_unsupported_option("uppercase", req.getParameter("uppercase"));
+    report_unsupported_option("adjustfield", req.getParameter("adjustfield"));
+    report_unsupported_option("width", req.getParameter("width"));
+    report_unsupported_option("fill", req.getParameter("fill"));
+    report_unsupported_option("showpos", req.getParameter("showpos"));
+    report_unsupported_option("uppercase", req.getParameter("uppercase"));
 
     time_t tt = time(nullptr);
     if ((config.itsLastAliasCheck + 10) < tt)
@@ -170,22 +183,24 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       loptions.reset(
           new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(req)));
 
-	  auto lon_coord = Spine::optional_double(req.getParameter("x"), kFloatMissing);
-	  auto lat_coord = Spine::optional_double(req.getParameter("y"), kFloatMissing);
-	  auto source_crs = Spine::optional_string(req.getParameter("crs"), "");
-	  
-	  if(lon_coord != kFloatMissing && lat_coord != kFloatMissing && !source_crs.empty())
-		{	
-		  // Transform lon_coord, lat_coord to lonlat parameter
-		  if(source_crs != "ESPG:4326")
-			{
-			  Fmi::CoordinateTransformation transformation(source_crs, "WGS84");
-			  transformation.transform(lon_coord, lat_coord);
-			}
-		  auto tmpReq = req;
-		  tmpReq.addParameter("lonlat", (Fmi::to_string(lon_coord) + "," + Fmi::to_string(lat_coord)));
-		  loptions.reset(new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(tmpReq)));
-		}
+      auto lon_coord = Spine::optional_double(req.getParameter("x"), kFloatMissing);
+      auto lat_coord = Spine::optional_double(req.getParameter("y"), kFloatMissing);
+      auto source_crs = Spine::optional_string(req.getParameter("crs"), "");
+
+      if (lon_coord != kFloatMissing && lat_coord != kFloatMissing && !source_crs.empty())
+      {
+        // Transform lon_coord, lat_coord to lonlat parameter
+        if (source_crs != "ESPG:4326")
+        {
+          Fmi::CoordinateTransformation transformation(source_crs, "WGS84");
+          transformation.transform(lon_coord, lat_coord);
+        }
+        auto tmpReq = req;
+        tmpReq.addParameter("lonlat",
+                            (Fmi::to_string(lon_coord) + "," + Fmi::to_string(lat_coord)));
+        loptions.reset(
+            new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(tmpReq)));
+      }
     }
 
     // Store WKT-geometries
