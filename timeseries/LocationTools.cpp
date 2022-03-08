@@ -4,8 +4,6 @@
 #include <macgyver/Exception.h>
 #include <newbase/NFmiSvgTools.h>
 
-namespace ts = SmartMet::Spine::TimeSeries;
-
 namespace SmartMet
 {
 namespace Plugin
@@ -447,7 +445,7 @@ int get_fmisid_index(const Engine::Observation::Settings& settings)
 
 #ifndef WITHOUT_OBSERVATION
 
-int get_fmisid_value(const ts::Value& value)
+int get_fmisid_value(const TS::Value& value)
 {
   try
   {
@@ -465,9 +463,9 @@ int get_fmisid_value(const ts::Value& value)
       return boost::get<int>(value);
     else if (boost::get<double>(&value))
       return boost::get<double>(value);
-    else if (boost::get<Spine::TimeSeries::None>(&value))
+    else if (boost::get<TS::None>(&value))
       throw Fmi::Exception(BCP, "Station with null fmisid encountered!");
-    else if (boost::get<Spine::TimeSeries::LonLat>(&value))
+    else if (boost::get<TS::LonLat>(&value))
       throw Fmi::Exception(BCP, "Station with latlon as fmisid encountered!");
     else
       throw Fmi::Exception(BCP, "Unknown fmisid type");
@@ -486,7 +484,7 @@ int get_fmisid_value(const ts::Value& value)
  */
 // ----------------------------------------------------------------------
 
-int get_fmisid_value(const ts::TimeSeries& ts)
+int get_fmisid_value(const TS::TimeSeries& ts)
 {
   for (const auto& tv : ts)
   {

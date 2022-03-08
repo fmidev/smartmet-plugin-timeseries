@@ -19,7 +19,7 @@ namespace TimeSeries
 State::State(const Plugin& thePlugin)
     : itsPlugin(thePlugin),
       itsTime(boost::posix_time::second_clock::universal_time()),
-      itsLocalTimePool(boost::make_shared<SmartMet::Spine::TimeSeries::LocalTimePool>())
+      itsLocalTimePool(boost::make_shared<TS::LocalTimePool>())
 {
 }
 
@@ -200,7 +200,7 @@ Engine::Querydata::Q State::get(const Engine::Querydata::Producer& theProducer,
   }
 }
 
-SmartMet::Spine::TimeSeries::LocalTimePoolPtr State::getLocalTimePool() const
+TS::LocalTimePoolPtr State::getLocalTimePool() const
 {
   return itsLocalTimePool;
 }

@@ -13,7 +13,7 @@
 #include <grid-files/common/AdditionalParameters.h>
 #include <grid-files/grid/Typedefs.h>
 #include <macgyver/TimeZones.h>
-#include <spine/TimeSeriesGenerator.h>
+#include <timeseries/TimeSeriesInclude.h>
 
 namespace SmartMet
 {
@@ -21,8 +21,6 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-namespace ts = SmartMet::Spine::TimeSeries;
-
 class GridInterface
 {
  public:
@@ -32,7 +30,7 @@ class GridInterface
 
   void processGridQuery(const State& state,
                         Query& query,
-                        OutputData& outputData,
+                        TS::OutputData& outputData,
                         const QueryServer::QueryStreamer_sptr& queryStreamer,
                         const AreaProducers& areaproducers,
                         const ProducerDataPeriod& producerDataPeriod,
@@ -75,17 +73,17 @@ class GridInterface
 
   int getParameterIndex(QueryServer::Query& gridQuery, const std::string& param);
 
-  void erase_redundant_timesteps(ts::TimeSeries& ts,
+  void erase_redundant_timesteps(TS::TimeSeries& ts,
                                  std::set<boost::local_time::local_date_time>& aggregationTimes);
 
-  ts::TimeSeriesPtr erase_redundant_timesteps(
-      ts::TimeSeriesPtr ts, std::set<boost::local_time::local_date_time>& aggregationTimes);
+  TS::TimeSeriesPtr erase_redundant_timesteps(
+      TS::TimeSeriesPtr ts, std::set<boost::local_time::local_date_time>& aggregationTimes);
 
-  ts::TimeSeriesVectorPtr erase_redundant_timesteps(
-      ts::TimeSeriesVectorPtr tsv, std::set<boost::local_time::local_date_time>& aggregationTimes);
+  TS::TimeSeriesVectorPtr erase_redundant_timesteps(
+      TS::TimeSeriesVectorPtr tsv, std::set<boost::local_time::local_date_time>& aggregationTimes);
 
-  ts::TimeSeriesGroupPtr erase_redundant_timesteps(
-      ts::TimeSeriesGroupPtr tsg, std::set<boost::local_time::local_date_time>& aggregationTimes);
+  TS::TimeSeriesGroupPtr erase_redundant_timesteps(
+      TS::TimeSeriesGroupPtr tsg, std::set<boost::local_time::local_date_time>& aggregationTimes);
 
   T::ParamLevelId getLevelId(const char* producerName, const Query& masterquery);
 

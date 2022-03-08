@@ -7,7 +7,7 @@
 #include <newbase/NFmiSvgPath.h>
 #include <spine/Location.h>
 #include <spine/Parameter.h>
-#include <spine/TimeSeries.h>
+#include <timeseries/TimeSeriesInclude.h>
 #include <string>
 #include <utility>
 
@@ -40,7 +40,7 @@ Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
                                 const std::string& idtype,
                                 const std::string& language);
 
-int get_fmisid_value(const Spine::TimeSeries::TimeSeries& ts);
+int get_fmisid_value(const TS::TimeSeries& ts);
 
 #ifndef WITHOUT_OBSERVATION
 
@@ -51,7 +51,7 @@ std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
                                      const std::string& wktstring);
 
 int get_fmisid_index(const Engine::Observation::Settings& settings);
-int get_fmisid_value(const Spine::TimeSeries::Value& value);
+int get_fmisid_value(const TS::Value& value);
 
 std::unique_ptr<Spine::Location> get_coordinate_location(double lon,
                                                          double lat,

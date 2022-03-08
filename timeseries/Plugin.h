@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Config.h"
-#include "DataFunctions.h"
 #include "LonLatDistance.h"
 #include "ObsParameter.h"
 #include "Query.h"
@@ -23,7 +22,7 @@
 #include <spine/HTTP.h>
 #include <spine/Reactor.h>
 #include <spine/SmartMetPlugin.h>
-#include <spine/TimeSeriesGeneratorCache.h>
+#include <timeseries/TimeSeriesInclude.h>
 #include <map>
 #include <queue>
 #include <string>
@@ -57,6 +56,8 @@ namespace TimeSeries
 class State;
 class PluginImpl;
 class GridInterface;
+
+using ObsParameters = std::vector<ObsParameter>;
 
 struct SettingsInfo
 {
@@ -120,7 +121,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
 
   void processQEngineQuery(const State& state,
                            Query& query,
-                           OutputData& outputData,
+                           TS::OutputData& outputData,
                            const AreaProducers& areaproducers,
                            const ProducerDataPeriod& producerDataPeriod);
   void fetchStaticLocationValues(Query& query,
@@ -135,11 +136,11 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                           const AreaProducers& areaproducers,
                           const ProducerDataPeriod& producerDataPeriod,
                           QueryLevelDataCache& queryLevelDataCache,
-                          OutputData& outputData);
+                          TS::OutputData& outputData);
 
   bool processGridEngineQuery(const State& state,
                               Query& masterquery,
-                              OutputData& outputData,
+                              TS::OutputData& outputData,
                               QueryServer::QueryStreamer_sptr queryStreamer,
                               const AreaProducers& areaproducers,
                               const ProducerDataPeriod& producerDataPeriod);
@@ -149,7 +150,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
 
   void processObsEngineQuery(const State& state,
                              Query& query,
-                             OutputData& outputData,
+                             TS::OutputData& outputData,
                              const AreaProducers& areaproducers,
                              const ProducerDataPeriod& producerDataPeriod,
                              const ObsParameters& obsParameters);
@@ -159,13 +160,13 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                                    const std::string& areaName,
                                    Engine::Observation::Settings& settings,
                                    Query& query,
-                                   OutputData& outputData);
+                                   TS::OutputData& outputData);
   void fetchObsEngineValuesForPlaces(const State& state,
                                      const std::string& producer,
                                      const ObsParameters& obsParameters,
                                      Engine::Observation::Settings& settings,
                                      Query& query,
-                                     OutputData& outputData);
+                                     TS::OutputData& outputData);
 
   void getCommonObsSettings(Engine::Observation::Settings& settings,
                             const std::string& producer,
@@ -198,7 +199,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   std::vector<ObsParameter> getObsParameters(const Query& query) const;
 #endif
 
-  Spine::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(
+  TS::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(
       const Query& query, const std::string& paramname) const;
 
   Spine::LocationPtr getLocationForArea(const Spine::TaggedLocation& tloc,
@@ -234,7 +235,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   std::set<std::string> itsObsEngineStationTypes;
 
   // Cached time series
-  mutable std::unique_ptr<Spine::TimeSeriesGeneratorCache> itsTimeSeriesCache;
+  mutable std::unique_ptr<TS::TimeSeriesGeneratorCache> itsTimeSeriesCache;
 
   // Geometries and their svg-representations are stored here
   Engine::Gis::GeometryStorage itsGeometryStorage;

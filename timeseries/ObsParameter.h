@@ -8,6 +8,7 @@
 #pragma once
 
 #include <spine/ParameterFactory.h>
+#include <timeseries/TimeSeriesInclude.h>
 
 namespace SmartMet
 {
@@ -17,13 +18,13 @@ namespace TimeSeries
 {
 struct ObsParameter
 {
-  SmartMet::Spine::Parameter param;
-  SmartMet::Spine::ParameterFunctions functions;
+  Spine::Parameter param;
+  TS::DataFunctions functions;
   unsigned int data_column;
   bool duplicate;
 
-  ObsParameter(SmartMet::Spine::Parameter p,
-               SmartMet::Spine::ParameterFunctions funcs,
+  ObsParameter(Spine::Parameter p,
+               TS::DataFunctions funcs,
                unsigned int dcol,
                bool dup)
       : param(p), functions(funcs), data_column(dcol), duplicate(dup)
