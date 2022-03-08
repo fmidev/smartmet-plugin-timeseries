@@ -10,29 +10,23 @@
 
 #include "AggregationInterval.h"
 #include "Producers.h"
-#include <engines/geonames/WktGeometry.h>
-
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/shared_ptr.hpp>
 #include <engines/geonames/Engine.h>
 #include <engines/geonames/WktGeometry.h>
 #include <engines/grid/Engine.h>
-
 #include <grid-content/queryServer/definition/AliasFileCollection.h>
 #include <grid-files/common/AdditionalParameters.h>
 #include <grid-files/common/AttributeList.h>
-#include <timeseries/TimeSeriesInclude.h>
+#include <macgyver/TimeFormatter.h>
+#include <macgyver/ValueFormatter.h>
+#include <newbase/NFmiPoint.h>
 #include <spine/HTTP.h>
 #include <spine/Location.h>
 #include <spine/OptionParsers.h>
 #include <spine/Parameter.h>
-#include <spine/TimeSeriesGeneratorOptions.h>
-#include <spine/ValueFormatter.h>
-
-#include <macgyver/TimeFormatter.h>
-#include <newbase/NFmiPoint.h>
-
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/shared_ptr.hpp>
-
+#include <timeseries/TimeSeriesGeneratorOptions.h>
+#include <timeseries/TimeSeriesInclude.h>
 #include <list>
 #include <locale>
 #include <map>
@@ -119,7 +113,7 @@ struct Query
 #endif
 
   ParamPrecisions precisions;
-  Spine::ValueFormatter valueformatter;
+  Fmi::ValueFormatter valueformatter;
 
 #ifndef WITHOUT_OBSERVATION
   std::map<std::string, double> boundingBox;
