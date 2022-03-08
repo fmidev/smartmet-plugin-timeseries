@@ -19,12 +19,11 @@
 #include <grid-content/queryServer/definition/AliasFileCollection.h>
 #include <grid-files/common/AdditionalParameters.h>
 #include <grid-files/common/AttributeList.h>
-#include <spine/DataFilter.h>
+#include <timeseries/TimeSeriesInclude.h>
 #include <spine/HTTP.h>
 #include <spine/Location.h>
 #include <spine/OptionParsers.h>
 #include <spine/Parameter.h>
-#include <spine/TableFeeder.h>
 #include <spine/TimeSeriesGeneratorOptions.h>
 #include <spine/ValueFormatter.h>
 
@@ -59,7 +58,7 @@ class Config;
 
 struct Query
 {
-  Query(const State& state, const SmartMet::Spine::HTTP::Request& req, Config& config);
+  Query(const State& state, const Spine::HTTP::Request& req, Config& config);
 
   // Note: Data members ordered according to the advice of Clang Analyzer to avoid excessive padding
 
@@ -120,21 +119,21 @@ struct Query
 #endif
 
   ParamPrecisions precisions;
-  SmartMet::Spine::ValueFormatter valueformatter;
+  Spine::ValueFormatter valueformatter;
 
 #ifndef WITHOUT_OBSERVATION
   std::map<std::string, double> boundingBox;
-  Spine::DataFilter dataFilter;
+  TS::DataFilter dataFilter;
 #endif
 
   Levels levels;
   Pressures pressures;
   Heights heights;
 
-  SmartMet::Spine::OptionParsers::ParameterOptions poptions;
+  Spine::OptionParsers::ParameterOptions poptions;
   MaxAggregationIntervals maxAggregationIntervals;
   Engine::Geonames::WktGeometries wktGeometries;
-  SmartMet::Spine::TimeSeriesGeneratorOptions toptions;
+  TS::TimeSeriesGeneratorOptions toptions;
 
 #ifndef WITHOUT_OBSERVATION
   int numberofstations;
@@ -164,22 +163,22 @@ struct Query
  private:
   Query();
 
-  void parse_levels(const SmartMet::Spine::HTTP::Request& theReq);
+  void parse_levels(const Spine::HTTP::Request& theReq);
 
-  void parse_precision(const SmartMet::Spine::HTTP::Request& theReq, const Config& config);
+  void parse_precision(const Spine::HTTP::Request& theReq, const Config& config);
 
 #ifndef WITHOUT_OBSERVATION
-  void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq,
-                        const SmartMet::Engine::Observation::Engine* theObsEngine);
-  void parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
-                       const SmartMet::Engine::Querydata::Engine& theQEngine,
-                       const SmartMet::Engine::Grid::Engine* theGridEngine,
-                       const SmartMet::Engine::Observation::Engine* theObsEngine);
+  void parse_parameters(const Spine::HTTP::Request& theReq,
+                        const Engine::Observation::Engine* theObsEngine);
+  void parse_producers(const Spine::HTTP::Request& theReq,
+                       const Engine::Querydata::Engine& theQEngine,
+                       const Engine::Grid::Engine* theGridEngine,
+                       const Engine::Observation::Engine* theObsEngine);
 #else
-  void parse_parameters(const SmartMet::Spine::HTTP::Request& theReq);
-  void parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
-                       const SmartMet::Engine::Querydata::Engine& theQEngine,
-                       const SmartMet::Engine::Grid::Engine& theGridEngine);
+  void parse_parameters(const Spine::HTTP::Request& theReq);
+  void parse_producers(const Spine::HTTP::Request& theReq,
+                       const Engine::Querydata::Engine& theQEngine,
+                       const Engine::Grid::Engine& theGridEngine);
 
 #endif
   QueryServer::AliasFileCollection* itsAliasFileCollectionPtr;

@@ -19,9 +19,9 @@ struct QueryLevelDataCache
 {
   using PressureLevelParameterPair = std::pair<float, std::string>;
   using ParameterTimeSeriesMap =
-      std::map<PressureLevelParameterPair, SmartMet::Spine::TimeSeries::TimeSeriesPtr>;
+      std::map<PressureLevelParameterPair, TS::TimeSeriesPtr>;
   using ParameterTimeSeriesGroupMap =
-      std::map<PressureLevelParameterPair, SmartMet::Spine::TimeSeries::TimeSeriesGroupPtr>;
+      std::map<PressureLevelParameterPair, TS::TimeSeriesGroupPtr>;
 
   ParameterTimeSeriesMap itsTimeSeries;
   ParameterTimeSeriesGroupMap itsTimeSeriesGroups;

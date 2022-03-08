@@ -57,41 +57,41 @@ void Config::add_default_precisions()
  */
 // ----------------------------------------------------------------------
 
-Spine::FunctionId get_function_id(const string& configName)
+TS::FunctionId get_function_id(const string& configName)
 {
   try
   {
     if (configName == "mean")
-      return Spine::FunctionId::Mean;
+      return TS::FunctionId::Mean;
 
     if (configName == "max")
-      return Spine::FunctionId::Maximum;
+      return TS::FunctionId::Maximum;
 
     if (configName == "min")
-      return Spine::FunctionId::Minimum;
+      return TS::FunctionId::Minimum;
 
     if (configName == "median")
-      return Spine::FunctionId::Median;
+      return TS::FunctionId::Median;
 
     if (configName == "sum")
-      return Spine::FunctionId::Sum;
+      return TS::FunctionId::Sum;
 
     if (configName == "sdev")
-      return Spine::FunctionId::StandardDeviation;
+      return TS::FunctionId::StandardDeviation;
 
     if (configName == "trend")
-      return Spine::FunctionId::Trend;
+      return TS::FunctionId::Trend;
 
     if (configName == "change")
-      return Spine::FunctionId::Change;
+      return TS::FunctionId::Change;
 
     if (configName == "count")
-      return Spine::FunctionId::Count;
+      return TS::FunctionId::Count;
 
     if (configName == "percentage")
-      return Spine::FunctionId::Percentage;
+      return TS::FunctionId::Percentage;
 
-    return Spine::FunctionId::NullFunction;
+    return TS::FunctionId::NullFunction;
   }
   catch (...)
   {

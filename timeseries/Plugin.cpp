@@ -10,6 +10,7 @@
 #include "ImageFormatter.h"
 #include "LocationTools.h"
 #include "State.h"
+#include "UtilityFunctions.h"
 #include <engines/gis/Engine.h>
 #include <engines/observation/Keywords.h>
 #include <fmt/format.h>
@@ -26,6 +27,8 @@
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
 #include <gis/CoordinateTransformation.h>
+#include <spine/TableFeeder.h>
+#include <timeseries/TimeSeriesInclude.h>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
@@ -106,7 +109,7 @@ Spine::Parameter get_query_param(const Spine::Parameter& parameter)
   return Spine::Parameter(paramname, alias, type, number);  
 }
 
-void transform_wgs84_coordinates(const std::string& name, const std::string& target_crs, const Spine::Location& loc, Spine::TimeSeries::TimeSeries& tseries)
+void transform_wgs84_coordinates(const std::string& name, const std::string& target_crs, const Spine::Location& loc, TS::TimeSeries& tseries)
 {
   if(target_crs.empty() || target_crs == "EPSG:4326")
 	return;
@@ -128,7 +131,7 @@ void transform_wgs84_coordinates(const std::string& name, const std::string& tar
 	}
 }
 
-void transform_wgs84_coordinates(const std::string& name, const std::string& crs, Spine::TimeSeries::TimeSeriesGroup& tsg)
+void transform_wgs84_coordinates(const std::string& name, const std::string& crs, TS::TimeSeriesGroup& tsg)
 {
   for(auto& item : tsg)
 	{
@@ -159,11 +162,11 @@ bool is_mobile_producer(const std::string& producer)
 {
   try
   {
-    return (producer == SmartMet::Engine::Observation::ROADCLOUD_PRODUCER ||
-            producer == SmartMet::Engine::Observation::TECONER_PRODUCER ||
-            producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER ||
-            producer == SmartMet::Engine::Observation::NETATMO_PRODUCER ||
-            producer == SmartMet::Engine::Observation::BK_HYDROMETA_PRODUCER);
+    return (producer == Engine::Observation::ROADCLOUD_PRODUCER ||
+            producer == Engine::Observation::TECONER_PRODUCER ||
+            producer == Engine::Observation::FMI_IOT_PRODUCER ||
+            producer == Engine::Observation::NETATMO_PRODUCER ||
+            producer == Engine::Observation::BK_HYDROMETA_PRODUCER);
   }
   catch (...)
   {
@@ -257,8 +260,8 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
 }
 
 void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
-                       ts::TableFeeder& tf,
-                       OutputData& outputData,
+                       Spine::TableFeeder& tf,
+                       TS::OutputData& outputData,
                        const std::string& location_name,
                        int& startRow)
 {
@@ -274,32 +277,32 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
 
       startRow = tf.getCurrentRow();
 
-      std::vector<TimeSeriesData>& outdata = outputData[i].second;
+      std::vector<TS::TimeSeriesData>& outdata = outputData[i].second;
       // iterate columns (parameters)
       for (unsigned int j = 0; j < outdata.size(); j++)
       {
-        TimeSeriesData tsdata = outdata[j];
+        TS::TimeSeriesData tsdata = outdata[j];
         tf.setCurrentRow(startRow);
         tf.setCurrentColumn(j);
 
         const auto& paramName = paramlist[j % numberOfParameters].name();
         if (paramName == LATLON_PARAM || paramName == NEARLATLON_PARAM)
         {
-          tf << Spine::TimeSeries::LonLatFormat::LATLON;
+          tf << TS::LonLatFormat::LATLON;
         }
         else if (paramName == LONLAT_PARAM || paramName == NEARLONLAT_PARAM)
         {
-          tf << Spine::TimeSeries::LonLatFormat::LONLAT;
+          tf << TS::LonLatFormat::LONLAT;
         }
 
-        if (boost::get<ts::TimeSeriesPtr>(&tsdata))
+        if (boost::get<TS::TimeSeriesPtr>(&tsdata))
         {
-          ts::TimeSeriesPtr ts = *(boost::get<ts::TimeSeriesPtr>(&tsdata));
+          TS::TimeSeriesPtr ts = *(boost::get<TS::TimeSeriesPtr>(&tsdata));
           tf << *ts;
         }
-        else if (boost::get<ts::TimeSeriesVectorPtr>(&tsdata))
+        else if (boost::get<TS::TimeSeriesVectorPtr>(&tsdata))
         {
-          ts::TimeSeriesVectorPtr tsv = *(boost::get<ts::TimeSeriesVectorPtr>(&tsdata));
+          TS::TimeSeriesVectorPtr tsv = *(boost::get<TS::TimeSeriesVectorPtr>(&tsdata));
           for (unsigned int k = 0; k < tsv->size(); k++)
           {
             tf.setCurrentColumn(k);
@@ -308,14 +311,14 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
           }
           startRow = tf.getCurrentRow();
         }
-        else if (boost::get<ts::TimeSeriesGroupPtr>(&tsdata))
+        else if (boost::get<TS::TimeSeriesGroupPtr>(&tsdata))
         {
-          ts::TimeSeriesGroupPtr tsg = *(boost::get<ts::TimeSeriesGroupPtr>(&tsdata));
+          TS::TimeSeriesGroupPtr tsg = *(boost::get<TS::TimeSeriesGroupPtr>(&tsdata));
           tf << *tsg;
         }
 
         // Reset formatting to the default value
-        tf << Spine::TimeSeries::LonLatFormat::LONLAT;
+        tf << TS::LonLatFormat::LONLAT;
       }
     }
   }
@@ -332,14 +335,14 @@ void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
 // ----------------------------------------------------------------------
 
 // fills the table with data
-void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
+void fill_table(Query& query, TS::OutputData& outputData, Spine::Table& table)
 {
   try
   {
     if (outputData.empty())
       return;
 
-    ts::TableFeeder tf(table, query.valueformatter, query.precisions);
+    Spine::TableFeeder tf(table, query.valueformatter, query.precisions);
     int startRow = tf.getCurrentRow();
 
     std::string locationName(outputData[0].first);
@@ -370,22 +373,22 @@ void fill_table(Query& query, OutputData& outputData, Spine::Table& table)
 
 #ifndef WITHOUT_OBSERVATION
 
-void add_missing_timesteps(ts::TimeSeries& ts,
-                           const Spine::TimeSeriesGeneratorCache::TimeList& tlist)
+void add_missing_timesteps(TS::TimeSeries& ts,
+                           const TS::TimeSeriesGeneratorCache::TimeList& tlist)
 {
   if (!tlist || tlist->empty())
     return;
 
-  ts::TimeSeries ts2(ts.getLocalTimePool());
+  TS::TimeSeries ts2(ts.getLocalTimePool());
 
-  SmartMet::Spine::TimeSeriesGenerator::LocalTimeList::const_iterator it = tlist->begin();
+  TS::TimeSeriesGenerator::LocalTimeList::const_iterator it = tlist->begin();
 
   for (const auto& value : ts)
   {
     // Add missing timesteps
     while (it != tlist->end() && *it < value.time)
     {
-      ts2.emplace_back(ts::TimedValue(*it, ts::None()));
+      ts2.emplace_back(TS::TimedValue(*it, TS::None()));
       ++it;
     }
     ts2.emplace_back(value);
@@ -397,22 +400,22 @@ void add_missing_timesteps(ts::TimeSeries& ts,
   // If there are requested timesteps after last value, add them
   while (it != tlist->end())
   {
-    ts2.emplace_back(ts::TimedValue(*it, ts::None()));
+    ts2.emplace_back(TS::TimedValue(*it, TS::None()));
     ++it;
   }
   ts = ts2;
 }
 
-TimeSeriesByLocation get_timeseries_by_fmisid(
+TS::TimeSeriesByLocation get_timeseries_by_fmisid(
     const std::string& producer,
-    const ts::TimeSeriesVectorPtr& observation_result,
-    const Spine::TimeSeriesGeneratorCache::TimeList& tlist,
+    const TS::TimeSeriesVectorPtr& observation_result,
+    const TS::TimeSeriesGeneratorCache::TimeList& tlist,
     int fmisid_index)
 
 {
   try
   {
-    TimeSeriesByLocation ret;
+	TS::TimeSeriesByLocation ret;
 
     if (is_flash_or_mobile_producer(producer))
     {
@@ -421,7 +424,7 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
     }
 
     // find fmisid time series
-    const ts::TimeSeries& fmisid_ts = observation_result->at(fmisid_index);
+    const TS::TimeSeries& fmisid_ts = observation_result->at(fmisid_index);
 
     // find indexes for locations
     std::vector<std::pair<unsigned int, unsigned int>> location_indexes;
@@ -443,17 +446,17 @@ TimeSeriesByLocation get_timeseries_by_fmisid(
     // Iterate through locations
     for (const auto& location_index : location_indexes)
     {
-      ts::TimeSeriesVectorPtr tsv(new ts::TimeSeriesVector());
+      TS::TimeSeriesVectorPtr tsv(new TS::TimeSeriesVector());
       start_index = location_index.first;
       end_index = location_index.second;
       for (unsigned int k = 0; k < observation_result->size(); k++)
       {
-        const ts::TimeSeries& ts_k = observation_result->at(k);
+        const TS::TimeSeries& ts_k = observation_result->at(k);
         if (ts_k.empty())
           tsv->push_back(ts_k);
         else
         {
-          ts::TimeSeries ts_ik(fmisid_ts.getLocalTimePool());
+          TS::TimeSeries ts_ik(fmisid_ts.getLocalTimePool());
           ts_ik.insert(ts_ik.begin(), ts_k.begin() + start_index, ts_k.begin() + end_index);
           // Add missing timesteps
           add_missing_timesteps(ts_ik, tlist);
@@ -1012,7 +1015,7 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
  */
 // ----------------------------------------------------------------------
 
-Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
+TS::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
     const Query& query, const std::string& paramname) const
 {
   try
@@ -1044,7 +1047,7 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
     timeseriesStartTime -= boost::posix_time::minutes(aggregationIntervalBehind);
     timeseriesEndTime += boost::posix_time::minutes(aggregationIntervalAhead);
 
-    Spine::TimeSeriesGeneratorOptions topt = query.toptions;
+    TS::TimeSeriesGeneratorOptions topt = query.toptions;
 
     topt.startTime = (query.toptions.startTimeUTC ? timeseriesStartTime.utc_time()
                                                   : timeseriesStartTime.local_time());
@@ -1056,10 +1059,10 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
     qdtimesteps.insert(tlist->begin(), tlist->end());
 
     // for aggregation generate timesteps also between fixed times
-    if (topt.mode == Spine::TimeSeriesGeneratorOptions::FixedTimes ||
-        topt.mode == Spine::TimeSeriesGeneratorOptions::TimeSteps)
+    if (topt.mode == TS::TimeSeriesGeneratorOptions::FixedTimes ||
+        topt.mode == TS::TimeSeriesGeneratorOptions::TimeSteps)
     {
-      topt.mode = Spine::TimeSeriesGeneratorOptions::DataTimes;
+      topt.mode = TS::TimeSeriesGeneratorOptions::DataTimes;
       topt.timeSteps = boost::none;
       topt.timeStep = boost::none;
       topt.timeList.clear();
@@ -1070,7 +1073,7 @@ Spine::TimeSeriesGenerator::LocalTimeList Plugin::generateQEngineQueryTimes(
     }
 
     // add timesteps to LocalTimeList
-    Spine::TimeSeriesGenerator::LocalTimeList ret;
+    TS::TimeSeriesGenerator::LocalTimeList ret;
     for (const auto& ldt : qdtimesteps)
       ret.push_back(ldt);
 
@@ -1133,7 +1136,7 @@ void Plugin::fetchStaticLocationValues(Query& query,
 
 Spine::LocationList get_indexmask_locations(const NFmiIndexMask& indexmask,
                                             const Spine::LocationPtr& loc,
-                                            const SmartMet::Engine::Querydata::Q& qi,
+                                            const Engine::Querydata::Q& qi,
                                             const Engine::Geonames::Engine& geoengine)
 {
   Spine::LocationList loclist;
@@ -1259,7 +1262,7 @@ void Plugin::fetchQEngineValues(const State& state,
                                 const AreaProducers& areaproducers,
                                 const ProducerDataPeriod& producerDataPeriod,
                                 QueryLevelDataCache& queryLevelDataCache,
-                                OutputData& outputData)
+                                TS::OutputData& outputData)
 
 {
   try
@@ -1356,7 +1359,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
     std::string country = state.getGeoEngine().countryName(loc->iso2, query.language);
 
-    std::vector<TimeSeriesData> aggregatedData;  // store here data of all levels
+    std::vector<TS::TimeSeriesData> aggregatedData;  // store here data of all levels
 
     // If no pressures/heights are chosen, loading all or just chosen data levels.
     //
@@ -1449,7 +1452,7 @@ void Plugin::fetchQEngineValues(const State& state,
           query.toptions.timeSteps = (*query.toptions.timeSteps) * 24;
         else
         {
-          if (query.toptions.mode != Spine::TimeSeriesGeneratorOptions::DataTimes)
+          if (query.toptions.mode != TS::TimeSeriesGeneratorOptions::DataTimes)
           {
             // In case of datatimes, setting timeSteps to zero results in empty times
             // due to start and end-times being identical
@@ -1466,7 +1469,7 @@ void Plugin::fetchQEngineValues(const State& state,
       query.toptions.timeSteps = timeStepOriginal;
 #endif
 
-      ts::Value missing_value = Spine::TimeSeries::None();
+      TS::Value missing_value = TS::None();
 
 #ifdef MYDEBUG
       std::cout << std::endl << "producer: " << producer << std::endl;
@@ -1494,7 +1497,7 @@ void Plugin::fetchQEngineValues(const State& state,
           loc->radius == 0)
       {
 
-        ts::TimeSeriesPtr querydata_result;
+        TS::TimeSeriesPtr querydata_result;
         // if we have fetched the data for this parameter earlier, use it
         if (queryLevelDataCache.itsTimeSeries.find(cacheKey) !=
             queryLevelDataCache.itsTimeSeries.end())
@@ -1503,16 +1506,16 @@ void Plugin::fetchQEngineValues(const State& state,
         }
         else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo")
         {
-          querydata_result = boost::make_shared<ts::TimeSeries>(state.getLocalTimePool());
+          querydata_result = boost::make_shared<TS::TimeSeries>(state.getLocalTimePool());
           for (const auto& t : querydata_tlist)
           {
             if (loc->fmisid && paramname == "fmisid")
             {
-              querydata_result->emplace_back(ts::TimedValue(t, *(loc->fmisid)));
+              querydata_result->emplace_back(TS::TimedValue(t, *(loc->fmisid)));
             }
             else
             {
-              querydata_result->emplace_back(ts::TimedValue(t, ts::None()));
+              querydata_result->emplace_back(TS::TimedValue(t, TS::None()));
             }
           }
         }
@@ -1550,13 +1553,13 @@ void Plugin::fetchQEngineValues(const State& state,
           }
         }
 
-        aggregatedData.emplace_back(TimeSeriesData(DataFunctions::erase_redundant_timesteps(
-            DataFunctions::aggregate(querydata_result, paramfunc.functions), tlist)));
+        aggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
+																					 TS::aggregate(querydata_result, paramfunc.functions), tlist)));
       }
       else
       {
-        ts::TimeSeriesGroupPtr querydata_result;
-        ts::TimeSeriesGroupPtr aggregated_querydata_result;
+        TS::TimeSeriesGroupPtr querydata_result;
+        TS::TimeSeriesGroupPtr aggregated_querydata_result;
 
         if (queryLevelDataCache.itsTimeSeriesGroups.find(cacheKey) !=
             queryLevelDataCache.itsTimeSeriesGroups.end())
@@ -1736,13 +1739,13 @@ void Plugin::fetchQEngineValues(const State& state,
         }  // area handling
 
         if (querydata_result->size() > 0)
-          aggregatedData.emplace_back(TimeSeriesData(DataFunctions::erase_redundant_timesteps(
-              DataFunctions::aggregate(querydata_result, paramfunc.functions), tlist)));
+          aggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
+																					   TS::aggregate(querydata_result, paramfunc.functions), tlist)));
       }
     }  // levels
 
     // store level-data
-    DataFunctions::store_data(aggregatedData, query, outputData);
+    UtilityFunctions::store_data(aggregatedData, query, outputData);
   }
   catch (...)
   {
@@ -1843,7 +1846,7 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
 
     settings.format = query.format;
     settings.stationtype = producer;
-    if (producer == SmartMet::Engine::Observation::FMI_IOT_PRODUCER)
+    if (producer == Engine::Observation::FMI_IOT_PRODUCER)
       settings.stationtype_specifier = query.iot_producer_specifier;
     settings.maxdistance = query.maxdistance_meters();
     if (!query.maxdistanceOptionGiven)
@@ -2153,9 +2156,9 @@ void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
       // max_t(temperature))
       // location parameters are handled in timeseries plugin
       if (obsparam.duplicate ||
-          (SmartMet::Spine::is_location_parameter(pname) &&
+          (Spine::is_location_parameter(pname) &&
            !is_flash_or_mobile_producer(producer)) ||
-          SmartMet::Spine::is_time_parameter(pname))
+          Spine::is_time_parameter(pname))
         continue;
 
       // fmisid must be always included (except for flash) in queries in order to get location
@@ -2425,11 +2428,11 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                            const ObsParameters& obsParameterss,
                                            Engine::Observation::Settings& settings,
                                            Query& query,
-                                           OutputData& outputData)
+                                           TS::OutputData& outputData)
 {
   try
   {
-    ts::TimeSeriesVectorPtr observation_result;
+    TS::TimeSeriesVectorPtr observation_result;
     ObsParameters obsParameters = obsParameterss;
 
     // Quick query if there is no aggregation
@@ -2440,7 +2443,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     else
     {
       // Request all observations in order to do aggregation
-      Spine::TimeSeriesGeneratorOptions tmpoptions;
+      TS::TimeSeriesGeneratorOptions tmpoptions;
       tmpoptions.startTime = settings.starttime;
       tmpoptions.endTime = settings.endtime;
       tmpoptions.startTimeUTC = query.toptions.startTimeUTC;
@@ -2457,10 +2460,10 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     if (observation_result->empty())
       return;
 
-    ts::Value missing_value = Spine::TimeSeries::None();
+    TS::Value missing_value = TS::None();
     int fmisid_index = get_fmisid_index(settings);
 
-    Spine::TimeSeriesGeneratorCache::TimeList tlist;
+    TS::TimeSeriesGeneratorCache::TimeList tlist;
     auto tz = getTimeZones().time_zone_from_string(query.timezone);
     // If query.toptions.startTime == query.toptions.endTime and timestep is missing
     // use minutes as timestep
@@ -2474,7 +2477,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     if (!query.toptions.all())
       tlist = itsTimeSeriesCache->generate(query.toptions, tz);
 
-    TimeSeriesByLocation observation_result_by_location =
+	TS::TimeSeriesByLocation observation_result_by_location =
         get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
 
     // iterate locations
@@ -2504,12 +2507,12 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
       // lets find out actual timesteps
       std::vector<boost::local_time::local_date_time> timestep_vector;
-      const ts::TimeSeries& ts = observation_result->at(0);
+      const TS::TimeSeries& ts = observation_result->at(0);
       for (const auto& value : ts)
         timestep_vector.push_back(value.time);
 
       unsigned int obs_result_field_index = 0;
-      ts::TimeSeriesVectorPtr observationResult2(new ts::TimeSeriesVector());
+      TS::TimeSeriesVectorPtr observationResult2(new TS::TimeSeriesVector());
       std::map<std::string, unsigned int> parameterResultIndexes;
 
       // Iterate parameters and store values for all parameters
@@ -2520,35 +2523,35 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
         std::string paramname(obsParam.param.name());
 
-        if (SmartMet::Spine::is_location_parameter(paramname) &&
+        if (Spine::is_location_parameter(paramname) &&
             !is_flash_or_mobile_producer(producer))
         {
           // add data for location field
-          ts::TimeSeries timeseries(state.getLocalTimePool());
+          TS::TimeSeries timeseries(state.getLocalTimePool());
 
           for (const auto& timestep : timestep_vector)
           {
-            ts::Value value = location_parameter(loc,
+            TS::Value value = location_parameter(loc,
                                                  obsParam.param.name(),
                                                  query.valueformatter,
                                                  query.timezone,
                                                  query.precisions[i],
 												 query.crs);
 
-            timeseries.emplace_back(ts::TimedValue(timestep, value));
+            timeseries.emplace_back(TS::TimedValue(timestep, value));
           }
 
           observationResult2->emplace_back(timeseries);
           parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
         }
-        else if (SmartMet::Spine::is_time_parameter(paramname))
+        else if (Spine::is_time_parameter(paramname))
         {
           // add data for time fields
           Spine::Location location(0, 0, "", query.timezone);
-          ts::TimeSeries timeseries(state.getLocalTimePool());
+          TS::TimeSeries timeseries(state.getLocalTimePool());
           for (const auto& timestep : timestep_vector)
           {
-            ts::Value value = time_parameter(paramname,
+            TS::Value value = time_parameter(paramname,
                                              timestep,
                                              state.getTime(),
                                              *loc,
@@ -2557,7 +2560,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
                                              query.outlocale,
                                              *query.timeformatter,
                                              query.timestring);
-            timeseries.emplace_back(ts::TimedValue(timestep, value));
+            timeseries.emplace_back(TS::TimedValue(timestep, value));
           }
           observationResult2->emplace_back(timeseries);
           parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
@@ -2573,9 +2576,9 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           auto result_at_index = result[obs_result_field_index];
           // If special parameter contains missing values in some timesteps, replace them with
           // exsisting values
-          if (SmartMet::Spine::is_special_parameter(paramname))
+          if (Spine::is_special_parameter(paramname))
           {
-            ts::Value actual_value = missing_value;
+            TS::Value actual_value = missing_value;
             bool missing_values_exists = false;
             for (const auto& item : result_at_index)
             {
@@ -2605,8 +2608,8 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       // Finally do aggregation if requested and remove reduntant timesteps
       observation_result = observationResult2;
 
-      ts::TimeSeriesVectorPtr aggregated_observation_result(new ts::TimeSeriesVector());
-      std::vector<TimeSeriesData> aggregatedData;
+      TS::TimeSeriesVectorPtr aggregated_observation_result(new TS::TimeSeriesVector());
+      std::vector<TS::TimeSeriesData> aggregatedData;
       // iterate parameters and do aggregation
       for (unsigned int i = 0; i < obsParameters.size(); i++)
       {
@@ -2619,19 +2622,19 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           continue;
 
         unsigned int resultIndex = parameterResultIndexes.at(paramname);
-        ts::TimeSeries ts = (*observation_result)[resultIndex];
-        Spine::ParameterFunctions pfunc = obsParam.functions;
-        ts::TimeSeriesPtr tsptr;
+        TS::TimeSeries ts = (*observation_result)[resultIndex];
+        TS::DataFunctions pfunc = obsParam.functions;
+        TS::TimeSeriesPtr tsptr;
         // If inner function exists aggregation happens
         if (pfunc.innerFunction.exists())
         {
-          tsptr = ts::aggregate(ts, pfunc);
+          tsptr = TS::Aggregator::aggregate(ts, pfunc);
           if (tsptr->empty())
             continue;
         }
         else
         {
-          tsptr = boost::make_shared<ts::TimeSeries>(state.getLocalTimePool());
+          tsptr = boost::make_shared<TS::TimeSeries>(state.getLocalTimePool());
           *tsptr = ts;
         }
         aggregated_observation_result->push_back(*tsptr);
@@ -2668,24 +2671,24 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           endTimeAsUTC = ldt.utc_time();
         }
 
-        Spine::TimeSeriesGenerator::LocalTimeList aggtimes;
-        for (const ts::TimedValue& tv : aggregated_observation_result->at(0))
+        TS::TimeSeriesGenerator::LocalTimeList aggtimes;
+        for (const TS::TimedValue& tv : aggregated_observation_result->at(0))
         {
           // Do not show timesteps beyond starttime/endtime
           if (tv.time.utc_time() >= startTimeAsUTC && tv.time.utc_time() <= endTimeAsUTC)
             aggtimes.push_back(tv.time);
         }
         // store observation data
-        DataFunctions::store_data(
-            DataFunctions::erase_redundant_timesteps(aggregated_observation_result, aggtimes),
+        UtilityFunctions::store_data(
+            TS::erase_redundant_timesteps(aggregated_observation_result, aggtimes),
             query,
             outputData);
       }
       else
       {
         // Else accept only the originally generated timesteps
-        DataFunctions::store_data(
-            DataFunctions::erase_redundant_timesteps(aggregated_observation_result, *tlist),
+        UtilityFunctions::store_data(
+            TS::erase_redundant_timesteps(aggregated_observation_result, *tlist),
             query,
             outputData);
       }
@@ -2711,12 +2714,12 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
                                          const std::string& areaName,
                                          Engine::Observation::Settings& settings,
                                          Query& query,
-                                         OutputData& outputData)
+                                         TS::OutputData& outputData)
 {
   try
   {
     // fetches results for all locations in the area and all parameters
-    ts::TimeSeriesVectorPtr observation_result = itsObsEngine->values(settings, query.toptions);
+    TS::TimeSeriesVectorPtr observation_result = itsObsEngine->values(settings, query.toptions);
 
 #ifdef MYDEBYG
     std::cout << "observation_result for area: " << *observation_result << std::endl;
@@ -2727,8 +2730,8 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     // lets find out actual timesteps: different locations may have different timesteps
     std::vector<boost::local_time::local_date_time> ts_vector;
     std::set<boost::local_time::local_date_time> ts_set;
-    const ts::TimeSeries& ts = observation_result->at(0);
-    for (const ts::TimedValue& tval : ts)
+    const TS::TimeSeries& ts = observation_result->at(0);
+    for (const TS::TimedValue& tval : ts)
       ts_set.insert(tval.time);
     ts_vector.insert(ts_vector.end(), ts_set.begin(), ts_set.end());
     std::sort(ts_vector.begin(), ts_vector.end());
@@ -2736,27 +2739,27 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     int fmisid_index = get_fmisid_index(settings);
 
     // All timesteps from result set
-    Spine::TimeSeriesGeneratorCache::TimeList tlist_all =
-        std::make_shared<Spine::TimeSeriesGenerator::LocalTimeList>(
-            Spine::TimeSeriesGenerator::LocalTimeList());
+    TS::TimeSeriesGeneratorCache::TimeList tlist_all =
+        std::make_shared<TS::TimeSeriesGenerator::LocalTimeList>(
+            TS::TimeSeriesGenerator::LocalTimeList());
     for (const auto t : ts_vector)
       tlist_all->push_back(t);
 
     // Separate timeseries of different locations to their own data structures and add missing
     // timesteps
-    TimeSeriesByLocation tsv_area =
+	TS::TimeSeriesByLocation tsv_area =
         get_timeseries_by_fmisid(producer, observation_result, tlist_all, fmisid_index);
 
-    std::vector<FmisidTSVectorPair> tsv_area_with_added_fields;
+    std::vector<TS::FmisidTSVectorPair> tsv_area_with_added_fields;
     // add data for location- and time-related fields; these fields are added by timeseries
     // plugin
-    for (FmisidTSVectorPair& val : tsv_area)
+    for (TS::FmisidTSVectorPair& val : tsv_area)
     {
-      ts::TimeSeriesVector* tsv_observation_result = val.second.get();
+      TS::TimeSeriesVector* tsv_observation_result = val.second.get();
 
-      ts::TimeSeriesVectorPtr observation_result_with_added_fields(new ts::TimeSeriesVector());
-      //		  ts::TimeSeriesVector* tsv_observation_result = observation_result.get();
-      const ts::TimeSeries& fmisid_ts = tsv_observation_result->at(fmisid_index);
+      TS::TimeSeriesVectorPtr observation_result_with_added_fields(new TS::TimeSeriesVector());
+      //		  TS::TimeSeriesVector* tsv_observation_result = observation_result.get();
+      const TS::TimeSeries& fmisid_ts = tsv_observation_result->at(fmisid_index);
 
       // fmisid may be missing for rows for which there is no data. Hence we extract
       // it from the full time timeseries once.
@@ -2771,35 +2774,35 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         std::string paramname = obsParameters[i].param.name();
 
         // add data for location fields
-        if (SmartMet::Spine::is_location_parameter(paramname) &&
+        if (Spine::is_location_parameter(paramname) &&
             !is_flash_or_mobile_producer(producer))
         {
-          ts::TimeSeries location_ts(state.getLocalTimePool());
+          TS::TimeSeries location_ts(state.getLocalTimePool());
 
           for (const auto& ts : ts_vector)
           {
-            ts::Value value = location_parameter(loc,
+            TS::Value value = location_parameter(loc,
                                                  obsParameters[i].param.name(),
                                                  query.valueformatter,
                                                  query.timezone,
                                                  query.precisions[i],
 												 query.crs);
 
-            location_ts.emplace_back(ts::TimedValue(ts, value));
+            location_ts.emplace_back(TS::TimedValue(ts, value));
           }
           observation_result_with_added_fields->push_back(location_ts);
         }
-        else if (SmartMet::Spine::is_time_parameter(paramname))
+        else if (Spine::is_time_parameter(paramname))
         {
           // add data for time fields
           Spine::Location dummyloc(0, 0, "", query.timezone);
 
-          ts::TimeSeriesGroupPtr grp(new ts::TimeSeriesGroup);
-          ts::TimeSeries time_ts(state.getLocalTimePool());
+          TS::TimeSeriesGroupPtr grp(new TS::TimeSeriesGroup);
+          TS::TimeSeries time_ts(state.getLocalTimePool());
 
           for (const auto& ts : ts_vector)
           {
-            ts::Value value = time_parameter(paramname,
+            TS::Value value = time_parameter(paramname,
                                              ts,
                                              state.getTime(),
                                              (loc ? *loc : dummyloc),
@@ -2809,7 +2812,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
                                              *query.timeformatter,
                                              query.timestring);
 
-            time_ts.emplace_back(ts::TimedValue(ts, value));
+            time_ts.emplace_back(TS::TimedValue(ts, value));
           }
           observation_result_with_added_fields->push_back(time_ts);
         }
@@ -2821,15 +2824,15 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         }
       }
       tsv_area_with_added_fields.emplace_back(
-          FmisidTSVectorPair(val.first, observation_result_with_added_fields));
+											  TS::FmisidTSVectorPair(val.first, observation_result_with_added_fields));
     }
 
 #ifdef MYDEBUG
     std::cout << "observation_result after locally added fields: " << std::endl;
 
-    for (FmisidTSVectorPair& val : tsv_area_with_added_fields)
+    for (TS::FmisidTSVectorPair& val : tsv_area_with_added_fields)
     {
-      ts::TimeSeriesVector* tsv = val.second.get();
+      TS::TimeSeriesVector* tsv = val.second.get();
       std::cout << "timeseries for fmisid " << val.first << ": " << std::endl << *tsv << std::endl;
     }
 #endif
@@ -2855,22 +2858,22 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     // ..  ..              ..
     //
 
-    std::vector<ts::TimeSeriesGroupPtr> tsg_vector;
+    std::vector<TS::TimeSeriesGroupPtr> tsg_vector;
     for (unsigned int i = 0; i < obsParameters.size(); i++)
-      tsg_vector.emplace_back(ts::TimeSeriesGroupPtr(new ts::TimeSeriesGroup));
+      tsg_vector.emplace_back(TS::TimeSeriesGroupPtr(new TS::TimeSeriesGroup));
 
     // iterate locations
 
     for (const auto& tsv_area : tsv_area_with_added_fields)
     {
-      const ts::TimeSeriesVector* tsv = tsv_area.second.get();
+      const TS::TimeSeriesVector* tsv = tsv_area.second.get();
 
       // iterate fields
       for (unsigned int k = 0; k < tsv->size(); k++)
       {
         // add k:th time series to the group
-        ts::LonLat lonlat(0, 0);  // location is not relevant here
-        ts::LonLatTimeSeries lonlat_ts(lonlat, tsv->at(k));
+        TS::LonLat lonlat(0, 0);  // location is not relevant here
+        TS::LonLatTimeSeries lonlat_ts(lonlat, tsv->at(k));
         tsg_vector[k]->push_back(lonlat_ts);
       }
     }
@@ -2879,18 +2882,18 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     std::cout << "timeseries groups: " << std::endl;
     for (unsigned int i = 0; i < tsg_vector.size(); i++)
     {
-      ts::TimeSeriesGroupPtr tsg = tsg_vector.at(i);
+      TS::TimeSeriesGroupPtr tsg = tsg_vector.at(i);
       std::cout << "group#" << i << ": " << std::endl << *tsg << std::endl;
     }
 #endif
 
-    ts::Value missing_value = Spine::TimeSeries::None();
+    TS::Value missing_value = TS::None();
     // iterate parameters, aggregate, and store aggregated result
 
     for (const auto& obsparam : obsParameters)
     {
       unsigned int data_column = obsparam.data_column;
-      ts::TimeSeriesGroupPtr tsg = tsg_vector.at(data_column);
+      TS::TimeSeriesGroupPtr tsg = tsg_vector.at(data_column);
 
       if (tsg->empty())
         continue;
@@ -2919,10 +2922,10 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           // the beginning and end of output vector
           for (unsigned int k = 1; k < tsg->size(); k++)
           {
-            ts::LonLatTimeSeries& llts = tsg->at(k);
-            ts::TimeSeries& ts = llts.timeseries;
-            ts::LonLatTimeSeries& lltsAt0 = tsg->at(0);
-            ts::TimeSeries& tsAt0 = lltsAt0.timeseries;
+            TS::LonLatTimeSeries& llts = tsg->at(k);
+            TS::TimeSeries& ts = llts.timeseries;
+            TS::LonLatTimeSeries& lltsAt0 = tsg->at(0);
+            TS::TimeSeries& tsAt0 = lltsAt0.timeseries;
 
             for (unsigned int j = 0; j < ts.size(); j++)
             {
@@ -2944,30 +2947,30 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           if (obsparam.param.name() == NAME_PARAM)
           { /*
              std::string place = (loc ? loc->name : "");
-             ts::LonLatTimeSeries& llts = tsg->at(0);
-             ts::TimeSeries& ts = llts.timeseries;
+             TS::LonLatTimeSeries& llts = tsg->at(0);
+             TS::TimeSeries& ts = llts.timeseries;
              std::string name = place;
              if (tloc.loc->type == Spine::Location::Wkt)
                    name = query.wktGeometries.getName(place);
              else if (name.find(" as ") != std::string::npos)
                    name = name.substr(name.find(" as ") + 4);
-             for (ts::TimedValue& tv : ts)
+             for (TS::TimedValue& tv : ts)
                    tv.value = name;
             */
-            ts::LonLatTimeSeries& llts = tsg->at(0);
-            ts::TimeSeries& ts = llts.timeseries;
-            for (ts::TimedValue& tv : ts)
+            TS::LonLatTimeSeries& llts = tsg->at(0);
+            TS::TimeSeries& ts = llts.timeseries;
+            for (TS::TimedValue& tv : ts)
               tv.value = areaName;
           }
         }
       }
 
-      Spine::ParameterFunctions pfunc = obsparam.functions;
+      TS::DataFunctions pfunc = obsparam.functions;
       // Do the aggregation if requasted
-      ts::TimeSeriesGroupPtr aggregated_tsg(new ts::TimeSeriesGroup);
+      TS::TimeSeriesGroupPtr aggregated_tsg(new TS::TimeSeriesGroup);
       if (pfunc.innerFunction.exists())
       {
-        *aggregated_tsg = *(ts::aggregate(*tsg, pfunc));
+        *aggregated_tsg = *(TS::aggregate(tsg, pfunc));
       }
       else
       {
@@ -2980,34 +2983,34 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
                 << *aggregated_tsg << std::endl;
 #endif
 
-      std::vector<TimeSeriesData> aggregatedData;
+      std::vector<TS::TimeSeriesData> aggregatedData;
 
       // If all timesteps are requested or producer is syke or flash accept all timesteps
       if (query.toptions.all() || is_flash_or_mobile_producer(producer) ||
           producer == SYKE_PRODUCER)
       {
-        Spine::TimeSeriesGenerator::LocalTimeList aggtimes;
-        ts::TimeSeries ts = aggregated_tsg->at(0).timeseries;
-        for (const ts::TimedValue& tv : ts)
+        TS::TimeSeriesGenerator::LocalTimeList aggtimes;
+        TS::TimeSeries ts = aggregated_tsg->at(0).timeseries;
+        for (const TS::TimedValue& tv : ts)
           aggtimes.push_back(tv.time);
         // store observation data
         aggregatedData.emplace_back(
-            TimeSeriesData(DataFunctions::erase_redundant_timesteps(aggregated_tsg, aggtimes)));
-        DataFunctions::store_data(aggregatedData, query, outputData);
+            TS::TimeSeriesData(TS::erase_redundant_timesteps(aggregated_tsg, aggtimes)));
+        UtilityFunctions::store_data(aggregatedData, query, outputData);
       }
       else
       {
         // Else accept only the original generated timesteps
         // Generate requested timesteps
-        Spine::TimeSeriesGeneratorCache::TimeList tlist;
+        TS::TimeSeriesGeneratorCache::TimeList tlist;
         auto tz = getTimeZones().time_zone_from_string(query.timezone);
         if (!query.toptions.all())
           tlist = itsTimeSeriesCache->generate(query.toptions, tz);
 
         aggregatedData.emplace_back(
-            TimeSeriesData(DataFunctions::erase_redundant_timesteps(aggregated_tsg, *tlist)));
+            TS::TimeSeriesData(TS::erase_redundant_timesteps(aggregated_tsg, *tlist)));
         // store observation data
-        DataFunctions::store_data(aggregatedData, query, outputData);
+        UtilityFunctions::store_data(aggregatedData, query, outputData);
       }
     }
   }
@@ -3027,7 +3030,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 #ifndef WITHOUT_OBSERVATION
 void Plugin::processObsEngineQuery(const State& state,
                                    Query& query,
-                                   OutputData& outputData,
+                                   TS::OutputData& outputData,
                                    const AreaProducers& areaproducers,
                                    const ProducerDataPeriod& producerDataPeriod,
                                    const ObsParameters& obsParameters)
@@ -3059,7 +3062,7 @@ void Plugin::processObsEngineQuery(const State& state,
         print_settings(settings);
 #endif
 
-        std::vector<TimeSeriesData> tsdatavector;
+        std::vector<TS::TimeSeriesData> tsdatavector;
         outputData.emplace_back(make_pair("_obs_", tsdatavector));
 
         if (!item.is_area || is_flash_or_mobile_producer(producer))
@@ -3086,7 +3089,7 @@ void Plugin::processObsEngineQuery(const State& state,
 
 void Plugin::processQEngineQuery(const State& state,
                                  Query& masterquery,
-                                 OutputData& outputData,
+                                 TS::OutputData& outputData,
                                  const AreaProducers& areaproducers,
                                  const ProducerDataPeriod& producerDataPeriod)
 {
@@ -3121,7 +3124,7 @@ void Plugin::processQEngineQuery(const State& state,
       Query query = masterquery;
       QueryLevelDataCache queryLevelDataCache;
 
-      std::vector<TimeSeriesData> tsdatavector;
+      std::vector<TS::TimeSeriesData> tsdatavector;
       outputData.emplace_back(make_pair(location_id, tsdatavector));
 
       if (masterquery.timezone == LOCALTIME_PARAM)
@@ -3175,7 +3178,7 @@ void Plugin::processQEngineQuery(const State& state,
 
 bool Plugin::processGridEngineQuery(const State& state,
                                     Query& query,
-                                    OutputData& outputData,
+                                    TS::OutputData& outputData,
                                     QueryServer::QueryStreamer_sptr queryStreamer,
                                     const AreaProducers& areaproducers,
                                     const ProducerDataPeriod& producerDataPeriod)
@@ -3340,10 +3343,10 @@ bool Plugin::processGridEngineQuery(const State& state,
                                                    itsConfig.ignoreGridGeometriesWhenPreloadReady(),
                                                    polygonPath,
                                                    geometryIdList))
-      {
-        outputData.clear();
-        return false;
-      }
+		{
+		  outputData.clear();
+		  return false;
+		}
 
       std::string country = itsGeoEngine->countryName(loc->iso2, query.language);
       // std::cout << formatLocation(*loc) << endl;
@@ -3489,7 +3492,7 @@ boost::shared_ptr<std::string> Plugin::processQuery(
 #endif
 
     // the result data is stored here during the query
-    OutputData outputData;
+    TS::OutputData outputData;
 
     const bool producerMissing = masterquery.timeproducers.empty();
     if (producerMissing)
@@ -3631,7 +3634,7 @@ void Plugin::query(const State& state,
 
     // The formatter knows which mimetype to send
 
-    SmartMet::Spine::TableFormatter* fmt = nullptr;
+    Spine::TableFormatter* fmt = nullptr;
 
     if (strcasecmp(query.format.c_str(), "IMAGE") == 0)
       fmt = new Spine::ImageFormatter();
@@ -4034,7 +4037,7 @@ void Plugin::init()
   try
   {
     // Time series cache
-    itsTimeSeriesCache.reset(new Spine::TimeSeriesGeneratorCache);
+    itsTimeSeriesCache.reset(new TS::TimeSeriesGeneratorCache);
     itsTimeSeriesCache->resize(itsConfig.maxTimeSeriesCacheSize());
 
     /* GeoEngine */

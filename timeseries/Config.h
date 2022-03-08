@@ -52,7 +52,7 @@ class Config : private boost::noncopyable
 
   const std::string& defaultWxmlVersion() const { return itsFormatterOptions.defaultWxmlVersion(); }
   const std::string& wxmlSchema() const { return itsFormatterOptions.wxmlSchema(); }
-  const SmartMet::Spine::TableFormatterOptions& formatterOptions() const
+  const Spine::TableFormatterOptions& formatterOptions() const
   {
     return itsFormatterOptions;
   }
@@ -86,7 +86,7 @@ class Config : private boost::noncopyable
   std::vector<uint> itsDefaultGridGeometries;
   bool itsIgnoreGridGeometriesWhenPreloadReady;
 
-  SmartMet::Spine::TableFormatterOptions itsFormatterOptions;
+  Spine::TableFormatterOptions itsFormatterOptions;
   Precisions itsPrecisions;
 
   std::map<std::string, Engine::Gis::postgis_identifier> postgis_identifiers;

@@ -48,11 +48,11 @@ class ProducerDataPeriod
 
   boost::posix_time::ptime getTime(const std::string& producer, eTime time_enum) const;
 
-  void getQEngineDataPeriods(const SmartMet::Engine::Querydata::Engine& querydata,
+  void getQEngineDataPeriods(const Engine::Querydata::Engine& querydata,
                              const TimeProducers& producers);
 
 #ifndef WITHOUT_OBSERVATION
-  void getObsEngineDataPeriods(const SmartMet::Engine::Observation::Engine& observation,
+  void getObsEngineDataPeriods(const Engine::Observation::Engine& observation,
                                const TimeProducers& producers,
                                const boost::posix_time::ptime& now);
 #endif
@@ -72,12 +72,12 @@ class ProducerDataPeriod
 
 #ifndef WITHOUT_OBSERVATION
   void init(const State& state,
-            const SmartMet::Engine::Querydata::Engine& querydata,
-            const SmartMet::Engine::Observation::Engine* observation,
+            const Engine::Querydata::Engine& querydata,
+            const Engine::Observation::Engine* observation,
             const TimeProducers& producers);
 #else
   void init(const State& state,
-            const SmartMet::Engine::Querydata::Engine& querydata,
+            const Engine::Querydata::Engine& querydata,
             const TimeProducers& producers);
 #endif
 

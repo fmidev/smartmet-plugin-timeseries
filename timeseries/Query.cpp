@@ -42,7 +42,7 @@ namespace
 {
 void add_sql_data_filter(const Spine::HTTP::Request& req,
                          const std::string& param_name,
-                         Spine::DataFilter& dataFilter)
+                         TS::DataFilter& dataFilter)
 {
   try
   {
@@ -445,14 +445,14 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 // ----------------------------------------------------------------------
 
 #ifndef WITHOUT_OBSERVATION
-void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
-                            const SmartMet::Engine::Querydata::Engine& theQEngine,
-                            const SmartMet::Engine::Grid::Engine* theGridEngine,
-                            const SmartMet::Engine::Observation::Engine* theObsEngine)
+void Query::parse_producers(const Spine::HTTP::Request& theReq,
+                            const Engine::Querydata::Engine& theQEngine,
+                            const Engine::Grid::Engine* theGridEngine,
+                            const Engine::Observation::Engine* theObsEngine)
 #else
-void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
-                            const SmartMet::Engine::Querydata::Engine& theQEngine,
-                            const SmartMet::Engine::Grid::Engine& theGridEngine)
+void Query::parse_producers(const Spine::HTTP::Request& theReq,
+                            const Engine::Querydata::Engine& theQEngine,
+                            const Engine::Grid::Engine& theGridEngine)
 #endif
 {
   try
@@ -484,7 +484,7 @@ void Query::parse_producers(const SmartMet::Spine::HTTP::Request& theReq,
       boost::algorithm::to_lower(p);
       if (p == "itmf")
       {
-        p = SmartMet::Engine::Observation::FMI_IOT_PRODUCER;
+        p = Engine::Observation::FMI_IOT_PRODUCER;
         iot_producer_specifier = "itmf";
       }
     }
@@ -769,20 +769,20 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     {
       if (paramfuncs.functions.innerFunction.getAggregationIntervalBehind() ==
           std::numeric_limits<unsigned int>::max())
-        const_cast<Spine::ParameterFunction&>(paramfuncs.functions.innerFunction)
+        const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction)
             .setAggregationIntervalBehind(agg_interval_behind);
       if (paramfuncs.functions.innerFunction.getAggregationIntervalAhead() ==
           std::numeric_limits<unsigned int>::max())
-        const_cast<Spine::ParameterFunction&>(paramfuncs.functions.innerFunction)
+        const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction)
             .setAggregationIntervalAhead(agg_interval_ahead);
 
       if (paramfuncs.functions.outerFunction.getAggregationIntervalBehind() ==
           std::numeric_limits<unsigned int>::max())
-        const_cast<Spine::ParameterFunction&>(paramfuncs.functions.outerFunction)
+        const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction)
             .setAggregationIntervalBehind(agg_interval_behind);
       if (paramfuncs.functions.outerFunction.getAggregationIntervalAhead() ==
           std::numeric_limits<unsigned int>::max())
-        const_cast<Spine::ParameterFunction&>(paramfuncs.functions.outerFunction)
+        const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction)
             .setAggregationIntervalAhead(agg_interval_ahead);
     }
 
@@ -794,7 +794,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
       if (maxAggregationIntervals.find(paramname) == maxAggregationIntervals.end())
         maxAggregationIntervals.insert(make_pair(paramname, AggregationInterval(0, 0)));
 
-      if (paramfuncs.functions.innerFunction.type() == Spine::FunctionType::TimeFunction)
+      if (paramfuncs.functions.innerFunction.type() == TS::FunctionType::TimeFunction)
       {
         if (maxAggregationIntervals[paramname].behind <
             paramfuncs.functions.innerFunction.getAggregationIntervalBehind())
@@ -805,7 +805,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
           maxAggregationIntervals[paramname].ahead =
               paramfuncs.functions.innerFunction.getAggregationIntervalAhead();
       }
-      else if (paramfuncs.functions.outerFunction.type() == Spine::FunctionType::TimeFunction)
+      else if (paramfuncs.functions.outerFunction.type() == TS::FunctionType::TimeFunction)
       {
         if (maxAggregationIntervals[paramname].behind <
             paramfuncs.functions.outerFunction.getAggregationIntervalBehind())

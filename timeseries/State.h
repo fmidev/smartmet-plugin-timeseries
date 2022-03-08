@@ -20,7 +20,7 @@
 #include <engines/querydata/OriginTime.h>
 #include <engines/querydata/Producer.h>
 #include <engines/querydata/Q.h>
-#include <spine/TimeSeries.h>
+#include <timeseries/TimeSeriesInclude.h>
 
 namespace Fmi
 {
@@ -68,11 +68,11 @@ class State
   State(const State& other) = delete;
 
   // Access engines
-  const SmartMet::Engine::Querydata::Engine& getQEngine() const;
-  const SmartMet::Engine::Geonames::Engine& getGeoEngine() const;
-  const SmartMet::Engine::Grid::Engine* getGridEngine() const;
+  const Engine::Querydata::Engine& getQEngine() const;
+  const Engine::Geonames::Engine& getGeoEngine() const;
+  const Engine::Grid::Engine* getGridEngine() const;
 #ifndef WITHOUT_OBSERVATION
-  SmartMet::Engine::Observation::Engine* getObsEngine() const;
+  Engine::Observation::Engine* getObsEngine() const;
 #endif
 
   const Fmi::TimeZones& getTimeZones() const;
@@ -82,21 +82,21 @@ class State
   void setTime(const boost::posix_time::ptime& theTime);
 
   // Get querydata for the given input
-  SmartMet::Engine::Querydata::Q get(
-      const SmartMet::Engine::Querydata::Producer& theProducer) const;
-  SmartMet::Engine::Querydata::Q get(
-      const SmartMet::Engine::Querydata::Producer& theProducer,
-      const SmartMet::Engine::Querydata::OriginTime& theOriginTime) const;
-  SmartMet::Spine::TimeSeries::LocalTimePoolPtr getLocalTimePool() const;
+  Engine::Querydata::Q get(
+      const Engine::Querydata::Producer& theProducer) const;
+  Engine::Querydata::Q get(
+      const Engine::Querydata::Producer& theProducer,
+      const Engine::Querydata::OriginTime& theOriginTime) const;
+  TS::LocalTimePoolPtr getLocalTimePool() const;
 
  private:
   const Plugin& itsPlugin;
   boost::posix_time::ptime itsTime;
-  SmartMet::Spine::TimeSeries::LocalTimePoolPtr itsLocalTimePool{nullptr};
+  TS::LocalTimePoolPtr itsLocalTimePool{nullptr};
 
   // Querydata caches - always make the same choice for same locations and producers
-  using QCache = std::map<SmartMet::Engine::Querydata::Producer, SmartMet::Engine::Querydata::Q>;
-  using TimedQCache = std::map<SmartMet::Engine::Querydata::OriginTime, QCache>;
+  using QCache = std::map<Engine::Querydata::Producer, Engine::Querydata::Q>;
+  using TimedQCache = std::map<Engine::Querydata::OriginTime, QCache>;
 
   mutable QCache itsQCache;
   mutable TimedQCache itsTimedQCache;
