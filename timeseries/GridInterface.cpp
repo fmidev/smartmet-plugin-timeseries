@@ -403,6 +403,8 @@ void GridInterface::prepareGridQuery(
     std::string startTime = Fmi::to_iso_string(masterquery.toptions.startTime);
     std::string endTime = Fmi::to_iso_string(masterquery.toptions.endTime);
 
+    //std::cout << startTime << " " << endTime << "\n";
+
     bool startTimeUTC = masterquery.toptions.startTimeUTC;
     bool endTimeUTC = masterquery.toptions.endTimeUTC;
 
@@ -509,6 +511,13 @@ void GridInterface::prepareGridQuery(
     }
 
     std::string latestTime = Fmi::to_iso_string(masterquery.latestTimestep);
+    std::string latestTimeUTC = latestTime;
+
+    if (!masterquery.toptions.startTimeUTC)
+      latestTimeUTC = localTimeToUtc(latestTime, tz);
+
+    if (latestTime != startTime)
+      grid_startTime = latestTimeUTC;
 
     if (masterquery.toptions.startTimeData || masterquery.toptions.endTimeData || masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes
         || masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
@@ -578,7 +587,7 @@ void GridInterface::prepareGridQuery(
 
         bool additionOk = true;
 
-        if (latestTime != startTime && ss < latestTime)
+        if (latestTime != startTime && str <= latestTimeUTC)
           additionOk = false;
 
         if (masterquery.toptions.timeList.size() > 0)
