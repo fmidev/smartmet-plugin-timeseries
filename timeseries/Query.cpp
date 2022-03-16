@@ -95,6 +95,8 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     report_unsupported_option("showpos", req.getParameter("showpos"));
     report_unsupported_option("uppercase", req.getParameter("uppercase"));
 
+    language = Spine::optional_string(req.getParameter("lang"), config.defaultLanguage());
+
     time_t tt = time(nullptr);
     if ((config.itsLastAliasCheck + 10) < tt)
     {
@@ -245,7 +247,6 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 
     timeformat = Spine::optional_string(req.getParameter("timeformat"), config.defaultTimeFormat());
 
-    language = Spine::optional_string(req.getParameter("lang"), config.defaultLanguage());
     maxdistanceOptionGiven = !!req.getParameter("maxdistance");
     maxdistance =
         Spine::optional_string(req.getParameter("maxdistance"), config.defaultMaxDistance());
