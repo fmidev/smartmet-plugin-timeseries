@@ -542,7 +542,7 @@ void GridInterface::prepareGridQuery(
 
       if (latestTime != startTime)
       {
-        grid_startTime = localTimeToUtc(latestTime, tz);
+        //grid_startTime = localTimeToUtc(latestTime, tz);
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeNotIncluded;
       }
 
