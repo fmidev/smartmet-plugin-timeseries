@@ -1625,6 +1625,11 @@ void GridInterface::processGridQuery(
                       TS::TimedValue tsValue(queryTime, C_INT(gridQuery->mQueryParameterList[cpid->second].mValueList[t]->mParameterLevel));
                       tsForNonGridParam->emplace_back(tsValue);
                     }
+                    else
+                    {
+                      TS::TimedValue tsValue(queryTime, missing_value);
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
                   }
                   else
                   {
@@ -1662,6 +1667,11 @@ void GridInterface::processGridQuery(
                     if (cpid != pidList.end())
                     {
                       TS::TimedValue tsValue(queryTime, static_cast<int>(gridQuery->mQueryParameterList[cpid->second].mValueList[t]->mParameterLevelId));
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
+                    else
+                    {
+                      TS::TimedValue tsValue(queryTime, missing_value);
                       tsForNonGridParam->emplace_back(tsValue);
                     }
                   }
@@ -1719,6 +1729,11 @@ void GridInterface::processGridQuery(
                         tsForNonGridParam->emplace_back(tsValue);
                       }
                     }
+                    else
+                    {
+                      TS::TimedValue tsValue(queryTime, missing_value);
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
                   }
                 }
                 else if (gridQuery->mQueryParameterList[pid].mParam.substr(0, 3) == "@G-")
@@ -1741,6 +1756,11 @@ void GridInterface::processGridQuery(
                         TS::TimedValue tsValue(queryTime, Fmi::to_string(gridQuery->mQueryParameterList[cpid->second].mValueList[t]->mGenerationId));
                         tsForNonGridParam->emplace_back(tsValue);
                       }
+                    }
+                    else
+                    {
+                      TS::TimedValue tsValue(queryTime, missing_value);
+                      tsForNonGridParam->emplace_back(tsValue);
                     }
                   }
                 }
@@ -1765,6 +1785,11 @@ void GridInterface::processGridQuery(
                         tsForNonGridParam->emplace_back(tsValue);
                       }
                     }
+                    else
+                    {
+                      TS::TimedValue tsValue(queryTime, missing_value);
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
                   }
                 }
                 else if (gridQuery->mQueryParameterList[pid].mParam.substr(0, 4) == "@FT-")
@@ -1776,6 +1801,11 @@ void GridInterface::processGridQuery(
                     if (cpid != pidList.end())
                     {
                       TS::TimedValue tsValue(queryTime, static_cast<int>(gridQuery->mQueryParameterList[cpid->second].mValueList[t]->mForecastType));
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
+                    else
+                    {
+                      TS::TimedValue tsValue(queryTime, missing_value);
                       tsForNonGridParam->emplace_back(tsValue);
                     }
                   }
@@ -1794,6 +1824,11 @@ void GridInterface::processGridQuery(
                     if (cpid != pidList.end())
                     {
                       TS::TimedValue tsValue(queryTime, static_cast<int>(gridQuery->mQueryParameterList[cpid->second].mValueList[t]->mForecastNumber));
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
+                    else
+                    {
+                      TS::TimedValue tsValue(queryTime, missing_value);
                       tsForNonGridParam->emplace_back(tsValue);
                     }
                   }
@@ -1882,6 +1917,11 @@ void GridInterface::processGridQuery(
                           C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mForecastNumber));
 
                       TS::TimedValue tsValue(queryTime, std::string(tmp));
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
+                    else
+                    {
+                      TS::TimedValue tsValue(queryTime, missing_value);
                       tsForNonGridParam->emplace_back(tsValue);
                     }
                   }
