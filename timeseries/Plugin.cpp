@@ -23,11 +23,11 @@
 #include <newbase/NFmiIndexMaskTools.h>
 #include <newbase/NFmiSvgTools.h>
 #include <spine/Convenience.h>
-#include <spine/ParameterTools.h>
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
 #include <gis/CoordinateTransformation.h>
-#include <spine/TableFeeder.h>
+#include <timeseries/TableFeeder.h>
+#include <timeseries/ParameterTools.h>
 #include <timeseries/TimeSeriesInclude.h>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
@@ -259,8 +259,8 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
   }
 }
 
-void add_data_to_table(const Spine::OptionParsers::ParameterList& paramlist,
-                       Spine::TableFeeder& tf,
+void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
+                       TS::TableFeeder& tf,
                        TS::OutputData& outputData,
                        const std::string& location_name,
                        int& startRow)
@@ -342,7 +342,7 @@ void fill_table(Query& query, TS::OutputData& outputData, Spine::Table& table)
     if (outputData.empty())
       return;
 
-    Spine::TableFeeder tf(table, query.valueformatter, query.precisions);
+    TS::TableFeeder tf(table, query.valueformatter, query.precisions);
     int startRow = tf.getCurrentRow();
 
     std::string locationName(outputData[0].first);
@@ -597,7 +597,7 @@ std::size_t Plugin::hash_value(const State& state,
 
     // If the query depends on locations only, that's it!
 
-    if (is_plain_location_query(masterquery.poptions.parameters()))
+    if (TS::is_plain_location_query(masterquery.poptions.parameters()))
       return hash;
 
 #ifndef WITHOUT_OBSERVATION
@@ -1121,8 +1121,8 @@ void Plugin::fetchStaticLocationValues(Query& query,
         else if (loc->type == Spine::Location::Wkt)
           loc = query.wktGeometries.getLocation(tloc.loc->name);
 
-        std::string val = location_parameter(
-											 loc, pname, query.valueformatter, query.timezone, query.precisions[column], query.crs);
+        std::string val = TS::location_parameter(loc, pname, query.valueformatter,
+            query.timezone, query.precisions[column], query.crs);
         data.set(column, row++, val);
       }
       column++;
@@ -1256,7 +1256,7 @@ void Plugin::resolveAreaLocations(Query& query,
 // ----------------------------------------------------------------------
 
 void Plugin::fetchQEngineValues(const State& state,
-                                const Spine::ParameterAndFunctions& paramfunc,
+                                const TS::ParameterAndFunctions& paramfunc,
                                 const Spine::TaggedLocation& tloc,
                                 Query& query,
                                 const AreaProducers& areaproducers,
@@ -1633,7 +1633,7 @@ void Plugin::fetchQEngineValues(const State& state,
             {
               // if the value is not dependent on location inside area
               // we just need to have the first one
-              if (!parameter_is_arithmetic(paramfunc.parameter))
+              if (!TS::parameter_is_arithmetic(paramfunc.parameter))
               {
                 auto dataIndependentValue = querydata_result->at(0);
                 querydata_result->clear();
@@ -1723,7 +1723,7 @@ void Plugin::fetchQEngineValues(const State& state,
             {
               // if the value is not dependent on location inside
               // area we just need to have the first one
-              if (!parameter_is_arithmetic(paramfunc.parameter))
+                if (!TS::parameter_is_arithmetic(paramfunc.parameter))
               {
                 auto dataIndependentValue = querydata_result->at(0);
                 querydata_result->clear();
@@ -1780,7 +1780,7 @@ std::vector<ObsParameter> Plugin::getObsParameters(const Query& query) const
         {
           std::map<std::string, unsigned int> parameter_columns;
           unsigned int column_index = 0;
-          for (const Spine::ParameterAndFunctions& paramfuncs : query.poptions.parameterFunctions())
+          for (const TS::ParameterAndFunctions& paramfuncs : query.poptions.parameterFunctions())
           {
             Spine::Parameter parameter(paramfuncs.parameter);
 
@@ -2156,9 +2156,9 @@ void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
       // max_t(temperature))
       // location parameters are handled in timeseries plugin
       if (obsparam.duplicate ||
-          (Spine::is_location_parameter(pname) &&
+          (TS::is_location_parameter(pname) &&
            !is_flash_or_mobile_producer(producer)) ||
-          Spine::is_time_parameter(pname))
+          TS::is_time_parameter(pname))
         continue;
 
       // fmisid must be always included (except for flash) in queries in order to get location
@@ -2523,7 +2523,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
         std::string paramname(obsParam.param.name());
 
-        if (Spine::is_location_parameter(paramname) &&
+        if (TS::is_location_parameter(paramname) &&
             !is_flash_or_mobile_producer(producer))
         {
           // add data for location field
@@ -2531,7 +2531,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
           for (const auto& timestep : timestep_vector)
           {
-            TS::Value value = location_parameter(loc,
+            TS::Value value = TS::location_parameter(loc,
                                                  obsParam.param.name(),
                                                  query.valueformatter,
                                                  query.timezone,
@@ -2544,14 +2544,14 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           observationResult2->emplace_back(timeseries);
           parameterResultIndexes.insert(std::make_pair(paramname, observationResult2->size() - 1));
         }
-        else if (Spine::is_time_parameter(paramname))
+        else if (TS::is_time_parameter(paramname))
         {
           // add data for time fields
           Spine::Location location(0, 0, "", query.timezone);
           TS::TimeSeries timeseries(state.getLocalTimePool());
           for (const auto& timestep : timestep_vector)
           {
-            TS::Value value = time_parameter(paramname,
+            TS::Value value = TS::time_parameter(paramname,
                                              timestep,
                                              state.getTime(),
                                              *loc,
@@ -2576,7 +2576,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           auto result_at_index = result[obs_result_field_index];
           // If special parameter contains missing values in some timesteps, replace them with
           // exsisting values
-          if (Spine::is_special_parameter(paramname))
+          if (TS::is_special_parameter(paramname))
           {
             TS::Value actual_value = missing_value;
             bool missing_values_exists = false;
@@ -2774,14 +2774,14 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         std::string paramname = obsParameters[i].param.name();
 
         // add data for location fields
-        if (Spine::is_location_parameter(paramname) &&
+        if (TS::is_location_parameter(paramname) &&
             !is_flash_or_mobile_producer(producer))
         {
           TS::TimeSeries location_ts(state.getLocalTimePool());
 
           for (const auto& ts : ts_vector)
           {
-            TS::Value value = location_parameter(loc,
+            TS::Value value = TS::location_parameter(loc,
                                                  obsParameters[i].param.name(),
                                                  query.valueformatter,
                                                  query.timezone,
@@ -2792,7 +2792,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           }
           observation_result_with_added_fields->push_back(location_ts);
         }
-        else if (Spine::is_time_parameter(paramname))
+        else if (TS::is_time_parameter(paramname))
         {
           // add data for time fields
           Spine::Location dummyloc(0, 0, "", query.timezone);
@@ -2802,7 +2802,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
 
           for (const auto& ts : ts_vector)
           {
-            TS::Value value = time_parameter(paramname,
+            TS::Value value = TS::time_parameter(paramname,
                                              ts,
                                              state.getTime(),
                                              (loc ? *loc : dummyloc),
@@ -2898,7 +2898,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       if (tsg->empty())
         continue;
 
-      if (special(obsparam.param))
+      if (TS::special(obsparam.param))
       {
         // value of these special fields is different in different locations,
         if (obsparam.param.name() != STATIONNAME_PARAM &&
@@ -3145,7 +3145,7 @@ void Plugin::processQEngineQuery(const State& state,
       // Reset for each new location, since fetchQEngineValues modifies it
       auto old_start_time = query.toptions.startTime;
 
-      for (const Spine::ParameterAndFunctions& paramfunc : query.poptions.parameterFunctions())
+      for (const TS::ParameterAndFunctions& paramfunc : query.poptions.parameterFunctions())
       {
         // reset to original start time for each new location
         query.toptions.startTime = old_start_time;
@@ -3476,7 +3476,7 @@ boost::shared_ptr<std::string> Plugin::processQuery(
     checkInKeywordLocations(masterquery);
 
     // if only location related parameters queried, use shortcut
-    if (is_plain_location_query(masterquery.poptions.parameters()))
+    if (TS::is_plain_location_query(masterquery.poptions.parameters()))
     {
       fetchStaticLocationValues(masterquery, table, 0, 0);
       return {};

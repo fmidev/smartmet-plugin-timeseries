@@ -25,7 +25,8 @@
 #include <macgyver/TimeParser.h>
 #include <newbase/NFmiPoint.h>
 #include <spine/Convenience.h>
-#include <spine/ParameterFactory.h>
+#include <timeseries/ParameterFactory.h>
+#include <timeseries/TimeSeriesGeneratorOptions.h>
 #include <algorithm>
 
 using namespace std;
@@ -208,7 +209,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     // Store WKT-geometries
     wktGeometries = state.getGeoEngine().getWktGeometries(*loptions, language);
 
-    toptions = Spine::OptionParsers::parseTimes(req);
+    toptions = TS::parseTimes(req);
 
 #ifdef MYDEBUG
     std::cout << "Time options: " << std::endl << toptions << std::endl;
@@ -299,14 +300,14 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     if (format == "wxml")
     {
       timeformat = "xml";
-      poptions.add(Spine::ParameterFactory::instance().parse("origintime"));
-      poptions.add(Spine::ParameterFactory::instance().parse("xmltime"));
-      poptions.add(Spine::ParameterFactory::instance().parse("weekday"));
-      poptions.add(Spine::ParameterFactory::instance().parse("timestring"));
-      poptions.add(Spine::ParameterFactory::instance().parse("name"));
-      poptions.add(Spine::ParameterFactory::instance().parse("geoid"));
-      poptions.add(Spine::ParameterFactory::instance().parse("longitude"));
-      poptions.add(Spine::ParameterFactory::instance().parse("latitude"));
+      poptions.add(TS::ParameterFactory::instance().parse("origintime"));
+      poptions.add(TS::ParameterFactory::instance().parse("xmltime"));
+      poptions.add(TS::ParameterFactory::instance().parse("weekday"));
+      poptions.add(TS::ParameterFactory::instance().parse("timestring"));
+      poptions.add(TS::ParameterFactory::instance().parse("name"));
+      poptions.add(TS::ParameterFactory::instance().parse("geoid"));
+      poptions.add(TS::ParameterFactory::instance().parse("longitude"));
+      poptions.add(TS::ParameterFactory::instance().parse("latitude"));
     }
 
     // This must be done after params is no longer being modified
@@ -632,7 +633,7 @@ void Query::parse_precision(const Spine::HTTP::Request& req, const Config& confi
 
     precisions.reserve(poptions.size());
 
-    for (const Spine::OptionParsers::ParameterList::value_type& p : poptions.parameters())
+    for (const TS::OptionParsers::ParameterList::value_type& p : poptions.parameters())
     {
       Precision::Map::const_iterator it = prec.parameter_precisions.find(p.name());
       if (it == prec.parameter_precisions.end())
@@ -748,8 +749,8 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     {
       try
       {
-        Spine::ParameterAndFunctions paramfuncs =
-            Spine::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
+        TS::ParameterAndFunctions paramfuncs =
+            TS::ParameterFactory::instance().parseNameAndFunctions(paramname, true);
 
         poptions.add(paramfuncs.parameter, paramfuncs.functions);
       }
@@ -781,7 +782,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
       throw Fmi::Exception(BCP, "The 'interval' option must be positive!");
 
     // set aggregation interval if it has not been set in parameter parser
-    for (const Spine::ParameterAndFunctions& paramfuncs : poptions.parameterFunctions())
+    for (const TS::ParameterAndFunctions& paramfuncs : poptions.parameterFunctions())
     {
       if (paramfuncs.functions.innerFunction.getAggregationIntervalBehind() ==
           std::numeric_limits<unsigned int>::max())
@@ -803,7 +804,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     }
 
     // store maximum aggregation intervals per parameter for later use
-    for (const Spine::ParameterAndFunctions& paramfuncs : poptions.parameterFunctions())
+    for (const TS::ParameterAndFunctions& paramfuncs : poptions.parameterFunctions())
     {
       std::string paramname(paramfuncs.parameter.name());
 

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <spine/ParameterFactory.h>
+#include <timeseries/ParameterFactory.h>
 #include <timeseries/TimeSeriesInclude.h>
 
 namespace SmartMet
