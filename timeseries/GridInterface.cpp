@@ -1007,7 +1007,7 @@ void GridInterface::processGridQuery(
 
     AdditionalParameters additionalParameters(itsTimezones, masterquery.outlocale, *masterquery.timeformatter, masterquery.valueformatter);
 
-    const Spine::OptionParsers::ParameterFunctionList& paramFuncs = masterquery.poptions.parameterFunctions();
+    const TS::OptionParsers::ParameterFunctionList& paramFuncs = masterquery.poptions.parameterFunctions();
 
     // std::cout << "LEVELTYPE : " << masterquery.leveltype << "\n";
 

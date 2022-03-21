@@ -17,6 +17,7 @@ INCLUDES += -isystem $(includedir)/mysql \
 	-isystem $(includedir)/oracle/11.2/client64
 
 LIBS += -L$(libdir) \
+	-lsmartmet-timeseries \
 	-lsmartmet-spine \
 	-lsmartmet-newbase \
 	-lsmartmet-locus \
