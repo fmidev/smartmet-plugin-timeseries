@@ -680,13 +680,12 @@ void GridInterface::prepareGridQuery(
       if (masterquery.origintime == boost::posix_time::ptime(boost::date_time::pos_infin))
       {
         // Generation: latest, newest
-        gridQuery.mGenerationFlags = 1;
+        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::LatestGeneration;
       }
       else if (masterquery.origintime == boost::posix_time::ptime(boost::date_time::neg_infin))
       {
         // Generation: oldest
-        gridQuery.mGenerationFlags = 1;
-        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::ReverseGenerationFlags;
+        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::OldestGeneration;
       }
       else
       {
