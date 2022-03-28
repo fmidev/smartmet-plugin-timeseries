@@ -130,7 +130,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                                  unsigned int row_index);
 
   void fetchQEngineValues(const State& state,
-                          const Spine::ParameterAndFunctions& paramfunc,
+                          const TS::ParameterAndFunctions& paramfunc,
                           const Spine::TaggedLocation& tloc,
                           Query& query,
                           const AreaProducers& areaproducers,

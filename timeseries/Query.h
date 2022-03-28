@@ -23,8 +23,8 @@
 #include <newbase/NFmiPoint.h>
 #include <spine/HTTP.h>
 #include <spine/Location.h>
-#include <spine/OptionParsers.h>
 #include <spine/Parameter.h>
+#include <timeseries/OptionParsers.h>
 #include <timeseries/TimeSeriesGeneratorOptions.h>
 #include <timeseries/TimeSeriesInclude.h>
 #include <list>
@@ -124,7 +124,7 @@ struct Query
   Pressures pressures;
   Heights heights;
 
-  Spine::OptionParsers::ParameterOptions poptions;
+  TS::OptionParsers::ParameterOptions poptions;
   MaxAggregationIntervals maxAggregationIntervals;
   Engine::Geonames::WktGeometries wktGeometries;
   TS::TimeSeriesGeneratorOptions toptions;
