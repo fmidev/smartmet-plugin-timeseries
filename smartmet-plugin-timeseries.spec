@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.3.21
-Release: 2%{?dist}.fmi
+Version: 22.3.28
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -97,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon Mar 28 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.3.28-1.fmi
+- Fixed handling of origintime=latest/newest/oldest requests
+
 * Mon Mar 21 2022 Andris Pavēnis <andris.pavenis@fmi.fi> 22.3.21-2.fmi
 - Fixed line positioning for additional query information
 
