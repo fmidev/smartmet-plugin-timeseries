@@ -7,3 +7,4 @@ netatmo_observations_uusimaa.get
 fmi_iot_observations.get
 fmi_iot_observations_selected_stations.get
 fmi_iot_observations_uusimaa.get
+magneto_observations.get

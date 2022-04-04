@@ -1,0 +1,1 @@
+GET /timeseries?format=ascii&fmisid=100758,101149,101932,102035,133749,133820,133821,133824,133846,133847,133879,133891&param=fmisid,utctime,localtime,MAGNX_PT10S_AVG,MAGNX_PT1M_AVG,MAGNY_PT10S_AVG,MAGNZ_PT10S_AVG,TTECH_PT1M_AVG,magnetometer_id,data_quality&producer=magneto&precision=double&starttime=202203151200&endtime=202203151205 HTTP/1.0
