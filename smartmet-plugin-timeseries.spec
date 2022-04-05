@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.3.28
+Version: 22.4.4
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -97,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon Apr 4 2022 Anssi Reponen <anssi.reponen@fmi.fi> - 22.4.4-1.fmi
+- Added magnetometer observation test (BRAINSTORM-2279)
+
 * Mon Mar 28 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.3.28-1.fmi
 - Fixed handling of origintime=latest/newest/oldest requests
 
