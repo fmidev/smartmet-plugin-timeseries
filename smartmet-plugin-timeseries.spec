@@ -18,7 +18,7 @@ BuildRequires: fmt-devel >= 7.1.3
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 22.3.18
-BuildRequires: smartmet-library-spine-devel >= 22.3.18
+BuildRequires: smartmet-library-spine-devel >= 22.4.26
 BuildRequires: smartmet-library-locus-devel >= 22.1.31
 BuildRequires: smartmet-library-macgyver-devel >= 22.3.8
 BuildRequires: smartmet-library-grid-content-devel >= 22.3.15
@@ -41,7 +41,7 @@ Requires: smartmet-library-gis >= 22.1.24
 Requires: smartmet-library-locus >= 22.1.31
 Requires: smartmet-library-macgyver >= 22.3.8
 Requires: smartmet-library-newbase >= 22.1.21
-Requires: smartmet-library-spine >= 22.3.18
+Requires: smartmet-library-spine >= 22.4.26
 Requires: smartmet-library-timeseries >= 22.3.18
 Requires: smartmet-library-gis >= 22.1.24
 Requires: smartmet-engine-geonames >= 22.3.15
@@ -58,7 +58,7 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 22.1.20
-#TestRequires: smartmet-library-spine-plugin-test >= 22.3.18
+#TestRequires: smartmet-library-spine-plugin-test >= 22.4.26
 #TestRequires: smartmet-library-newbase-devel >= 22.1.21
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 21.1.21
