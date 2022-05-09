@@ -2742,7 +2742,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     TS::TimeSeriesGeneratorCache::TimeList tlist_all =
         std::make_shared<TS::TimeSeriesGenerator::LocalTimeList>(
             TS::TimeSeriesGenerator::LocalTimeList());
-    for (const auto t : ts_vector)
+    for (const auto& t : ts_vector)
       tlist_all->push_back(t);
 
     // Separate timeseries of different locations to their own data structures and add missing
@@ -4034,6 +4034,8 @@ Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
 
 void Plugin::init()
 {
+    using namespace boost::placeholders;
+
   try
   {
     // Time series cache
