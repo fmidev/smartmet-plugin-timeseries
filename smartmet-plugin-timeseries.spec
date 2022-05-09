@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.4.28
+Version: 22.5.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,7 +27,7 @@ BuildRequires: smartmet-library-newbase-devel >= 22.1.21
 BuildRequires: smartmet-library-gis-devel >= 22.1.24
 BuildRequires: smartmet-engine-geonames-devel >= 22.3.15
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 22.3.18
+BuildRequires: smartmet-engine-observation-devel >= 22.4.25
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.3.18
 BuildRequires: smartmet-engine-gis-devel >= 22.2.10
@@ -69,7 +69,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 22.2.10
 #TestRequires: smartmet-engine-querydata >= 22.3.18
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 22.3.18
+#TestRequires: smartmet-engine-observation >= 22.4.25
 %endif
 #TestRequires: smartmet-engine-grid >= 22.3.15
 #TestRequires: gdal34
@@ -97,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon May  9 2022 Anssi Reponen <anssi.reponen@fmi.fi> - 22.5.9-1.fmi
+- Tests updated (BRAINSTORM-2297)
+
 * Thu Apr 28 2022 Andris Pavenis <andris.pavenis@fmi.fi> 22.4.28-1.fmi
 - Repackage due to SmartMet::Spine::Reactor ABI changes
 
