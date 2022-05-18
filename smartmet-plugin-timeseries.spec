@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.5.9
+Version: 22.5.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -97,6 +97,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed May 18 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.5.18-1.fmi
+- Fixed handling of station number parameters, they had no effect on ETag calculations
+
 * Mon May  9 2022 Anssi Reponen <anssi.reponen@fmi.fi> - 22.5.9-1.fmi
 - Tests updated (BRAINSTORM-2297)
 
