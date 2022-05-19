@@ -14,6 +14,7 @@
 #include <engines/gis/Engine.h>
 #include <engines/observation/Keywords.h>
 #include <fmt/format.h>
+#include <gis/CoordinateTransformation.h>
 #include <gis/OGR.h>
 #include <grid-files/common/GeneralFunctions.h>
 #include <grid-files/common/GraphFunctions.h>
@@ -25,9 +26,8 @@
 #include <spine/Convenience.h>
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
-#include <gis/CoordinateTransformation.h>
-#include <timeseries/TableFeeder.h>
 #include <timeseries/ParameterTools.h>
+#include <timeseries/TableFeeder.h>
 #include <timeseries/TimeSeriesInclude.h>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
@@ -84,60 +84,64 @@ void print_settings(const Engine::Observation::Settings& settings)
 }
 #endif
 
-
 Spine::Parameter get_query_param(const Spine::Parameter& parameter)
 {
   std::string paramname = parameter.name();
   std::string alias = parameter.alias();
   Spine::Parameter::Type type = parameter.type();
   FmiParameterName number = parameter.number();
-  if(paramname == "x")
-	{
-	  paramname = "lon";
-	  alias = "lon";
-	  type = Spine::Parameter::Type::DataDerived;
-	  number = kFmiLongitude;
-	}
-  else if(paramname == "y")
-	{
-	  paramname = "lat";
-	  alias = "lat";
-	  type = Spine::Parameter::Type::DataDerived;
-	  number = kFmiLatitude;
-	}
+  if (paramname == "x")
+  {
+    paramname = "lon";
+    alias = "lon";
+    type = Spine::Parameter::Type::DataDerived;
+    number = kFmiLongitude;
+  }
+  else if (paramname == "y")
+  {
+    paramname = "lat";
+    alias = "lat";
+    type = Spine::Parameter::Type::DataDerived;
+    number = kFmiLatitude;
+  }
 
-  return Spine::Parameter(paramname, alias, type, number);  
+  return Spine::Parameter(paramname, alias, type, number);
 }
 
-void transform_wgs84_coordinates(const std::string& name, const std::string& target_crs, const Spine::Location& loc, TS::TimeSeries& tseries)
+void transform_wgs84_coordinates(const std::string& name,
+                                 const std::string& target_crs,
+                                 const Spine::Location& loc,
+                                 TS::TimeSeries& tseries)
 {
-  if(target_crs.empty() || target_crs == "EPSG:4326")
-	return;
+  if (target_crs.empty() || target_crs == "EPSG:4326")
+    return;
 
   double longitude = loc.longitude;
   double latitude = loc.latitude;
   Fmi::CoordinateTransformation transformation("WGS84", target_crs);
   transformation.transform(longitude, latitude);
 
-  if(name == "x")
-	{
-	  for(auto& item : tseries)
-		item.value = longitude;
-	}
-  else if(name == "y")
-	{
-	  for(auto& item : tseries)
-		item.value = latitude;
-	}
+  if (name == "x")
+  {
+    for (auto& item : tseries)
+      item.value = longitude;
+  }
+  else if (name == "y")
+  {
+    for (auto& item : tseries)
+      item.value = latitude;
+  }
 }
 
-void transform_wgs84_coordinates(const std::string& name, const std::string& crs, TS::TimeSeriesGroup& tsg)
+void transform_wgs84_coordinates(const std::string& name,
+                                 const std::string& crs,
+                                 TS::TimeSeriesGroup& tsg)
 {
-  for(auto& item : tsg)
-	{
-	  Spine::Location loc(item.lonlat.lon, item.lonlat.lat);
-	  transform_wgs84_coordinates(name, crs, loc, item.timeseries);
-	}
+  for (auto& item : tsg)
+  {
+    Spine::Location loc(item.lonlat.lon, item.lonlat.lat);
+    transform_wgs84_coordinates(name, crs, loc, item.timeseries);
+  }
 }
 
 std::string get_parameter_id(const Spine::Parameter& parameter)
@@ -230,14 +234,13 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
 {
   try
   {
-
     // Allow querydata to use data specific max distances if the maxdistance option
     // was not given in the query string
 
     bool use_data_max_distance = !query.maxdistanceOptionGiven;
 
     if (areaproducers.empty())
-    {	  
+    {
       return querydata.find(location.longitude,
                             location.latitude,
                             query.maxdistance_kilometers(),
@@ -249,7 +252,7 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
     return querydata.find(areaproducers,
                           location.longitude,
                           location.latitude,
-						  query.maxdistance_kilometers(),
+                          query.maxdistance_kilometers(),
                           use_data_max_distance,
                           query.leveltype);
   }
@@ -373,8 +376,7 @@ void fill_table(Query& query, TS::OutputData& outputData, Spine::Table& table)
 
 #ifndef WITHOUT_OBSERVATION
 
-void add_missing_timesteps(TS::TimeSeries& ts,
-                           const TS::TimeSeriesGeneratorCache::TimeList& tlist)
+void add_missing_timesteps(TS::TimeSeries& ts, const TS::TimeSeriesGeneratorCache::TimeList& tlist)
 {
   if (!tlist || tlist->empty())
     return;
@@ -415,7 +417,7 @@ TS::TimeSeriesByLocation get_timeseries_by_fmisid(
 {
   try
   {
-	TS::TimeSeriesByLocation ret;
+    TS::TimeSeriesByLocation ret;
 
     if (is_flash_or_mobile_producer(producer))
     {
@@ -1121,8 +1123,8 @@ void Plugin::fetchStaticLocationValues(Query& query,
         else if (loc->type == Spine::Location::Wkt)
           loc = query.wktGeometries.getLocation(tloc.loc->name);
 
-        std::string val = TS::location_parameter(loc, pname, query.valueformatter,
-            query.timezone, query.precisions[column], query.crs);
+        std::string val = TS::location_parameter(
+            loc, pname, query.valueformatter, query.timezone, query.precisions[column], query.crs);
         data.set(column, row++, val);
       }
       column++;
@@ -1496,7 +1498,6 @@ void Plugin::fetchQEngineValues(const State& state,
       if ((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
           loc->radius == 0)
       {
-
         TS::TimeSeriesPtr querydata_result;
         // if we have fetched the data for this parameter earlier, use it
         if (queryLevelDataCache.itsTimeSeries.find(cacheKey) !=
@@ -1521,7 +1522,7 @@ void Plugin::fetchQEngineValues(const State& state,
         }
         else
         {
-		  Spine::Parameter param = get_query_param(paramfunc.parameter);
+          Spine::Parameter param = get_query_param(paramfunc.parameter);
 
           Engine::Querydata::ParameterOptions querydata_param(param,
                                                               producer,
@@ -1546,15 +1547,16 @@ void Plugin::fetchQEngineValues(const State& state,
 
           if (querydata_result->size() > 0)
           {
-			if(paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
-			  transform_wgs84_coordinates(paramfunc.parameter.name(), query.crs, *loc, *querydata_result);
+            if (paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
+              transform_wgs84_coordinates(
+                  paramfunc.parameter.name(), query.crs, *loc, *querydata_result);
 
             queryLevelDataCache.itsTimeSeries.insert(make_pair(cacheKey, querydata_result));
           }
         }
 
         aggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
-																					 TS::aggregate(querydata_result, paramfunc.functions), tlist)));
+            TS::aggregate(querydata_result, paramfunc.functions), tlist)));
       }
       else
       {
@@ -1603,7 +1605,7 @@ void Plugin::fetchQEngineValues(const State& state,
               llist = get_location_list(svgPath, tloc.tag, query.step, state.getGeoEngine());
             }
 
-			Spine::Parameter param = get_query_param(paramfunc.parameter);
+            Spine::Parameter param = get_query_param(paramfunc.parameter);
 
             Engine::Querydata::ParameterOptions querydata_param(param,
                                                                 producer,
@@ -1623,12 +1625,18 @@ void Plugin::fetchQEngineValues(const State& state,
             // list of locations, list of local times
             querydata_result =
                 loadDataLevels
-			  ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
-                : pressure
-                    ? qi->valuesAtPressure(
-                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers(), *pressure)
-                    : qi->valuesAtHeight(
-                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers(), *height);
+                    ? qi->values(
+                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
+                : pressure ? qi->valuesAtPressure(querydata_param,
+                                                  llist,
+                                                  querydata_tlist,
+                                                  query.maxdistance_kilometers(),
+                                                  *pressure)
+                           : qi->valuesAtHeight(querydata_param,
+                                                llist,
+                                                querydata_tlist,
+                                                query.maxdistance_kilometers(),
+                                                *height);
             if (querydata_result->size() > 0)
             {
               // if the value is not dependent on location inside area
@@ -1640,8 +1648,9 @@ void Plugin::fetchQEngineValues(const State& state,
                 querydata_result->push_back(dataIndependentValue);
               }
 
-			  if(paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
-				transform_wgs84_coordinates(paramfunc.parameter.name(), query.crs, *querydata_result);
+              if (paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
+                transform_wgs84_coordinates(
+                    paramfunc.parameter.name(), query.crs, *querydata_result);
 
               queryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(cacheKey, querydata_result));
             }
@@ -1687,7 +1696,7 @@ void Plugin::fetchQEngineValues(const State& state,
               mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, loc->radius);
             }
 
-			Spine::Parameter param = get_query_param(paramfunc.parameter);
+            Spine::Parameter param = get_query_param(paramfunc.parameter);
 
             Engine::Querydata::ParameterOptions querydata_param(param,
                                                                 producer,
@@ -1711,27 +1720,34 @@ void Plugin::fetchQEngineValues(const State& state,
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
             querydata_result =
                 loadDataLevels
-                    ? qi->values(querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
-                : pressure
-                    ? qi->valuesAtPressure(
-                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers(), *pressure)
-                    : qi->valuesAtHeight(
-                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers(), *height);
+                    ? qi->values(
+                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
+                : pressure ? qi->valuesAtPressure(querydata_param,
+                                                  llist,
+                                                  querydata_tlist,
+                                                  query.maxdistance_kilometers(),
+                                                  *pressure)
+                           : qi->valuesAtHeight(querydata_param,
+                                                llist,
+                                                querydata_tlist,
+                                                query.maxdistance_kilometers(),
+                                                *height);
 #pragma GCC diagnostic pop
 
             if (querydata_result->size() > 0)
             {
               // if the value is not dependent on location inside
               // area we just need to have the first one
-                if (!TS::parameter_is_arithmetic(paramfunc.parameter))
+              if (!TS::parameter_is_arithmetic(paramfunc.parameter))
               {
                 auto dataIndependentValue = querydata_result->at(0);
                 querydata_result->clear();
                 querydata_result->push_back(dataIndependentValue);
               }
 
-			  if(paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
-				transform_wgs84_coordinates(paramfunc.parameter.name(), query.crs, *querydata_result);
+              if (paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
+                transform_wgs84_coordinates(
+                    paramfunc.parameter.name(), query.crs, *querydata_result);
 
               queryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(cacheKey, querydata_result));
             }
@@ -1740,7 +1756,7 @@ void Plugin::fetchQEngineValues(const State& state,
 
         if (querydata_result->size() > 0)
           aggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
-																					   TS::aggregate(querydata_result, paramfunc.functions), tlist)));
+              TS::aggregate(querydata_result, paramfunc.functions), tlist)));
       }
     }  // levels
 
@@ -2156,8 +2172,7 @@ void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
       // max_t(temperature))
       // location parameters are handled in timeseries plugin
       if (obsparam.duplicate ||
-          (TS::is_location_parameter(pname) &&
-           !is_flash_or_mobile_producer(producer)) ||
+          (TS::is_location_parameter(pname) && !is_flash_or_mobile_producer(producer)) ||
           TS::is_time_parameter(pname))
         continue;
 
@@ -2477,7 +2492,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     if (!query.toptions.all())
       tlist = itsTimeSeriesCache->generate(query.toptions, tz);
 
-	TS::TimeSeriesByLocation observation_result_by_location =
+    TS::TimeSeriesByLocation observation_result_by_location =
         get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
 
     // iterate locations
@@ -2523,8 +2538,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 
         std::string paramname(obsParam.param.name());
 
-        if (TS::is_location_parameter(paramname) &&
-            !is_flash_or_mobile_producer(producer))
+        if (TS::is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
         {
           // add data for location field
           TS::TimeSeries timeseries(state.getLocalTimePool());
@@ -2532,11 +2546,11 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           for (const auto& timestep : timestep_vector)
           {
             TS::Value value = TS::location_parameter(loc,
-                                                 obsParam.param.name(),
-                                                 query.valueformatter,
-                                                 query.timezone,
-                                                 query.precisions[i],
-												 query.crs);
+                                                     obsParam.param.name(),
+                                                     query.valueformatter,
+                                                     query.timezone,
+                                                     query.precisions[i],
+                                                     query.crs);
 
             timeseries.emplace_back(TS::TimedValue(timestep, value));
           }
@@ -2552,14 +2566,14 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
           for (const auto& timestep : timestep_vector)
           {
             TS::Value value = TS::time_parameter(paramname,
-                                             timestep,
-                                             state.getTime(),
-                                             *loc,
-                                             query.timezone,
-                                             getTimeZones(),
-                                             query.outlocale,
-                                             *query.timeformatter,
-                                             query.timestring);
+                                                 timestep,
+                                                 state.getTime(),
+                                                 *loc,
+                                                 query.timezone,
+                                                 getTimeZones(),
+                                                 query.outlocale,
+                                                 *query.timeformatter,
+                                                 query.timestring);
             timeseries.emplace_back(TS::TimedValue(timestep, value));
           }
           observationResult2->emplace_back(timeseries);
@@ -2742,12 +2756,12 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
     TS::TimeSeriesGeneratorCache::TimeList tlist_all =
         std::make_shared<TS::TimeSeriesGenerator::LocalTimeList>(
             TS::TimeSeriesGenerator::LocalTimeList());
-    for (const auto t : ts_vector)
+    for (const auto& t : ts_vector)
       tlist_all->push_back(t);
 
     // Separate timeseries of different locations to their own data structures and add missing
     // timesteps
-	TS::TimeSeriesByLocation tsv_area =
+    TS::TimeSeriesByLocation tsv_area =
         get_timeseries_by_fmisid(producer, observation_result, tlist_all, fmisid_index);
 
     std::vector<TS::FmisidTSVectorPair> tsv_area_with_added_fields;
@@ -2774,19 +2788,18 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         std::string paramname = obsParameters[i].param.name();
 
         // add data for location fields
-        if (TS::is_location_parameter(paramname) &&
-            !is_flash_or_mobile_producer(producer))
+        if (TS::is_location_parameter(paramname) && !is_flash_or_mobile_producer(producer))
         {
           TS::TimeSeries location_ts(state.getLocalTimePool());
 
           for (const auto& ts : ts_vector)
           {
             TS::Value value = TS::location_parameter(loc,
-                                                 obsParameters[i].param.name(),
-                                                 query.valueformatter,
-                                                 query.timezone,
-                                                 query.precisions[i],
-												 query.crs);
+                                                     obsParameters[i].param.name(),
+                                                     query.valueformatter,
+                                                     query.timezone,
+                                                     query.precisions[i],
+                                                     query.crs);
 
             location_ts.emplace_back(TS::TimedValue(ts, value));
           }
@@ -2803,14 +2816,14 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
           for (const auto& ts : ts_vector)
           {
             TS::Value value = TS::time_parameter(paramname,
-                                             ts,
-                                             state.getTime(),
-                                             (loc ? *loc : dummyloc),
-                                             query.timezone,
-                                             getTimeZones(),
-                                             query.outlocale,
-                                             *query.timeformatter,
-                                             query.timestring);
+                                                 ts,
+                                                 state.getTime(),
+                                                 (loc ? *loc : dummyloc),
+                                                 query.timezone,
+                                                 getTimeZones(),
+                                                 query.outlocale,
+                                                 *query.timeformatter,
+                                                 query.timestring);
 
             time_ts.emplace_back(TS::TimedValue(ts, value));
           }
@@ -2824,7 +2837,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
         }
       }
       tsv_area_with_added_fields.emplace_back(
-											  TS::FmisidTSVectorPair(val.first, observation_result_with_added_fields));
+          TS::FmisidTSVectorPair(val.first, observation_result_with_added_fields));
     }
 
 #ifdef MYDEBUG
@@ -3095,14 +3108,6 @@ void Plugin::processQEngineQuery(const State& state,
 {
   try
   {
-    // Resolve locations for FMISDs,WMOs,LPNNs (https://jira.fmi.fi/browse/BRAINSTORM-1848)
-    Engine::Geonames::LocationOptions lopt = itsGeoEngine->parseLocations(
-        masterquery.fmisids, masterquery.lpnns, masterquery.wmos, masterquery.language);
-    const Spine::TaggedLocationList& locations = lopt.locations();
-    Spine::TaggedLocationList tagged_ll = masterquery.loptions->locations();
-    tagged_ll.insert(tagged_ll.end(), locations.begin(), locations.end());
-    masterquery.loptions->setLocations(tagged_ll);
-
     // If user wants to get grid points of area to separate lines, resolve coordinates inside area
     if (masterquery.groupareas == false)
       resolveAreaLocations(masterquery, state, areaproducers);
@@ -3343,10 +3348,10 @@ bool Plugin::processGridEngineQuery(const State& state,
                                                    itsConfig.ignoreGridGeometriesWhenPreloadReady(),
                                                    polygonPath,
                                                    geometryIdList))
-		{
-		  outputData.clear();
-		  return false;
-		}
+      {
+        outputData.clear();
+        return false;
+      }
 
       std::string country = itsGeoEngine->countryName(loc->iso2, query.language);
       // std::cout << formatLocation(*loc) << endl;
@@ -3613,6 +3618,16 @@ void Plugin::query(const State& state,
     // Options
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
     Query query(state, request, itsConfig);
+
+    // Resolve locations for FMISDs,WMOs,LPNNs (https://jira.fmi.fi/browse/BRAINSTORM-1848)
+    Engine::Geonames::LocationOptions lopt =
+        itsGeoEngine->parseLocations(query.fmisids, query.lpnns, query.wmos, query.language);
+
+    const Spine::TaggedLocationList& locations = lopt.locations();
+    Spine::TaggedLocationList tagged_ll = query.loptions->locations();
+    tagged_ll.insert(tagged_ll.end(), locations.begin(), locations.end());
+    query.loptions->setLocations(tagged_ll);
+
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
     data.setPaging(query.startrow, query.maxresults);
@@ -4034,6 +4049,8 @@ Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
 
 void Plugin::init()
 {
+  using namespace boost::placeholders;
+
   try
   {
     // Time series cache
