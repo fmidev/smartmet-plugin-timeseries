@@ -1,0 +1,4 @@
+/tmp
+/failures-sqlite
+/failures-oracle
+/failures-postgresql
