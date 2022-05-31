@@ -27,14 +27,14 @@ BuildRequires: smartmet-library-newbase-devel >= 22.5.24
 BuildRequires: smartmet-library-gis-devel >= 22.5.4
 BuildRequires: smartmet-engine-geonames-devel >= 22.5.24
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 22.5.24
+BuildRequires: smartmet-engine-observation-devel >= 22.5.31
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 22.5.24
+BuildRequires: smartmet-engine-querydata-devel >= 22.5.31
 BuildRequires: smartmet-engine-gis-devel >= 22.5.24
 BuildRequires: smartmet-engine-grid-devel >= 22.5.24
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 22.3.8
+#Requires: smartmet-engine-observation >= 22.5.31
 #%endif
 Requires: fmt >= 7.1.3
 Requires: smartmet-library-gis >= 22.5.4
@@ -45,7 +45,7 @@ Requires: smartmet-library-spine >= 22.5.24
 Requires: smartmet-library-timeseries >= 22.5.24
 Requires: smartmet-library-gis >= 22.5.4
 Requires: smartmet-engine-geonames >= 22.5.24
-Requires: smartmet-engine-querydata >= 22.5.24
+Requires: smartmet-engine-querydata >= 22.5.31
 Requires: smartmet-engine-gis >= 22.5.24
 Requires: smartmet-engine-grid >= 22.5.24
 Requires: smartmet-server >= 22.5.16
@@ -67,9 +67,9 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis >= 22.5.4
 #TestRequires: smartmet-engine-geonames >= 22.5.24
 #TestRequires: smartmet-engine-gis >= 22.5.24
-#TestRequires: smartmet-engine-querydata >= 22.5.24
+#TestRequires: smartmet-engine-querydata >= 22.5.31
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 22.4.25
+#TestRequires: smartmet-engine-observation >= 22.5.31
 %endif
 #TestRequires: smartmet-engine-grid >= 22.5.24
 #TestRequires: gdal34
