@@ -14,8 +14,10 @@ endif
 
 test-sqlite test-oracle test-postgresql:
 	rm -rf failures-$(DB_TYPE)
-	mkdir -p failures-$(DB_TYPE) tmp
-	ok=true; $(TEST_RUNNER) smartmet-plugin-test --handler /timeseries \
+	rm -rf tmp && mkdir tmp && cp output/* tmp/
+	if grep --quiet "#define WGS84 1" /usr/include/smartmet/newbase/NFmiGlobals.h; then for f in tmp/*.wgs84; do mv $$f tmp/$$(basename $$f .wgs84); done; fi
+	mkdir -p failures-$(DB_TYPE)
+	ok=true; $(TEST_RUNNER) smartmet-plugin-test --handler /timeseries -e tmp/ \
 		--reactor-config cnf/reactor_$(DB_TYPE).conf \
 		--failures-dir failures-$(DB_TYPE) \
 		$(foreach fn, input/.testignore_$(DB_TYPE) $(EXTRA_IGNORE), --ignore $(fn)) \
