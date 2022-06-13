@@ -111,7 +111,7 @@ bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
     {
       Spine::Parameter param = paramfunc.parameter;
 
-      char buf[1000];
+      char buf[param.name().length() + 100];
       strcpy(buf, param.name().c_str());
       uint c1 = 0;
       uint c2 = 0;
