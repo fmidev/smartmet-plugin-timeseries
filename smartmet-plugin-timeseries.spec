@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.7.27
+Version: 22.7.28
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -39,7 +39,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 22.7.27
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 22.7.27
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 22.7.27
+BuildRequires: smartmet-engine-querydata-devel >= 22.7.28
 BuildRequires: smartmet-engine-gis-devel >= 22.7.27
 BuildRequires: smartmet-engine-grid-devel >= 22.6.17
 # obsengine can be disabled in configuration: not included intentionally
@@ -53,9 +53,8 @@ Requires: smartmet-library-macgyver >= 22.7.27
 Requires: smartmet-library-newbase >= 22.6.16
 Requires: smartmet-library-spine >= 22.7.27
 Requires: smartmet-library-timeseries >= 22.7.27
-Requires: smartmet-library-gis >= 22.7.27
 Requires: smartmet-engine-geonames >= 22.7.27
-Requires: smartmet-engine-querydata >= 22.7.27
+Requires: smartmet-engine-querydata >= 22.7.28
 Requires: smartmet-engine-gis >= 22.7.27
 Requires: smartmet-engine-grid >= 22.6.17
 Requires: smartmet-server >= 22.5.16
@@ -77,7 +76,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis >= 22.7.27
 #TestRequires: smartmet-engine-geonames >= 22.7.27
 #TestRequires: smartmet-engine-gis >= 22.7.27
-#TestRequires: smartmet-engine-querydata >= 22.7.27
+#TestRequires: smartmet-engine-querydata >= 22.7.28
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 22.7.27
 %endif
@@ -107,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Jul 28 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.7.28-1.fmi
+- Repackaged due to QEngine ABI change
+
 * Wed Jul 27 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.7.27-1.fmi
 - Repackaged since macgyver CacheStats ABI changed
 
