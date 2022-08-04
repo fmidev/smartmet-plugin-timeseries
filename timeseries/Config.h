@@ -52,10 +52,7 @@ class Config : private boost::noncopyable
 
   const std::string& defaultWxmlVersion() const { return itsFormatterOptions.defaultWxmlVersion(); }
   const std::string& wxmlSchema() const { return itsFormatterOptions.wxmlSchema(); }
-  const Spine::TableFormatterOptions& formatterOptions() const
-  {
-    return itsFormatterOptions;
-  }
+  const Spine::TableFormatterOptions& formatterOptions() const { return itsFormatterOptions; }
   const libconfig::Config& config() const { return itsConfig; }
   Engine::Gis::PostGISIdentifierVector getPostGISIdentifiers() const;
 

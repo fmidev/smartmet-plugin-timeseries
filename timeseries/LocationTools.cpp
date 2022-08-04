@@ -392,15 +392,15 @@ Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
 
     // lets just take the first one
     if (ll.size() > 0)
-	  {
-		loc = geonames.idSearch((*ll.begin())->geoid, language);
-		if(loc)
-		  {
-			Spine::Location location(*loc);
-			location.dem = geonames.demHeight(location.longitude, location.latitude);
-			loc = boost::make_shared<Spine::Location>(location);
-		  }
-	  }
+    {
+      loc = geonames.idSearch((*ll.begin())->geoid, language);
+      if (loc)
+      {
+        Spine::Location location(*loc);
+        location.dem = geonames.demHeight(location.longitude, location.latitude);
+        loc = boost::make_shared<Spine::Location>(location);
+      }
+    }
 
     return loc;
   }

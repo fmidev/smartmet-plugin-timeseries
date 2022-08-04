@@ -82,11 +82,9 @@ class State
   void setTime(const boost::posix_time::ptime& theTime);
 
   // Get querydata for the given input
-  Engine::Querydata::Q get(
-      const Engine::Querydata::Producer& theProducer) const;
-  Engine::Querydata::Q get(
-      const Engine::Querydata::Producer& theProducer,
-      const Engine::Querydata::OriginTime& theOriginTime) const;
+  Engine::Querydata::Q get(const Engine::Querydata::Producer& theProducer) const;
+  Engine::Querydata::Q get(const Engine::Querydata::Producer& theProducer,
+                           const Engine::Querydata::OriginTime& theOriginTime) const;
   TS::LocalTimePoolPtr getLocalTimePool() const;
 
  private:

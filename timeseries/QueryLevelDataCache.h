@@ -18,10 +18,8 @@ namespace TimeSeries
 struct QueryLevelDataCache
 {
   using PressureLevelParameterPair = std::pair<float, std::string>;
-  using ParameterTimeSeriesMap =
-      std::map<PressureLevelParameterPair, TS::TimeSeriesPtr>;
-  using ParameterTimeSeriesGroupMap =
-      std::map<PressureLevelParameterPair, TS::TimeSeriesGroupPtr>;
+  using ParameterTimeSeriesMap = std::map<PressureLevelParameterPair, TS::TimeSeriesPtr>;
+  using ParameterTimeSeriesGroupMap = std::map<PressureLevelParameterPair, TS::TimeSeriesGroupPtr>;
 
   ParameterTimeSeriesMap itsTimeSeries;
   ParameterTimeSeriesGroupMap itsTimeSeriesGroups;
