@@ -99,9 +99,7 @@ void update_latest_timestep(Query& query, const TS::TimeSeriesGroup& tsg)
  */
 // ----------------------------------------------------------------------
 
-void store_data(TS::TimeSeriesVectorPtr aggregatedData,
-                Query& query,
-                TS::OutputData& outputData)
+void store_data(TS::TimeSeriesVectorPtr aggregatedData, Query& query, TS::OutputData& outputData)
 {
   try
   {
@@ -125,7 +123,9 @@ void store_data(TS::TimeSeriesVectorPtr aggregatedData,
  */
 // ----------------------------------------------------------------------
 
-void store_data(std::vector<TS::TimeSeriesData>& aggregatedData, Query& query, TS::OutputData& outputData)
+void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
+                Query& query,
+                TS::OutputData& outputData)
 {
   try
   {
@@ -135,15 +135,12 @@ void store_data(std::vector<TS::TimeSeriesData>& aggregatedData, Query& query, T
     TS::TimeSeriesData tsdata;
     if (boost::get<TS::TimeSeriesPtr>(&aggregatedData[0]))
     {
-      TS::TimeSeriesPtr ts_first =
-          *(boost::get<TS::TimeSeriesPtr>(&aggregatedData[0]));
-      TS::TimeSeriesPtr ts_result(
-          new TS::TimeSeries(ts_first->getLocalTimePool()));
+      TS::TimeSeriesPtr ts_first = *(boost::get<TS::TimeSeriesPtr>(&aggregatedData[0]));
+      TS::TimeSeriesPtr ts_result(new TS::TimeSeries(ts_first->getLocalTimePool()));
       // first merge timeseries of all levels of one parameter
       for (const auto& data : aggregatedData)
       {
-        TS::TimeSeriesPtr ts =
-            *(boost::get<TS::TimeSeriesPtr>(&data));
+        TS::TimeSeriesPtr ts = *(boost::get<TS::TimeSeriesPtr>(&data));
         ts_result->insert(ts_result->end(), ts->begin(), ts->end());
       }
       // update the latest timestep, so that next query (if exists) knows from where to continue
@@ -156,8 +153,7 @@ void store_data(std::vector<TS::TimeSeriesData>& aggregatedData, Query& query, T
       // first merge timeseries of all levels of one parameter
       for (const auto& data : aggregatedData)
       {
-        TS::TimeSeriesGroupPtr tsg =
-            *(boost::get<TS::TimeSeriesGroupPtr>(&data));
+        TS::TimeSeriesGroupPtr tsg = *(boost::get<TS::TimeSeriesGroupPtr>(&data));
         tsg_result->insert(tsg_result->end(), tsg->begin(), tsg->end());
       }
       // update the latest timestep, so that next query (if exists) knows from where to continue

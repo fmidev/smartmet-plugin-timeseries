@@ -23,10 +23,7 @@ struct ObsParameter
   unsigned int data_column;
   bool duplicate;
 
-  ObsParameter(Spine::Parameter p,
-               TS::DataFunctions funcs,
-               unsigned int dcol,
-               bool dup)
+  ObsParameter(Spine::Parameter p, TS::DataFunctions funcs, unsigned int dcol, bool dup)
       : param(p), functions(funcs), data_column(dcol), duplicate(dup)
   {
   }
