@@ -1,7 +1,7 @@
 # Examples of Timeseries Requests <!-- omit in toc -->
 
 This page has example queries. For more indepth instructions on how to make them
-see [Using the Timeseries API -page](Using-the-Timeseries-API).
+see [Using the Timeseries API -page](Using-the-Timeseries-API.md).
 
 Feel free to contribute your own examples on this page!
 
