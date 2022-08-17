@@ -1164,6 +1164,7 @@ void Plugin::resolveAreaLocations(Query& query,
                                   const State& state,
                                   const AreaProducers& areaproducers)
 {
+
   if (query.groupareas == true)
     return;
 
@@ -1693,7 +1694,8 @@ void Plugin::fetchQEngineValues(const State& state,
             {
               if (!isWkt)  // SVG for WKT has been extracted earlier
                 get_svg_path(tloc, itsGeometryStorage, svgPath);
-              mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, loc->radius);
+			  // If SVG has been extarcted earier the radius is already included
+			  mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, isWkt ? 0 : loc->radius);
             }
 
             Spine::Parameter param = get_query_param(paramfunc.parameter);
