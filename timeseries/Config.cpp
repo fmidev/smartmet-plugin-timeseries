@@ -12,6 +12,7 @@
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <spine/Convenience.h>
+#include <spine/Exceptions.h>
 #include <ogr_geometry.h>
 #include <stdexcept>
 
@@ -139,24 +140,9 @@ void Config::parse_config_precision(const string& name)
         else
           prec.parameter_precisions.insert(Precision::Map::value_type(paramname, value));
       }
-      catch (const libconfig::ParseException& e)
+      catch (...)
       {
-        throw Fmi::Exception(BCP,
-                             string("TimeSeries configuration error ' ") + e.getError() +
-                                 "' with variable '" + paramname + "' on line " +
-                                 Fmi::to_string(e.getLine()));
-      }
-      catch (const libconfig::ConfigException&)
-      {
-        throw Fmi::Exception(BCP,
-                             string("TimeSeries configuration error with variable '") + paramname +
-                                 "' on line " + Fmi::to_string(settings[i].getSourceLine()));
-      }
-      catch (const std::exception& e)
-      {
-        throw Fmi::Exception(BCP,
-                             e.what() + string(" (line number ") +
-                                 Fmi::to_string(settings[i].getSourceLine()) + ")");
+        Spine::Exceptions::handle("TimeSeries plugin");
       }
     }
 
