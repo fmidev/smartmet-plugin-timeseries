@@ -1333,9 +1333,11 @@ void GridInterface::processGridQuery(const State& state,
 
             uint rLen = gridQuery->mQueryParameterList[pid].mValueList.size();
             uint tLen = gridQuery->mForecastTimeList.size();
+            bool processed = false;
 
             if (vLen > 0 && rLen <= tLen)
             {
+              processed = true;
               // The query has returned at least some values for the parameter.
 
               for (uint v = 0; v < vLen; v++)
@@ -1435,7 +1437,65 @@ void GridInterface::processGridQuery(const State& state,
                 }
               }
             }
-            else
+
+            if (!processed  &&  coordinates.size() > 1)
+            {
+              const char *cname[] = {"lat","latitude","lon","longitude","latlon","lonlat",nullptr};
+              uint aaa = 0;
+              while (cname[aaa] != nullptr && strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), cname[aaa]) != 0)
+                aaa++;
+
+              if (cname[aaa] != nullptr)
+              {
+                processed = true;
+
+                uint len = coordinates.size();
+                for (uint i = 0; i < len; i++)
+                {
+                  TS::TimeSeries ts(state.getLocalTimePool());
+                  for (uint t = 0; t < tLen; t++)
+                  {
+                    auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastTimeUTC);
+                    boost::local_time::local_date_time queryTime(dt, tz);
+
+                    switch (aaa)
+                    {
+                      case 0:
+                      case 1:
+                      {
+                        TS::TimedValue tsValue(queryTime, TS::Value(coordinates[i].y()));
+                        ts.emplace_back(tsValue);
+                      }
+                      break;
+
+                      case 2:
+                      case 3:
+                      {
+                        TS::TimedValue tsValue(queryTime, TS::Value(coordinates[i].x()));
+                        ts.emplace_back(tsValue);
+                      }
+                      break;
+                      case 4:
+                      {
+                        TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].y(),coordinates[i].x()));
+                        ts.emplace_back(tsValue);
+                      }
+                      break;
+                      case 5:
+                      {
+                        TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].x(),coordinates[i].y()));
+                        ts.emplace_back(tsValue);
+                      }
+                      break;
+                    }
+                  }
+                  TS::LonLatTimeSeries llSeries(TS::LonLat(0, 0), ts);
+                  tsForGroup->emplace_back(llSeries);
+                }
+              }
+            }
+
+            if (!processed)
             {
               // The query has returned no values for the parameter. This usually means that the
               // parameter is not a data parameter. It is most likely "a special parameter" that is
@@ -1444,6 +1504,7 @@ void GridInterface::processGridQuery(const State& state,
               std::string paramValue;
               size_t tLen = gridQuery->mForecastTimeList.size();
               size_t t = 0;
+
 
               for (auto ft = gridQuery->mForecastTimeList.begin();
                    ft != gridQuery->mForecastTimeList.end();
@@ -1614,86 +1675,6 @@ void GridInterface::processGridQuery(const State& state,
                   if (coordinates.size() > 1)
                     output << "]";
 
-                  TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-                  tsForNonGridParam->emplace_back(tsValue);
-                }
-                else if (coordinates.size() > 1 && (
-                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "lat") == 0 ||
-                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "latitude") == 0))
-                {
-                  uint len = coordinates.size();
-                  std::ostringstream output;
-                  output << "[";
-                  for (uint i = 0; i < len; i++)
-                  {
-                    output << masterquery.valueformatter.format(
-                        coordinates[i].y(), gridQuery->mQueryParameterList[pid].mPrecision);
-                    if ((i + 1) < len)
-                      output << " ";
-                  }
-                  output << "]";
-                  TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-                  tsForNonGridParam->emplace_back(tsValue);
-                }
-                else if (coordinates.size() > 1 && (
-                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "lon") == 0 ||
-                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "longitude") == 0))
-                {
-                  uint len = coordinates.size();
-                  std::ostringstream output;
-                  output << "[";
-                  for (uint i = 0; i < len; i++)
-                  {
-                    output << masterquery.valueformatter.format(
-                        coordinates[i].x(), gridQuery->mQueryParameterList[pid].mPrecision);
-                    if ((i + 1) < len)
-                      output << " ";
-                  }
-                  output << "]";
-                  TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-                  tsForNonGridParam->emplace_back(tsValue);
-                }
-                else if (coordinates.size() > 1 &&
-                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "latlon") ==
-                             0)
-                {
-                  uint len = coordinates.size();
-                  std::ostringstream output;
-                  output << "[";
-                  for (uint i = 0; i < len; i++)
-                  {
-                    output << masterquery.valueformatter.format(
-                                  coordinates[i].x(),
-                                  gridQuery->mQueryParameterList[pid].mPrecision)
-                           << ",";
-                    output << masterquery.valueformatter.format(
-                        coordinates[i].y(), gridQuery->mQueryParameterList[pid].mPrecision);
-                    if ((i + 1) < len)
-                      output << " ";
-                  }
-                  output << "]";
-                  TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-                  tsForNonGridParam->emplace_back(tsValue);
-                }
-                else if (coordinates.size() > 1 &&
-                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "lonlat") ==
-                             0)
-                {
-                  uint len = coordinates.size();
-                  std::ostringstream output;
-                  output << "[";
-                  for (uint i = 0; i < len; i++)
-                  {
-                    output << masterquery.valueformatter.format(
-                                  coordinates[i].x(),
-                                  gridQuery->mQueryParameterList[pid].mPrecision)
-                           << ",";
-                    output << masterquery.valueformatter.format(
-                        coordinates[i].y(), gridQuery->mQueryParameterList[pid].mPrecision);
-                    if ((i + 1) < len)
-                      output << " ";
-                  }
-                  output << "]";
                   TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
                   tsForNonGridParam->emplace_back(tsValue);
                 }
