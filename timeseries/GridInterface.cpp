@@ -1617,8 +1617,9 @@ void GridInterface::processGridQuery(const State& state,
                   TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
                   tsForNonGridParam->emplace_back(tsValue);
                 }
-                else if (coordinates.size() > 1 &&
-                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "lat") == 0)
+                else if (coordinates.size() > 1 && (
+                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "lat") == 0 ||
+                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "latitude") == 0))
                 {
                   uint len = coordinates.size();
                   std::ostringstream output;
@@ -1634,8 +1635,9 @@ void GridInterface::processGridQuery(const State& state,
                   TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
                   tsForNonGridParam->emplace_back(tsValue);
                 }
-                else if (coordinates.size() > 1 &&
-                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "lon") == 0)
+                else if (coordinates.size() > 1 && (
+                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "lon") == 0 ||
+                         strcasecmp(gridQuery->mQueryParameterList[pid].mParam.c_str(), "longitude") == 0))
                 {
                   uint len = coordinates.size();
                   std::ostringstream output;
