@@ -1477,13 +1477,13 @@ void GridInterface::processGridQuery(const State& state,
                       break;
                       case 4:
                       {
-                        TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].y(),coordinates[i].x()));
+                        TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].x(),coordinates[i].y()));
                         ts.emplace_back(tsValue);
                       }
                       break;
                       case 5:
                       {
-                        TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].x(),coordinates[i].y()));
+                        TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].y(),coordinates[i].x()));
                         ts.emplace_back(tsValue);
                       }
                       break;
