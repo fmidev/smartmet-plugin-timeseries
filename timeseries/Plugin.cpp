@@ -272,19 +272,20 @@ void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
   {
     unsigned int numberOfParameters = paramlist.size();
     // iterate different locations
-    for (unsigned int i = 0; i < outputData.size(); i++)
+    for (const auto& output : outputData)
     {
-      const auto& locationName = outputData[i].first;
+      const auto& locationName = output.first;
       if (locationName != location_name)
         continue;
 
       startRow = tf.getCurrentRow();
 
-      std::vector<TS::TimeSeriesData>& outdata = outputData[i].second;
+      const std::vector<TS::TimeSeriesData>& outdata = output.second;
+
       // iterate columns (parameters)
       for (unsigned int j = 0; j < outdata.size(); j++)
       {
-        TS::TimeSeriesData tsdata = outdata[j];
+        const TS::TimeSeriesData& tsdata = outdata[j];
         tf.setCurrentRow(startRow);
         tf.setCurrentColumn(j);
 
@@ -383,7 +384,7 @@ void add_missing_timesteps(TS::TimeSeries& ts, const TS::TimeSeriesGeneratorCach
 
   TS::TimeSeries ts2(ts.getLocalTimePool());
 
-  TS::TimeSeriesGenerator::LocalTimeList::const_iterator it = tlist->begin();
+  auto it = tlist->begin();
 
   for (const auto& value : ts)
   {
@@ -854,7 +855,10 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
 {
   try
   {
-    double bottom = 0.0, top = 0.0, left = 0.0, right = 0.0;
+    double bottom = 0.0;
+    double top = 0.0;
+    double left = 0.0;
+    double right = 0.0;
 
     const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
 
@@ -925,7 +929,10 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
   FUNCTION_TRACE
   try
   {
-    double bottom = 0.0, top = 0.0, left = 0.0, right = 0.0;
+    double bottom = 0.0;
+    double top = 0.0;
+    double left = 0.0;
+    double right = 0.0;
 
     const OGRGeometry* geom = get_ogr_geometry(tloc, itsGeometryStorage);
     std::string wktString;
@@ -1007,7 +1014,7 @@ Spine::LocationPtr Plugin::getLocationForArea(const Spine::TaggedLocation& tloc,
   }
   catch (...)
   {
-    throw Fmi::Exception(BCP, "Operation failed!", NULL);
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -1164,8 +1171,7 @@ void Plugin::resolveAreaLocations(Query& query,
                                   const State& state,
                                   const AreaProducers& areaproducers)
 {
-
-  if (query.groupareas == true)
+  if (query.groupareas)
     return;
 
   Spine::TaggedLocationList tloclist;
@@ -1378,7 +1384,8 @@ void Plugin::fetchQEngineValues(const State& state,
     // Loop over the levels
     for (qi->resetLevel();;)
     {
-      boost::optional<float> pressure, height;
+      boost::optional<float> pressure;
+      boost::optional<float> height;
       float levelValue = 0;
 
       if (loadDataLevels)
@@ -1428,12 +1435,12 @@ void Plugin::fetchQEngineValues(const State& state,
 
       // remove timesteps that are later than last timestep in query data file
       // except from climatology
-      if (tlist.size() > 0 && !isClimatologyProducer)
+      if (!tlist.empty() && !isClimatologyProducer)
       {
         boost::local_time::local_date_time data_period_endtime =
             producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones());
 
-        while (tlist.size() > 0 && !data_period_endtime.is_not_a_date_time() &&
+        while (!tlist.empty() && !data_period_endtime.is_not_a_date_time() &&
                *(--tlist.end()) > data_period_endtime)
         {
           tlist.pop_back();
@@ -1546,7 +1553,7 @@ void Plugin::fetchQEngineValues(const State& state,
                                  ? qi->valuesAtPressure(querydata_param, querydata_tlist, *pressure)
                                  : qi->valuesAtHeight(querydata_param, querydata_tlist, *height);
 
-          if (querydata_result->size() > 0)
+          if (!querydata_result->empty())
           {
             if (paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
               transform_wgs84_coordinates(
@@ -1587,7 +1594,7 @@ void Plugin::fetchQEngineValues(const State& state,
                 {
                   Spine::LocationList ll =
                       get_location_list(svg, tloc.tag, query.step, state.getGeoEngine());
-                  if (ll.size() > 0)
+                  if (!ll.empty())
                     llist.insert(llist.end(), ll.begin(), ll.end());
                 }
               }
@@ -1638,7 +1645,7 @@ void Plugin::fetchQEngineValues(const State& state,
                                                 querydata_tlist,
                                                 query.maxdistance_kilometers(),
                                                 *height);
-            if (querydata_result->size() > 0)
+            if (!querydata_result->empty())
             {
               // if the value is not dependent on location inside area
               // we just need to have the first one
@@ -1694,8 +1701,8 @@ void Plugin::fetchQEngineValues(const State& state,
             {
               if (!isWkt)  // SVG for WKT has been extracted earlier
                 get_svg_path(tloc, itsGeometryStorage, svgPath);
-			  // If SVG has been extarcted earier the radius is already included
-			  mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, isWkt ? 0 : loc->radius);
+              // If SVG has been extarcted earier the radius is already included
+              mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, isWkt ? 0 : loc->radius);
             }
 
             Spine::Parameter param = get_query_param(paramfunc.parameter);
@@ -1736,7 +1743,7 @@ void Plugin::fetchQEngineValues(const State& state,
                                                 *height);
 #pragma GCC diagnostic pop
 
-            if (querydata_result->size() > 0)
+            if (!querydata_result->empty())
             {
               // if the value is not dependent on location inside
               // area we just need to have the first one
@@ -1756,7 +1763,7 @@ void Plugin::fetchQEngineValues(const State& state,
           }
         }  // area handling
 
-        if (querydata_result->size() > 0)
+        if (!querydata_result->empty())
           aggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
               TS::aggregate(querydata_result, paramfunc.functions), tlist)));
       }
@@ -2123,7 +2130,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
       {
         settings.wktArea = wktString;
       }
-      else if (stationSettings.fmisids.size() > 0)
+      else if (!stationSettings.fmisids.empty())
       {
         settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
             settings.starttime, settings.endtime, producer, stationSettings);
@@ -2142,7 +2149,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
   }
   catch (...)
   {
-    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -2398,8 +2405,8 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
           settings.starttime, settings.endtime, producer, stationSettings);
     }
 
-    if (settings.taggedFMISIDs.size() > 0 || settings.boundingBox.size() > 0 ||
-        settings.taggedLocations.size() > 0)
+    if (!settings.taggedFMISIDs.empty() || !settings.boundingBox.empty() ||
+        !settings.taggedLocations.empty())
       settingsVector.emplace_back(settings, false, "");
 
     if (settingsVector.empty() && is_flash_or_mobile_producer(producer))
@@ -2627,11 +2634,10 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       TS::TimeSeriesVectorPtr aggregated_observation_result(new TS::TimeSeriesVector());
       std::vector<TS::TimeSeriesData> aggregatedData;
       // iterate parameters and do aggregation
-      for (unsigned int i = 0; i < obsParameters.size(); i++)
+      for (const auto& obsParam : obsParameters)
       {
-        const ObsParameter& obsParam = obsParameters[i];
         std::string paramname = obsParam.param.name();
-        std::string pname_plus_snumber = get_parameter_id(obsParameters[i].param);
+        std::string pname_plus_snumber = get_parameter_id(obsParam.param);
         if (parameterResultIndexes.find(pname_plus_snumber) != parameterResultIndexes.end())
           paramname = pname_plus_snumber;
         else if (parameterResultIndexes.find(paramname) == parameterResultIndexes.end())
@@ -3111,7 +3117,7 @@ void Plugin::processQEngineQuery(const State& state,
   try
   {
     // If user wants to get grid points of area to separate lines, resolve coordinates inside area
-    if (masterquery.groupareas == false)
+    if (!masterquery.groupareas)
       resolveAreaLocations(masterquery, state, areaproducers);
 
     // first timestep is here in utc
@@ -3186,7 +3192,7 @@ void Plugin::processQEngineQuery(const State& state,
 bool Plugin::processGridEngineQuery(const State& state,
                                     Query& query,
                                     TS::OutputData& outputData,
-                                    QueryServer::QueryStreamer_sptr queryStreamer,
+                                    const QueryServer::QueryStreamer_sptr& queryStreamer,
                                     const AreaProducers& areaproducers,
                                     const ProducerDataPeriod& producerDataPeriod)
 {
@@ -3198,7 +3204,7 @@ bool Plugin::processGridEngineQuery(const State& state,
 
     boost::posix_time::ptime latestTimestep = query.latestTimestep;
 
-    BOOST_FOREACH (auto& tloc, query.loptions->locations())
+    for (auto& tloc : query.loptions->locations())
     {
       query.latestTimestep = latestTimestep;
 
@@ -3321,7 +3327,7 @@ bool Plugin::processGridEngineQuery(const State& state,
               const char* p = wkt.c_str();
               newGeom->importFromWkt(&p);
 
-              auto expandedGeom = Fmi::OGR::expandGeometry(newGeom, tloc.loc->radius);
+              auto* expandedGeom = Fmi::OGR::expandGeometry(newGeom, tloc.loc->radius);
               expandedGeomUptr.reset(expandedGeom);
 
               std::string wktString = Fmi::OGR::exportToWkt(*expandedGeom);
@@ -3381,7 +3387,7 @@ bool Plugin::processGridEngineQuery(const State& state,
   }
   catch (...)
   {
-    throw Fmi::Exception(BCP, "Operation failed!", NULL);
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
@@ -3687,7 +3693,7 @@ void Plugin::query(const State& state,
     catch (...)
     {
       if (!gridEnabled)
-        throw Fmi::Exception(BCP, "Operation failed!", NULL);
+        throw Fmi::Exception::Trace(BCP, "Operation failed!");
     }
 
     high_resolution_clock::time_point t3 = high_resolution_clock::now();
@@ -4027,7 +4033,7 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
 // ----------------------------------------------------------------------
 
 Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
-    : SmartMetPlugin(), itsModuleName("TimeSeries"), itsConfig(theConfig), itsReactor(theReactor)
+    : itsModuleName("TimeSeries"), itsConfig(theConfig), itsReactor(theReactor)
 {
   try
   {
@@ -4083,7 +4089,7 @@ void Plugin::init()
     /* GridEngine */
     if (!itsConfig.gridEngineDisabled())
     {
-      engine = itsReactor->getSingleton("grid", NULL);
+      engine = itsReactor->getSingleton("grid", nullptr);
       if (!engine)
         throw Fmi::Exception(BCP, "The 'grid-engine' unavailable!");
 
@@ -4193,7 +4199,7 @@ bool Plugin::queryIsFast(const Spine::HTTP::Request& theRequest) const
  */
 // ----------------------------------------------------------------------
 
-Plugin::~Plugin() {}
+Plugin::~Plugin() = default;
 
 // ----------------------------------------------------------------------
 /*!

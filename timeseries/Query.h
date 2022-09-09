@@ -52,6 +52,7 @@ class Config;
 
 struct Query
 {
+  Query() = delete;
   Query(const State& state, const Spine::HTTP::Request& req, Config& config);
 
   // Note: Data members ordered according to the advice of Clang Analyzer to avoid excessive padding
@@ -155,8 +156,6 @@ struct Query
   // DO NOT FORGET TO CHANGE hash_value IF YOU ADD ANY NEW PARAMETERS
 
  private:
-  Query();
-
   void parse_levels(const Spine::HTTP::Request& theReq);
 
   void parse_precision(const Spine::HTTP::Request& theReq, const Config& config);

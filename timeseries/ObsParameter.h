@@ -24,7 +24,7 @@ struct ObsParameter
   bool duplicate;
 
   ObsParameter(Spine::Parameter p, TS::DataFunctions funcs, unsigned int dcol, bool dup)
-      : param(p), functions(funcs), data_column(dcol), duplicate(dup)
+      : param(std::move(p)), functions(funcs), data_column(dcol), duplicate(dup)
   {
   }
 };

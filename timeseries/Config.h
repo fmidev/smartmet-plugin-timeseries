@@ -47,8 +47,11 @@ class Config : private boost::noncopyable
     return itsFormatterOptions.defaultWxmlTimeString();
   }
 
-  const std::vector<uint>& defaultGridGeometries() { return itsDefaultGridGeometries; }
-  bool ignoreGridGeometriesWhenPreloadReady() { return itsIgnoreGridGeometriesWhenPreloadReady; }
+  const std::vector<uint>& defaultGridGeometries() const { return itsDefaultGridGeometries; }
+  bool ignoreGridGeometriesWhenPreloadReady() const
+  {
+    return itsIgnoreGridGeometriesWhenPreloadReady;
+  }
 
   const std::string& defaultWxmlVersion() const { return itsFormatterOptions.defaultWxmlVersion(); }
   const std::string& wxmlSchema() const { return itsFormatterOptions.wxmlSchema(); }
@@ -95,7 +98,6 @@ class Config : private boost::noncopyable
 
   unsigned long long itsMaxTimeSeriesCacheSize;
 
- private:
   void add_default_precisions();
   void parse_config_precisions();
   void parse_config_precision(const std::string& name);

@@ -74,8 +74,9 @@ struct SettingsInfo
 class Plugin : public SmartMetPlugin, private boost::noncopyable
 {
  public:
+  Plugin() = delete;
   Plugin(Spine::Reactor* theReactor, const char* theConfig);
-  virtual ~Plugin();
+  ~Plugin() override;
 
   const std::string& getPluginName() const override;
   int getRequiredAPIVersion() const override;
@@ -103,8 +104,6 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
                       Spine::HTTP::Response& theResponse) override;
 
  private:
-  Plugin();
-
   std::size_t hash_value(const State& state,
                          Query masterquery,
                          const Spine::HTTP::Request& request);
@@ -141,7 +140,7 @@ class Plugin : public SmartMetPlugin, private boost::noncopyable
   bool processGridEngineQuery(const State& state,
                               Query& masterquery,
                               TS::OutputData& outputData,
-                              QueryServer::QueryStreamer_sptr queryStreamer,
+                              const QueryServer::QueryStreamer_sptr& queryStreamer,
                               const AreaProducers& areaproducers,
                               const ProducerDataPeriod& producerDataPeriod);
 

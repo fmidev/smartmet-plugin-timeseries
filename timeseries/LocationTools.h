@@ -36,7 +36,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
 std::string get_location_id(const Spine::LocationPtr& loc);
 
 Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
-                                const int id,
+                                int id,
                                 const std::string& idtype,
                                 const std::string& language);
 

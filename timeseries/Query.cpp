@@ -635,15 +635,11 @@ void Query::parse_precision(const Spine::HTTP::Request& req, const Config& confi
 
     for (const TS::OptionParsers::ParameterList::value_type& p : poptions.parameters())
     {
-      Precision::Map::const_iterator it = prec.parameter_precisions.find(p.name());
+      const auto it = prec.parameter_precisions.find(p.name());
       if (it == prec.parameter_precisions.end())
-      {
         precisions.push_back(prec.default_precision);  // unknown gets default
-      }
       else
-      {
         precisions.push_back(it->second);  // known gets configured value
-      }
     }
   }
   catch (...)
@@ -693,10 +689,9 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
         {
           Names tmp;
           boost::algorithm::split(tmp, alias, boost::algorithm::is_any_of(","));
-          for (auto tt = tmp.begin(); tt != tmp.end(); ++tt)
-          {
-            names.push_back(*tt);
-          }
+          for (const auto& tt : tmp)
+            names.push_back(tt);
+
           ind = true;
         }
         else if (itsAliasFileCollectionPtr->replaceAlias(tmpName, alias))
@@ -756,8 +751,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
       }
       catch (...)
       {
-        Fmi::Exception exception(BCP, "Parameter parsing failed for '" + paramname + "'!", NULL);
-        throw exception;
+        throw Fmi::Exception(BCP, "Parameter parsing failed for '" + paramname + "'!", nullptr);
       }
     }
     poptions.expandParameter("data_source");

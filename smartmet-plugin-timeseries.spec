@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.9.8
+Version: 22.9.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -31,7 +31,7 @@ BuildRequires: smartmet-library-timeseries-devel >= 22.7.27
 BuildRequires: smartmet-library-spine-devel >= 22.9.5
 BuildRequires: smartmet-library-locus-devel >= 22.6.17
 BuildRequires: smartmet-library-macgyver-devel >= 22.8.23
-BuildRequires: smartmet-library-grid-content-devel >= 22.8.30
+BuildRequires: smartmet-library-grid-content-devel >= 22.9.9
 BuildRequires: smartmet-library-grid-files-devel >= 22.6.23
 BuildRequires: smartmet-library-newbase-devel >= 22.8.29
 BuildRequires: smartmet-library-gis-devel >= 22.9.1
@@ -41,7 +41,7 @@ BuildRequires: smartmet-engine-observation-devel >= 22.8.29
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.9.8
 BuildRequires: smartmet-engine-gis-devel >= 22.8.25
-BuildRequires: smartmet-engine-grid-devel >= 22.8.24
+BuildRequires: smartmet-engine-grid-devel >= 22.9.9
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 22.6.17
@@ -56,7 +56,7 @@ Requires: smartmet-library-timeseries >= 22.7.27
 Requires: smartmet-engine-geonames >= 22.8.25
 Requires: smartmet-engine-querydata >= 22.9.8
 Requires: smartmet-engine-gis >= 22.8.25
-Requires: smartmet-engine-grid >= 22.8.24
+Requires: smartmet-engine-grid >= 22.9.9
 Requires: smartmet-server >= 22.8.19
 Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
@@ -72,7 +72,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 22.4.14
 #TestRequires: smartmet-test-data >= 20.12.1
-#TestRequires: smartmet-engine-grid-test >= 22.8.24
+#TestRequires: smartmet-engine-grid-test >= 22.9.9
 #TestRequires: smartmet-library-gis >= 22.9.1
 #TestRequires: smartmet-engine-geonames >= 22.8.25
 #TestRequires: smartmet-engine-gis >= 22.8.25
@@ -80,7 +80,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 22.8.29
 %endif
-#TestRequires: smartmet-engine-grid >= 22.8.24
+#TestRequires: smartmet-engine-grid >= 22.9.9
 #TestRequires: gdal34
 
 %description
@@ -106,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri Sep  9 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.9.9-1.fmi
+- Fixed several compiler warnings, some of which were on unnecessary copies
+
 * Thu Sep  8 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.9.8-1.fmi
 - Fixes to grib coordinate latlon coordinate handling
 

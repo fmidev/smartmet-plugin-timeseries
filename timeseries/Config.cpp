@@ -236,8 +236,6 @@ Config::Config(const string& configfile)
       itsDefaultUrl(default_url),
       itsDefaultMaxDistance(DEFAULT_MAXDISTANCE),
       itsExpirationTime(default_expires),
-      itsFormatterOptions(),
-      itsPrecisions(),
       itsObsEngineDisabled(false),
       itsGridEngineDisabled(false),
       itsPreventObsEngineDatabaseQuery(false),
@@ -421,7 +419,7 @@ const Precision& Config::getPrecision(const string& name) const
 {
   try
   {
-    Precisions::const_iterator p = itsPrecisions.find(name);
+    auto p = itsPrecisions.find(name);
     if (p != itsPrecisions.end())
       return p->second;
 

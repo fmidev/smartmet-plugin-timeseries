@@ -26,7 +26,7 @@ class GridInterface
  public:
   GridInterface(Engine::Grid::Engine* engine, const Fmi::TimeZones& timezones);
 
-  virtual ~GridInterface();
+  virtual ~GridInterface() = default;
 
   void processGridQuery(const State& state,
                         Query& query,
@@ -64,17 +64,17 @@ class GridInterface
                         T::GeometryId_set& geometryIdList,
                         std::vector<std::vector<T::Coordinate>>& polygonPath);
 
-  void insertFileQueries(QueryServer::Query& query,
-                         const QueryServer::QueryStreamer_sptr& queryStreamer);
+  static void insertFileQueries(QueryServer::Query& query,
+                                const QueryServer::QueryStreamer_sptr& queryStreamer);
 
   void getDataTimes(const AreaProducers& areaproducers,
                     std::string& startTime,
                     std::string& endTime);
 
-  int getParameterIndex(QueryServer::Query& gridQuery, const std::string& param);
+  static int getParameterIndex(QueryServer::Query& gridQuery, const std::string& param);
 
-  void erase_redundant_timesteps(TS::TimeSeries& ts,
-                                 std::set<boost::local_time::local_date_time>& aggregationTimes);
+  static void erase_redundant_timesteps(
+      TS::TimeSeries& ts, std::set<boost::local_time::local_date_time>& aggregationTimes);
 
   TS::TimeSeriesPtr erase_redundant_timesteps(
       TS::TimeSeriesPtr ts, std::set<boost::local_time::local_date_time>& aggregationTimes);
@@ -87,7 +87,6 @@ class GridInterface
 
   T::ParamLevelId getLevelId(const char* producerName, const Query& masterquery);
 
- private:
   Engine::Grid::Engine* itsGridEngine;
   const Fmi::TimeZones& itsTimezones;
 
