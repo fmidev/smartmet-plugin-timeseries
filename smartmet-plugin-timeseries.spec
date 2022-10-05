@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.9.9
+Version: 22.10.6
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,7 +27,7 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 22.7.27
+BuildRequires: smartmet-library-timeseries-devel >= 22.10.5
 BuildRequires: smartmet-library-spine-devel >= 22.9.5
 BuildRequires: smartmet-library-locus-devel >= 22.6.17
 BuildRequires: smartmet-library-macgyver-devel >= 22.8.23
@@ -52,7 +52,7 @@ Requires: smartmet-library-locus >= 22.6.17
 Requires: smartmet-library-macgyver >= 22.8.23
 Requires: smartmet-library-newbase >= 22.8.29
 Requires: smartmet-library-spine >= 22.9.5
-Requires: smartmet-library-timeseries >= 22.7.27
+Requires: smartmet-library-timeseries >= 22.10.5
 Requires: smartmet-engine-geonames >= 22.8.25
 Requires: smartmet-engine-querydata >= 22.9.8
 Requires: smartmet-engine-gis >= 22.8.25
@@ -106,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Oct 6 2022 Anssi Reponen <anssi.reponen@fmi.fi> - 22.10.6-1.fmi
+- Handle special parameters (time and location) in timeseries plugin (BRAINSTORM-2420)
+
 * Fri Sep  9 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.9.9-1.fmi
 - Fixed several compiler warnings, some of which were on unnecessary copies
 

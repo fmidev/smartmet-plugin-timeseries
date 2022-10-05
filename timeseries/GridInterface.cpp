@@ -7,6 +7,7 @@
 #include "LocationTools.h"
 #include "State.h"
 #include "UtilityFunctions.h"
+#include <timeseries/ParameterTools.h>
 #include <engines/grid/Engine.h>
 #include <gis/CoordinateTransformation.h>
 #include <grid-files/common/GeneralFunctions.h>
@@ -358,7 +359,6 @@ bool GridInterface::isValidDefaultRequest(const std::vector<uint>& defaultGeomet
 }
 
 void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
-                                     AdditionalParameters& additionalParameters,
                                      const Query& masterquery,
                                      uint mode,
                                      int origLevelId,
@@ -1151,7 +1151,6 @@ void GridInterface::processGridQuery(const State& state,
           splitString(geometryIdStr, ',', originalGridQuery->mGeometryIdList);
 
         prepareGridQuery(*originalGridQuery,
-                         additionalParameters,
                          masterquery,
                          mode,
                          aLevelId,
@@ -1655,6 +1654,41 @@ void GridInterface::processGridQuery(const State& state,
 
                   TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
                   tsForNonGridParam->emplace_back(tsValue);
+                }
+                else if(UtilityFunctions::is_special_parameter(gridQuery->mQueryParameterList[pid].mParam))
+                {
+                   auto paramname = gridQuery->mQueryParameterList[pid].mParam;
+                   auto timezone = masterquery.timezone;
+                   if (timezone == LOCALTIME_PARAM)
+                      timezone = loc->timezone;
+                   
+                   if(TS::is_time_parameter(paramname))
+                   {
+
+			          TS::Value paramValue = TS::time_parameter(paramname,
+                                                                queryTime,
+                                                                state.getTime(),
+                                                                *loc,
+                                                                timezone,
+                                                                itsTimezones,
+                                                                masterquery.outlocale,
+												                *masterquery.timeformatter,
+												                masterquery.timestring);
+
+                      TS::TimedValue tsValue(queryTime, paramValue);
+                      tsForNonGridParam->emplace_back(tsValue);
+                   }
+                   else if(TS::is_location_parameter(gridQuery->mQueryParameterList[pid].mParam))
+                   {
+ 			          TS::Value paramValue = TS::location_parameter(loc,
+                                                                    paramname,
+												                    masterquery.valueformatter,
+                                                                    timezone,
+                                                                    gridQuery->mQueryParameterList[pid].mPrecision,
+                                                                    masterquery.crs);
+                      TS::TimedValue tsValue(queryTime, paramValue);
+                      tsForNonGridParam->emplace_back(tsValue);
+                  }
                 }
                 else if (additionalParameters.getParameterValueByLocation(
                              gridQuery->mQueryParameterList[pid].mParam,
