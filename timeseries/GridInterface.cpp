@@ -7,7 +7,6 @@
 #include "LocationTools.h"
 #include "State.h"
 #include "UtilityFunctions.h"
-#include <timeseries/ParameterTools.h>
 #include <engines/grid/Engine.h>
 #include <gis/CoordinateTransformation.h>
 #include <grid-files/common/GeneralFunctions.h>
@@ -21,6 +20,8 @@
 #include <macgyver/TimeFormatter.h>
 #include <macgyver/TimeParser.h>
 #include <macgyver/TimeZoneFactory.h>
+#include <timeseries/ParameterKeywords.h>
+#include <timeseries/ParameterTools.h>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
@@ -1655,39 +1656,40 @@ void GridInterface::processGridQuery(const State& state,
                   TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
                   tsForNonGridParam->emplace_back(tsValue);
                 }
-                else if(UtilityFunctions::is_special_parameter(gridQuery->mQueryParameterList[pid].mParam))
+                else if (UtilityFunctions::is_special_parameter(
+                             gridQuery->mQueryParameterList[pid].mParam))
                 {
-                   auto paramname = gridQuery->mQueryParameterList[pid].mParam;
-                   auto timezone = masterquery.timezone;
-                   if (timezone == LOCALTIME_PARAM)
-                      timezone = loc->timezone;
-                   
-                   if(TS::is_time_parameter(paramname))
-                   {
+                  auto paramname = gridQuery->mQueryParameterList[pid].mParam;
+                  auto timezone = masterquery.timezone;
+                  if (timezone == LOCALTIME_PARAM)
+                    timezone = loc->timezone;
 
-			          TS::Value paramValue = TS::time_parameter(paramname,
-                                                                queryTime,
-                                                                state.getTime(),
-                                                                *loc,
-                                                                timezone,
-                                                                itsTimezones,
-                                                                masterquery.outlocale,
-												                *masterquery.timeformatter,
-												                masterquery.timestring);
+                  if (TS::is_time_parameter(paramname))
+                  {
+                    TS::Value paramValue = TS::time_parameter(paramname,
+                                                              queryTime,
+                                                              state.getTime(),
+                                                              *loc,
+                                                              timezone,
+                                                              itsTimezones,
+                                                              masterquery.outlocale,
+                                                              *masterquery.timeformatter,
+                                                              masterquery.timestring);
 
-                      TS::TimedValue tsValue(queryTime, paramValue);
-                      tsForNonGridParam->emplace_back(tsValue);
-                   }
-                   else if(TS::is_location_parameter(gridQuery->mQueryParameterList[pid].mParam))
-                   {
- 			          TS::Value paramValue = TS::location_parameter(loc,
-                                                                    paramname,
-												                    masterquery.valueformatter,
-                                                                    timezone,
-                                                                    gridQuery->mQueryParameterList[pid].mPrecision,
-                                                                    masterquery.crs);
-                      TS::TimedValue tsValue(queryTime, paramValue);
-                      tsForNonGridParam->emplace_back(tsValue);
+                    TS::TimedValue tsValue(queryTime, paramValue);
+                    tsForNonGridParam->emplace_back(tsValue);
+                  }
+                  else if (TS::is_location_parameter(gridQuery->mQueryParameterList[pid].mParam))
+                  {
+                    TS::Value paramValue =
+                        TS::location_parameter(loc,
+                                               paramname,
+                                               masterquery.valueformatter,
+                                               timezone,
+                                               gridQuery->mQueryParameterList[pid].mPrecision,
+                                               masterquery.crs);
+                    TS::TimedValue tsValue(queryTime, paramValue);
+                    tsForNonGridParam->emplace_back(tsValue);
                   }
                 }
                 else if (additionalParameters.getParameterValueByLocation(
