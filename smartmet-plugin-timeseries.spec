@@ -109,6 +109,9 @@ rm -rf $RPM_BUILD_ROOT
 * Mon Oct 10 2022 Anssi Reponen <anssi.reponen@fmi.fi> - 22.10.10-1.fmi
 - Handle special parameters (time and location) in timeseries plugin (BRAINSTORM-2420)
 
+* Wed Oct  5 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.10.5-1.fmi
+- Do not use boost::noncopyable
+
 * Fri Sep  9 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.9.9-1.fmi
 - Fixed several compiler warnings, some of which were on unnecessary copies
 

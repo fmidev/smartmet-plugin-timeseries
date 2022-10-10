@@ -12,7 +12,6 @@
 #include "Query.h"
 #include "QueryLevelDataCache.h"
 #include <boost/shared_ptr.hpp>
-#include <boost/utility.hpp>
 #include <engines/gis/GeometryStorage.h>
 #include <engines/grid/Engine.h>
 #include <grid-content/queryServer/definition/QueryStreamer.h>
@@ -71,10 +70,12 @@ struct SettingsInfo
   }
 };
 
-class Plugin : public SmartMetPlugin, private boost::noncopyable
+class Plugin : public SmartMetPlugin
 {
  public:
   Plugin() = delete;
+  Plugin(const Plugin& other) = delete;
+  Plugin& operator=(const Plugin& other) = delete;
   Plugin(Spine::Reactor* theReactor, const char* theConfig);
   ~Plugin() override;
 

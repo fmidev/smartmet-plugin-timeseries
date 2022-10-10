@@ -33,7 +33,7 @@ test:	$(TEST_PREPARE_TARGETS)
 	ok=true; \
 	if $(MAKE) -C base $@; then ok=true; else ok=false; fi; \
 	if ! $(MAKE) -C grid test; then ok=false; fi; \
-	-$(MAKE) $(TEST_FINISH_TARGETS); \
+	$(MAKE) $(TEST_FINISH_TARGETS); \
 	$$ok
 
 test-sqlite test-oracle test-postgresql: $(TEST_PREPARE_TARGETS)

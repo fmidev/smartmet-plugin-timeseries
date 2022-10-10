@@ -8,8 +8,6 @@
 
 #include "Precision.h"
 #include "Query.h"
-
-#include <boost/utility.hpp>
 #include <engines/gis/GeometryStorage.h>
 #include <engines/grid/Engine.h>
 #include <spine/Parameter.h>
@@ -25,11 +23,13 @@ namespace TimeSeries
 {
 using Precisions = std::map<std::string, Precision>;
 
-class Config : private boost::noncopyable
+class Config
 {
  public:
   Config(const std::string& configfile);
   Config() = delete;
+  Config(const Config& other) = delete;
+  Config& operator=(const Config& other) = delete;
 
   const Precision& getPrecision(const std::string& name) const;
 
