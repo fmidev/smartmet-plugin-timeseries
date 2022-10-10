@@ -53,7 +53,6 @@ class GridInterface
 
  private:
   void prepareGridQuery(QueryServer::Query& gridQuery,
-                        AdditionalParameters& additionalParameters,
                         const Query& masterquery,
                         uint mode,
                         int origLevelId,

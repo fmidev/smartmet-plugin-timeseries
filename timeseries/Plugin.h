@@ -131,6 +131,7 @@ class Plugin : public SmartMetPlugin
 
   void fetchQEngineValues(const State& state,
                           const TS::ParameterAndFunctions& paramfunc,
+                          int precision,
                           const Spine::TaggedLocation& tloc,
                           Query& query,
                           const AreaProducers& areaproducers,

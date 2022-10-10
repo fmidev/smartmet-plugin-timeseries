@@ -1,8 +1,8 @@
 #include "LocationTools.h"
 #include "LonLatDistance.h"
-#include <engines/observation/Keywords.h>
 #include <macgyver/Exception.h>
 #include <newbase/NFmiSvgTools.h>
+#include <timeseries/ParameterKeywords.h>
 
 namespace SmartMet
 {

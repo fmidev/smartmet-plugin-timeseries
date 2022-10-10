@@ -26,6 +26,7 @@
 #include <spine/Convenience.h>
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
+#include <timeseries/ParameterKeywords.h>
 #include <timeseries/ParameterTools.h>
 #include <timeseries/TableFeeder.h>
 #include <timeseries/TimeSeriesInclude.h>
@@ -1266,6 +1267,7 @@ void Plugin::resolveAreaLocations(Query& query,
 
 void Plugin::fetchQEngineValues(const State& state,
                                 const TS::ParameterAndFunctions& paramfunc,
+                                int precision,
                                 const Spine::TaggedLocation& tloc,
                                 Query& query,
                                 const AreaProducers& areaproducers,
@@ -1528,6 +1530,18 @@ void Plugin::fetchQEngineValues(const State& state,
             }
           }
         }
+        else if (UtilityFunctions::is_special_parameter(paramname))
+        {
+          querydata_result = boost::make_shared<TS::TimeSeries>(state.getLocalTimePool());
+          UtilityFunctions::get_special_parameter_values(paramname,
+                                                         precision,
+                                                         querydata_tlist,
+                                                         loc,
+                                                         query,
+                                                         state,
+                                                         getTimeZones(),
+                                                         querydata_result);
+        }
         else
         {
           Spine::Parameter param = get_query_param(paramfunc.parameter);
@@ -1552,15 +1566,14 @@ void Plugin::fetchQEngineValues(const State& state,
                              : pressure
                                  ? qi->valuesAtPressure(querydata_param, querydata_tlist, *pressure)
                                  : qi->valuesAtHeight(querydata_param, querydata_tlist, *height);
+        }
+        if (!querydata_result->empty())
+        {
+          if (paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
+            transform_wgs84_coordinates(
+                paramfunc.parameter.name(), query.crs, *loc, *querydata_result);
 
-          if (!querydata_result->empty())
-          {
-            if (paramfunc.parameter.name() == "x" || paramfunc.parameter.name() == "y")
-              transform_wgs84_coordinates(
-                  paramfunc.parameter.name(), query.crs, *loc, *querydata_result);
-
-            queryLevelDataCache.itsTimeSeries.insert(make_pair(cacheKey, querydata_result));
-          }
+          queryLevelDataCache.itsTimeSeries.insert(make_pair(cacheKey, querydata_result));
         }
 
         aggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
@@ -1613,38 +1626,54 @@ void Plugin::fetchQEngineValues(const State& state,
               llist = get_location_list(svgPath, tloc.tag, query.step, state.getGeoEngine());
             }
 
-            Spine::Parameter param = get_query_param(paramfunc.parameter);
+            if (UtilityFunctions::is_special_parameter(paramname))
+            {
+              querydata_result = boost::make_shared<TS::TimeSeriesGroup>();
+              UtilityFunctions::get_special_parameter_values(paramname,
+                                                             precision,
+                                                             querydata_tlist,
+                                                             llist,
+                                                             query,
+                                                             state,
+                                                             getTimeZones(),
+                                                             querydata_result);
+            }
+            else
+            {
+              Spine::Parameter param = get_query_param(paramfunc.parameter);
 
-            Engine::Querydata::ParameterOptions querydata_param(param,
-                                                                producer,
-                                                                *loc,
-                                                                country,
-                                                                tloc.tag,
-                                                                *query.timeformatter,
-                                                                query.timestring,
-                                                                query.language,
-                                                                query.outlocale,
-                                                                query.timezone,
-                                                                query.findnearestvalidpoint,
-                                                                nearestpoint,
-                                                                query.lastpoint,
-                                                                state.getLocalTimePool());
+              Engine::Querydata::ParameterOptions querydata_param(param,
+                                                                  producer,
+                                                                  *loc,
+                                                                  country,
+                                                                  tloc.tag,
+                                                                  *query.timeformatter,
+                                                                  query.timestring,
+                                                                  query.language,
+                                                                  query.outlocale,
+                                                                  query.timezone,
+                                                                  query.findnearestvalidpoint,
+                                                                  nearestpoint,
+                                                                  query.lastpoint,
+                                                                  state.getLocalTimePool());
 
-            // list of locations, list of local times
-            querydata_result =
-                loadDataLevels
-                    ? qi->values(
-                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
-                : pressure ? qi->valuesAtPressure(querydata_param,
+              // list of locations, list of local times
+              querydata_result =
+                  loadDataLevels
+                      ? qi->values(
+                            querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
+                  : pressure ? qi->valuesAtPressure(querydata_param,
+                                                    llist,
+                                                    querydata_tlist,
+                                                    query.maxdistance_kilometers(),
+                                                    *pressure)
+                             : qi->valuesAtHeight(querydata_param,
                                                   llist,
                                                   querydata_tlist,
                                                   query.maxdistance_kilometers(),
-                                                  *pressure)
-                           : qi->valuesAtHeight(querydata_param,
-                                                llist,
-                                                querydata_tlist,
-                                                query.maxdistance_kilometers(),
-                                                *height);
+                                                  *height);
+            }
+
             if (!querydata_result->empty())
             {
               // if the value is not dependent on location inside area
@@ -1705,43 +1734,58 @@ void Plugin::fetchQEngineValues(const State& state,
               mask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, isWkt ? 0 : loc->radius);
             }
 
-            Spine::Parameter param = get_query_param(paramfunc.parameter);
-
-            Engine::Querydata::ParameterOptions querydata_param(param,
-                                                                producer,
-                                                                *loc,
-                                                                country,
-                                                                tloc.tag,
-                                                                *query.timeformatter,
-                                                                query.timestring,
-                                                                query.language,
-                                                                query.outlocale,
-                                                                query.timezone,
-                                                                query.findnearestvalidpoint,
-                                                                nearestpoint,
-                                                                query.lastpoint,
-                                                                state.getLocalTimePool());
-
             // Indexmask (indexed locations on the area)
             Spine::LocationList llist = get_indexmask_locations(mask, loc, qi, *itsGeoEngine);
 
+            if (UtilityFunctions::is_special_parameter(paramname))
+            {
+              querydata_result = boost::make_shared<TS::TimeSeriesGroup>();
+              UtilityFunctions::get_special_parameter_values(paramname,
+                                                             precision,
+                                                             querydata_tlist,
+                                                             llist,
+                                                             query,
+                                                             state,
+                                                             getTimeZones(),
+                                                             querydata_result);
+            }
+            else
+            {
+              Spine::Parameter param = get_query_param(paramfunc.parameter);
+
+              Engine::Querydata::ParameterOptions querydata_param(param,
+                                                                  producer,
+                                                                  *loc,
+                                                                  country,
+                                                                  tloc.tag,
+                                                                  *query.timeformatter,
+                                                                  query.timestring,
+                                                                  query.language,
+                                                                  query.outlocale,
+                                                                  query.timezone,
+                                                                  query.findnearestvalidpoint,
+                                                                  nearestpoint,
+                                                                  query.lastpoint,
+                                                                  state.getLocalTimePool());
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-            querydata_result =
-                loadDataLevels
-                    ? qi->values(
-                          querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
-                : pressure ? qi->valuesAtPressure(querydata_param,
+              querydata_result =
+                  loadDataLevels
+                      ? qi->values(
+                            querydata_param, llist, querydata_tlist, query.maxdistance_kilometers())
+                  : pressure ? qi->valuesAtPressure(querydata_param,
+                                                    llist,
+                                                    querydata_tlist,
+                                                    query.maxdistance_kilometers(),
+                                                    *pressure)
+                             : qi->valuesAtHeight(querydata_param,
                                                   llist,
                                                   querydata_tlist,
                                                   query.maxdistance_kilometers(),
-                                                  *pressure)
-                           : qi->valuesAtHeight(querydata_param,
-                                                llist,
-                                                querydata_tlist,
-                                                query.maxdistance_kilometers(),
-                                                *height);
+                                                  *height);
 #pragma GCC diagnostic pop
+            }
 
             if (!querydata_result->empty())
             {
@@ -3158,6 +3202,7 @@ void Plugin::processQEngineQuery(const State& state,
       // Reset for each new location, since fetchQEngineValues modifies it
       auto old_start_time = query.toptions.startTime;
 
+      int column = 0;
       for (const TS::ParameterAndFunctions& paramfunc : query.poptions.parameterFunctions())
       {
         // reset to original start time for each new location
@@ -3171,12 +3216,14 @@ void Plugin::processQEngineQuery(const State& state,
         }
         fetchQEngineValues(state,
                            paramfunc,
+                           query.precisions[column],
                            tloc,
                            query,
                            areaproducers,
                            producerDataPeriod,
                            queryLevelDataCache,
                            outputData);
+        column++;
       }
       // get the latest_timestep from previous query
       masterquery.latestTimestep = query.latestTimestep;
