@@ -24,6 +24,7 @@
 #include <newbase/NFmiIndexMaskTools.h>
 #include <newbase/NFmiSvgTools.h>
 #include <spine/Convenience.h>
+#include <spine/FmiApiKey.h>
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
 #include <timeseries/ParameterKeywords.h>
@@ -4048,6 +4049,11 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
     Fmi::Exception ex(BCP, "Request processing exception!", nullptr);
     ex.addParameter("URI", theRequest.getURI());
     ex.addParameter("ClientIP", theRequest.getClientIP());
+
+    const bool check_token = true;
+    auto apikey = Spine::FmiApiKey::getFmiApiKey(theRequest, check_token);
+    ex.addParameter("Apikey", (apikey ? *apikey : std::string("-")));
+
     ex.printError();
 
     std::string firstMessage = ex.what();

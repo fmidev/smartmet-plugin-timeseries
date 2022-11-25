@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.11.8
+Version: 22.11.25
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -28,18 +28,18 @@ BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 22.10.25
-BuildRequires: smartmet-library-spine-devel >= 22.10.26
+BuildRequires: smartmet-library-spine-devel >= 22.11.25
 BuildRequires: smartmet-library-locus-devel >= 22.6.17
 BuildRequires: smartmet-library-macgyver-devel >= 22.10.20
 BuildRequires: smartmet-library-grid-content-devel >= 22.11.8
 BuildRequires: smartmet-library-grid-files-devel >= 22.11.8
-BuildRequires: smartmet-library-newbase-devel >= 22.8.29
+BuildRequires: smartmet-library-newbase-devel >= 22.11.14
 BuildRequires: smartmet-library-gis-devel >= 22.9.28
 BuildRequires: smartmet-engine-geonames-devel >= 22.10.5
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 22.10.12
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 22.10.5
+BuildRequires: smartmet-engine-querydata-devel >= 22.11.23
 BuildRequires: smartmet-engine-gis-devel >= 22.10.5
 BuildRequires: smartmet-engine-grid-devel >= 22.11.8
 # obsengine can be disabled in configuration: not included intentionally
@@ -50,11 +50,11 @@ Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 22.9.28
 Requires: smartmet-library-locus >= 22.6.17
 Requires: smartmet-library-macgyver >= 22.10.20
-Requires: smartmet-library-newbase >= 22.8.29
-Requires: smartmet-library-spine >= 22.10.26
+Requires: smartmet-library-newbase >= 22.11.14
+Requires: smartmet-library-spine >= 22.11.25
 Requires: smartmet-library-timeseries >= 22.10.25
 Requires: smartmet-engine-geonames >= 22.10.5
-Requires: smartmet-engine-querydata >= 22.10.5
+Requires: smartmet-engine-querydata >= 22.11.23
 Requires: smartmet-engine-gis >= 22.10.5
 Requires: smartmet-engine-grid >= 22.11.8
 Requires: smartmet-server >= 22.11.7
@@ -67,8 +67,8 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 22.10.7
-#TestRequires: smartmet-library-spine-plugin-test >= 22.10.26
-#TestRequires: smartmet-library-newbase-devel >= 22.8.29
+#TestRequires: smartmet-library-spine-plugin-test >= 22.11.25
+#TestRequires: smartmet-library-newbase-devel >= 22.11.14
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 22.4.14
 #TestRequires: smartmet-test-data >= 20.12.1
@@ -76,7 +76,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis >= 22.9.28
 #TestRequires: smartmet-engine-geonames >= 22.10.5
 #TestRequires: smartmet-engine-gis >= 22.10.5
-#TestRequires: smartmet-engine-querydata >= 22.10.5
+#TestRequires: smartmet-engine-querydata >= 22.11.23
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 22.10.12
 %endif
@@ -106,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri Nov 25 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.11.25-1.fmi
+- Add apikey to stack traces
+
 * Tue Nov  8 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.11.8-1.fmi
 - Repackaged due to base library ABI changes
 
