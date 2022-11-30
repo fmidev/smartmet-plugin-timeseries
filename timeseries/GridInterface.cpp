@@ -310,7 +310,6 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
 }
 
 bool GridInterface::isValidDefaultRequest(const std::vector<uint>& defaultGeometries,
-                                          bool ignoreGridGeometriesWhenPreloadReady,
                                           std::vector<std::vector<T::Coordinate>>& polygonPath,
                                           T::GeometryId_set& geometryIdList)
 {
@@ -318,19 +317,6 @@ bool GridInterface::isValidDefaultRequest(const std::vector<uint>& defaultGeomet
   {
     if (defaultGeometries.empty())
       return true;
-
-    if (ignoreGridGeometriesWhenPreloadReady)
-    {
-      auto dataServer = itsGridEngine->getDataServer_sptr();
-      uint count = 0;
-
-      if (dataServer->getGridMessagePreloadCount(0, count) == 0)
-      {
-        if (count == 0)
-          return true;  // The dataServer has preload functionality active and all content is
-                        // preloaded.
-      }
-    }
 
     for (const auto& geom : defaultGeometries)
     {

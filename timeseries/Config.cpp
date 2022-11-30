@@ -243,8 +243,6 @@ Config::Config(const string& configfile)
 {
   try
   {
-    itsIgnoreGridGeometriesWhenPreloadReady = true;
-
     if (configfile.empty())
       throw Fmi::Exception(BCP, "TimeSeries configuration file cannot be empty");
 
@@ -369,8 +367,6 @@ Config::Config(const string& configfile)
         itsDefaultGridGeometries.push_back(geomId);
       }
 
-      itsConfig.lookupValue("ignoreGridGeometriesWhenPreloadReady",
-                            itsIgnoreGridGeometriesWhenPreloadReady);
       itsConfig.lookupValue("defaultProducerMappingName", itsDefaultProducerMappingName);
 
       const libconfig::Setting& aliasFiles = itsConfig.lookup("parameterAliasFiles");

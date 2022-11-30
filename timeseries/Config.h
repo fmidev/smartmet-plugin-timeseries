@@ -48,10 +48,6 @@ class Config
   }
 
   const std::vector<uint>& defaultGridGeometries() const { return itsDefaultGridGeometries; }
-  bool ignoreGridGeometriesWhenPreloadReady() const
-  {
-    return itsIgnoreGridGeometriesWhenPreloadReady;
-  }
 
   const std::string& defaultWxmlVersion() const { return itsFormatterOptions.defaultWxmlVersion(); }
   const std::string& wxmlSchema() const { return itsFormatterOptions.wxmlSchema(); }
@@ -84,7 +80,6 @@ class Config
   unsigned int itsExpirationTime;
   std::vector<std::string> itsParameterAliasFiles;
   std::vector<uint> itsDefaultGridGeometries;
-  bool itsIgnoreGridGeometriesWhenPreloadReady;
 
   Spine::TableFormatterOptions itsFormatterOptions;
   Precisions itsPrecisions;
