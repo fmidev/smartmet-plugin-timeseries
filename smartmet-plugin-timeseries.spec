@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.12.2
+Version: 22.12.8
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -37,7 +37,7 @@ BuildRequires: smartmet-library-newbase-devel >= 22.11.14
 BuildRequires: smartmet-library-gis-devel >= 22.9.28
 BuildRequires: smartmet-engine-geonames-devel >= 22.10.5
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 22.10.12
+BuildRequires: smartmet-engine-observation-devel >= 22.12.8
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.11.23
 BuildRequires: smartmet-engine-gis-devel >= 22.10.5
@@ -78,7 +78,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 22.10.5
 #TestRequires: smartmet-engine-querydata >= 22.11.23
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 22.10.12
+#TestRequires: smartmet-engine-observation >= 22.12.8
 %endif
 #TestRequires: smartmet-engine-grid >= 22.11.8
 #TestRequires: gdal34
@@ -106,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Dec 8 2022 Anssi Reponen <anssi.reponen@fmi.fi> - 22.12.8-1.fmi
+- Updated Fmi IoT tests (BRAINSTORM-2494)
+
 * Fri Dec  2 2022 Andris Pavēnis <andris.pavenis@fmi.fi> 22.12.2-1.fmi
 - Update HTTP request method checking and support OPTIONS method
 
