@@ -39,7 +39,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 22.10.5
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 22.12.8
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 22.11.23
+BuildRequires: smartmet-engine-querydata-devel >= 22.12.2
 BuildRequires: smartmet-engine-gis-devel >= 22.10.5
 BuildRequires: smartmet-engine-grid-devel >= 22.11.8
 # obsengine can be disabled in configuration: not included intentionally
@@ -54,10 +54,10 @@ Requires: smartmet-library-newbase >= 22.11.14
 Requires: smartmet-library-spine >= 22.12.2
 Requires: smartmet-library-timeseries >= 22.10.25
 Requires: smartmet-engine-geonames >= 22.10.5
-Requires: smartmet-engine-querydata >= 22.11.23
+Requires: smartmet-engine-querydata >= 22.12.2
 Requires: smartmet-engine-gis >= 22.10.5
 Requires: smartmet-engine-grid >= 22.11.8
-Requires: smartmet-server >= 22.11.7
+Requires: smartmet-server >= 22.12.1
 Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
@@ -76,7 +76,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis >= 22.9.28
 #TestRequires: smartmet-engine-geonames >= 22.10.5
 #TestRequires: smartmet-engine-gis >= 22.10.5
-#TestRequires: smartmet-engine-querydata >= 22.11.23
+#TestRequires: smartmet-engine-querydata >= 22.12.2
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 22.12.8
 %endif
@@ -108,6 +108,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Thu Dec 8 2022 Anssi Reponen <anssi.reponen@fmi.fi> - 22.12.8-1.fmi
 - Updated Fmi IoT tests (BRAINSTORM-2494)
+- Preload checking removed as obsolete
 
 * Fri Dec  2 2022 Andris Pavēnis <andris.pavenis@fmi.fi> 22.12.2-1.fmi
 - Update HTTP request method checking and support OPTIONS method
