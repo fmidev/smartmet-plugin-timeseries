@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.12.8
+Version: 22.12.12
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -31,17 +31,17 @@ BuildRequires: smartmet-library-timeseries-devel >= 22.10.25
 BuildRequires: smartmet-library-spine-devel >= 22.12.2
 BuildRequires: smartmet-library-locus-devel >= 22.6.17
 BuildRequires: smartmet-library-macgyver-devel >= 22.10.20
-BuildRequires: smartmet-library-grid-content-devel >= 22.11.8
-BuildRequires: smartmet-library-grid-files-devel >= 22.11.8
+BuildRequires: smartmet-library-grid-content-devel >= 22.12.12
+BuildRequires: smartmet-library-grid-files-devel >= 22.12.12
 BuildRequires: smartmet-library-newbase-devel >= 22.11.14
 BuildRequires: smartmet-library-gis-devel >= 22.9.28
 BuildRequires: smartmet-engine-geonames-devel >= 22.10.5
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 22.12.8
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 22.11.23
+BuildRequires: smartmet-engine-querydata-devel >= 22.12.2
 BuildRequires: smartmet-engine-gis-devel >= 22.10.5
-BuildRequires: smartmet-engine-grid-devel >= 22.11.8
+BuildRequires: smartmet-engine-grid-devel >= 22.12.12
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 22.6.17
@@ -54,10 +54,10 @@ Requires: smartmet-library-newbase >= 22.11.14
 Requires: smartmet-library-spine >= 22.12.2
 Requires: smartmet-library-timeseries >= 22.10.25
 Requires: smartmet-engine-geonames >= 22.10.5
-Requires: smartmet-engine-querydata >= 22.11.23
+Requires: smartmet-engine-querydata >= 22.12.2
 Requires: smartmet-engine-gis >= 22.10.5
-Requires: smartmet-engine-grid >= 22.11.8
-Requires: smartmet-server >= 22.11.7
+Requires: smartmet-engine-grid >= 22.12.12
+Requires: smartmet-server >= 22.12.5
 Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
@@ -72,15 +72,15 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 22.4.14
 #TestRequires: smartmet-test-data >= 20.12.1
-#TestRequires: smartmet-engine-grid-test >= 22.11.8
+#TestRequires: smartmet-engine-grid-test >= 22.12.12
 #TestRequires: smartmet-library-gis >= 22.9.28
 #TestRequires: smartmet-engine-geonames >= 22.10.5
 #TestRequires: smartmet-engine-gis >= 22.10.5
-#TestRequires: smartmet-engine-querydata >= 22.11.23
+#TestRequires: smartmet-engine-querydata >= 22.12.2
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 22.12.8
 %endif
-#TestRequires: smartmet-engine-grid >= 22.11.8
+#TestRequires: smartmet-engine-grid >= 22.12.12
 #TestRequires: gdal34
 
 %description
@@ -106,8 +106,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon Dec 12 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.12.12-1.fmi
+- Repackaged due to ABI changes
+
 * Thu Dec 8 2022 Anssi Reponen <anssi.reponen@fmi.fi> - 22.12.8-1.fmi
 - Updated Fmi IoT tests (BRAINSTORM-2494)
+- Preload checking removed as obsolete
 
 * Fri Dec  2 2022 Andris Pavēnis <andris.pavenis@fmi.fi> 22.12.2-1.fmi
 - Update HTTP request method checking and support OPTIONS method
