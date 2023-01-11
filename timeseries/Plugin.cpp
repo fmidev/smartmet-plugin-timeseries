@@ -192,11 +192,24 @@ bool is_flash_producer(const std::string& producer)
   }
 }
 
+bool is_icebuoy_or_copernicus_producer(const std::string& producer)
+{
+  try
+  {
+    return (producer == ICEBUOY_PRODUCER || producer == COPERNICUS_PRODUCER);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
+}
+
+
 bool is_flash_or_mobile_producer(const std::string& producer)
 {
   try
   {
-    return (is_flash_producer(producer) || is_mobile_producer(producer));
+    return (is_flash_producer(producer) || is_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer));
   }
   catch (...)
   {
@@ -2041,7 +2054,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
             wktString = Fmi::OGR::exportToWkt(*poly);
           }
         }
-        if (!is_flash_or_mobile_producer(producer))
+        if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
       }
@@ -2077,7 +2090,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
           wktString = Fmi::OGR::exportToWkt(*poly);
         }
 
-        if (!is_flash_or_mobile_producer(producer))
+        if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
       }
@@ -2108,7 +2121,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
 
         std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
         wktString = Fmi::OGR::exportToWkt(*geom);
-        if (!is_flash_or_mobile_producer(producer))
+        if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
       }
@@ -2127,7 +2140,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
 
         std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
         wktString = Fmi::OGR::exportToWkt(*geom);
-        if (!is_flash_or_mobile_producer(producer))
+        if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
       }
@@ -2159,7 +2172,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
           wktString = Fmi::OGR::exportToWkt(*geom);
         }
 
-        if (!is_flash_or_mobile_producer(producer))
+        if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
           stationSettings.fmisids = get_fmisids_for_wkt(
               itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
       }
@@ -2175,7 +2188,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
       {
         settings.wktArea = wktString;
       }
-      else if (!stationSettings.fmisids.empty())
+      if (!stationSettings.fmisids.empty() && (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer)))
       {
         settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
             settings.starttime, settings.endtime, producer, stationSettings);
@@ -2444,7 +2457,7 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
       stationSettings.bounding_box_settings["maxy"] = query.boundingBox.at("maxy");
     }
 
-    if (!is_flash_or_mobile_producer(producer))
+    if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
     {
       settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
           settings.starttime, settings.endtime, producer, stationSettings);
@@ -2720,7 +2733,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
 #endif
 
       // if producer is syke or flash accept all timesteps
-      if (query.toptions.all() || is_flash_or_mobile_producer(producer) ||
+      if (query.toptions.all() || is_flash_producer(producer) || is_mobile_producer(producer) ||
           producer == SYKE_PRODUCER)
       {
         boost::posix_time::ptime startTimeAsUTC = query.toptions.startTime;
@@ -3052,7 +3065,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       std::vector<TS::TimeSeriesData> aggregatedData;
 
       // If all timesteps are requested or producer is syke or flash accept all timesteps
-      if (query.toptions.all() || is_flash_or_mobile_producer(producer) ||
+      if (query.toptions.all() ||  is_flash_producer(producer) || is_mobile_producer(producer) ||
           producer == SYKE_PRODUCER)
       {
         TS::TimeSeriesGenerator::LocalTimeList aggtimes;

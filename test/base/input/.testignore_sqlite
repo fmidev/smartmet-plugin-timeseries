@@ -8,3 +8,6 @@ fmi_iot_observations.get
 fmi_iot_observations_selected_stations.get
 fmi_iot_observations_uusimaa.get
 magneto_observations.get
+fmi_icebuoy_observations.get
+fmi_icebuoy_observations_bbox.get
+fmi_copernicus_observations.get

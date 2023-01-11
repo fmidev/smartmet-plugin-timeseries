@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 22.12.12
+Version: 23.1.11
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -37,14 +37,14 @@ BuildRequires: smartmet-library-newbase-devel >= 22.11.14
 BuildRequires: smartmet-library-gis-devel >= 22.9.28
 BuildRequires: smartmet-engine-geonames-devel >= 22.10.5
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 22.12.8
+BuildRequires: smartmet-engine-observation-devel >= 23.1.11
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.12.2
 BuildRequires: smartmet-engine-gis-devel >= 22.10.5
 BuildRequires: smartmet-engine-grid-devel >= 22.12.12
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 22.6.17
+#Requires: smartmet-engine-observation >= 23.1.11
 #%endif
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 22.9.28
@@ -78,7 +78,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 22.10.5
 #TestRequires: smartmet-engine-querydata >= 22.12.2
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 22.12.8
+#TestRequires: smartmet-engine-observation >= 23.1.11
 %endif
 #TestRequires: smartmet-engine-grid >= 22.12.12
 #TestRequires: gdal34
@@ -106,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Jan 11 2023 Anssi Reponen <anssi.reponen@fmi.fi> - 23.1.11-1.fmi
+- Added support for moving stations icebuoy and copernicus (BRAINSTORM-2409)
+
 * Mon Dec 12 2022 Mika Heiskanen <mika.heiskanen@fmi.fi> - 22.12.12-1.fmi
 - Repackaged due to ABI changes
 
