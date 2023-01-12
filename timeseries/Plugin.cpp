@@ -204,12 +204,12 @@ bool is_icebuoy_or_copernicus_producer(const std::string& producer)
   }
 }
 
-
 bool is_flash_or_mobile_producer(const std::string& producer)
 {
   try
   {
-    return (is_flash_producer(producer) || is_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer));
+    return (is_flash_producer(producer) || is_mobile_producer(producer) ||
+            is_icebuoy_or_copernicus_producer(producer));
   }
   catch (...)
   {
@@ -2188,7 +2188,8 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
       {
         settings.wktArea = wktString;
       }
-      if (!stationSettings.fmisids.empty() && (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer)))
+      if (!stationSettings.fmisids.empty() &&
+          (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer)))
       {
         settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
             settings.starttime, settings.endtime, producer, stationSettings);
@@ -3065,7 +3066,7 @@ void Plugin::fetchObsEngineValuesForArea(const State& state,
       std::vector<TS::TimeSeriesData> aggregatedData;
 
       // If all timesteps are requested or producer is syke or flash accept all timesteps
-      if (query.toptions.all() ||  is_flash_producer(producer) || is_mobile_producer(producer) ||
+      if (query.toptions.all() || is_flash_producer(producer) || is_mobile_producer(producer) ||
           producer == SYKE_PRODUCER)
       {
         TS::TimeSeriesGenerator::LocalTimeList aggtimes;
@@ -3413,9 +3414,8 @@ bool Plugin::processGridEngineQuery(const State& state,
 
       T::GeometryId_set geometryIdList;
       if (areaproducers.empty() && !itsGridInterface->containsParameterWithGridProducer(query) &&
-          !itsGridInterface->isValidDefaultRequest(itsConfig.defaultGridGeometries(),
-                                                   polygonPath,
-                                                   geometryIdList))
+          !itsGridInterface->isValidDefaultRequest(
+              itsConfig.defaultGridGeometries(), polygonPath, geometryIdList))
       {
         outputData.clear();
         return false;
@@ -4018,8 +4018,9 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
   try
   {
     // Check request method (support GET, OPTIONS)
-    if (checkRequest(theRequest, theResponse, false)) {
-        return;
+    if (checkRequest(theRequest, theResponse, false))
+    {
+      return;
     }
 
     if (Spine::optional_bool(theRequest.getParameter("grouplocations"), false))
