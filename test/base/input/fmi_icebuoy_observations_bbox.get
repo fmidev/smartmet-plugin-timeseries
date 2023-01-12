@@ -1,0 +1,1 @@
+GET /timeseries?starttime=202103020000&endtime=202103100000&param=utctime,fmisid,T,P_SEA,BATT,longitude,latitude&producer=icebuoy&bbox=16.0,59.0,26.0,65.0&precision=double HTTP/1.0

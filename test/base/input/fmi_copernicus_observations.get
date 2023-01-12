@@ -1,0 +1,1 @@
+GET /timeseries?starttime=202202211200&endtime=202202211300&param=utctime,fmisid,TemperatureSea,longitude,latitude&producer=copernicus&fmisid=105393,105395,105396,105397,105399,105401,106410,106411&precision=double HTTP/1.0
