@@ -82,6 +82,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 %endif
 #TestRequires: smartmet-engine-grid >= 23.1.19
 #TestRequires: gdal34
+#TestRequires: libwebp13
 
 %description
 SmartMet timeseries plugin
