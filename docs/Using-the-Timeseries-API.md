@@ -575,7 +575,11 @@ marked in the querydata engine not to be full with "fullgrid=false",
 the nearest valid point in the data will be searched if necessary
 using the given "maxdistance" condition. The default "maxdistance" is
 "60.0km". If a valid point is found nearby, "nearlongitude" and
-similar parameters will store the actual coordinate uesed.
+similar parameters will store the actual coordinate used.
+
+This feature is thought to be useful for example when trying to
+establish wave heights at the shore simply by specifying the name of
+the harbour or the city.
 
 ### Computed Parameters
 
