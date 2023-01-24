@@ -570,6 +570,13 @@ or by using other parameters. So we name the parameter of the first table as
 | localtz | Time zone of the geographical location. |X|X|
 | gridnorth | Direction of north in the grid location. |X|-|
 
+If option "findnearestvalidpoint=1" is used, and the data has been
+marked in the querydata engine not to be full with "fullgrid=false",
+the nearest valid point in the data will be searched if necessary
+using the given "maxdistance" condition. The default "maxdistance" is
+"60.0km". If a valid point is found nearby, "nearlongitude" and
+similar parameters will store the actual coordinate uesed.
+
 ### Computed Parameters
 
 The table with the computed parameters is given below.
