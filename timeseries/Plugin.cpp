@@ -53,36 +53,7 @@ namespace
 #ifdef MYDEBUG
 void print_settings(const Engine::Observation::Settings& settings)
 {
-  std::cout << "settings.taggedFMISIDs: " << settings.taggedFMISIDs.size() << " kpl" << std::endl;
-  std::cout << "settings.allplaces: " << settings.allplaces << std::endl;
-  std::cout << "settings.boundingBox.size(): " << settings.boundingBox.size() << std::endl;
-  std::cout << "settings.starttime: " << settings.starttime << std::endl;
-  std::cout << "settings.endtime: " << settings.endtime << std::endl;
-  std::cout << "settings.starttimeGiven: " << settings.starttimeGiven << std::endl;
-  std::cout << "settings.format: " << settings.format << std::endl;
-  std::cout << "settings.hours.size(): " << settings.hours.size() << std::endl;
-  std::cout << "settings.language: " << settings.language << std::endl;
-  std::cout << "settings.latest: " << settings.latest << std::endl;
-  std::cout << "settings.localename: " << settings.localename << std::endl;
-  std::cout << "settings.locale.name(): " << settings.locale.name() << std::endl;
-  std::cout << "settings.maxdistance: " << settings.maxdistance << std::endl;
-  std::cout << "settings.missingtext: " << settings.missingtext << std::endl;
-  std::cout << "settings.taggedLocations.size(): " << settings.taggedLocations.size() << std::endl;
-  std::cout << "settings.numberofstations: " << settings.numberofstations << std::endl;
-  std::cout << "settings.parameters.size(): " << settings.parameters.size() << std::endl;
-  std::cout << "settings.stationtype: " << settings.stationtype << std::endl;
-  std::cout << "settings.timeformat: " << settings.timeformat << std::endl;
-  std::cout << "settings.timestep: " << settings.timestep << std::endl;
-  std::cout << "settings.timestring: " << settings.timestring << std::endl;
-  std::cout << "settings.timezone: " << settings.timezone << std::endl;
-  std::cout << "settings.weekdays.size(): " << settings.weekdays.size() << std::endl;
-  std::string wktString = settings.wktArea;
-  if (wktString.size() > 50)
-  {
-    wktString.resize(50);
-    wktString += " ... ";
-  }
-  std::cout << "settings.wktArea: " << wktString << std::endl;
+  std::cout << settings;
 }
 #endif
 
@@ -1397,27 +1368,38 @@ void Plugin::fetchQEngineValues(const State& state,
     auto itPressure = query.pressures.begin();
     auto itHeight = query.heights.begin();
 
+	if(loadDataLevels)
+	  check_request_limit(itsConfig.requestLimits(), query.levels.size(), Spine::RequestLimitMember::LEVELS);
+	if(itPressure != query.pressures.end())
+	  check_request_limit(itsConfig.requestLimits(), query.pressures.size(), Spine::RequestLimitMember::LEVELS);
+	if (itHeight != query.heights.end())
+	  check_request_limit(itsConfig.requestLimits(), query.heights.size(), Spine::RequestLimitMember::LEVELS);
+
+	std::set<int> received_levels;
     // Loop over the levels
     for (qi->resetLevel();;)
     {
       boost::optional<float> pressure;
       boost::optional<float> height;
       float levelValue = 0;
-
+	  
       if (loadDataLevels)
-      {
+		{	
         if (!qi->nextLevel())
-          // No more native/data levels; load/interpolate pressure and height levels if any
+          // No more native/data levels; load/interpolate pressure and height
+          // levels if any
           loadDataLevels = false;
         else
         {
           // check if only some levels are chosen
+		  int level = static_cast<int>(qi->levelValue());
           if (!query.levels.empty())
           {
-            int level = static_cast<int>(qi->levelValue());
             if (query.levels.find(level) == query.levels.end())
               continue;
           }
+		  received_levels.insert(level);
+		  check_request_limit(itsConfig.requestLimits(), received_levels.size(), Spine::RequestLimitMember::LEVELS);
         }
       }
 
@@ -1487,6 +1469,8 @@ void Plugin::fetchQEngineValues(const State& state,
         }
       }
 #endif
+
+	  check_request_limit(itsConfig.requestLimits(), tlist.size(), Spine::RequestLimitMember::TIMESTEPS);
 
       auto querydata_tlist = generateQEngineQueryTimes(query, paramname);
 
@@ -1640,6 +1624,8 @@ void Plugin::fetchQEngineValues(const State& state,
               llist = get_location_list(svgPath, tloc.tag, query.step, state.getGeoEngine());
             }
 
+			check_request_limit(itsConfig.requestLimits(), llist.size(), Spine::RequestLimitMember::LOCATIONS);
+
             if (UtilityFunctions::is_special_parameter(paramname))
             {
               querydata_result = boost::make_shared<TS::TimeSeriesGroup>();
@@ -1750,6 +1736,8 @@ void Plugin::fetchQEngineValues(const State& state,
 
             // Indexmask (indexed locations on the area)
             Spine::LocationList llist = get_indexmask_locations(mask, loc, qi, *itsGeoEngine);
+
+			check_request_limit(itsConfig.requestLimits(), llist.size(), Spine::RequestLimitMember::LOCATIONS);
 
             if (UtilityFunctions::is_special_parameter(paramname))
             {
@@ -3134,6 +3122,11 @@ void Plugin::processObsEngineQuery(const State& state,
       {
         Engine::Observation::Settings& settings = item.settings;
         settings.localTimePool = state.getLocalTimePool();
+		settings.requestLimits = itsConfig.requestLimits();
+
+		check_request_limit(itsConfig.requestLimits(), settings.parameters.size(), Spine::RequestLimitMember::PARAMETERS);
+		if(settings.taggedFMISIDs.size() > 0)
+		  check_request_limit(itsConfig.requestLimits(), settings.taggedFMISIDs.size(), Spine::RequestLimitMember::LOCATIONS);
 
         if (query.debug)
           settings.debug_options = Engine::Observation::Settings::DUMP_SETTINGS;
@@ -3178,6 +3171,8 @@ void Plugin::processQEngineQuery(const State& state,
     // If user wants to get grid points of area to separate lines, resolve coordinates inside area
     if (!masterquery.groupareas)
       resolveAreaLocations(masterquery, state, areaproducers);
+
+	check_request_limit(itsConfig.requestLimits(), masterquery.poptions.parameterFunctions().size(), Spine::RequestLimitMember::PARAMETERS);
 
     // first timestep is here in utc
     boost::posix_time::ptime first_timestep = masterquery.latestTimestep;
@@ -3239,6 +3234,7 @@ void Plugin::processQEngineQuery(const State& state,
                            queryLevelDataCache,
                            outputData);
         column++;
+		check_request_limit(itsConfig.requestLimits(), TS::number_of_elements(outputData), Spine::RequestLimitMember::ELEMENTS);
       }
       // get the latest_timestep from previous query
       masterquery.latestTimestep = query.latestTimestep;
