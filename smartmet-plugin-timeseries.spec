@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.1.19
+Version: 23.1.25
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -28,7 +28,7 @@ BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 22.10.25
-BuildRequires: smartmet-library-spine-devel >= 23.1.16
+BuildRequires: smartmet-library-spine-devel >= 23.1.25
 BuildRequires: smartmet-library-locus-devel >= 22.12.16
 BuildRequires: smartmet-library-macgyver-devel >= 22.12.16
 BuildRequires: smartmet-library-grid-content-devel >= 23.1.19
@@ -37,21 +37,21 @@ BuildRequires: smartmet-library-newbase-devel >= 22.11.14
 BuildRequires: smartmet-library-gis-devel >= 23.1.5
 BuildRequires: smartmet-engine-geonames-devel >= 22.12.21
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 23.1.11
+BuildRequires: smartmet-engine-observation-devel >= 23.1.25
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.12.15
 BuildRequires: smartmet-engine-gis-devel >= 22.12.21
 BuildRequires: smartmet-engine-grid-devel >= 23.1.19
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 23.1.11
+#Requires: smartmet-engine-observation >= 23.1.25
 #%endif
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 23.1.5
 Requires: smartmet-library-locus >= 22.12.16
 Requires: smartmet-library-macgyver >= 22.12.16
 Requires: smartmet-library-newbase >= 22.11.14
-Requires: smartmet-library-spine >= 23.1.16
+Requires: smartmet-library-spine >= 23.1.25
 Requires: smartmet-library-timeseries >= 22.10.25
 Requires: smartmet-engine-geonames >= 22.12.21
 Requires: smartmet-engine-querydata >= 22.12.15
@@ -67,7 +67,7 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 23.1.19
-#TestRequires: smartmet-library-spine-plugin-test >= 23.1.16
+#TestRequires: smartmet-library-spine-plugin-test >= 23.1.25
 #TestRequires: smartmet-library-newbase-devel >= 22.11.14
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 22.4.14
@@ -78,7 +78,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 22.12.21
 #TestRequires: smartmet-engine-querydata >= 22.12.15
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 23.1.11
+#TestRequires: smartmet-engine-observation >= 23.1.25
 %endif
 #TestRequires: smartmet-engine-grid >= 23.1.19
 #TestRequires: gdal34
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Jan 25 2023 Anssi Reponen <anssi.reponen@fmi.fi> - 23.1.25-1.fmi
+- Added support for request size limits (BRAINSTORM-2443)
+
 * Thu Jan 19 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.1.19-1.fmi
 - Repackaged due to ABI changes in grid libraries
 
