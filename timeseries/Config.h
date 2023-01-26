@@ -11,8 +11,8 @@
 #include <engines/gis/GeometryStorage.h>
 #include <engines/grid/Engine.h>
 #include <spine/Parameter.h>
-#include <spine/RequestLimits.h>
 #include <spine/TableFormatterOptions.h>
+#include <timeseries/RequestLimits.h>
 #include <libconfig.h++>
 #include <string>
 
@@ -64,7 +64,7 @@ class Config
   unsigned long long maxTimeSeriesCacheSize() const;
 
   unsigned int expirationTime() const { return itsExpirationTime; }
-  const Spine::RequestLimits& requestLimits() const { return itsRequestLimits; };
+  const TS::RequestLimits& requestLimits() const { return itsRequestLimits; };
 
   QueryServer::AliasFileCollection itsAliasFileCollection;
   time_t itsLastAliasCheck;
@@ -94,7 +94,7 @@ class Config
   bool itsPreventObsEngineDatabaseQuery;
 
   unsigned long long itsMaxTimeSeriesCacheSize;
-  Spine::RequestLimits itsRequestLimits;
+  SmartMet::TimeSeries::RequestLimits itsRequestLimits;
 
   void add_default_precisions();
   void parse_config_precisions();
