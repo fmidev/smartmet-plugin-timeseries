@@ -1,0 +1,1 @@
+GET /timeseries?producer=opendata_daily&endtime=2013-11-30T22:00:00&fmisid=101118&starttime=2013-10-31T22:00:00&place=Kumpula&param=time,tday,rrday,tmin,tmax,stationname&lang=sv HTTP/1.0
