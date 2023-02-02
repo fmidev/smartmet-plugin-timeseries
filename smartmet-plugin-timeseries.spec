@@ -71,7 +71,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-newbase-devel >= 22.11.14
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 22.4.14
-#TestRequires: smartmet-test-data >= 20.12.1
+#TestRequires: smartmet-test-data >= 23.2.2
 #TestRequires: smartmet-engine-grid-test >= 23.1.19
 #TestRequires: smartmet-library-gis >= 23.1.5
 #TestRequires: smartmet-engine-geonames >= 23.1.18
