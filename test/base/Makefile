@@ -28,11 +28,10 @@ testdatabase:
 	@printf "CREATING TEST DATABASE:\n\n"
 	@ls -1 input > input/.testignore
 	@rm -f test_cache.sqlite
+	@spatialite -silent test_cache.sqlite VACUUM
 	@$(TEST_RUNNER) smartmet-plugin-test --handler /timeseries \
 		--reactor-config cnf/reactor_testdb.conf \
-		--ignore input/.testignore \
-		&& \
-	echo .quit | spatialite -silent test_cache.sqlite
+		--ignore input/.testignore
 	@rm -f input/.testignore
 
 all:
