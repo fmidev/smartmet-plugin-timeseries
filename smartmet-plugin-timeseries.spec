@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.2.1
+Version: 23.2.8
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -28,7 +28,7 @@ BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 23.1.31
-BuildRequires: smartmet-library-spine-devel >= 23.2.1
+BuildRequires: smartmet-library-spine-devel >= 23.2.8
 BuildRequires: smartmet-library-locus-devel >= 22.12.16
 BuildRequires: smartmet-library-macgyver-devel >= 22.12.16
 BuildRequires: smartmet-library-grid-content-devel >= 23.1.19
@@ -37,7 +37,7 @@ BuildRequires: smartmet-library-newbase-devel >= 22.11.14
 BuildRequires: smartmet-library-gis-devel >= 23.1.5
 BuildRequires: smartmet-engine-geonames-devel >= 23.1.18
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 23.2.1
+BuildRequires: smartmet-engine-observation-devel >= 23.2.8
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.12.15
 BuildRequires: smartmet-engine-gis-devel >= 22.12.21
@@ -51,7 +51,7 @@ Requires: smartmet-library-gis >= 23.1.5
 Requires: smartmet-library-locus >= 22.12.16
 Requires: smartmet-library-macgyver >= 22.12.16
 Requires: smartmet-library-newbase >= 22.11.14
-Requires: smartmet-library-spine >= 23.2.1
+Requires: smartmet-library-spine >= 23.2.8
 Requires: smartmet-library-timeseries >= 23.1.31
 Requires: smartmet-engine-geonames >= 23.1.18
 Requires: smartmet-engine-querydata >= 22.12.15
@@ -67,7 +67,7 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 23.1.19
-#TestRequires: smartmet-library-spine-plugin-test >= 23.2.1
+#TestRequires: smartmet-library-spine-plugin-test >= 23.2.8
 #TestRequires: smartmet-library-newbase-devel >= 22.11.14
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 22.4.14
@@ -78,7 +78,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 22.12.21
 #TestRequires: smartmet-engine-querydata >= 22.12.15
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 23.2.1
+#TestRequires: smartmet-engine-observation >= 23.2.8
 %endif
 #TestRequires: smartmet-engine-grid >= 23.1.19
 #TestRequires: gdal34
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Feb  8 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.2.8-1.fmi
+- Add host name to stack traces
+
 * Wed Feb 1 2023 Anssi Reponen <anssi.reponen@fmi.fi> - 23.2.1-1.fmi
 - Added language support for station names (BRAINSTORM-2514)
 
