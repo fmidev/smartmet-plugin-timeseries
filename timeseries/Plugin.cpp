@@ -25,6 +25,7 @@
 #include <newbase/NFmiSvgTools.h>
 #include <spine/Convenience.h>
 #include <spine/FmiApiKey.h>
+#include <spine/HostInfo.h>
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
 #include <timeseries/ParameterKeywords.h>
@@ -1368,23 +1369,26 @@ void Plugin::fetchQEngineValues(const State& state,
     auto itPressure = query.pressures.begin();
     auto itHeight = query.heights.begin();
 
-	if(loadDataLevels)
-	  check_request_limit(itsConfig.requestLimits(), query.levels.size(), TS::RequestLimitMember::LEVELS);
-	if(itPressure != query.pressures.end())
-	  check_request_limit(itsConfig.requestLimits(), query.pressures.size(), TS::RequestLimitMember::LEVELS);
-	if (itHeight != query.heights.end())
-	  check_request_limit(itsConfig.requestLimits(), query.heights.size(), TS::RequestLimitMember::LEVELS);
+    if (loadDataLevels)
+      check_request_limit(
+          itsConfig.requestLimits(), query.levels.size(), TS::RequestLimitMember::LEVELS);
+    if (itPressure != query.pressures.end())
+      check_request_limit(
+          itsConfig.requestLimits(), query.pressures.size(), TS::RequestLimitMember::LEVELS);
+    if (itHeight != query.heights.end())
+      check_request_limit(
+          itsConfig.requestLimits(), query.heights.size(), TS::RequestLimitMember::LEVELS);
 
-	std::set<int> received_levels;
+    std::set<int> received_levels;
     // Loop over the levels
     for (qi->resetLevel();;)
     {
       boost::optional<float> pressure;
       boost::optional<float> height;
       float levelValue = 0;
-	  
+
       if (loadDataLevels)
-		{	
+      {
         if (!qi->nextLevel())
           // No more native/data levels; load/interpolate pressure and height
           // levels if any
@@ -1392,14 +1396,15 @@ void Plugin::fetchQEngineValues(const State& state,
         else
         {
           // check if only some levels are chosen
-		  int level = static_cast<int>(qi->levelValue());
+          int level = static_cast<int>(qi->levelValue());
           if (!query.levels.empty())
           {
             if (query.levels.find(level) == query.levels.end())
               continue;
           }
-		  received_levels.insert(level);
-		  check_request_limit(itsConfig.requestLimits(), received_levels.size(), TS::RequestLimitMember::LEVELS);
+          received_levels.insert(level);
+          check_request_limit(
+              itsConfig.requestLimits(), received_levels.size(), TS::RequestLimitMember::LEVELS);
         }
       }
 
@@ -1470,7 +1475,8 @@ void Plugin::fetchQEngineValues(const State& state,
       }
 #endif
 
-	  check_request_limit(itsConfig.requestLimits(), tlist.size(), TS::RequestLimitMember::TIMESTEPS);
+      check_request_limit(
+          itsConfig.requestLimits(), tlist.size(), TS::RequestLimitMember::TIMESTEPS);
 
       auto querydata_tlist = generateQEngineQueryTimes(query, paramname);
 
@@ -1624,7 +1630,8 @@ void Plugin::fetchQEngineValues(const State& state,
               llist = get_location_list(svgPath, tloc.tag, query.step, state.getGeoEngine());
             }
 
-			check_request_limit(itsConfig.requestLimits(), llist.size(), TS::RequestLimitMember::LOCATIONS);
+            check_request_limit(
+                itsConfig.requestLimits(), llist.size(), TS::RequestLimitMember::LOCATIONS);
 
             if (UtilityFunctions::is_special_parameter(paramname))
             {
@@ -1737,7 +1744,8 @@ void Plugin::fetchQEngineValues(const State& state,
             // Indexmask (indexed locations on the area)
             Spine::LocationList llist = get_indexmask_locations(mask, loc, qi, *itsGeoEngine);
 
-			check_request_limit(itsConfig.requestLimits(), llist.size(), TS::RequestLimitMember::LOCATIONS);
+            check_request_limit(
+                itsConfig.requestLimits(), llist.size(), TS::RequestLimitMember::LOCATIONS);
 
             if (UtilityFunctions::is_special_parameter(paramname))
             {
@@ -3122,11 +3130,15 @@ void Plugin::processObsEngineQuery(const State& state,
       {
         Engine::Observation::Settings& settings = item.settings;
         settings.localTimePool = state.getLocalTimePool();
-		settings.requestLimits = itsConfig.requestLimits();
+        settings.requestLimits = itsConfig.requestLimits();
 
-		check_request_limit(itsConfig.requestLimits(), settings.parameters.size(), TS::RequestLimitMember::PARAMETERS);
-		if(settings.taggedFMISIDs.size() > 0)
-		  check_request_limit(itsConfig.requestLimits(), settings.taggedFMISIDs.size(), TS::RequestLimitMember::LOCATIONS);
+        check_request_limit(itsConfig.requestLimits(),
+                            settings.parameters.size(),
+                            TS::RequestLimitMember::PARAMETERS);
+        if (settings.taggedFMISIDs.size() > 0)
+          check_request_limit(itsConfig.requestLimits(),
+                              settings.taggedFMISIDs.size(),
+                              TS::RequestLimitMember::LOCATIONS);
 
         if (query.debug)
           settings.debug_options = Engine::Observation::Settings::DUMP_SETTINGS;
@@ -3172,7 +3184,9 @@ void Plugin::processQEngineQuery(const State& state,
     if (!masterquery.groupareas)
       resolveAreaLocations(masterquery, state, areaproducers);
 
-	check_request_limit(itsConfig.requestLimits(), masterquery.poptions.parameterFunctions().size(), TS::RequestLimitMember::PARAMETERS);
+    check_request_limit(itsConfig.requestLimits(),
+                        masterquery.poptions.parameterFunctions().size(),
+                        TS::RequestLimitMember::PARAMETERS);
 
     // first timestep is here in utc
     boost::posix_time::ptime first_timestep = masterquery.latestTimestep;
@@ -3234,7 +3248,9 @@ void Plugin::processQEngineQuery(const State& state,
                            queryLevelDataCache,
                            outputData);
         column++;
-		check_request_limit(itsConfig.requestLimits(), TS::number_of_elements(outputData), TS::RequestLimitMember::ELEMENTS);
+        check_request_limit(itsConfig.requestLimits(),
+                            TS::number_of_elements(outputData),
+                            TS::RequestLimitMember::ELEMENTS);
       }
       // get the latest_timestep from previous query
       masterquery.latestTimestep = query.latestTimestep;
@@ -4063,6 +4079,7 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
     Fmi::Exception ex(BCP, "Request processing exception!", nullptr);
     ex.addParameter("URI", theRequest.getURI());
     ex.addParameter("ClientIP", theRequest.getClientIP());
+    ex.addParameter("HostName", Spine::HostInfo::getHostName(theRequest.getClientIP()));
 
     const bool check_token = true;
     auto apikey = Spine::FmiApiKey::getFmiApiKey(theRequest, check_token);
