@@ -695,18 +695,18 @@ necessary returned to the user.
 
 |Function|Description|
 |---------|-----------|
-|interpolate_t(field:btime:atime) |Replaces the missing value with linearly interpolated value using two nearest values inside given time interval. |
-|nearest_t(field:btime:atime) |Replaces the missing value with nearest value inside given time interval. |
-|median_t(field:btime:atime) |The median value of the field evaluated over the given time interval.|
-|mean_t(field:btime:atime) |The mean value of the field evaluated over the given time interval. |
-|min_t(field:btime:atime) |The minimum value of the field in the given time interval.|
-|max_t(field:btime:atime) |The maximum value of the field in the given time interval.|
-|sum_t(field:btime:atime) |The sum of the field values calculated over the given time interval.|
-|integ_t(field:btime:atime) |The weighted sum of the field values calculated over the given area. Duration is used as the weight.|
-|sdev_t(field:btime:atime)|The standard deviation of the field values calculated over the given time interval.|
-|trend_t(field:btime:atime)|The trend of the field values calculated over the given time interval. |
-|change_t(field:btime:atime)|The change of the field values calculated over the given time interval. |
-|count_t\[min:max](field:btime:atime)|The number of the field values in the given range (min..max) calculated  over the given time interval. The function returns the total number of the field values if no range is given .|
+|interpolate_t(field/btime/atime) |Replaces the missing value with linearly interpolated value using two nearest values inside given time interval. |
+|nearest_t(field/btime/atime) |Replaces the missing value with nearest value inside given time interval. |
+|median_t(field/btime/atime) |The median value of the field evaluated over the given time interval.|
+|mean_t(field/btime/atime) |The mean value of the field evaluated over the given time interval. |
+|min_t(field/btime/atime) |The minimum value of the field in the given time interval.|
+|max_t(field/btime/atime) |The maximum value of the field in the given time interval.|
+|sum_t(field/btime/atime) |The sum of the field values calculated over the given time interval.|
+|integ_t(field/btime/atime) |The weighted sum of the field values calculated over the given area. Duration is used as the weight.|
+|sdev_t(field/btime/atime)|The standard deviation of the field values calculated over the given time interval.|
+|trend_t(field/btime/atime)|The trend of the field values calculated over the given time interval. |
+|change_t(field/btime/atime)|The change of the field values calculated over the given time interval. |
+|count_t\[min:max](field/btime/atime)|The number of the field values in the given range (min..max) calculated  over the given time interval. The function returns the total number of the field values if no range is given .|
 |percentage_\[min:max](field) | The percentage of the field values in the given range (min..max) calculated over the given time interval.|
 
 Example
@@ -716,7 +716,7 @@ min, max and mean value by using temperature values in the time range
 [timestep-30minutes .. timestep+30minutes].
 
 ```text
-http://data.fmi.fi/timeseries?format=debug&place=Turku&timestep=1h&param=name,time,mean_t(temperature:30m:30m)as meantemperature
+http://data.fmi.fi/timeseries?format=debug&place=Turku&timestep=1h&param=name,time,mean_t(temperature/30m/30m)as meantemperature
 ```
 
 The response of the query is as follows.
@@ -744,7 +744,7 @@ are aggregated over the given time interval and after that the result values are
 aggregated over the area.
 
 ```text
-http://data.fmi.fi/timeseries?format=debug&area=Turku&param=name,time,temperature,mean(mean_t(temperature:1h:1h) as meantemperature
+http://data.fmi.fi/timeseries?format=debug&area=Turku&param=name,time,temperature,mean(mean_t(temperature/1h/1h) as meantemperature
 ```
 
 | name | time | temperature |meantemperature|
@@ -760,7 +760,7 @@ function. This can be done by adding filtering range in brackets just after the
 function name. For example
 
 ```text
-mean_t[0:15](temperature:1h:1h)
+mean_t[0:15](temperature/1h/1h)
 ```
 
 would calculate mean temperature for values between 0...15 degrees, values
@@ -768,7 +768,7 @@ outside the interval will be ignored. Or if you want to include only
 temperatures equal or over zero degrees, you would write
 
 ```text
-mean_t[0:](temperature:1h:1h)
+mean_t[0:](temperature/1h/1h)
 ```
 
 Filtering can be done for all aggregate functions except count- and
