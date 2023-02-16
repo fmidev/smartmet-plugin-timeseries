@@ -2548,9 +2548,13 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     // use minutes as timestep
     if (!query.toptions.timeStep && query.toptions.startTime == query.toptions.endTime)
     {
+      query.toptions.timeStep = 0;
+	  /*
+		BRAINSTORM-2545
       query.toptions.timeStep = query.toptions.startTime.time_of_day().minutes();
       if (*query.toptions.timeStep == 0)
         query.toptions.timeStep = 60;
+	  */
     }
 
     if (!query.toptions.all())
