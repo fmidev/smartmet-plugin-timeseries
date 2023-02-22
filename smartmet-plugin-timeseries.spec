@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.2.20
+Version: 23.2.22
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -37,7 +37,7 @@ BuildRequires: smartmet-library-newbase-devel >= 23.2.9
 BuildRequires: smartmet-library-gis-devel >= 23.1.5
 BuildRequires: smartmet-engine-geonames-devel >= 23.1.18
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 23.2.9
+BuildRequires: smartmet-engine-observation-devel >= 23.2.22
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 22.12.15
 BuildRequires: smartmet-engine-gis-devel >= 22.12.21
@@ -78,7 +78,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 22.12.21
 #TestRequires: smartmet-engine-querydata >= 22.12.15
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 23.2.9
+#TestRequires: smartmet-engine-observation >= 23.2.22
 %endif
 #TestRequires: smartmet-engine-grid >= 23.2.20
 #TestRequires: gdal34
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Feb 22 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.2.22-1.fmi
+- Fixed handling of missing values for location parameters (BRAINSTORM-2544)
+
 * Mon Feb 20 2023 Anssi Reponen <anssi.reponen@fmi.fi> - 23.2.20-1.fmi
 - Fixed timestep handling bug in observation query(BRAINSTORM-2545)
 

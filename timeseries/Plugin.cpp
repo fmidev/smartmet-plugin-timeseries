@@ -2549,12 +2549,12 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
     if (!query.toptions.timeStep && query.toptions.startTime == query.toptions.endTime)
     {
       query.toptions.timeStep = 0;
-	  /*
-		BRAINSTORM-2545
-      query.toptions.timeStep = query.toptions.startTime.time_of_day().minutes();
-      if (*query.toptions.timeStep == 0)
-        query.toptions.timeStep = 60;
-	  */
+      /*
+            BRAINSTORM-2545
+  query.toptions.timeStep = query.toptions.startTime.time_of_day().minutes();
+  if (*query.toptions.timeStep == 0)
+    query.toptions.timeStep = 60;
+      */
     }
 
     if (!query.toptions.all())
@@ -2656,9 +2656,11 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
             continue;
           }
           auto result_at_index = result[obs_result_field_index];
-          // If special parameter contains missing values in some timesteps, replace them with
-          // exsisting values
-          if (TS::is_special_parameter(paramname))
+
+          // If time independend special parameter contains missing values in some timesteps,
+          // replace them with existing values to keep aggregation working
+
+          if (TS::is_location_parameter(paramname))
           {
             TS::Value actual_value = missing_value;
             bool missing_values_exists = false;
