@@ -278,22 +278,22 @@ Config::Config(const string& configfile)
       itsDefaultMaxDistance = Fmi::to_string(value) + "km";
     }
 
-	// Request limits
-	int maxlocations = 0;
-	int maxparameters = 0;
-	int maxtimes = 0;
-	int maxlevels = 0;
-	int maxelements = 0;
-	itsConfig.lookupValue("request_limits.maxlocations", maxlocations);
-	itsConfig.lookupValue("request_limits.maxparameters", maxparameters);
-	itsConfig.lookupValue("request_limits.maxtimes", maxtimes);
-	itsConfig.lookupValue("request_limits.maxlevels", maxlevels);
-	itsConfig.lookupValue("request_limits.maxelements", maxelements);
-	itsRequestLimits.maxlocations = maxlocations;
-	itsRequestLimits.maxparameters = maxparameters;
-	itsRequestLimits.maxtimes = maxtimes;
-	itsRequestLimits.maxlevels = maxlevels;
-	itsRequestLimits.maxelements = maxelements;
+    // Request limits
+    int maxlocations = 0;
+    int maxparameters = 0;
+    int maxtimes = 0;
+    int maxlevels = 0;
+    int maxelements = 0;
+    itsConfig.lookupValue("request_limits.maxlocations", maxlocations);
+    itsConfig.lookupValue("request_limits.maxparameters", maxparameters);
+    itsConfig.lookupValue("request_limits.maxtimes", maxtimes);
+    itsConfig.lookupValue("request_limits.maxlevels", maxlevels);
+    itsConfig.lookupValue("request_limits.maxelements", maxelements);
+    itsRequestLimits.maxlocations = maxlocations;
+    itsRequestLimits.maxparameters = maxparameters;
+    itsRequestLimits.maxtimes = maxtimes;
+    itsRequestLimits.maxlevels = maxlevels;
+    itsRequestLimits.maxelements = maxelements;
 
     // TODO: Remove deprecated settings detection
     using Spine::log_time_str;
