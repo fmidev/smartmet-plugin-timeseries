@@ -696,14 +696,17 @@ necessary returned to the user.
 |Function|Description|
 |---------|-----------|
 |interpolate_t(field/btime/atime) |Replaces the missing value with linearly interpolated value using two nearest values inside given time interval. |
+|interpolatedir_t(field/btime/atime) |Same as above but for direction parameters in range 0...360. |
 |nearest_t(field/btime/atime) |Replaces the missing value with nearest value inside given time interval. |
 |median_t(field/btime/atime) |The median value of the field evaluated over the given time interval.|
 |mean_t(field/btime/atime) |The mean value of the field evaluated over the given time interval. |
+|meandir_t(field/btime/atime) |Same as above but for direction parameters in range 0...360. |
 |min_t(field/btime/atime) |The minimum value of the field in the given time interval.|
 |max_t(field/btime/atime) |The maximum value of the field in the given time interval.|
 |sum_t(field/btime/atime) |The sum of the field values calculated over the given time interval.|
 |integ_t(field/btime/atime) |The weighted sum of the field values calculated over the given area. Duration is used as the weight.|
 |sdev_t(field/btime/atime)|The standard deviation of the field values calculated over the given time interval.|
+|sdevdir_t(field/btime/atime) |Same as above but for direction parameters in range 0...360. |
 |trend_t(field/btime/atime)|The trend of the field values calculated over the given time interval. |
 |change_t(field/btime/atime)|The change of the field values calculated over the given time interval. |
 |count_t\[min:max](field/btime/atime)|The number of the field values in the given range (min..max) calculated  over the given time interval. The function returns the total number of the field values if no range is given .|
@@ -731,6 +734,8 @@ Please note that here we get the min, max and mean temperatures over the time
 interval but the query will not return the actual values of the temperatures
 during that interval which are used in calculating the min, max and mean
 temperatures.
+
+Modular means and standard deviations are calculated using the Mitsuta algorithm.
 
 ### Aggregate functions over an area and time
 
