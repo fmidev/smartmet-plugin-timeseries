@@ -4,7 +4,7 @@
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
 Version: 23.3.16
-Release: 2%{?dist}.fmi
+Release: 3%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Mar 16 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.3.16-3.fmi
+- Disable printing stack traces to journals on trivial user input errors
+
 * Thu Mar 16 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.3.16-2.fmi
 - Fixed grid producer detection
 

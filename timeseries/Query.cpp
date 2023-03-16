@@ -449,9 +449,9 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
   }
   catch (...)
   {
-    // The stack traces are useless when the user has made a typo
+    // Stack traces in journals are useless when the user has made a typo
     throw Fmi::Exception::Trace(BCP, "TimeSeries plugin failed to parse query string options!")
-        .disableStackTrace();
+        .disableLogging();
   }
 }
 
