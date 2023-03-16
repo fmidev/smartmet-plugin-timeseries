@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.3.15
+Version: 23.3.16
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -37,7 +37,7 @@ BuildRequires: smartmet-library-newbase-devel >= 23.2.9
 BuildRequires: smartmet-library-gis-devel >= 23.3.14
 BuildRequires: smartmet-engine-geonames-devel >= 23.2.27
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 23.3.14
+BuildRequires: smartmet-engine-observation-devel >= 23.3.15
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 23.3.9
 BuildRequires: smartmet-engine-gis-devel >= 22.12.21
@@ -78,7 +78,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 22.12.21
 #TestRequires: smartmet-engine-querydata >= 23.3.9
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 23.3.14
+#TestRequires: smartmet-engine-observation >= 23.3.15
 %endif
 #TestRequires: smartmet-engine-grid >= 23.3.9
 #TestRequires: gdal34
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Mar 16 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.3.16-1.fmi
+- Silenced compiler warnings
+
 * Wed Mar 15 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.3.15-1.fmi
 - Repackaged since timeseries library Stat object ABI changed
 
