@@ -28,6 +28,12 @@ class GridInterface
 
   virtual ~GridInterface() = default;
 
+  GridInterface() = delete;
+  GridInterface(const GridInterface& other) = delete;
+  GridInterface(GridInterface& other) = delete;
+  GridInterface& operator=(const GridInterface& other) = delete;
+  GridInterface& operator=(GridInterface& other) = delete;
+
   void processGridQuery(const State& state,
                         Query& query,
                         TS::OutputData& outputData,
@@ -42,9 +48,9 @@ class GridInterface
 
   bool isGridProducer(const std::string& producer);
 
-  bool isValidDefaultRequest(const std::vector<uint>& defaultGeometries,
-                             std::vector<std::vector<T::Coordinate>>& polygonPath,
-                             T::GeometryId_set& geometryIdList);
+  static bool isValidDefaultRequest(const std::vector<uint>& defaultGeometries,
+                                    std::vector<std::vector<T::Coordinate>>& polygonPath,
+                                    T::GeometryId_set& geometryIdList);
 
   bool containsGridProducer(const Query& masterquery);
 

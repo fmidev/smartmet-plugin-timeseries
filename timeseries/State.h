@@ -66,6 +66,9 @@ class State
   State(const Plugin& thePlugin);
   State() = delete;
   State(const State& other) = delete;
+  State(State&& other) = delete;
+  State& operator=(const State& other) = delete;
+  State& operator=(State&& other) = delete;
 
   // Access engines
   const Engine::Querydata::Engine& getQEngine() const;

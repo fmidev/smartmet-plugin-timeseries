@@ -27,10 +27,14 @@ using Precisions = std::map<std::string, Precision>;
 class Config
 {
  public:
-  Config(const std::string& configfile);
+  ~Config() = default;
   Config() = delete;
+  Config(const std::string& configfile);
+
   Config(const Config& other) = delete;
   Config& operator=(const Config& other) = delete;
+  Config(Config&& other) = delete;
+  Config& operator=(Config&& other) = delete;
 
   const Precision& getPrecision(const std::string& name) const;
 

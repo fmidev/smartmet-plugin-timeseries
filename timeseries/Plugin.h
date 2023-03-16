@@ -64,8 +64,8 @@ struct SettingsInfo
   bool is_area = false;
   std::string area_name;
 
-  SettingsInfo(const Engine::Observation::Settings& s, bool isa, const std::string& an)
-      : settings(s), is_area(isa), area_name(an)
+  SettingsInfo(Engine::Observation::Settings s, bool isa, std::string an)
+      : settings(std::move(s)), is_area(isa), area_name(std::move(an))
   {
   }
 };
@@ -76,6 +76,8 @@ class Plugin : public SmartMetPlugin
   Plugin() = delete;
   Plugin(const Plugin& other) = delete;
   Plugin& operator=(const Plugin& other) = delete;
+  Plugin(Plugin&& other) = delete;
+  Plugin& operator=(Plugin&& other) = delete;
   Plugin(Spine::Reactor* theReactor, const char* theConfig);
   ~Plugin() override;
 

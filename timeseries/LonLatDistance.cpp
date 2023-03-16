@@ -116,7 +116,7 @@ std::pair<double, double> midpoint(const std::pair<double, double>& from,
     double pi(boost::math::constants::pi<double>());
     lon3 = fmod(lon3 + (3 * pi), 2 * pi) - pi;  // normalise to -180..+180º
 
-    return std::pair<double, double>(rad_to_deg(lon3), rad_to_deg(lat3));
+    return {rad_to_deg(lon3), rad_to_deg(lat3)};
   }
   catch (...)
   {

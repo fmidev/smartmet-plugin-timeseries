@@ -8,6 +8,7 @@
 #include "State.h"
 #include "UtilityFunctions.h"
 #include <engines/grid/Engine.h>
+#include <fmt/format.h>
 #include <gis/CoordinateTransformation.h>
 #include <grid-files/common/GeneralFunctions.h>
 #include <grid-files/common/ImageFunctions.h>
@@ -231,9 +232,9 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
   FUNCTION_TRACE
   try
   {
-    // Adding queries into the QueryStreamer. These queries fetch actual GRIB1/GRIB2 files accoding
-    // to the file attribute definitions (query.mAttributeList). The queryStreamer sends these
-    // queries to the queryServer and returns the results (= GRIB files) to the HTTP client.
+    // Adding queries into the QueryStreamer. These queries fetch actual GRIB1/GRIB2 files
+    // accoding to the file attribute definitions (query.mAttributeList). The queryStreamer sends
+    // these queries to the queryServer and returns the results (= GRIB files) to the HTTP client.
 
     for (auto param = query.mQueryParameterList.begin(); param != query.mQueryParameterList.end();
          ++param)
@@ -624,10 +625,9 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
     int geometryId = -1;
 
     // Producers
-    for (auto it = areaproducers.begin(); it != areaproducers.end(); ++it)
+    for (const auto& areaproducer : areaproducers)
     {
-      std::string producerName = *it;
-      producerName = itsGridEngine->getProducerAlias(producerName, levelId);
+      std::string producerName = itsGridEngine->getProducerAlias(areaproducer, levelId);
 
       Engine::Grid::ParameterDetails_vec parameters;
       itsGridEngine->getParameterDetails(producerName, parameters);
@@ -1245,7 +1245,7 @@ void GridInterface::processGridQuery(const State& state,
             uint vLen = 0;
             uint xLen = 0;
             if (C_INT(gridQuery->mQueryParameterList.size()) > pp &&
-                gridQuery->mQueryParameterList[pp].mValueList.size() > 0)
+                !gridQuery->mQueryParameterList[pp].mValueList.empty())
             {
               // ### Going through all timesteps.
 
@@ -1463,8 +1463,8 @@ void GridInterface::processGridQuery(const State& state,
             if (!processed)
             {
               // The query has returned no values for the parameter. This usually means that the
-              // parameter is not a data parameter. It is most likely "a special parameter" that is
-              // based on the given query location, time, level, etc.
+              // parameter is not a data parameter. It is most likely "a special parameter" that
+              // is based on the given query location, time, level, etc.
 
               std::string paramValue;
               size_t tLen = gridQuery->mForecastTimeList.size();
@@ -1525,18 +1525,14 @@ void GridInterface::processGridQuery(const State& state,
                           gridQuery->mQueryParameterList[pid].mValueList[t]->mValueData[s]);
                     }
 
-                    char filename[100];
                     auto cpid = pidList.find(((ulonglong)pp << 32) + t);
                     if (cpid != pidList.end())
                     {
-                      sprintf(filename,
-                              "/tmp/timeseries_contours_%llu_%u_%lu.png",
-                              outputTime,
-                              cpid->second,
-                              t);
-                      imagePaint.savePngImage(filename);
-                      std::string image = fileToBase64(filename);
-                      filenameList.emplace_back(std::string(filename));
+                      auto filename = fmt::format(
+                          "/tmp/timeseries_contours_{}_{}_{}.png", outputTime, cpid->second, t);
+                      imagePaint.savePngImage(filename.c_str());
+                      std::string image = fileToBase64(filename.c_str());
+                      filenameList.emplace_back(filename);
 
                       if ((gridQuery->mQueryParameterList[pid].mFlags &
                            QueryServer::QueryParameter::Flags::InvisibleParameter) == 0)
@@ -2045,23 +2041,20 @@ void GridInterface::processGridQuery(const State& state,
                               producer))
                         producerName = producer.mName;
 
-                      char tmp[1000];
-
                       // gridQuery->mQueryParameterList[idx].mValueList[t]->mGenerationId;
                       // gridQuery->mQueryParameterList[idx].mValueList[t]->mGeometryId;
 
-                      sprintf(
-                          tmp,
-                          "%s:%s:%u:%d:%d:%d:%d",
-                          gridQuery->mQueryParameterList[i].mValueList[t]->mParameterKey.c_str(),
-                          producerName.c_str(),
+                      auto tmp = fmt::format(
+                          "{}:{}:{}:{}:{}:{}:{}",
+                          gridQuery->mQueryParameterList[i].mValueList[t]->mParameterKey,
+                          producerName,
                           gridQuery->mQueryParameterList[i].mValueList[t]->mGeometryId,
                           C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mParameterLevelId),
                           C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mParameterLevel),
                           C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mForecastType),
                           C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mForecastNumber));
 
-                      TS::TimedValue tsValue(queryTime, std::string(tmp));
+                      TS::TimedValue tsValue(queryTime, tmp);
                       tsForNonGridParam->emplace_back(tsValue);
                     }
                     else
@@ -2084,18 +2077,16 @@ void GridInterface::processGridQuery(const State& state,
 
                   // gridQuery->mQueryParameterList[pid].mValueList[t]->print(std::cout,0,0);
 
-                  char tmp[1000];
-                  sprintf(
-                      tmp,
-                      "%s:%s:%u:%d:%d:%d:%d %s flags:%d",
-                      gridQuery->mQueryParameterList[pid].mValueList[t]->mParameterKey.c_str(),
-                      producerName.c_str(),
+                  auto tmp = fmt::format(
+                      "{}:{}:{}:{}:{}:{}:{} {} flags:{}",
+                      gridQuery->mQueryParameterList[pid].mValueList[t]->mParameterKey,
+                      producerName,
                       gridQuery->mQueryParameterList[pid].mValueList[t]->mGeometryId,
                       C_INT(gridQuery->mQueryParameterList[pid].mValueList[t]->mParameterLevelId),
                       C_INT(gridQuery->mQueryParameterList[pid].mValueList[t]->mParameterLevel),
                       C_INT(gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastType),
                       C_INT(gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastNumber),
-                      gridQuery->mQueryParameterList[pid].mValueList[t]->mAnalysisTime.c_str(),
+                      gridQuery->mQueryParameterList[pid].mValueList[t]->mAnalysisTime,
                       C_INT(gridQuery->mQueryParameterList[pid].mValueList[t]->mFlags));
 
                   TS::TimedValue tsValue(queryTime, std::string(tmp));
@@ -2129,24 +2120,25 @@ void GridInterface::processGridQuery(const State& state,
 
                   uint partCount = partList.size();
 
-                  char filename[100];
+                  std::string filename;
                   for (uint pl = 1; pl < partCount; pl++)
                   {
                     int idx = toInt32(partList[pl]);
                     int i = pidList[idx];
-                    sprintf(filename, "/tmp/timeseries_contours_%llu_%d_%lu.png", outputTime, i, t);
-                    if (getFileSize(filename) > 0)
-                      fileList.emplace_back(std::string(filename));
+                    filename =
+                        fmt::format("/tmp/timeseries_contours_{}_{}_{}.png", outputTime, i, t);
+                    if (getFileSize(filename.c_str()) > 0)
+                      fileList.emplace_back(filename);
                   }
 
                   if (!fileList.empty())
                   {
-                    sprintf(
-                        filename, "/tmp/timeseries_contours_%llu_%d_%lu.png", outputTime, pid, t);
-                    mergePngFiles(filename, fileList);
+                    filename =
+                        fmt::format("/tmp/timeseries_contours_{}_{}_{}.png", outputTime, pid, t);
+                    mergePngFiles(filename.c_str(), fileList);
 
-                    std::string image = fileToBase64(filename);
-                    filenameList.emplace_back(std::string(filename));
+                    std::string image = fileToBase64(filename.c_str());
+                    filenameList.emplace_back(filename);
 
                     std::string s1 = R"(<img border="5" src="data:image/png;base64,)";
 
@@ -2161,11 +2153,11 @@ void GridInterface::processGridQuery(const State& state,
                 }
                 else if (rLen > tLen)
                 {
-                  // It seems that there are more values available for each time step than expected.
-                  // This usually happens if the requested parameter definition does not contain
-                  // enough information in order to identify an unique parameter. For example, if
-                  // the parameter definition does not contain level information then the result is
-                  // that we get values from several levels.
+                  // It seems that there are more values available for each time step than
+                  // expected. This usually happens if the requested parameter definition does not
+                  // contain enough information in order to identify an unique parameter. For
+                  // example, if the parameter definition does not contain level information then
+                  // the result is that we get values from several levels.
 
                   char tmp[10000];
                   std::set<std::string> pList;

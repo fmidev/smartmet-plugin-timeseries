@@ -136,7 +136,7 @@ void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
       return;
 
     TS::TimeSeriesData tsdata;
-    if (boost::get<TS::TimeSeriesPtr>(&aggregatedData[0]))
+    if (boost::get<TS::TimeSeriesPtr>(aggregatedData.data()))
     {
       TS::TimeSeriesPtr ts_first = *(boost::get<TS::TimeSeriesPtr>(&aggregatedData[0]));
       TS::TimeSeriesPtr ts_result(new TS::TimeSeries(ts_first->getLocalTimePool()));
@@ -150,7 +150,7 @@ void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
       update_latest_timestep(query, *ts_result);
       tsdata = ts_result;
     }
-    else if (boost::get<TS::TimeSeriesGroupPtr>(&aggregatedData[0]))
+    else if (boost::get<TS::TimeSeriesGroupPtr>(aggregatedData.data()))
     {
       TS::TimeSeriesGroupPtr tsg_result(new TS::TimeSeriesGroup);
       // first merge timeseries of all levels of one parameter

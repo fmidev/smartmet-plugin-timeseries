@@ -36,10 +36,6 @@
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
 using boost::local_time::local_date_time;
-using boost::posix_time::hours;
-using boost::posix_time::minutes;
-using boost::posix_time::ptime;
-using boost::posix_time::seconds;
 
 //#define MYDEBUG ON
 
@@ -79,7 +75,7 @@ Spine::Parameter get_query_param(const Spine::Parameter& parameter)
     number = kFmiLatitude;
   }
 
-  return Spine::Parameter(paramname, alias, type, number);
+  return {paramname, alias, type, number};
 }
 
 void transform_wgs84_coordinates(const std::string& name,
@@ -3141,7 +3137,7 @@ void Plugin::processObsEngineQuery(const State& state,
         check_request_limit(itsConfig.requestLimits(),
                             settings.parameters.size(),
                             TS::RequestLimitMember::PARAMETERS);
-        if (settings.taggedFMISIDs.size() > 0)
+        if (!settings.taggedFMISIDs.empty())
           check_request_limit(itsConfig.requestLimits(),
                               settings.taggedFMISIDs.size(),
                               TS::RequestLimitMember::LOCATIONS);
@@ -3284,7 +3280,7 @@ bool Plugin::processGridEngineQuery(const State& state,
 
     boost::posix_time::ptime latestTimestep = query.latestTimestep;
 
-    for (auto& tloc : query.loptions->locations())
+    for (const auto& tloc : query.loptions->locations())
     {
       query.latestTimestep = latestTimestep;
 
@@ -3432,7 +3428,7 @@ bool Plugin::processGridEngineQuery(const State& state,
 
       T::GeometryId_set geometryIdList;
       if (areaproducers.empty() && !itsGridInterface->containsParameterWithGridProducer(query) &&
-          !itsGridInterface->isValidDefaultRequest(
+          !GridInterface::isValidDefaultRequest(
               itsConfig.defaultGridGeometries(), polygonPath, geometryIdList))
       {
         outputData.clear();
@@ -4209,13 +4205,22 @@ void Plugin::init()
     // fail.
     if (!itsReactor->addContentHandler(this,
                                        itsConfig.defaultUrl(),
-                                       boost::bind(&Plugin::callRequestHandler, this, _1, _2, _3)))
+                                       [this](Spine::Reactor& theReactor,
+                                              const Spine::HTTP::Request& theRequest,
+                                              Spine::HTTP::Response& theResponse) {
+                                         callRequestHandler(theReactor, theRequest, theResponse);
+                                       }))
       throw Fmi::Exception(BCP, "Failed to register timeseries content handler");
 
     // DEPRECATED:
 
-    if (!itsReactor->addContentHandler(
-            this, "/pointforecast", boost::bind(&Plugin::callRequestHandler, this, _1, _2, _3)))
+    if (!itsReactor->addContentHandler(this,
+                                       "/pointforecast",
+                                       [this](Spine::Reactor& theReactor,
+                                              const Spine::HTTP::Request& theRequest,
+                                              Spine::HTTP::Response& theResponse) {
+                                         callRequestHandler(theReactor, theRequest, theResponse);
+                                       }))
       throw Fmi::Exception(BCP, "Failed to register pointforecast content handler");
 
     // DONE
