@@ -85,46 +85,35 @@ bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
   FUNCTION_TRACE
   try
   {
-    const char removeChar[] = {'(', ')', '{', '}', '[', ']', ';', ' ', '\0'};
-
-    // BOOST_FOREACH (const Spine::ParameterAndFunctions&
-    // paramfunc,masterquery.poptions.parameterFunctions())
+    const char replaceChar[] = {'(', ')', '{', '}', '[', ']', ';', ',', ' ', '/', '\\', '\0'};
 
     for (const auto& paramfunc : masterquery.poptions.parameterFunctions())
     {
       Spine::Parameter param = paramfunc.parameter;
+      //printf("PARAM %s\n",param.name().c_str());
 
-      char buf[param.name().length() + 100];
+      uint len = param.name().length();
+      char buf[len+1];
       strcpy(buf, param.name().c_str());
-      uint c1 = 0;
-      uint c2 = 0;
-      while (buf[c1] != '\0')
+      for (uint t=0; t<len; t++)
       {
-        bool removeRequested = false;
-        uint c = 0;
-        while (removeChar[c] != '\0' && !removeRequested)
+        for (uint c=0; c<12; c++)
         {
-          if (buf[c1] == removeChar[c])
-            removeRequested = true;
-
-          c++;
+          if (buf[t] == replaceChar[c])
+          {
+            buf[t] = ':';
+            c = 12;
+          }
         }
-
-        if (!removeRequested)
-        {
-          buf[c2] = buf[c1];
-          c2++;
-        }
-        c1++;
       }
-      buf[c2] = '\0';
 
       std::vector<std::string> partList;
 
-      splitString(param.name(), ':', partList);
+      splitString(buf, ':', partList);
       for (const auto& producer : partList)
       {
-        if (isGridProducer(producer))
+        //printf("  -- PRODUCER [%s]\n",producer.c_str());
+        if (!producer.empty() &&  isGridProducer(producer))
           return true;
       }
     }
