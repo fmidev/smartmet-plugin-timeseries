@@ -1,5 +1,7 @@
 include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
+TEST_TIMEOUT ?= 300
+
 all:
 
 test test-grid:	start-redis-db
@@ -13,7 +15,7 @@ test-impl:
 	smartmet-plugin-test \
 		--handler /timeseries \
 		--reactor-config cnf/reactor.conf \
-		--timeout 300
+		--timeout $(TEST_TIMEOUT)
 
 start-redis-db:
 	rm -rf cnf/grid

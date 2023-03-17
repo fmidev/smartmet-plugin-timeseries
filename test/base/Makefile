@@ -4,6 +4,8 @@ test-oracle:		DB_TYPE := oracle
 test-postgresql:	DB_TYPE := postgresql
 test-sqlite:		DB_TYPE := sqlite
 
+TEST_TIMEOUT ?= 300
+
 ifdef CI
 TEST_TARGETS := test-sqlite
 EXTRA_IGNORE := input/.testignore_ci
@@ -21,7 +23,7 @@ test-sqlite test-oracle test-postgresql:
 		--reactor-config cnf/reactor_$(DB_TYPE).conf \
 		--failures-dir failures-$(DB_TYPE) \
 		$(foreach fn, input/.testignore_$(DB_TYPE) $(EXTRA_IGNORE), --ignore $(fn)) \
-		--timeout 300 || ok=false; \
+		--timeout $(TEST_TIMEOUT) || ok=false; \
 	$$ok
 
 testdatabase:
