@@ -12,7 +12,7 @@ clean:
 	rm -rf cnf/grid
 
 test-impl:
-	smartmet-plugin-test \
+	$(TEST_RUNNER) smartmet-plugin-test \
 		--handler /timeseries \
 		--reactor-config cnf/reactor.conf \
 		--timeout $(TEST_TIMEOUT)
