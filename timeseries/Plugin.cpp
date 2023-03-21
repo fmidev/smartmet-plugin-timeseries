@@ -3727,7 +3727,7 @@ void Plugin::query(const State& state,
 #else
     if (query.loptions->locations().empty())
 #endif
-      throw Fmi::Exception(BCP, "No location option given!");
+      throw Fmi::Exception(BCP, "No location option given!").disableLogging();
 
     // The formatter knows which mimetype to send
 
