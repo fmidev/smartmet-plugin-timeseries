@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.3.16
-Release: 3%{?dist}.fmi
+Version: 23.3.21
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -35,7 +35,7 @@ BuildRequires: smartmet-library-grid-content-devel >= 23.3.9
 BuildRequires: smartmet-library-grid-files-devel >= 23.3.9
 BuildRequires: smartmet-library-newbase-devel >= 23.2.9
 BuildRequires: smartmet-library-gis-devel >= 23.3.14
-BuildRequires: smartmet-engine-geonames-devel >= 23.2.27
+BuildRequires: smartmet-engine-geonames-devel >= 23.3.16
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 23.3.15
 %endif
@@ -53,7 +53,7 @@ Requires: smartmet-library-macgyver >= 23.3.3
 Requires: smartmet-library-newbase >= 23.2.9
 Requires: smartmet-library-spine >= 23.3.14
 Requires: smartmet-library-timeseries >= 23.3.15
-Requires: smartmet-engine-geonames >= 23.2.27
+Requires: smartmet-engine-geonames >= 23.3.16
 Requires: smartmet-engine-querydata >= 23.3.9
 Requires: smartmet-engine-gis >= 22.12.21
 Requires: smartmet-engine-grid >= 23.3.9
@@ -74,7 +74,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-data >= 23.2.9
 #TestRequires: smartmet-engine-grid-test >= 23.3.9
 #TestRequires: smartmet-library-gis >= 23.3.14
-#TestRequires: smartmet-engine-geonames >= 23.2.27
+#TestRequires: smartmet-engine-geonames >= 23.3.16
 #TestRequires: smartmet-engine-gis >= 22.12.21
 #TestRequires: smartmet-engine-querydata >= 23.3.9
 %if %{with observation}
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Mar 21 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.3.21-1.fmi
+- Disable stack trace & logging of queries without location options
+
 * Thu Mar 16 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.3.16-3.fmi
 - Disable printing stack traces to journals on trivial user input errors
 
