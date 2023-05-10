@@ -1936,7 +1936,6 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
     // Does this one actually do anything once the Setting object has been initialized??
     settings.localename = query.localename;
     settings.numberofstations = query.numberofstations;
-    settings.latest = query.latestObservation;
     settings.useDataCache = query.useDataCache;
     // Data filtering settings
     settings.dataFilter = query.dataFilter;
@@ -2393,6 +2392,10 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
                         aggregationIntervalBehind,
                         aggregationIntervalAhead,
                         settings);
+
+    // Handle endtime=now
+    if (query.latestObservation)
+      settings.wantedtime = settings.endtime;
 
     Engine::Observation::StationSettings stationSettings;
 
