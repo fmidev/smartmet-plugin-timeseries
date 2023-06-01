@@ -563,6 +563,7 @@ or by using other parameters. So we name the parameter of the first table as
 | stationname | The official name of the observation station. |X|X|
 | stationlon | The longitude of the station. |X|X|
 | stationlat | The latitude of the station. |X|X|
+| stationgroups | Limit the set of acceptable stations for the producer further. For example stationgroups=AWS,SYNOP will omit precipitation stations, radars etc. |X|X
 | distance | The distance to the station. |X|X
 | name | The name of the location. This information was returned by the GeoEngine module according to the location coordinates. |X|X|
 |geoid | The geo-id of the location. This information was returned by the GeoEngine module according to the location coordinates. |X|X|
