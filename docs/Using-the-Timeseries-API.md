@@ -561,6 +561,9 @@ or by using other parameters. So we name the parameter of the first table as
 | month | The name of the month (January, February, etc.). The used language can be set by the "locale" parameter (e.g.  locale=fi_FI) |X|X|
 | place | The name of the place that was used in the "place" parameter. If the parameter was not used then this contains the location coordinates (longitude, latitude) |X|X|
 | stationname | The official name of the observation station. |X|X|
+| stationlon | The longitude of the station. |X|X|
+| stationlat | The latitude of the station. |X|X|
+| distance | The distance to the station. |X|X
 | name | The name of the location. This information was returned by the GeoEngine module according to the location coordinates. |X|X|
 |geoid | The geo-id of the location. This information was returned by the GeoEngine module according to the location coordinates. |X|X|
 | country | The name of the country. This information was returned by the GeoEngine module according to the location coordinates. |X|X|
