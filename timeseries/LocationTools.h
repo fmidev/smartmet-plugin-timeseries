@@ -45,9 +45,7 @@ int get_fmisid_value(const TS::TimeSeries& ts);
 #ifndef WITHOUT_OBSERVATION
 
 std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
-                                     const std::string& producer,
-                                     const boost::posix_time::ptime& starttime,
-                                     const boost::posix_time::ptime& endtime,
+                                     const Engine::Observation::Settings& settings,
                                      const std::string& wktstring);
 
 int get_fmisid_index(const Engine::Observation::Settings& settings);

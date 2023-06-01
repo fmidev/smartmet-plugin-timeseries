@@ -320,6 +320,9 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 #ifndef WITHOUT_OBSERVATION
     // observation params
     numberofstations = Spine::optional_int(req.getParameter("numberofstations"), 1);
+    std::string opt_stationgroups = Spine::optional_string(req.getParameter("stationgroups"), "");
+    if (!opt_stationgroups.empty())
+      boost::algorithm::split(stationgroups, opt_stationgroups, boost::algorithm::is_any_of(","));
 #endif
 
 #ifndef WITHOUT_OBSERVATION

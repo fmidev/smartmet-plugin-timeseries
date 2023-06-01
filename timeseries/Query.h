@@ -132,6 +132,7 @@ struct Query
 
 #ifndef WITHOUT_OBSERVATION
   int numberofstations;
+  std::set<std::string> stationgroups;
 #endif
 
   bool maxdistanceOptionGiven;

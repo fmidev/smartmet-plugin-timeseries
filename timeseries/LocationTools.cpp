@@ -339,9 +339,7 @@ std::string get_location_id(const Spine::LocationPtr& loc)
 
 #ifndef WITHOUT_OBSERVATION
 std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
-                                     const std::string& producer,
-                                     const boost::posix_time::ptime& starttime,
-                                     const boost::posix_time::ptime& endtime,
+                                     const Engine::Observation::Settings& settings,
                                      const std::string& wktstring)
 {
   try
@@ -350,7 +348,7 @@ std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
 
     Spine::Stations stations;
 
-    observation->getStationsByArea(stations, producer, starttime, endtime, wktstring);
+    observation->getStationsByArea(stations, settings, wktstring);
     for (const auto& station : stations)
       fmisids.push_back(station.fmisid);
 

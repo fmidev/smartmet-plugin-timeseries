@@ -1921,6 +1921,7 @@ void Plugin::getCommonObsSettings(Engine::Observation::Settings& settings,
 
     settings.format = query.format;
     settings.stationtype = producer;
+    settings.stationgroups = query.stationgroups;
     if (producer == Engine::Observation::FMI_IOT_PRODUCER)
       settings.stationtype_specifier = query.iot_producer_specifier;
     settings.maxdistance = query.maxdistance_meters();
@@ -2046,8 +2047,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
           }
         }
         if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
-          stationSettings.fmisids = get_fmisids_for_wkt(
-              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+          stationSettings.fmisids = get_fmisids_for_wkt(itsObsEngine, settings, wktString);
       }
       else if (loc->type == Spine::Location::Area)
       {
@@ -2082,8 +2082,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         }
 
         if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
-          stationSettings.fmisids = get_fmisids_for_wkt(
-              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+          stationSettings.fmisids = get_fmisids_for_wkt(itsObsEngine, settings, wktString);
       }
       else if (loc->type == Spine::Location::BoundingBox && !is_flash_producer(producer))
       {
@@ -2113,8 +2112,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
         wktString = Fmi::OGR::exportToWkt(*geom);
         if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
-          stationSettings.fmisids = get_fmisids_for_wkt(
-              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+          stationSettings.fmisids = get_fmisids_for_wkt(itsObsEngine, settings, wktString);
       }
       else if (!is_flash_producer(producer) && loc->type == Spine::Location::Place &&
                loc->radius > 0)
@@ -2132,8 +2130,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
         wktString = Fmi::OGR::exportToWkt(*geom);
         if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
-          stationSettings.fmisids = get_fmisids_for_wkt(
-              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+          stationSettings.fmisids = get_fmisids_for_wkt(itsObsEngine, settings, wktString);
       }
       else if (!is_flash_producer(producer) && loc->type == Spine::Location::CoordinatePoint &&
                loc->radius > 0)
@@ -2164,8 +2161,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
         }
 
         if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
-          stationSettings.fmisids = get_fmisids_for_wkt(
-              itsObsEngine, producer, settings.starttime, settings.endtime, wktString);
+          stationSettings.fmisids = get_fmisids_for_wkt(itsObsEngine, settings, wktString);
       }
 
 #ifdef MYDEBUG
@@ -2182,8 +2178,7 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
       if (!stationSettings.fmisids.empty() &&
           (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer)))
       {
-        settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
-            settings.starttime, settings.endtime, producer, stationSettings);
+        settings.taggedFMISIDs = itsObsEngine->translateToFMISID(settings, stationSettings);
 
         name = loc->name;
         if (loc->type == Spine::Location::Wkt)
@@ -2454,10 +2449,7 @@ void Plugin::getObsSettings(std::vector<SettingsInfo>& settingsVector,
     }
 
     if (!is_flash_or_mobile_producer(producer) || is_icebuoy_or_copernicus_producer(producer))
-    {
-      settings.taggedFMISIDs = itsObsEngine->translateToFMISID(
-          settings.starttime, settings.endtime, producer, stationSettings);
-    }
+      settings.taggedFMISIDs = itsObsEngine->translateToFMISID(settings, stationSettings);
 
     if (!settings.taggedFMISIDs.empty() || !settings.boundingBox.empty() ||
         !settings.taggedLocations.empty())
