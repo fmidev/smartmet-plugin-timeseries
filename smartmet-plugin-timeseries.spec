@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.6.1
+Version: 23.6.6
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -30,9 +30,9 @@ BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 23.3.15
 BuildRequires: smartmet-library-spine-devel >= 23.4.27
 BuildRequires: smartmet-library-locus-devel >= 23.3.7
-BuildRequires: smartmet-library-macgyver-devel >= 23.5.24
+BuildRequires: smartmet-library-macgyver-devel >= 23.6.2
 BuildRequires: smartmet-library-grid-content-devel >= 23.5.26
-BuildRequires: smartmet-library-grid-files-devel >= 23.3.9
+BuildRequires: smartmet-library-grid-files-devel >= 23.6.6
 BuildRequires: smartmet-library-newbase-devel >= 23.2.9
 BuildRequires: smartmet-library-gis-devel >= 23.3.14
 BuildRequires: smartmet-engine-geonames-devel >= 23.4.27
@@ -49,7 +49,7 @@ BuildRequires: smartmet-engine-grid-devel >= 23.5.26
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 23.3.14
 Requires: smartmet-library-locus >= 23.3.7
-Requires: smartmet-library-macgyver >= 23.5.24
+Requires: smartmet-library-macgyver >= 23.6.2
 Requires: smartmet-library-newbase >= 23.2.9
 Requires: smartmet-library-spine >= 23.4.27
 Requires: smartmet-library-timeseries >= 23.3.15
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Jun  6 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.6.6-1.fmi
+- Repackaged due to GRID ABI changes
+
 * Thu Jun  1 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.6.1-1.fmi
 - Added stationgroups option
 
