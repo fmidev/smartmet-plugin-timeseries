@@ -11,6 +11,7 @@
 #include <grid-files/common/ShowFunction.h>
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
+#include <spine/ConfigTools.h>
 #include <spine/Convenience.h>
 #include <spine/Exceptions.h>
 #include <ogr_geometry.h>
@@ -251,6 +252,7 @@ Config::Config(const string& configfile)
     itsConfig.setIncludeDir(p.c_str());
 
     itsConfig.readFile(configfile.c_str());
+    Spine::expandVariables(itsConfig);
 
     // Obligatory settings
     itsDefaultLocaleName = itsConfig.lookup("locale").c_str();
