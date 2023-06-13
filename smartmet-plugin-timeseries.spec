@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.6.6
+Version: 23.6.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -28,35 +28,35 @@ BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 23.3.15
-BuildRequires: smartmet-library-spine-devel >= 23.4.27
+BuildRequires: smartmet-library-spine-devel >= 23.6.13
 BuildRequires: smartmet-library-locus-devel >= 23.3.7
-BuildRequires: smartmet-library-macgyver-devel >= 23.6.2
+BuildRequires: smartmet-library-macgyver-devel >= 23.6.6
 BuildRequires: smartmet-library-grid-content-devel >= 23.5.26
 BuildRequires: smartmet-library-grid-files-devel >= 23.6.6
 BuildRequires: smartmet-library-newbase-devel >= 23.2.9
-BuildRequires: smartmet-library-gis-devel >= 23.3.14
-BuildRequires: smartmet-engine-geonames-devel >= 23.4.27
+BuildRequires: smartmet-library-gis-devel >= 23.6.7
+BuildRequires: smartmet-engine-geonames-devel >= 23.6.13
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 23.6.1
+BuildRequires: smartmet-engine-observation-devel >= 23.6.12
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 23.4.27
-BuildRequires: smartmet-engine-gis-devel >= 22.12.21
-BuildRequires: smartmet-engine-grid-devel >= 23.5.26
+BuildRequires: smartmet-engine-querydata-devel >= 23.6.13
+BuildRequires: smartmet-engine-gis-devel >= 23.6.13
+BuildRequires: smartmet-engine-grid-devel >= 23.6.8
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 23.1.26
 #%endif
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
-Requires: smartmet-library-gis >= 23.3.14
+Requires: smartmet-library-gis >= 23.6.7
 Requires: smartmet-library-locus >= 23.3.7
-Requires: smartmet-library-macgyver >= 23.6.2
+Requires: smartmet-library-macgyver >= 23.6.6
 Requires: smartmet-library-newbase >= 23.2.9
-Requires: smartmet-library-spine >= 23.4.27
+Requires: smartmet-library-spine >= 23.6.13
 Requires: smartmet-library-timeseries >= 23.3.15
-Requires: smartmet-engine-geonames >= 23.4.27
-Requires: smartmet-engine-querydata >= 23.4.27
-Requires: smartmet-engine-gis >= 22.12.21
-Requires: smartmet-engine-grid >= 23.5.26
+Requires: smartmet-engine-geonames >= 23.6.13
+Requires: smartmet-engine-querydata >= 23.6.13
+Requires: smartmet-engine-gis >= 23.6.13
+Requires: smartmet-engine-grid >= 23.6.8
 Requires: smartmet-server >= 23.5.19
 Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
@@ -67,20 +67,20 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 23.4.28
-#TestRequires: smartmet-library-spine-plugin-test >= 23.4.27
+#TestRequires: smartmet-library-spine-plugin-test >= 23.6.13
 #TestRequires: smartmet-library-newbase-devel >= 23.2.9
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 23.6.1
 #TestRequires: smartmet-test-data >= 23.5.15
-#TestRequires: smartmet-engine-grid-test >= 23.5.26
-#TestRequires: smartmet-library-gis >= 23.3.14
-#TestRequires: smartmet-engine-geonames >= 23.4.27
-#TestRequires: smartmet-engine-gis >= 22.12.21
-#TestRequires: smartmet-engine-querydata >= 23.4.27
+#TestRequires: smartmet-engine-grid-test >= 23.6.8
+#TestRequires: smartmet-library-gis >= 23.6.7
+#TestRequires: smartmet-engine-geonames >= 23.6.13
+#TestRequires: smartmet-engine-gis >= 23.6.13
+#TestRequires: smartmet-engine-querydata >= 23.6.13
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 23.6.1
+#TestRequires: smartmet-engine-observation >= 23.6.12
 %endif
-#TestRequires: smartmet-engine-grid >= 23.5.26
+#TestRequires: smartmet-engine-grid >= 23.6.8
 #TestRequires: gdal34
 #TestRequires: libwebp13
 
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Jun 13 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.6.13-1.fmi
+- Support internal and environment variables in configuration files
+
 * Tue Jun  6 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.6.6-1.fmi
 - Repackaged due to GRID ABI changes
 
