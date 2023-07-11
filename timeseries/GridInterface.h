@@ -30,9 +30,9 @@ class GridInterface
 
   GridInterface() = delete;
   GridInterface(const GridInterface& other) = delete;
-  GridInterface(GridInterface& other) = delete;
   GridInterface& operator=(const GridInterface& other) = delete;
-  GridInterface& operator=(GridInterface& other) = delete;
+  GridInterface(GridInterface&& other) = delete;
+  GridInterface& operator=(GridInterface&& other) = delete;
 
   void processGridQuery(const State& state,
                         Query& query,
@@ -49,7 +49,7 @@ class GridInterface
   bool isGridProducer(const std::string& producer);
 
   static bool isValidDefaultRequest(const std::vector<uint>& defaultGeometries,
-                                    std::vector<std::vector<T::Coordinate>>& polygonPath,
+                                    const std::vector<std::vector<T::Coordinate>>& polygonPath,
                                     T::GeometryId_set& geometryIdList);
 
   bool containsGridProducer(const Query& masterquery);
@@ -65,7 +65,7 @@ class GridInterface
                         const AreaProducers& areaproducers,
                         const Spine::TaggedLocation& tloc,
                         const Spine::LocationPtr& loc,
-                        T::GeometryId_set& geometryIdList,
+                        const T::GeometryId_set& geometryIdList,
                         std::vector<std::vector<T::Coordinate>>& polygonPath);
 
   static void insertFileQueries(QueryServer::Query& query,
@@ -76,18 +76,6 @@ class GridInterface
                     std::string& endTime);
 
   static int getParameterIndex(QueryServer::Query& gridQuery, const std::string& param);
-
-  static void erase_redundant_timesteps(
-      TS::TimeSeries& ts, std::set<boost::local_time::local_date_time>& aggregationTimes);
-
-  TS::TimeSeriesPtr erase_redundant_timesteps(
-      TS::TimeSeriesPtr ts, std::set<boost::local_time::local_date_time>& aggregationTimes);
-
-  TS::TimeSeriesVectorPtr erase_redundant_timesteps(
-      TS::TimeSeriesVectorPtr tsv, std::set<boost::local_time::local_date_time>& aggregationTimes);
-
-  TS::TimeSeriesGroupPtr erase_redundant_timesteps(
-      TS::TimeSeriesGroupPtr tsg, std::set<boost::local_time::local_date_time>& aggregationTimes);
 
   T::ParamLevelId getLevelId(const char* producerName, const Query& masterquery);
 

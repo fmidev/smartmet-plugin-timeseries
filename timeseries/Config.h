@@ -29,7 +29,7 @@ class Config
  public:
   ~Config() = default;
   Config() = delete;
-  Config(const std::string& configfile);
+  explicit Config(const std::string& configfile);
 
   Config(const Config& other) = delete;
   Config& operator=(const Config& other) = delete;

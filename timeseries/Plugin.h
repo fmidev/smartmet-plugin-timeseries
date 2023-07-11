@@ -116,7 +116,7 @@ class Plugin : public SmartMetPlugin
              Spine::HTTP::Response& response);
 
   boost::shared_ptr<std::string> processQuery(const State& state,
-                                              Spine::Table& data,
+                                              Spine::Table& table,
                                               Query& masterquery,
                                               const QueryServer::QueryStreamer_sptr& queryStreamer,
                                               size_t& product_hash);
@@ -186,12 +186,6 @@ class Plugin : public SmartMetPlugin
                            Query& query,
                            Engine::Observation::Settings& settings,
                            std::string& name) const;
-  void resolveParameterSettings(const ObsParameters& obsParameters,
-                                const Query& query,
-                                const std::string& producer,
-                                Engine::Observation::Settings& settings,
-                                unsigned int& aggregationIntervalBehind,
-                                unsigned int& aggregationIntervalAhead) const;
   void resolveTimeSettings(const std::string& producer,
                            const ProducerDataPeriod& producerDataPeriod,
                            const boost::posix_time::ptime& now,
