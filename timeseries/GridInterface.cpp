@@ -90,14 +90,14 @@ bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
     for (const auto& paramfunc : masterquery.poptions.parameterFunctions())
     {
       Spine::Parameter param = paramfunc.parameter;
-      //printf("PARAM %s\n",param.name().c_str());
+      // printf("PARAM %s\n",param.name().c_str());
 
       uint len = param.name().length();
-      char buf[len+1];
+      char buf[len + 1];
       strcpy(buf, param.name().c_str());
-      for (uint t=0; t<len; t++)
+      for (uint t = 0; t < len; t++)
       {
-        for (uint c=0; c<12; c++)
+        for (uint c = 0; c < 12; c++)
         {
           if (buf[t] == replaceChar[c])
           {
@@ -112,8 +112,8 @@ bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
       splitString(buf, ':', partList);
       for (const auto& producer : partList)
       {
-        //printf("  -- PRODUCER [%s]\n",producer.c_str());
-        if (!producer.empty() &&  isGridProducer(producer))
+        // printf("  -- PRODUCER [%s]\n",producer.c_str());
+        if (!producer.empty() && isGridProducer(producer))
           return true;
       }
     }
