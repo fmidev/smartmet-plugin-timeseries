@@ -63,7 +63,8 @@ class State
 {
  public:
   // We always construct with the plugin only
-  State(const Plugin& thePlugin);
+  explicit State(const Plugin& thePlugin);
+  ~State() = default;
   State() = delete;
   State(const State& other) = delete;
   State(State&& other) = delete;

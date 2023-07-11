@@ -247,7 +247,7 @@ Engine::Querydata::Producer select_producer(const Engine::Querydata::Engine& que
 
 void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
                        TS::TableFeeder& tf,
-                       TS::OutputData& outputData,
+                       const TS::OutputData& outputData,
                        const std::string& location_name,
                        int& startRow)
 {
@@ -641,15 +641,15 @@ std::size_t Plugin::hash_value(const State& state,
 
     for (const AreaProducers& areaproducers : masterquery.timeproducers)
     {
-      Query query = masterquery;
+      Query q = masterquery;
 
-      query.timeproducers.clear();  // not used
+      q.timeproducers.clear();  // not used
       // set latestTimestep for the query
-      query.latestTimestep = latestTimestep;
+      q.latestTimestep = latestTimestep;
 
       if (producer_group != 0)
-        query.toptions.startTimeUTC = startTimeUTC;
-      query.toptions.endTimeUTC = masterquery.toptions.endTimeUTC;
+        q.toptions.startTimeUTC = startTimeUTC;
+      q.toptions.endTimeUTC = masterquery.toptions.endTimeUTC;
 
 #ifndef WITHOUT_OBSERVATION
       if (!areaproducers.empty() && !itsConfig.obsEngineDisabled() &&
@@ -665,12 +665,12 @@ std::size_t Plugin::hash_value(const State& state,
         // Note name changes: masterquery --> query, and query-->subquery
 
         // first timestep is here in utc
-        boost::posix_time::ptime first_timestep = query.latestTimestep;
+        boost::posix_time::ptime first_timestep = q.latestTimestep;
 
-        for (const auto& tloc : query.loptions->locations())
+        for (const auto& tloc : q.loptions->locations())
         {
-          Query subquery = query;
-          QueryLevelDataCache queryLevelDataCache;
+          Query subquery = q;
+          // QueryLevelDataCache queryLevelDataCache;
 
           if (subquery.timezone == LOCALTIME_PARAM)
             subquery.timezone = tloc.loc->timezone;
@@ -709,13 +709,13 @@ std::size_t Plugin::hash_value(const State& state,
             else if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
             {
               NFmiSvgPath svgPath;
-              loc = getLocationForArea(tloc, query, &svgPath);
+              loc = getLocationForArea(tloc, q, &svgPath);
             }
             else if (loc->type == Spine::Location::BoundingBox)
             {
               // get location info for center coordinates
               std::unique_ptr<Spine::Location> tmp =
-                  get_bbox_location(place, query.language, *itsGeoEngine);
+                  get_bbox_location(place, q.language, *itsGeoEngine);
 
               tmp->name = tloc.tag;
               tmp->type = tloc.loc->type;
@@ -727,7 +727,7 @@ std::size_t Plugin::hash_value(const State& state,
               subquery.timezone = loc->timezone;
 
             // Select the producer for the coordinate
-            auto producer = select_producer(*itsQEngine, *loc, subquery, areaproducers);
+            producer = select_producer(*itsQEngine, *loc, subquery, areaproducers);
 
             if (producer.empty())
             {
@@ -751,10 +751,10 @@ std::size_t Plugin::hash_value(const State& state,
             Fmi::hash_combine(timeseries_hash, Fmi::hash_value(subquery.timezone));
             Fmi::hash_combine(timeseries_hash, subquery.toptions.hash_value());
 
-            if (handled_timeseries.find(timeseries_hash) == handled_timeseries.end())
-            {
-              handled_timeseries.insert(timeseries_hash);
+            auto pos_flag = handled_timeseries.insert(timeseries_hash);
 
+            if (pos_flag.second)  // if insert was successful
+            {
               const auto validtimes = qi->validTimes();
               if (validtimes->empty())
                 throw Fmi::Exception(BCP, "Producer '" + producer + "' has no valid timesteps!");
@@ -806,15 +806,15 @@ std::size_t Plugin::hash_value(const State& state,
           }
 
           // get the latest_timestep from previous query
-          query.latestTimestep = subquery.latestTimestep;
-          query.lastpoint = subquery.lastpoint;
+          q.latestTimestep = subquery.latestTimestep;
+          q.lastpoint = subquery.lastpoint;
         }
       }
 
       // get the latestTimestep from previous query
-      latestTimestep = query.latestTimestep;
+      latestTimestep = q.latestTimestep;
 
-      startTimeUTC = query.toptions.startTimeUTC;
+      startTimeUTC = q.toptions.startTimeUTC;
       ++producer_group;
     }
 
@@ -2198,12 +2198,12 @@ bool Plugin::resolveAreaStations(const Spine::LocationPtr& location,
   }
 }
 
-void Plugin::resolveParameterSettings(const ObsParameters& obsParameters,
-                                      const Query& query,
-                                      const std::string& producer,
-                                      Engine::Observation::Settings& settings,
-                                      unsigned int& aggregationIntervalBehind,
-                                      unsigned int& aggregationIntervalAhead) const
+void resolveParameterSettings(const ObsParameters& obsParameters,
+                              const Query& query,
+                              const std::string& producer,
+                              Engine::Observation::Settings& settings,
+                              unsigned int& aggregationIntervalBehind,
+                              unsigned int& aggregationIntervalAhead)
 {
   try
   {
@@ -2684,7 +2684,7 @@ void Plugin::fetchObsEngineValuesForPlaces(const State& state,
       observation_result = observationResult2;
 
       TS::TimeSeriesVectorPtr aggregated_observation_result(new TS::TimeSeriesVector());
-      std::vector<TS::TimeSeriesData> aggregatedData;
+      // std::vector<TS::TimeSeriesData> aggregatedData;
       // iterate parameters and do aggregation
       for (const auto& obsParam : obsParameters)
       {
@@ -3199,47 +3199,47 @@ void Plugin::processQEngineQuery(const State& state,
         continue;
       processed_locations.insert(location_id);
 
-      Query query = masterquery;
+      Query q = masterquery;
       QueryLevelDataCache queryLevelDataCache;
 
       std::vector<TS::TimeSeriesData> tsdatavector;
       outputData.emplace_back(make_pair(location_id, tsdatavector));
 
       if (masterquery.timezone == LOCALTIME_PARAM)
-        query.timezone = tloc.loc->timezone;
+        q.timezone = tloc.loc->timezone;
 
-      query.toptions.startTime = first_timestep;
+      q.toptions.startTime = first_timestep;
       if (!firstProducer)
-        query.toptions.startTime += boost::posix_time::minutes(1);
+        q.toptions.startTime += boost::posix_time::minutes(1);
 
       // producer can be alias, get actual producer
-      std::string producer(select_producer(*itsQEngine, *(tloc.loc), query, areaproducers));
+      std::string producer(select_producer(*itsQEngine, *(tloc.loc), q, areaproducers));
       bool isClimatologyProducer =
           (producer.empty() ? false : itsQEngine->getProducerConfig(producer).isclimatology);
 
       boost::local_time::local_date_time data_period_endtime(
-          producerDataPeriod.getLocalEndTime(producer, query.timezone, getTimeZones()));
+          producerDataPeriod.getLocalEndTime(producer, q.timezone, getTimeZones()));
 
       // Reset for each new location, since fetchQEngineValues modifies it
-      auto old_start_time = query.toptions.startTime;
+      auto old_start_time = q.toptions.startTime;
 
       int column = 0;
-      for (const TS::ParameterAndFunctions& paramfunc : query.poptions.parameterFunctions())
+      for (const TS::ParameterAndFunctions& paramfunc : q.poptions.parameterFunctions())
       {
         // reset to original start time for each new location
-        query.toptions.startTime = old_start_time;
+        q.toptions.startTime = old_start_time;
 
         // every parameter starts from the same row
-        if (query.toptions.endTime > data_period_endtime.local_time() &&
+        if (q.toptions.endTime > data_period_endtime.local_time() &&
             !data_period_endtime.is_not_a_date_time() && !isClimatologyProducer)
         {
-          query.toptions.endTime = data_period_endtime.local_time();
+          q.toptions.endTime = data_period_endtime.local_time();
         }
         fetchQEngineValues(state,
                            paramfunc,
-                           query.precisions[column],
+                           q.precisions[column],
                            tloc,
-                           query,
+                           q,
                            areaproducers,
                            producerDataPeriod,
                            queryLevelDataCache,
@@ -3250,8 +3250,8 @@ void Plugin::processQEngineQuery(const State& state,
                             TS::RequestLimitMember::ELEMENTS);
       }
       // get the latest_timestep from previous query
-      masterquery.latestTimestep = query.latestTimestep;
-      masterquery.lastpoint = query.lastpoint;
+      masterquery.latestTimestep = q.latestTimestep;
+      masterquery.lastpoint = q.lastpoint;
     }
   }
   catch (...)
@@ -3594,22 +3594,22 @@ boost::shared_ptr<std::string> Plugin::processQuery(
     std::size_t producer_group = 0;
     for (const AreaProducers& areaproducers : masterquery.timeproducers)
     {
-      Query query = masterquery;
+      Query q = masterquery;
 
-      query.timeproducers.clear();  // not used
+      q.timeproducers.clear();  // not used
       // set latestTimestep for the query
-      query.latestTimestep = latestTimestep;
+      q.latestTimestep = latestTimestep;
 
       if (producer_group != 0)
-        query.toptions.startTimeUTC = startTimeUTC;
-      query.toptions.endTimeUTC = masterquery.toptions.endTimeUTC;
+        q.toptions.startTimeUTC = startTimeUTC;
+      q.toptions.endTimeUTC = masterquery.toptions.endTimeUTC;
 
 #ifndef WITHOUT_OBSERVATION
       if (!areaproducers.empty() && !itsConfig.obsEngineDisabled() &&
           isObsProducer(areaproducers.front()))
       {
         processObsEngineQuery(
-            state, query, outputData, areaproducers, producerDataPeriod, obsParameters);
+            state, q, outputData, areaproducers, producerDataPeriod, obsParameters);
       }
       else
 #endif
@@ -3626,7 +3626,7 @@ boost::shared_ptr<std::string> Plugin::processQuery(
 
           if (!itsConfig.gridEngineDisabled() && itsGridEngine->isEnabled() &&
               (strcasecmp(masterquery.forecastSource.c_str(), "grid") == 0 ||
-               (masterquery.forecastSource == "" &&
+               (masterquery.forecastSource.empty() &&
                 (((!areaproducers.empty() &&
                    itsGridInterface->containsGridProducer(masterquery))) ||
                  (itsGridInterface->containsParameterWithGridProducer(masterquery)) ||
@@ -3634,7 +3634,7 @@ boost::shared_ptr<std::string> Plugin::processQuery(
                   strcasecmp(itsConfig.primaryForecastSource().c_str(), "grid") == 0)))))
       {
         bool processed = processGridEngineQuery(
-            state, query, outputData, queryStreamer, areaproducers, producerDataPeriod);
+            state, q, outputData, queryStreamer, areaproducers, producerDataPeriod);
 
         if (processed)
         {
@@ -3644,17 +3644,17 @@ boost::shared_ptr<std::string> Plugin::processQuery(
         // If the query was not processed then we should call the QEngine instead.
         else
         {
-          processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
+          processQEngineQuery(state, q, outputData, areaproducers, producerDataPeriod);
         }
       }
       else
       {
-        processQEngineQuery(state, query, outputData, areaproducers, producerDataPeriod);
+        processQEngineQuery(state, q, outputData, areaproducers, producerDataPeriod);
       }
 
       // get the latestTimestep from previous query
-      latestTimestep = query.latestTimestep;
-      startTimeUTC = query.toptions.startTimeUTC;
+      latestTimestep = q.latestTimestep;
+      startTimeUTC = q.toptions.startTimeUTC;
       ++producer_group;
     }
 
@@ -3694,20 +3694,20 @@ void Plugin::query(const State& state,
 
     // Options
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    Query query(state, request, itsConfig);
+    Query q(state, request, itsConfig);
 
     // Resolve locations for FMISDs,WMOs,LPNNs (https://jira.fmi.fi/browse/BRAINSTORM-1848)
     Engine::Geonames::LocationOptions lopt =
-        itsGeoEngine->parseLocations(query.fmisids, query.lpnns, query.wmos, query.language);
+        itsGeoEngine->parseLocations(q.fmisids, q.lpnns, q.wmos, q.language);
 
     const Spine::TaggedLocationList& locations = lopt.locations();
-    Spine::TaggedLocationList tagged_ll = query.loptions->locations();
+    Spine::TaggedLocationList tagged_ll = q.loptions->locations();
     tagged_ll.insert(tagged_ll.end(), locations.begin(), locations.end());
-    query.loptions->setLocations(tagged_ll);
+    q.loptions->setLocations(tagged_ll);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
-    data.setPaging(query.startrow, query.maxresults);
+    data.setPaging(q.startrow, q.maxresults);
 
     std::string producer_option =
         Spine::optional_string(request.getParameter(PRODUCER_PARAM),
@@ -3716,11 +3716,10 @@ void Plugin::query(const State& state,
     // At least one of location specifiers must be set
 
 #ifndef WITHOUT_OBSERVATION
-    if (query.fmisids.empty() && query.lpnns.empty() && query.wmos.empty() &&
-        query.boundingBox.empty() && !is_flash_or_mobile_producer(producer_option) &&
-        query.loptions->locations().empty())
+    if (q.fmisids.empty() && q.lpnns.empty() && q.wmos.empty() && q.boundingBox.empty() &&
+        !is_flash_or_mobile_producer(producer_option) && q.loptions->locations().empty())
 #else
-    if (query.loptions->locations().empty())
+    if (q.loptions->locations().empty())
 #endif
       throw Fmi::Exception(BCP, "No location option given!").disableLogging();
 
@@ -3728,22 +3727,22 @@ void Plugin::query(const State& state,
 
     Spine::TableFormatter* fmt = nullptr;
 
-    if (strcasecmp(query.format.c_str(), "IMAGE") == 0)
+    if (strcasecmp(q.format.c_str(), "IMAGE") == 0)
       fmt = new Spine::ImageFormatter();
-    else if (strcasecmp(query.format.c_str(), "FILE") == 0)
+    else if (strcasecmp(q.format.c_str(), "FILE") == 0)
     {
       fmt = new Spine::ImageFormatter();
       auto* qStreamer = new QueryServer::QueryStreamer();
       queryStreamer.reset(qStreamer);
     }
-    else if (strcasecmp(query.format.c_str(), "INFO") == 0)
+    else if (strcasecmp(q.format.c_str(), "INFO") == 0)
       fmt = Spine::TableFormatterFactory::create("debug");
     else
-      fmt = Spine::TableFormatterFactory::create(query.format);
+      fmt = Spine::TableFormatterFactory::create(q.format);
 
     bool gridEnabled = false;
-    if (strcasecmp(query.forecastSource.c_str(), "grid") == 0 ||
-        (query.forecastSource.length() == 0 &&
+    if (strcasecmp(q.forecastSource.c_str(), "grid") == 0 ||
+        (q.forecastSource.length() == 0 &&
          strcasecmp(itsConfig.primaryForecastSource().c_str(), "grid") == 0))
       gridEnabled = true;
 
@@ -3757,7 +3756,7 @@ void Plugin::query(const State& state,
 
     try
     {
-      product_hash = hash_value(state, query, request);
+      product_hash = hash_value(state, q, request);
     }
     catch (...)
     {
@@ -3783,7 +3782,7 @@ void Plugin::query(const State& state,
       }
     }
     // If obj is not nullptr it is from cache
-    auto obj = processQuery(state, data, query, queryStreamer, product_hash);
+    auto obj = processQuery(state, data, q, queryStreamer, product_hash);
 
     if (obj)
     {
@@ -3800,11 +3799,11 @@ void Plugin::query(const State& state,
     timeheader.append("+").append(
         Fmi::to_string(std::chrono::duration_cast<std::chrono::microseconds>(t4 - t3).count()));
 
-    data.setMissingText(query.valueformatter.missing());
+    data.setMissingText(q.valueformatter.missing());
 
     // The names of the columns
     Spine::TableFormatter::Names headers;
-    for (const Spine::Parameter& p : query.poptions.parameters())
+    for (const Spine::Parameter& p : q.poptions.parameters())
     {
       std::string header_name = p.alias();
       std::vector<std::string> partList;
@@ -3814,8 +3813,9 @@ void Plugin::query(const State& state,
       // may be incorrect.
       if (partList.size() > 2 && (partList[0] == "ISOBANDS" || partList[0] == "ISOLINES"))
       {
-        const char* p = header_name.c_str() + partList[0].size() + partList[1].size() + 2;
-        headers.push_back(p);
+        const char* param_header =
+            header_name.c_str() + partList[0].size() + partList[1].size() + 2;
+        headers.push_back(param_header);
       }
       else
       {
@@ -3875,7 +3875,7 @@ void Plugin::query(const State& state,
 
     response.setHeader("X-Duration", timeheader);
 
-    if (strcasecmp(query.format.c_str(), "FILE") == 0)
+    if (strcasecmp(q.format.c_str(), "FILE") == 0)
     {
       std::string filename =
           "attachement; filename=timeseries_" + std::to_string(getTime()) + ".grib";
@@ -4102,7 +4102,8 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
 
     // Adding the first exception information into the response header
     boost::algorithm::replace_all(firstMessage, "\n", " ");
-    firstMessage = firstMessage.substr(0, 300);
+    if (firstMessage.size() > 300)
+      firstMessage.resize(300);
     theResponse.setHeader("X-TimeSeriesPlugin-Error", firstMessage);
   }
 }

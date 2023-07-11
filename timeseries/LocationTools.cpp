@@ -29,8 +29,9 @@ std::string get_name_base(const std::string& theName)
     std::string place = theName;
 
     // remove radius if exists
-    if (place.find(':') != std::string::npos)
-      place = place.substr(0, place.find(':'));
+    auto pos = place.find(':');
+    if (pos != std::string::npos)
+      place.resize(pos);
 
     return place;
   }

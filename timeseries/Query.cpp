@@ -256,13 +256,13 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     auto searchName = req.getParameterList("inkeyword");
     if (!searchName.empty())
     {
-      for (const std::string& keyword : searchName)
+      for (const std::string& key : searchName)
       {
         Locus::QueryOptions opts;
         opts.SetLanguage(language);
-        Spine::LocationList places = state.getGeoEngine().keywordSearch(opts, keyword);
+        Spine::LocationList places = state.getGeoEngine().keywordSearch(opts, key);
         if (places.empty())
-          throw Fmi::Exception(BCP, "No locations for keyword " + std::string(keyword) + " found");
+          throw Fmi::Exception(BCP, "No locations for keyword " + std::string(key) + " found");
         inKeywordLocations.insert(inKeywordLocations.end(), places.begin(), places.end());
       }
     }
@@ -395,8 +395,9 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       vector<string> parts;
       boost::algorithm::split(parts, bbox, boost::algorithm::is_any_of(","));
       std::string lat2(parts[3]);
-      if (lat2.find(':') != string::npos)
-        lat2 = lat2.substr(0, lat2.find(':'));
+      auto radius_pos = lat2.find(':');
+      if (radius_pos != string::npos)
+        lat2.resize(radius_pos);
 
       // Bounding box must contain exactly 4 elements
       if (parts.size() != 4)
@@ -405,21 +406,16 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
       }
 
       if (!parts[0].empty())
-      {
         boundingBox["minx"] = Fmi::stod(parts[0]);
-      }
+
       if (!parts[1].empty())
-      {
         boundingBox["miny"] = Fmi::stod(parts[1]);
-      }
+
       if (!parts[2].empty())
-      {
         boundingBox["maxx"] = Fmi::stod(parts[2]);
-      }
+
       if (!parts[3].empty())
-      {
         boundingBox["maxy"] = Fmi::stod(lat2);
-      }
     }
     // Data filter options
     add_sql_data_filter(req, "station_id", dataFilter);
@@ -720,6 +716,8 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
 
     // Determine whether any producer implies observations are needed
 
+    // TODO: The boolean is unused, is the code buggy?
+
     bool obsProducersExist = false;
 
     if (theObsEngine != nullptr)
@@ -764,16 +762,15 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     std::string aggregationIntervalStringAhead = ("0m");
 
     // check if second aggregation interval is defined
-    if (aggregationIntervalStringBehind.find(':') != string::npos)
+    auto agg_pos = aggregationIntervalStringBehind.find(':');
+    if (agg_pos != string::npos)
     {
-      aggregationIntervalStringAhead =
-          aggregationIntervalStringBehind.substr(aggregationIntervalStringBehind.find(':') + 1);
-      aggregationIntervalStringBehind =
-          aggregationIntervalStringBehind.substr(0, aggregationIntervalStringBehind.find(':'));
+      aggregationIntervalStringAhead = aggregationIntervalStringBehind.substr(agg_pos + 1);
+      aggregationIntervalStringBehind.resize(agg_pos);
     }
 
-    int agg_interval_behind(Spine::duration_string_to_minutes(aggregationIntervalStringBehind));
-    int agg_interval_ahead(Spine::duration_string_to_minutes(aggregationIntervalStringAhead));
+    int agg_interval_behind = Spine::duration_string_to_minutes(aggregationIntervalStringBehind);
+    int agg_interval_ahead = Spine::duration_string_to_minutes(aggregationIntervalStringAhead);
 
     if (agg_interval_behind < 0 || agg_interval_ahead < 0)
       throw Fmi::Exception(BCP, "The 'interval' option must be positive!");
