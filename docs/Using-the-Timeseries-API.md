@@ -797,7 +797,8 @@ have one of the values listed in the following table.
 |-------|-------------|
 |json |The response data is returned in the JSON format (JavaScript Object Notation). The "attributes" parameter can be used  to define the field for which the values are used as attribute names. |
 |debug |The response data is returned in the debug format (= fetched fields are expressed as a HTML table with rows and columns). The output is intended to be viewed directly with a browser.|
-|ascii | **Not actual ASCII format!** The response data is returned as text, i.e. text line that contain requested fields. The field separator used in these lines can be defined by the "separator" parameter.|
+|ascii | **Not actual ASCII format!** The response data is returned as text, i.e. text line that contain requested fields. The field separator used in these lines can be defined by the "separator" parameter. Mostly useful for testing, not usually suitable for production.|
+|csv|Comma Separated Values, headers are included. Text fields are properly espaced.|
 |xml| The response data is returned in the XML format. The style of the XML format can be defined by the  "xmlstyle" parameter, which can have one of the following values: "attributes", "tags", "mixed". When using the "mixed" mode, the "attributes" parameter can be used to define which fields are expressed as attributes while the rest of the fields are expressed as elements.|
 |php| The response data is returned in the PHP format (= PHP array). This can be used in PHP scripts. The "attributes" parameter can be used in order to define the field for which the values are used as attribute names in the output.|
 |serial | The response data is returned in the PHP serial format. The "attributes" parameter can be used  to define the field for which the values are used as attribute names in the output. |
