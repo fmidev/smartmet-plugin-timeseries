@@ -30,7 +30,7 @@ BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 23.7.10
 BuildRequires: smartmet-library-spine-devel >= 23.7.10
 BuildRequires: smartmet-library-locus-devel >= 23.7.10
-BuildRequires: smartmet-library-macgyver-devel >= 23.6.6
+BuildRequires: smartmet-library-macgyver-devel >= 23.6.30
 BuildRequires: smartmet-library-grid-content-devel >= 23.7.10
 BuildRequires: smartmet-library-grid-files-devel >= 23.7.10
 BuildRequires: smartmet-library-newbase-devel >= 23.7.10
@@ -49,7 +49,7 @@ BuildRequires: smartmet-engine-grid-devel >= 23.7.11
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 23.7.10
 Requires: smartmet-library-locus >= 23.7.10
-Requires: smartmet-library-macgyver >= 23.6.6
+Requires: smartmet-library-macgyver >= 23.6.30
 Requires: smartmet-library-newbase >= 23.7.10
 Requires: smartmet-library-spine >= 23.7.10
 Requires: smartmet-library-timeseries >= 23.7.10
