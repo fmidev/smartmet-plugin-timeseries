@@ -7,7 +7,6 @@
 #include "Plugin.h"
 #include "GridInterface.h"
 #include "Hash.h"
-#include "ImageFormatter.h"
 #include "LocationTools.h"
 #include "State.h"
 #include "UtilityFunctions.h"
@@ -26,6 +25,7 @@
 #include <spine/Convenience.h>
 #include <spine/FmiApiKey.h>
 #include <spine/HostInfo.h>
+#include <spine/ImageFormatter.h>
 #include <spine/SmartMet.h>
 #include <spine/TableFormatterFactory.h>
 #include <timeseries/ParameterKeywords.h>
