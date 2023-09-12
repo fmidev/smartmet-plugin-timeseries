@@ -9,6 +9,7 @@
 
 #include <timeseries/ParameterFactory.h>
 #include <timeseries/TimeSeriesInclude.h>
+#include <vector>
 
 namespace SmartMet
 {
@@ -29,6 +30,7 @@ struct ObsParameter
   }
 };
 
+using ObsParameters = std::vector<ObsParameter>;
 }  // namespace TimeSeries
 }  // namespace Plugin
 }  // namespace SmartMet

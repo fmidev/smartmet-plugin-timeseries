@@ -1,5 +1,7 @@
 #include "State.h"
 #include "Plugin.h"
+#include <engines/querydata/Engine.h>
+#include <engines/observation/ExternalAndMobileProducerId.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <macgyver/Exception.h>
 #include <ogr_geometry.h>
@@ -33,7 +35,7 @@ const Engine::Querydata::Engine& State::getQEngine() const
 {
   try
   {
-    return itsPlugin.getQEngine();
+    return *(itsPlugin.getEngines().qEngine);
   }
   catch (...)
   {
@@ -45,7 +47,7 @@ const Engine::Grid::Engine* State::getGridEngine() const
 {
   try
   {
-    return itsPlugin.getGridEngine();
+    return itsPlugin.getEngines().gridEngine;
   }
   catch (...)
   {
@@ -63,7 +65,7 @@ const Engine::Geonames::Engine& State::getGeoEngine() const
 {
   try
   {
-    return itsPlugin.getGeoEngine();
+    return *(itsPlugin.getEngines().geoEngine);
   }
   catch (...)
   {
@@ -82,7 +84,7 @@ Engine::Observation::Engine* State::getObsEngine() const
 {
   try
   {
-    return itsPlugin.getObsEngine();
+    return itsPlugin.getEngines().obsEngine;
   }
   catch (...)
   {
@@ -90,6 +92,24 @@ Engine::Observation::Engine* State::getObsEngine() const
   }
 }
 #endif
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Get the plugin
+ */
+// ----------------------------------------------------------------------
+
+const Plugin& State::getPlugin() const
+{
+  try
+  {
+    return itsPlugin;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
 
 // ----------------------------------------------------------------------
 /*!
@@ -151,7 +171,7 @@ Engine::Querydata::Q State::get(const Engine::Querydata::Producer& theProducer) 
       return res->second;
 
     // Get the data from the engine
-    auto q = itsPlugin.getQEngine().get(theProducer);
+    auto q = itsPlugin.getEngines().qEngine->get(theProducer);
 
     // Cache the obtained data and return it. The cache is
     // request specific, no need for mutexes here.
@@ -185,7 +205,7 @@ Engine::Querydata::Q State::get(const Engine::Querydata::Producer& theProducer,
     }
 
     // Get the data from the engine
-    auto q = itsPlugin.getQEngine().get(theProducer, theOriginTime);
+    auto q = itsPlugin.getEngines().qEngine->get(theProducer, theOriginTime);
 
     // Cache the obtained data and return it. The cache is
     // request specific, no need for mutexes here.
