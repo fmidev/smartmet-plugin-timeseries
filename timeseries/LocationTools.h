@@ -49,14 +49,33 @@ std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
                                      const std::string& wktstring);
 
 int get_fmisid_index(const Engine::Observation::Settings& settings);
+#endif
 int get_fmisid_value(const TS::Value& value);
 
 std::unique_ptr<Spine::Location> get_coordinate_location(double lon,
-                                                         double lat,
-                                                         const std::string& language,
-                                                         const Engine::Geonames::Engine& geoEngine);
+	double lat,
+	const std::string& language,
+	const Engine::Geonames::Engine& geoEngine);
+  
+std::unique_ptr<Spine::Location> get_bbox_location(const std::string& bbox_string, 
+	const std::string& language,
+	const Engine::Geonames::Engine& geoengine);
 
-#endif
+Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
+										 const Engine::Gis::GeometryStorage& geometryStorage,
+										 const std::string& language,
+										 const Engine::Geonames::Engine& geoengine,
+										 NFmiSvgPath* svgPath = nullptr);
+
+Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
+										 int radius,
+										 const Engine::Gis::GeometryStorage& geometryStorage,
+										 const std::string& language,
+										 const Engine::Geonames::Engine& geoengine,
+										 NFmiSvgPath* svgPath = nullptr);
+
+Spine::TaggedLocationList get_locations_inside_geometry(const Spine::LocationList& locations,
+                                                        const OGRGeometry& geom);
 
 }  // namespace TimeSeries
 }  // namespace Plugin

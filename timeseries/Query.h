@@ -8,33 +8,15 @@
 
 #pragma once
 
-#include "AggregationInterval.h"
+#include "ObsQueryParams.h"
 #include "Producers.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/shared_ptr.hpp>
+#include "AggregationInterval.h"
 #include <engines/geonames/Engine.h>
 #include <engines/geonames/WktGeometry.h>
-#include <engines/grid/Engine.h>
-#include <grid-content/queryServer/definition/AliasFileCollection.h>
-#include <grid-files/common/AdditionalParameters.h>
-#include <grid-files/common/AttributeList.h>
-#include <macgyver/TimeFormatter.h>
-#include <macgyver/ValueFormatter.h>
-#include <newbase/NFmiPoint.h>
-#include <spine/HTTP.h>
-#include <spine/Location.h>
-#include <spine/Parameter.h>
-#include <timeseries/OptionParsers.h>
-#include <timeseries/TimeSeriesGeneratorOptions.h>
 #include <timeseries/TimeSeriesInclude.h>
-#include <list>
-#include <locale>
-#include <map>
-#include <set>
-#include <string>
-#include <vector>
-
-#include "ProducerDataPeriod.h"
+#include <timeseries/OptionParsers.h>
+#include <grid-files/common/AttributeList.h>
+#include <grid-content/queryServer/definition/AliasFileCollection.h>
 
 namespace SmartMet
 {
@@ -50,7 +32,7 @@ class Config;
  */
 // ----------------------------------------------------------------------
 
-struct Query
+struct Query : public ObsQueryParams
 {
   Query() = delete;
   Query(const State& state, const Spine::HTTP::Request& req, Config& config);
@@ -91,10 +73,6 @@ struct Query
   std::string areasource;
   std::string crs;
 
-#ifndef WITHOUT_OBSERVATION
-  std::string iot_producer_specifier;
-#endif
-
   boost::posix_time::ptime latestTimestep;
   boost::optional<boost::posix_time::ptime> origintime;
 
@@ -107,19 +85,8 @@ struct Query
 
   std::vector<int> weekdays;
 
-#ifndef WITHOUT_OBSERVATION
-  std::vector<int> wmos;
-  std::vector<int> lpnns;
-  std::vector<int> fmisids;
-#endif
-
   ParamPrecisions precisions;
   Fmi::ValueFormatter valueformatter;
-
-#ifndef WITHOUT_OBSERVATION
-  std::map<std::string, double> boundingBox;
-  TS::DataFilter dataFilter;
-#endif
 
   Levels levels;
   Pressures pressures;
@@ -130,11 +97,6 @@ struct Query
   Engine::Geonames::WktGeometries wktGeometries;
   TS::TimeSeriesGeneratorOptions toptions;
 
-#ifndef WITHOUT_OBSERVATION
-  int numberofstations;
-  std::set<std::string> stationgroups;
-#endif
-
   bool maxdistanceOptionGiven;
   bool findnearestvalidpoint;
   bool debug = false;
@@ -144,11 +106,6 @@ struct Query
   std::string forecastSource;
   T::AttributeList attributeList;
 
-#ifndef WITHOUT_OBSERVATION
-  bool allplaces;
-  bool latestObservation;
-  bool useDataCache;
-#endif
   Spine::LocationList inKeywordLocations;
   bool groupareas{true};
 
@@ -161,20 +118,15 @@ struct Query
 
   void parse_precision(const Spine::HTTP::Request& theReq, const Config& config);
 
-#ifndef WITHOUT_OBSERVATION
-  void parse_parameters(const Spine::HTTP::Request& theReq,
-                        const Engine::Observation::Engine* theObsEngine);
   void parse_producers(const Spine::HTTP::Request& theReq,
-                       const Engine::Querydata::Engine& theQEngine,
-                       const Engine::Grid::Engine* theGridEngine,
-                       const Engine::Observation::Engine* theObsEngine);
-#else
+					   const State& theState);
   void parse_parameters(const Spine::HTTP::Request& theReq);
-  void parse_producers(const Spine::HTTP::Request& theReq,
-                       const Engine::Querydata::Engine& theQEngine,
-                       const Engine::Grid::Engine& theGridEngine);
+  void parse_aggregation_intervals(const Spine::HTTP::Request& theReq);
+  void parse_attr(const Spine::HTTP::Request& theReq);
+  bool parse_grib_loptions(const State& state);
+  void parse_inkeyword_locations(const Spine::HTTP::Request& theReq, const State& state);
+  void parse_origintime(const Spine::HTTP::Request& theReq);
 
-#endif
   QueryServer::AliasFileCollection* itsAliasFileCollectionPtr;
 
   std::string maxdistance;

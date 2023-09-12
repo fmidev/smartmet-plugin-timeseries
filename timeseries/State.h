@@ -78,6 +78,7 @@ class State
 #ifndef WITHOUT_OBSERVATION
   Engine::Observation::Engine* getObsEngine() const;
 #endif
+  const Plugin& getPlugin() const;
 
   const Fmi::TimeZones& getTimeZones() const;
   // The fixed time during the query may also be overridden

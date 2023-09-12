@@ -14,6 +14,7 @@
 #include <grid-files/grid/Typedefs.h>
 #include <macgyver/TimeZones.h>
 #include <timeseries/TimeSeriesInclude.h>
+#include "ProducerDataPeriod.h"
 
 namespace SmartMet
 {

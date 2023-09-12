@@ -103,6 +103,8 @@ class Config
   void add_default_precisions();
   void parse_config_precisions();
   void parse_config_precision(const std::string& name);
+  void parse_geometries();
+  void parse_grid_settings(const std::string& configfile);
 
 };  // class Config
 

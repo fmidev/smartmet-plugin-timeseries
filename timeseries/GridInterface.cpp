@@ -7,6 +7,7 @@
 #include "LocationTools.h"
 #include "State.h"
 #include "UtilityFunctions.h"
+#include "PostProcessing.h"
 #include <engines/grid/Engine.h>
 #include <fmt/format.h>
 #include <gis/CoordinateTransformation.h>
@@ -2292,7 +2293,7 @@ void GridInterface::processGridQuery(const State& state,
                   TS::aggregate(tsForGroup, paramFuncs[pIdx].functions), aggregationTimes));
             }
 
-            UtilityFunctions::store_data(aggregatedData, masterquery, outputData);
+            PostProcessing::store_data(aggregatedData, masterquery, outputData);
             pIdx++;
           }
         }

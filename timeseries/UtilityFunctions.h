@@ -18,10 +18,6 @@ namespace TimeSeries
 {
 namespace UtilityFunctions
 {
-void store_data(TS::TimeSeriesVectorPtr aggregatedData, Query& query, TS::OutputData& outputData);
-void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
-                Query& query,
-                TS::OutputData& outputData);
 bool is_special_parameter(const std::string& paramname);
 void get_special_parameter_values(const std::string& paramname,
                                   int precision,
@@ -39,6 +35,11 @@ void get_special_parameter_values(const std::string& paramname,
                                   const State& state,
                                   const Fmi::TimeZones& timezones,
                                   TS::TimeSeriesGroupPtr& result);
+bool is_mobile_producer(const std::string& producer);
+bool is_flash_producer(const std::string& producer);
+bool is_icebuoy_or_copernicus_producer(const std::string& producer);
+bool is_flash_or_mobile_producer(const std::string& producer);
+
 }  // namespace UtilityFunctions
 }  // namespace TimeSeries
 }  // namespace Plugin
