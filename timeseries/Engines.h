@@ -1,6 +1,6 @@
 namespace SmartMet
 {
-  /*
+/*
 namespace Engine
 {
 namespace Querydata
@@ -20,12 +20,11 @@ namespace Grid
 class Engine;
 }
 }  // namespace Engine
-  */
+*/
 namespace Plugin
 {
 namespace TimeSeries
 {
-
 struct Engines
 {
   Engine::Querydata::Engine* qEngine = nullptr;

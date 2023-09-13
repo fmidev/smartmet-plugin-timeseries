@@ -66,8 +66,7 @@ class Plugin : public SmartMetPlugin
                       const Spine::HTTP::Request& theRequest,
                       Spine::HTTP::Response& theResponse) override;
 
- private:  
-  
+ private:
   void query(const State& theState,
              const Spine::HTTP::Request& req,
              Spine::HTTP::Response& response);
@@ -93,12 +92,12 @@ class Plugin : public SmartMetPlugin
 
   // Geometries and their svg-representations are stored here
   Engine::Gis::GeometryStorage itsGeometryStorage;
-  
+
   friend class QEngineQuery;
   friend class ObsEngineQuery;
   friend class GridEngineQuery;
   friend class QueryProcessingHub;
-  
+
 };  // class Plugin
 
 }  // namespace TimeSeries

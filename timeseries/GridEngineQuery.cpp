@@ -1,9 +1,9 @@
 #include "GridEngineQuery.h"
 #include "GridInterface.h"
-#include "State.h"
 #include "LocationTools.h"
-#include "UtilityFunctions.h"
 #include "PostProcessing.h"
+#include "State.h"
+#include "UtilityFunctions.h"
 #include <fmt/format.h>
 
 namespace SmartMet
@@ -12,22 +12,21 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-
 GridEngineQuery::GridEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin)
 {
   if (!itsPlugin.itsConfig.gridEngineDisabled())
-	{
-	  itsGridInterface.reset(new GridInterface(itsPlugin.itsEngines.gridEngine, itsPlugin.itsEngines.geoEngine->getTimeZones()));
-	}
+  {
+    itsGridInterface.reset(new GridInterface(itsPlugin.itsEngines.gridEngine,
+                                             itsPlugin.itsEngines.geoEngine->getTimeZones()));
+  }
 }
 
-
 bool GridEngineQuery::processGridEngineQuery(const State& state,
-											 Query& query,
-											 TS::OutputData& outputData,
-											 const QueryServer::QueryStreamer_sptr& queryStreamer,
-											 const AreaProducers& areaproducers,
-											 const ProducerDataPeriod& producerDataPeriod) const
+                                             Query& query,
+                                             TS::OutputData& outputData,
+                                             const QueryServer::QueryStreamer_sptr& queryStreamer,
+                                             const AreaProducers& areaproducers,
+                                             const ProducerDataPeriod& producerDataPeriod) const
 {
   try
   {
@@ -66,7 +65,12 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
         case Spine::Location::Area:
         {
           NFmiSvgPath svgPath;
-          loc = get_location_for_area(tloc, tloc.loc->radius * 1000, itsPlugin.itsGeometryStorage, query.language, *itsPlugin.itsEngines.geoEngine, &svgPath);
+          loc = get_location_for_area(tloc,
+                                      tloc.loc->radius * 1000,
+                                      itsPlugin.itsGeometryStorage,
+                                      query.language,
+                                      *itsPlugin.itsEngines.geoEngine,
+                                      &svgPath);
           convertSvgPathToPolygonPath(svgPath, polygonPath);
         }
         break;
@@ -74,7 +78,12 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
         case Spine::Location::Path:
         {
           NFmiSvgPath svgPath;
-          loc = get_location_for_area(tloc, tloc.loc->radius * 1000, itsPlugin.itsGeometryStorage, query.language, *itsPlugin.itsEngines.geoEngine, &svgPath);
+          loc = get_location_for_area(tloc,
+                                      tloc.loc->radius * 1000,
+                                      itsPlugin.itsGeometryStorage,
+                                      query.language,
+                                      *itsPlugin.itsEngines.geoEngine,
+                                      &svgPath);
           // convertSvgPathToPolygonPath(svgPath,polygonPath);
           Spine::LocationList locationList =
               get_location_list(svgPath, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine);
@@ -99,7 +108,8 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
           double lat2 = Fmi::stod(parts[3]);
 
           // Get location info by the center coordinates
-          Spine::LocationPtr locCenter = get_bbox_location(place, query.language, *itsPlugin.itsEngines.geoEngine);
+          Spine::LocationPtr locCenter =
+              get_bbox_location(place, query.language, *itsPlugin.itsEngines.geoEngine);
 
           std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
                                                                    tloc.tag,
@@ -221,7 +231,8 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
   }
 }
 
-bool GridEngineQuery::isGridEngineQuery(const AreaProducers& theProducers, const Query& theQuery) const
+bool GridEngineQuery::isGridEngineQuery(const AreaProducers& theProducers,
+                                        const Query& theQuery) const
 {
   // Grid-query is executed if the following conditions are fulfilled:
   //   1. The usage of Grid-Engine is enabled (=> timeseries configuration file)
@@ -233,15 +244,15 @@ bool GridEngineQuery::isGridEngineQuery(const AreaProducers& theProducers, const
   //       contains a grid producer d) Query source is not defined and no producers are
   //       defined and the primary forecast
   //          source defined in the config file is "grid".
-  
-  return(!itsPlugin.itsConfig.gridEngineDisabled() && itsPlugin.itsEngines.gridEngine->isEnabled() &&
-              (strcasecmp(theQuery.forecastSource.c_str(), "grid") == 0 ||
-               (theQuery.forecastSource.empty() &&
-                (((!theProducers.empty() &&
-                   itsGridInterface->containsGridProducer(theQuery))) ||
-                 (itsGridInterface->containsParameterWithGridProducer(theQuery)) ||
-                 (theProducers.empty() &&
-                  strcasecmp(itsPlugin.itsConfig.primaryForecastSource().c_str(), "grid") == 0)))));
+
+  return (!itsPlugin.itsConfig.gridEngineDisabled() &&
+          itsPlugin.itsEngines.gridEngine->isEnabled() &&
+          (strcasecmp(theQuery.forecastSource.c_str(), "grid") == 0 ||
+           (theQuery.forecastSource.empty() &&
+            (((!theProducers.empty() && itsGridInterface->containsGridProducer(theQuery))) ||
+             (itsGridInterface->containsParameterWithGridProducer(theQuery)) ||
+             (theProducers.empty() &&
+              strcasecmp(itsPlugin.itsConfig.primaryForecastSource().c_str(), "grid") == 0)))));
 }
 
 }  // namespace TimeSeries

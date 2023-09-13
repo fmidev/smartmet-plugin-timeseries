@@ -6,17 +6,17 @@
 
 #include "Plugin.h"
 #include "QueryProcessingHub.h"
-#include "UtilityFunctions.h"
 #include "State.h"
+#include "UtilityFunctions.h"
+#include <engines/gis/Engine.h>
+#include <fmt/format.h>
+#include <macgyver/Hash.h>
 #include <spine/Convenience.h>
-#include <timeseries/ParameterKeywords.h>
 #include <spine/FmiApiKey.h>
 #include <spine/HostInfo.h>
 #include <spine/ImageFormatter.h>
 #include <spine/TableFormatterFactory.h>
-#include <macgyver/Hash.h>
-#include <fmt/format.h>
-#include <engines/gis/Engine.h>
+#include <timeseries/ParameterKeywords.h>
 
 //#define MYDEBUG ON
 
@@ -28,146 +28,149 @@ namespace TimeSeries
 {
 namespace
 {
-Spine::TableFormatter* get_formatter_and_qstreamer(const Query& q, QueryServer::QueryStreamer_sptr& queryStreamer)
-{  
-  try
-	{
-	  if (strcasecmp(q.format.c_str(), "IMAGE") == 0)
-		return new Spine::ImageFormatter();
-	  
-	  if (strcasecmp(q.format.c_str(), "FILE") == 0)
-		{
-		  auto* qStreamer = new QueryServer::QueryStreamer();
-		  queryStreamer.reset(qStreamer);
-		  return new Spine::ImageFormatter();
-		}
-	  
-	  if (strcasecmp(q.format.c_str(), "INFO") == 0)
-		return Spine::TableFormatterFactory::create("debug");
-	  
-	  return Spine::TableFormatterFactory::create(q.format);
-	  
-	}
-  catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
-}
-
-Spine::TableFormatter::Names get_headers(const std::vector<Spine::Parameter>& parameters)
-{  
-  try
-	{
-	  // The names of the columns
-	  Spine::TableFormatter::Names headers;
-	  
-	  for (const Spine::Parameter& p : parameters)
-		{
-		  std::string header_name = p.alias();
-		  std::vector<std::string> partList;
-		  splitString(header_name, ':', partList);
-		  // There was a merge conflict in here at one time. GRIB branch processed
-		  // these two special cases, while master added the sensor part below. This
-		  // may be incorrect.
-		  if (partList.size() > 2 && (partList[0] == "ISOBANDS" || partList[0] == "ISOLINES"))
-			{
-			  const char* param_header =
-				header_name.c_str() + partList[0].size() + partList[1].size() + 2;
-			  headers.push_back(param_header);
-			}
-		  else
-			{
-			  const boost::optional<int>& sensor_no = p.getSensorNumber();
-			  if (sensor_no)
-				{
-				  header_name += ("_#" + Fmi::to_string(*sensor_no));
-				}
-			  if (!p.getSensorParameter().empty())
-				header_name += ("_" + p.getSensorParameter());
-			  headers.push_back(header_name);
-			}
-		}
-	  
-	  return headers;
-	}
-  catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
-}
-
-std::string get_wxml_type(const std::string& producer_option, const std::set<std::string>& obs_station_types)
-{  
-  try
-	{
-	  // If query is fast, we do not not have observation producers
-	  // This means we put 'forecast' into wxml-tag
-	  std::string wxml_type = "forecast";
-	  
-	  for (const auto& obsProducer : obs_station_types)
-		{
-		  if (boost::algorithm::contains(producer_option, obsProducer))
-			{
-			  // Observation mentioned, use 'observation' wxml type
-			  wxml_type = "observation";
-			  break;
-			}
-		}
-	  
-	  return wxml_type;
-	}
-  catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
-}
-
-bool etag_only(const Spine::HTTP::Request& request, Spine::HTTP::Response& response, std::size_t product_hash)
-{  
-  try
-	{
-	  if (product_hash != Fmi::bad_hash)
-		{
-		  response.setHeader("ETag", fmt::format("\"{:x}-timeseries\"", product_hash));
-		  
-		  // If the product is cacheable and etag was requested, respond with etag only
-		  
-		  if (request.getHeader("X-Request-ETag"))
-			{
-			  response.setStatus(Spine::HTTP::Status::no_content);
-			  return true;
-			}
-		}
-	  return false;
-	}
-  catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
-}
-
-void parse_lonlats(const boost::optional<std::string>& lonlats,
-				   Spine::HTTP::Request& theRequest,
-				   std::string& wkt_multipoint)
+Spine::TableFormatter* get_formatter_and_qstreamer(const Query& q,
+                                                   QueryServer::QueryStreamer_sptr& queryStreamer)
 {
   try
   {
-	if(!lonlats)
-	  return;
+    if (strcasecmp(q.format.c_str(), "IMAGE") == 0)
+      return new Spine::ImageFormatter();
 
-	theRequest.removeParameter("lonlat");
-	theRequest.removeParameter("lonlats");
-	std::vector<std::string> parts;
-	boost::algorithm::split(parts, *lonlats, boost::algorithm::is_any_of(","));
-	if (parts.size() % 2 != 0)
-	  throw Fmi::Exception(BCP, "Invalid lonlats list: " + *lonlats);
-	
-	for (unsigned int j = 0; j < parts.size(); j += 2)
-	  {
-		if (wkt_multipoint != "MULTIPOINT(")
-		  wkt_multipoint += ",";
-		wkt_multipoint += "(" + parts[j] + " " + parts[j + 1] + ")";
-	  }
+    if (strcasecmp(q.format.c_str(), "FILE") == 0)
+    {
+      auto* qStreamer = new QueryServer::QueryStreamer();
+      queryStreamer.reset(qStreamer);
+      return new Spine::ImageFormatter();
+    }
+
+    if (strcasecmp(q.format.c_str(), "INFO") == 0)
+      return Spine::TableFormatterFactory::create("debug");
+
+    return Spine::TableFormatterFactory::create(q.format);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+Spine::TableFormatter::Names get_headers(const std::vector<Spine::Parameter>& parameters)
+{
+  try
+  {
+    // The names of the columns
+    Spine::TableFormatter::Names headers;
+
+    for (const Spine::Parameter& p : parameters)
+    {
+      std::string header_name = p.alias();
+      std::vector<std::string> partList;
+      splitString(header_name, ':', partList);
+      // There was a merge conflict in here at one time. GRIB branch processed
+      // these two special cases, while master added the sensor part below. This
+      // may be incorrect.
+      if (partList.size() > 2 && (partList[0] == "ISOBANDS" || partList[0] == "ISOLINES"))
+      {
+        const char* param_header =
+            header_name.c_str() + partList[0].size() + partList[1].size() + 2;
+        headers.push_back(param_header);
+      }
+      else
+      {
+        const boost::optional<int>& sensor_no = p.getSensorNumber();
+        if (sensor_no)
+        {
+          header_name += ("_#" + Fmi::to_string(*sensor_no));
+        }
+        if (!p.getSensorParameter().empty())
+          header_name += ("_" + p.getSensorParameter());
+        headers.push_back(header_name);
+      }
+    }
+
+    return headers;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+std::string get_wxml_type(const std::string& producer_option,
+                          const std::set<std::string>& obs_station_types)
+{
+  try
+  {
+    // If query is fast, we do not not have observation producers
+    // This means we put 'forecast' into wxml-tag
+    std::string wxml_type = "forecast";
+
+    for (const auto& obsProducer : obs_station_types)
+    {
+      if (boost::algorithm::contains(producer_option, obsProducer))
+      {
+        // Observation mentioned, use 'observation' wxml type
+        wxml_type = "observation";
+        break;
+      }
+    }
+
+    return wxml_type;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+bool etag_only(const Spine::HTTP::Request& request,
+               Spine::HTTP::Response& response,
+               std::size_t product_hash)
+{
+  try
+  {
+    if (product_hash != Fmi::bad_hash)
+    {
+      response.setHeader("ETag", fmt::format("\"{:x}-timeseries\"", product_hash));
+
+      // If the product is cacheable and etag was requested, respond with etag only
+
+      if (request.getHeader("X-Request-ETag"))
+      {
+        response.setStatus(Spine::HTTP::Status::no_content);
+        return true;
+      }
+    }
+    return false;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+void parse_lonlats(const boost::optional<std::string>& lonlats,
+                   Spine::HTTP::Request& theRequest,
+                   std::string& wkt_multipoint)
+{
+  try
+  {
+    if (!lonlats)
+      return;
+
+    theRequest.removeParameter("lonlat");
+    theRequest.removeParameter("lonlats");
+    std::vector<std::string> parts;
+    boost::algorithm::split(parts, *lonlats, boost::algorithm::is_any_of(","));
+    if (parts.size() % 2 != 0)
+      throw Fmi::Exception(BCP, "Invalid lonlats list: " + *lonlats);
+
+    for (unsigned int j = 0; j < parts.size(); j += 2)
+    {
+      if (wkt_multipoint != "MULTIPOINT(")
+        wkt_multipoint += ",";
+      wkt_multipoint += "(" + parts[j] + " " + parts[j + 1] + ")";
+    }
   }
   catch (...)
   {
@@ -176,27 +179,27 @@ void parse_lonlats(const boost::optional<std::string>& lonlats,
 }
 
 void parse_latlons(const boost::optional<std::string>& latlons,
-				   Spine::HTTP::Request& theRequest,
-				   std::string& wkt_multipoint)
+                   Spine::HTTP::Request& theRequest,
+                   std::string& wkt_multipoint)
 {
   try
   {
-	if(!latlons)
-	  return;
+    if (!latlons)
+      return;
 
-	theRequest.removeParameter("latlon");
-	theRequest.removeParameter("latlons");
-	std::vector<std::string> parts;
-	boost::algorithm::split(parts, *latlons, boost::algorithm::is_any_of(","));
-	if (parts.size() % 2 != 0)
-	  throw Fmi::Exception(BCP, "Invalid latlons list: " + *latlons);
-	
-	for (unsigned int j = 0; j < parts.size(); j += 2)
-      {
-        if (wkt_multipoint != "MULTIPOINT(")
-          wkt_multipoint += ",";
-        wkt_multipoint += "(" + parts[j + 1] + " " + parts[j] + ")";
-      }
+    theRequest.removeParameter("latlon");
+    theRequest.removeParameter("latlons");
+    std::vector<std::string> parts;
+    boost::algorithm::split(parts, *latlons, boost::algorithm::is_any_of(","));
+    if (parts.size() % 2 != 0)
+      throw Fmi::Exception(BCP, "Invalid latlons list: " + *latlons);
+
+    for (unsigned int j = 0; j < parts.size(); j += 2)
+    {
+      if (wkt_multipoint != "MULTIPOINT(")
+        wkt_multipoint += ",";
+      wkt_multipoint += "(" + parts[j + 1] + " " + parts[j] + ")";
+    }
   }
   catch (...)
   {
@@ -205,29 +208,29 @@ void parse_latlons(const boost::optional<std::string>& latlons,
 }
 
 void parse_places(const boost::optional<std::string>& places,
-				  Spine::HTTP::Request& theRequest,
-				  std::string& wkt_multipoint,
-				  const Engine::Geonames::Engine* geoEngine)
+                  Spine::HTTP::Request& theRequest,
+                  std::string& wkt_multipoint,
+                  const Engine::Geonames::Engine* geoEngine)
 {
   try
   {
-	if(!places)
-	  return;
+    if (!places)
+      return;
 
-      theRequest.removeParameter("places");
-      std::vector<std::string> parts;
-      boost::algorithm::split(parts, *places, boost::algorithm::is_any_of(","));
-      for (const auto& place : parts)
+    theRequest.removeParameter("places");
+    std::vector<std::string> parts;
+    boost::algorithm::split(parts, *places, boost::algorithm::is_any_of(","));
+    for (const auto& place : parts)
+    {
+      Spine::LocationPtr loc = geoEngine->nameSearch(place, "fi");
+      if (loc)
       {
-        Spine::LocationPtr loc = geoEngine->nameSearch(place, "fi");
-        if (loc)
-        {
-          if (wkt_multipoint != "MULTIPOINT(")
-            wkt_multipoint += ",";
-          wkt_multipoint +=
-              "(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")";
-        }
+        if (wkt_multipoint != "MULTIPOINT(")
+          wkt_multipoint += ",";
+        wkt_multipoint +=
+            "(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")";
       }
+    }
   }
   catch (...)
   {
@@ -236,19 +239,19 @@ void parse_places(const boost::optional<std::string>& places,
 }
 
 void parse_fmisids(const boost::optional<std::string>& fmisid,
-				   Spine::HTTP::Request& theRequest,
-				   std::vector<int>& fmisids)
+                   Spine::HTTP::Request& theRequest,
+                   std::vector<int>& fmisids)
 {
   try
   {
-	if (!fmisid)
-	  return;
+    if (!fmisid)
+      return;
 
-	theRequest.removeParameter("fmisid");
-	std::vector<std::string> parts;
-	boost::algorithm::split(parts, *fmisid, boost::algorithm::is_any_of(","));
-	for (const auto& id : parts)
-	  fmisids.push_back(Fmi::stoi(id));
+    theRequest.removeParameter("fmisid");
+    std::vector<std::string> parts;
+    boost::algorithm::split(parts, *fmisid, boost::algorithm::is_any_of(","));
+    for (const auto& id : parts)
+      fmisids.push_back(Fmi::stoi(id));
   }
   catch (...)
   {
@@ -257,19 +260,19 @@ void parse_fmisids(const boost::optional<std::string>& fmisid,
 }
 
 void parse_lpnns(const boost::optional<std::string>& lpnn,
-				 Spine::HTTP::Request& theRequest,
-				 std::vector<int>& lpnns)
+                 Spine::HTTP::Request& theRequest,
+                 std::vector<int>& lpnns)
 {
   try
   {
-	if (!lpnn)
-	  return;
+    if (!lpnn)
+      return;
 
-	theRequest.removeParameter("lpnn");
-	std::vector<std::string> parts;
-	boost::algorithm::split(parts, *lpnn, boost::algorithm::is_any_of(","));
-	for (const auto& id : parts)
-	  lpnns.push_back(Fmi::stoi(id));
+    theRequest.removeParameter("lpnn");
+    std::vector<std::string> parts;
+    boost::algorithm::split(parts, *lpnn, boost::algorithm::is_any_of(","));
+    for (const auto& id : parts)
+      lpnns.push_back(Fmi::stoi(id));
   }
   catch (...)
   {
@@ -278,19 +281,19 @@ void parse_lpnns(const boost::optional<std::string>& lpnn,
 }
 
 void parse_wmos(const boost::optional<std::string>& wmo,
-				Spine::HTTP::Request& theRequest,
-				std::vector<int>& wmos)
+                Spine::HTTP::Request& theRequest,
+                std::vector<int>& wmos)
 {
   try
   {
-	if (!wmo)
-	  return;
+    if (!wmo)
+      return;
 
-	theRequest.removeParameter("wmo");
-	std::vector<std::string> parts;
-	boost::algorithm::split(parts, *wmo, boost::algorithm::is_any_of(","));
-	for (const auto& id : parts)
-	  wmos.push_back(Fmi::stoi(id));
+    theRequest.removeParameter("wmo");
+    std::vector<std::string> parts;
+    boost::algorithm::split(parts, *wmo, boost::algorithm::is_any_of(","));
+    for (const auto& id : parts)
+      wmos.push_back(Fmi::stoi(id));
   }
   catch (...)
   {
@@ -298,8 +301,7 @@ void parse_wmos(const boost::optional<std::string>& wmo,
   }
 }
 
-} // anonymous
-
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
@@ -314,7 +316,7 @@ void Plugin::query(const State& state,
   try
   {
     using std::chrono::duration_cast;
-	using std::chrono::high_resolution_clock;
+    using std::chrono::high_resolution_clock;
     using std::chrono::microseconds;
 
     Spine::Table data;
@@ -344,7 +346,8 @@ void Plugin::query(const State& state,
 
 #ifndef WITHOUT_OBSERVATION
     if (q.fmisids.empty() && q.lpnns.empty() && q.wmos.empty() && q.boundingBox.empty() &&
-        !UtilityFunctions::is_flash_or_mobile_producer(producer_option) && q.loptions->locations().empty())
+        !UtilityFunctions::is_flash_or_mobile_producer(producer_option) &&
+        q.loptions->locations().empty())
 #else
     if (q.loptions->locations().empty())
 #endif
@@ -352,7 +355,7 @@ void Plugin::query(const State& state,
 
     QueryServer::QueryStreamer_sptr queryStreamer;
     // The formatter knows which mimetype to send
-	Spine::TableFormatter* fmt = get_formatter_and_qstreamer(q, queryStreamer);
+    Spine::TableFormatter* fmt = get_formatter_and_qstreamer(q, queryStreamer);
 
     bool gridEnabled = false;
     if (strcasecmp(q.forecastSource.c_str(), "grid") == 0 ||
@@ -367,8 +370,8 @@ void Plugin::query(const State& state,
     // Calculate the hash value for the product.
 
     std::size_t product_hash = Fmi::bad_hash;
-	
-	QueryProcessingHub qph(*this);
+
+    QueryProcessingHub qph(*this);
 
     try
     {
@@ -380,15 +383,13 @@ void Plugin::query(const State& state,
         throw Fmi::Exception::Trace(BCP, "Operation failed!");
     }
 
-
     high_resolution_clock::time_point t3 = high_resolution_clock::now();
 
     std::string timeheader = Fmi::to_string(duration_cast<microseconds>(t2 - t1).count()) + '+' +
                              Fmi::to_string(duration_cast<microseconds>(t3 - t2).count());
 
-
-	if(etag_only(request, response, product_hash))
-	   return;
+    if (etag_only(request, response, product_hash))
+      return;
 
     // If obj is not nullptr it is from cache
     auto obj = qph.processQuery(state, data, q, queryStreamer, product_hash);
@@ -411,13 +412,13 @@ void Plugin::query(const State& state,
     data.setMissingText(q.valueformatter.missing());
 
     // The names of the columns
-	Spine::TableFormatter::Names headers = get_headers(q.poptions.parameters());
+    Spine::TableFormatter::Names headers = get_headers(q.poptions.parameters());
 
     // Format product
     // Deduce WXML-tag from used producer. (What happens when we combine forecasts and
     // observations??).
 
-	std::string wxml_type = get_wxml_type(producer_option, itsObsEngineStationTypes);
+    std::string wxml_type = get_wxml_type(producer_option, itsObsEngineStationTypes);
 
     auto formatter_options = itsConfig.formatterOptions();
     formatter_options.setFormatType(wxml_type);
@@ -481,17 +482,17 @@ void Plugin::grouplocations(Spine::HTTP::Request& theRequest)
     auto wmo = theRequest.getParameter("wmo");
 
     std::string wkt_multipoint = "MULTIPOINT(";
-	parse_lonlats(lonlats, theRequest, wkt_multipoint);
-	parse_latlons(latlons, theRequest, wkt_multipoint);
-	parse_places(places, theRequest, wkt_multipoint, itsEngines.geoEngine);
+    parse_lonlats(lonlats, theRequest, wkt_multipoint);
+    parse_latlons(latlons, theRequest, wkt_multipoint);
+    parse_places(places, theRequest, wkt_multipoint, itsEngines.geoEngine);
 
     std::vector<int> fmisids;
     std::vector<int> lpnns;
     std::vector<int> wmos;
 
-	parse_fmisids(fmisid, theRequest, fmisids);
-	parse_lpnns(lpnn, theRequest, lpnns);
-	parse_wmos(wmo, theRequest, wmos);
+    parse_fmisids(fmisid, theRequest, fmisids);
+    parse_lpnns(lpnn, theRequest, lpnns);
+    parse_wmos(wmo, theRequest, wmos);
 
     Engine::Geonames::LocationOptions lopts =
         itsEngines.geoEngine->parseLocations(fmisids, lpnns, wmos, "fi");
@@ -664,7 +665,8 @@ void Plugin::init()
     itsEngines.gisEngine = reinterpret_cast<Engine::Gis::Engine*>(engine);
 
     // Read the geometries from PostGIS database
-    itsEngines.gisEngine->populateGeometryStorage(itsConfig.getPostGISIdentifiers(), itsGeometryStorage);
+    itsEngines.gisEngine->populateGeometryStorage(itsConfig.getPostGISIdentifiers(),
+                                                  itsGeometryStorage);
 
     /* QEngine */
     engine = itsReactor->getSingleton("Querydata", nullptr);

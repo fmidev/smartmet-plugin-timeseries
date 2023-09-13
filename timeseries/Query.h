@@ -8,15 +8,15 @@
 
 #pragma once
 
+#include "AggregationInterval.h"
 #include "ObsQueryParams.h"
 #include "Producers.h"
-#include "AggregationInterval.h"
 #include <engines/geonames/Engine.h>
 #include <engines/geonames/WktGeometry.h>
-#include <timeseries/TimeSeriesInclude.h>
-#include <timeseries/OptionParsers.h>
-#include <grid-files/common/AttributeList.h>
 #include <grid-content/queryServer/definition/AliasFileCollection.h>
+#include <grid-files/common/AttributeList.h>
+#include <timeseries/OptionParsers.h>
+#include <timeseries/TimeSeriesInclude.h>
 
 namespace SmartMet
 {
@@ -118,8 +118,7 @@ struct Query : public ObsQueryParams
 
   void parse_precision(const Spine::HTTP::Request& theReq, const Config& config);
 
-  void parse_producers(const Spine::HTTP::Request& theReq,
-					   const State& theState);
+  void parse_producers(const Spine::HTTP::Request& theReq, const State& theState);
   void parse_parameters(const Spine::HTTP::Request& theReq);
   void parse_aggregation_intervals(const Spine::HTTP::Request& theReq);
   void parse_attr(const Spine::HTTP::Request& theReq);

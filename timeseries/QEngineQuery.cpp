@@ -1,16 +1,16 @@
 #include "QEngineQuery.h"
-#include "State.h"
 #include "LocationTools.h"
-#include "UtilityFunctions.h"
 #include "PostProcessing.h"
+#include "State.h"
+#include "UtilityFunctions.h"
+#include <macgyver/Exception.h>
+#include <newbase/NFmiIndexMaskTools.h>
+#include <newbase/NFmiSvgTools.h>
 #include <timeseries/ParameterKeywords.h>
 #include <timeseries/ParameterTools.h>
 #include <timeseries/TableFeeder.h>
 #include <timeseries/TimeSeriesInclude.h>
 #include <timeseries/TimeSeriesOutput.h>
-#include <macgyver/Exception.h>
-#include <newbase/NFmiIndexMaskTools.h>
-#include <newbase/NFmiSvgTools.h>
 
 namespace SmartMet
 {
@@ -20,52 +20,50 @@ namespace TimeSeries
 {
 namespace
 {
-
 bool is_wkt_area(const Spine::LocationPtr& loc)
 {
   try
-	{
-	  if(loc->type == Spine::Location::Wkt)
-		{
-		  auto geom = get_ogr_geometry(loc->name, loc->radius);
+  {
+    if (loc->type == Spine::Location::Wkt)
+    {
+      auto geom = get_ogr_geometry(loc->name, loc->radius);
 
-		  if(!geom)
-			return false;
+      if (!geom)
+        return false;
 
-		  auto type = geom->getGeometryType();
-	
-		  return (type == wkbPolygon || type == wkbMultiPolygon);
-		}
+      auto type = geom->getGeometryType();
 
-		return false;
-	}
+      return (type == wkbPolygon || type == wkbMultiPolygon);
+    }
+
+    return false;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
-
 
 bool is_point_query(const Spine::LocationPtr& loc)
 {
   try
-	{
-	  if((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) && loc->radius == 0)
-		return true;
+  {
+    if ((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
+        loc->radius == 0)
+      return true;
 
-	  if(loc->type == Spine::Location::Wkt)
-		{
-		  auto geom = get_ogr_geometry(loc->name, loc->radius);		  
-		  return (geom && geom->getGeometryType() == wkbPoint);
-		}
-		return false;
-	}
+    if (loc->type == Spine::Location::Wkt)
+    {
+      auto geom = get_ogr_geometry(loc->name, loc->radius);
+      return (geom && geom->getGeometryType() == wkbPoint);
+    }
+    return false;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
-
 
 Spine::LocationList get_indexmask_locations(const NFmiIndexMask& indexmask,
                                             const Spine::LocationPtr& loc,
@@ -73,24 +71,24 @@ Spine::LocationList get_indexmask_locations(const NFmiIndexMask& indexmask,
                                             const Engine::Geonames::Engine& geoengine)
 {
   try
-	{
-	  Spine::LocationList loclist;
-	  
-	  for (const auto& mask : indexmask)
-		{
-		  NFmiPoint coord = qi->latLon(mask);
-		  Spine::Location location(*loc);
-		  location.longitude = coord.X();
-		  location.latitude = coord.Y();
-		  location.dem = geoengine.demHeight(location.longitude, location.latitude);
-		  location.covertype = geoengine.coverType(location.longitude, location.latitude);
-		  location.type = Spine::Location::CoordinatePoint;
-		  Spine::LocationPtr locPtr = boost::make_shared<Spine::Location>(location);
-		  loclist.emplace_back(locPtr);
-		}
-	  
-	  return loclist;	  
-	}
+  {
+    Spine::LocationList loclist;
+
+    for (const auto& mask : indexmask)
+    {
+      NFmiPoint coord = qi->latLon(mask);
+      Spine::Location location(*loc);
+      location.longitude = coord.X();
+      location.latitude = coord.Y();
+      location.dem = geoengine.demHeight(location.longitude, location.latitude);
+      location.covertype = geoengine.coverType(location.longitude, location.latitude);
+      location.type = Spine::Location::CoordinatePoint;
+      Spine::LocationPtr locPtr = boost::make_shared<Spine::Location>(location);
+      loclist.emplace_back(locPtr);
+    }
+
+    return loclist;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
@@ -98,149 +96,137 @@ Spine::LocationList get_indexmask_locations(const NFmiIndexMask& indexmask,
 }
 
 Spine::TaggedLocationList get_locations_for_area(const NFmiIndexMask& indexmask,
-												 const Spine::TaggedLocation& tloc,
-												 const Spine::LocationPtr& area_loc,
-												 const Engine::Querydata::Q& qi,
-												 const Engine::Geonames::Engine& geoengine)
+                                                 const Spine::TaggedLocation& tloc,
+                                                 const Spine::LocationPtr& area_loc,
+                                                 const Engine::Querydata::Q& qi,
+                                                 const Engine::Geonames::Engine& geoengine)
 {
   try
-	{
-	  Spine::TaggedLocationList tloclist;
+  {
+    Spine::TaggedLocationList tloclist;
 
-	  for (const auto& mask : indexmask)
-		{
-		  NFmiPoint coord = qi->latLon(mask);
-		  Spine::Location location(*area_loc);
-		  location.longitude = coord.X();
-		  location.latitude = coord.Y();
-		  location.dem = geoengine.demHeight(location.longitude, location.latitude);
-		  location.covertype = geoengine.coverType(location.longitude, location.latitude);
-		  location.type = Spine::Location::CoordinatePoint;
-		  location.radius = 0;
-		  Spine::LocationPtr locPtr = boost::make_shared<Spine::Location>(location);
-		  Spine::TaggedLocation new_tloc(tloc.tag, locPtr);
-		  tloclist.emplace_back(new_tloc);
-		}
+    for (const auto& mask : indexmask)
+    {
+      NFmiPoint coord = qi->latLon(mask);
+      Spine::Location location(*area_loc);
+      location.longitude = coord.X();
+      location.latitude = coord.Y();
+      location.dem = geoengine.demHeight(location.longitude, location.latitude);
+      location.covertype = geoengine.coverType(location.longitude, location.latitude);
+      location.type = Spine::Location::CoordinatePoint;
+      location.radius = 0;
+      Spine::LocationPtr locPtr = boost::make_shared<Spine::Location>(location);
+      Spine::TaggedLocation new_tloc(tloc.tag, locPtr);
+      tloclist.emplace_back(new_tloc);
+    }
 
-	  return tloclist;
-	}
+    return tloclist;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
-NFmiIndexMask get_bbox_indexmask(const Spine::LocationPtr& loc,
-								 const Engine::Querydata::Q& qi)
+NFmiIndexMask get_bbox_indexmask(const Spine::LocationPtr& loc, const Engine::Querydata::Q& qi)
 {
   try
-	{
-	  NFmiIndexMask indexmask;
+  {
+    NFmiIndexMask indexmask;
 
-	  std::vector<std::string> coordinates;
-	  std::string place = get_name_base(loc->name);
-	  boost::algorithm::split(coordinates, place, boost::algorithm::is_any_of(","));
-	  if (coordinates.size() != 4)
-		throw Fmi::Exception(BCP,
-							 "Invalid bbox parameter " + place +
-							 ", should be in format 'lon,lat,lon,lat[:radius]'!");
-	  
-	  std::string lonstr1 = coordinates[0];
-	  std::string latstr1 = coordinates[1];
-	  std::string lonstr2 = coordinates[2];
-	  std::string latstr2 = coordinates[3];
-	  
-	  if (latstr2.find(':') != std::string::npos)
-		latstr2.erase(latstr2.begin() + latstr2.find(':'), latstr2.end());
-	  
-	  double lon1 = Fmi::stod(lonstr1);
-	  double lat1 = Fmi::stod(latstr1);
-	  double lon2 = Fmi::stod(lonstr2);
-	  double lat2 = Fmi::stod(latstr2);
-	  
-	  NFmiSvgPath boundingBoxPath;
-	  NFmiSvgTools::BBoxToSvgPath(boundingBoxPath, lon1, lat1, lon2, lat2);
-	  indexmask = NFmiIndexMaskTools::MaskExpand(qi->grid(), boundingBoxPath, loc->radius);
+    std::vector<std::string> coordinates;
+    std::string place = get_name_base(loc->name);
+    boost::algorithm::split(coordinates, place, boost::algorithm::is_any_of(","));
+    if (coordinates.size() != 4)
+      throw Fmi::Exception(
+          BCP,
+          "Invalid bbox parameter " + place + ", should be in format 'lon,lat,lon,lat[:radius]'!");
 
-	  return indexmask;
- 	}
+    std::string lonstr1 = coordinates[0];
+    std::string latstr1 = coordinates[1];
+    std::string lonstr2 = coordinates[2];
+    std::string latstr2 = coordinates[3];
+
+    if (latstr2.find(':') != std::string::npos)
+      latstr2.erase(latstr2.begin() + latstr2.find(':'), latstr2.end());
+
+    double lon1 = Fmi::stod(lonstr1);
+    double lat1 = Fmi::stod(latstr1);
+    double lon2 = Fmi::stod(lonstr2);
+    double lat2 = Fmi::stod(latstr2);
+
+    NFmiSvgPath boundingBoxPath;
+    NFmiSvgTools::BBoxToSvgPath(boundingBoxPath, lon1, lat1, lon2, lat2);
+    indexmask = NFmiIndexMaskTools::MaskExpand(qi->grid(), boundingBoxPath, loc->radius);
+
+    return indexmask;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
-} 
+}
 
 NFmiIndexMask get_area_indexmask(const Spine::TaggedLocation& tloc,
-								 const Spine::LocationPtr& loc,
-								 const Engine::Querydata::Q& qi,
-								 const Engine::Gis::GeometryStorage& geometryStorage,
-								 NFmiSvgPath& svgPath)
+                                 const Spine::LocationPtr& loc,
+                                 const Engine::Querydata::Q& qi,
+                                 const Engine::Gis::GeometryStorage& geometryStorage,
+                                 NFmiSvgPath& svgPath)
 {
   try
-	{
-	  NFmiIndexMask indexmask;
+  {
+    NFmiIndexMask indexmask;
 
-	  if (loc->type != Spine::Location::Wkt)  // SVG for WKT has been extracted earlier
-		get_svg_path(tloc, geometryStorage, svgPath);
-	  indexmask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, loc->radius);
+    if (loc->type != Spine::Location::Wkt)  // SVG for WKT has been extracted earlier
+      get_svg_path(tloc, geometryStorage, svgPath);
+    indexmask = NFmiIndexMaskTools::MaskExpand(qi->grid(), svgPath, loc->radius);
 
-	  return indexmask;
- 	}
+    return indexmask;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
-} 
+}
 
 Spine::TaggedLocationList get_tloclist(const Query& query,
-									   const Spine::TaggedLocation& tloc,
-									   const Spine::LocationPtr& loc,
-									   const Spine::LocationPtr& area_loc,
-									   const Engine::Querydata::Q& qi,
-									   const Engine::Geonames::Engine& geoengine,
-									   const Engine::Gis::GeometryStorage& geometryStorage,
-									   bool bbox_area,
-									   NFmiSvgPath& svgPath)
+                                       const Spine::TaggedLocation& tloc,
+                                       const Spine::LocationPtr& loc,
+                                       const Spine::LocationPtr& area_loc,
+                                       const Engine::Querydata::Q& qi,
+                                       const Engine::Geonames::Engine& geoengine,
+                                       const Engine::Gis::GeometryStorage& geometryStorage,
+                                       bool bbox_area,
+                                       NFmiSvgPath& svgPath)
 {
   try
   {
-	if (loc->type == Spine::Location::Wkt)
-	  svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
-	
-	NFmiIndexMask indexmask;
-	
-	if(bbox_area)
-	  indexmask = get_bbox_indexmask(loc, qi);
-	else 
-	  indexmask = get_area_indexmask(tloc,
-									 loc,
-									 qi,
-									 geometryStorage,
-									 svgPath);
-	
-	return get_locations_for_area(indexmask,
-								  tloc,
-								  area_loc,
-								  qi,
-								  geoengine);	
+    if (loc->type == Spine::Location::Wkt)
+      svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+
+    NFmiIndexMask indexmask;
+
+    if (bbox_area)
+      indexmask = get_bbox_indexmask(loc, qi);
+    else
+      indexmask = get_area_indexmask(tloc, loc, qi, geometryStorage, svgPath);
+
+    return get_locations_for_area(indexmask, tloc, area_loc, qi, geoengine);
   }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
-} 
-
-
-} // anonymous
-
-QEngineQuery::QEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin)
-{
 }
+
+}  // namespace
+
+QEngineQuery::QEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin) {}
 
 // If query.groupareas is false, find out locations inside area and process them individaually
 void QEngineQuery::resolveAreaLocations(Query& query,
-										const State& state,
-										const AreaProducers& areaproducers) const
+                                        const State& state,
+                                        const AreaProducers& areaproducers) const
 {
   if (query.groupareas)
     return;
@@ -250,12 +236,17 @@ void QEngineQuery::resolveAreaLocations(Query& query,
   {
     Spine::LocationPtr loc = tloc.loc;
     Spine::LocationPtr area_loc;
-	NFmiSvgPath svgPath;
+    NFmiSvgPath svgPath;
 
     if (tloc.loc->type == Spine::Location::BoundingBox)
-      area_loc = get_bbox_location(get_name_base(tloc.loc->name), query.language, *itsPlugin.itsEngines.geoEngine);
+      area_loc = get_bbox_location(
+          get_name_base(tloc.loc->name), query.language, *itsPlugin.itsEngines.geoEngine);
     else
-      area_loc = get_location_for_area(tloc, itsPlugin.itsGeometryStorage, query.language, *itsPlugin.itsEngines.geoEngine, &svgPath);
+      area_loc = get_location_for_area(tloc,
+                                       itsPlugin.itsGeometryStorage,
+                                       query.language,
+                                       *itsPlugin.itsEngines.geoEngine,
+                                       &svgPath);
 
     auto producer = selectProducer(*area_loc, query, areaproducers);
 
@@ -264,42 +255,41 @@ void QEngineQuery::resolveAreaLocations(Query& query,
 
     auto qi = (query.origintime ? state.get(producer, *query.origintime) : state.get(producer));
 
-	bool bbox_area = (qi->isGrid() && loc->type == Spine::Location::BoundingBox);
-	bool area_area = (qi->isGrid() && (loc->type == Spine::Location::Area || 
-									   is_wkt_area(loc) ||
-									   ((loc->type == Spine::Location::Place || 
-										 loc->type == Spine::Location::CoordinatePoint) &&
-										loc->radius > 0)));
+    bool bbox_area = (qi->isGrid() && loc->type == Spine::Location::BoundingBox);
+    bool area_area =
+        (qi->isGrid() &&
+         (loc->type == Spine::Location::Area || is_wkt_area(loc) ||
+          ((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
+           loc->radius > 0)));
 
-	if(bbox_area || area_area)
-	  {
-		auto tlocs = get_tloclist(query,
-								  tloc,
-								  loc,
-								  area_loc,
-								  qi,
-								  *itsPlugin.itsEngines.geoEngine,
-								  itsPlugin.itsGeometryStorage,
-								  bbox_area,
-								  svgPath);
+    if (bbox_area || area_area)
+    {
+      auto tlocs = get_tloclist(query,
+                                tloc,
+                                loc,
+                                area_loc,
+                                qi,
+                                *itsPlugin.itsEngines.geoEngine,
+                                itsPlugin.itsGeometryStorage,
+                                bbox_area,
+                                svgPath);
 
-		tloclist.insert(tloclist.end(), tlocs.begin(), tlocs.end());
-	  }
+      tloclist.insert(tloclist.end(), tlocs.begin(), tlocs.end());
+    }
     else
-	  {
-		tloclist.emplace_back(tloc);
-	  }
+    {
+      tloclist.emplace_back(tloc);
+    }
   }
 
   query.loptions->setLocations(tloclist);
 }
 
-
 void QEngineQuery::processQEngineQuery(const State& state,
-									   Query& masterquery,
-									   TS::OutputData& outputData,
-									   const AreaProducers& areaproducers,
-									   const ProducerDataPeriod& producerDataPeriod) const
+                                       Query& masterquery,
+                                       TS::OutputData& outputData,
+                                       const AreaProducers& areaproducers,
+                                       const ProducerDataPeriod& producerDataPeriod) const
 {
   try
   {
@@ -341,10 +331,12 @@ void QEngineQuery::processQEngineQuery(const State& state,
       // producer can be alias, get actual producer
       std::string producer(selectProducer(*(tloc.loc), q, areaproducers));
       bool isClimatologyProducer =
-          (producer.empty() ? false : itsPlugin.itsEngines.qEngine->getProducerConfig(producer).isclimatology);
+          (producer.empty()
+               ? false
+               : itsPlugin.itsEngines.qEngine->getProducerConfig(producer).isclimatology);
 
-      boost::local_time::local_date_time data_period_endtime(
-          producerDataPeriod.getLocalEndTime(producer, q.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones()));
+      boost::local_time::local_date_time data_period_endtime(producerDataPeriod.getLocalEndTime(
+          producer, q.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones()));
 
       // Reset for each new location, since fetchQEngineValues modifies it
       auto old_start_time = q.toptions.startTime;
@@ -387,14 +379,14 @@ void QEngineQuery::processQEngineQuery(const State& state,
 }
 
 void QEngineQuery::fetchQEngineValues(const State& state,
-									  const TS::ParameterAndFunctions& paramfunc,
-									  int precision,
-									  const Spine::TaggedLocation& tloc,
-									  Query& query,
-									  const AreaProducers& areaproducers,
-									  const ProducerDataPeriod& producerDataPeriod,
-									  QueryLevelDataCache& queryLevelDataCache,
-									  TS::OutputData& outputData) const
+                                      const TS::ParameterAndFunctions& paramfunc,
+                                      int precision,
+                                      const Spine::TaggedLocation& tloc,
+                                      Query& query,
+                                      const AreaProducers& areaproducers,
+                                      const ProducerDataPeriod& producerDataPeriod,
+                                      QueryLevelDataCache& queryLevelDataCache,
+                                      TS::OutputData& outputData) const
 {
   try
   {
@@ -404,7 +396,7 @@ void QEngineQuery::fetchQEngineValues(const State& state,
 
     NFmiSvgPath svgPath;
     bool isWkt = false;
-	loc = resolveLocation(tloc, query, svgPath, isWkt);
+    loc = resolveLocation(tloc, query, svgPath, isWkt);
 
     if (query.timezone == LOCALTIME_PARAM)
       query.timezone = loc->timezone;
@@ -427,7 +419,7 @@ void QEngineQuery::fetchQEngineValues(const State& state,
     query.toptions.setDataTimes(validtimes, qi->isClimatology());
 
     // No area operations allowed for non-grid data
-	bool isPointQuery = is_point_query(loc);
+    bool isPointQuery = is_point_query(loc);
     if (!qi->isGrid() && !isPointQuery)
       return;
 
@@ -459,11 +451,13 @@ void QEngineQuery::fetchQEngineValues(const State& state,
       check_request_limit(
           itsPlugin.itsConfig.requestLimits(), query.levels.size(), TS::RequestLimitMember::LEVELS);
     if (itPressure != query.pressures.end())
-      check_request_limit(
-          itsPlugin.itsConfig.requestLimits(), query.pressures.size(), TS::RequestLimitMember::LEVELS);
+      check_request_limit(itsPlugin.itsConfig.requestLimits(),
+                          query.pressures.size(),
+                          TS::RequestLimitMember::LEVELS);
     if (itHeight != query.heights.end())
-      check_request_limit(
-          itsPlugin.itsConfig.requestLimits(), query.heights.size(), TS::RequestLimitMember::LEVELS);
+      check_request_limit(itsPlugin.itsConfig.requestLimits(),
+                          query.heights.size(),
+                          TS::RequestLimitMember::LEVELS);
 
     std::set<int> received_levels;
     // Loop over the levels
@@ -476,43 +470,46 @@ void QEngineQuery::fetchQEngineValues(const State& state,
       if (loadDataLevels)
       {
         if (!qi->nextLevel())
-		  {
-			// No more native/data levels; load/interpolate pressure and height
-			// levels if any
-			loadDataLevels = false;
-		  }
+        {
+          // No more native/data levels; load/interpolate pressure and height
+          // levels if any
+          loadDataLevels = false;
+        }
         else
-		  {
-			// check if only some levels are chosen
-			int level = static_cast<int>(qi->levelValue());
-			if (!query.levels.empty())
-			  {
-				if (query.levels.find(level) == query.levels.end())
-				  continue;
-			  }
-			received_levels.insert(level);
-			check_request_limit(itsPlugin.itsConfig.requestLimits(), received_levels.size(), TS::RequestLimitMember::LEVELS);
-		  }
+        {
+          // check if only some levels are chosen
+          int level = static_cast<int>(qi->levelValue());
+          if (!query.levels.empty())
+          {
+            if (query.levels.find(level) == query.levels.end())
+              continue;
+          }
+          received_levels.insert(level);
+          check_request_limit(itsPlugin.itsConfig.requestLimits(),
+                              received_levels.size(),
+                              TS::RequestLimitMember::LEVELS);
+        }
       }
-	  
-      if (!loadDataLevels)
-		{
-		  if (itPressure != query.pressures.end())
-			{
-			  levelType = "pressure:";
-			  pressure = levelValue = *(itPressure++);
-			}
-		  else if (itHeight != query.heights.end())
-			{
-			  levelType = "height:";
-			  height = levelValue = *(itHeight++);
-			}
-		  else
-          break;
-		}
 
-      auto tz = itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
-	  auto tlist = generateTList(query, producer, producerDataPeriod);
+      if (!loadDataLevels)
+      {
+        if (itPressure != query.pressures.end())
+        {
+          levelType = "pressure:";
+          pressure = levelValue = *(itPressure++);
+        }
+        else if (itHeight != query.heights.end())
+        {
+          levelType = "height:";
+          height = levelValue = *(itHeight++);
+        }
+        else
+          break;
+      }
+
+      auto tz =
+          itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
+      auto tlist = generateTList(query, producer, producerDataPeriod);
 
       if (tlist.empty())
         return;
@@ -525,10 +522,12 @@ void QEngineQuery::fetchQEngineValues(const State& state,
 #ifdef MYDEBUG
       std::cout << std::endl << "producer: " << producer << std::endl;
       std::cout << "data period start time: "
-                << producerDataPeriod.getLocalStartTime(producer, query.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones())
+                << producerDataPeriod.getLocalStartTime(
+                       producer, query.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones())
                 << std::endl;
       std::cout << "data period end time: "
-                << producerDataPeriod.getLocalEndTime(producer, query.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones())
+                << producerDataPeriod.getLocalEndTime(
+                       producer, query.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones())
                 << std::endl;
       std::cout << "paramname: " << paramname << std::endl;
       std::cout << "query.timezone: " << query.timezone << std::endl;
@@ -544,48 +543,48 @@ void QEngineQuery::fetchQEngineValues(const State& state,
       std::pair<float, std::string> cacheKey(loadDataLevels ? qi->levelValue() : levelValue,
                                              levelType + paramname);
 
-	  if(isPointQuery)
+      if (isPointQuery)
       {
-		pointQuery(query,
-				   producer,
-				   paramfunc,
-				   tloc,
-				   querydata_tlist,
-				   tlist,
-				   cacheKey,
-				   state,
-				   qi,
-				   nearestpoint,
-				   precision,
-				   loadDataLevels,
-				   pressure,
-				   height,
-				   queryLevelDataCache,
-				   aggregatedData);
+        pointQuery(query,
+                   producer,
+                   paramfunc,
+                   tloc,
+                   querydata_tlist,
+                   tlist,
+                   cacheKey,
+                   state,
+                   qi,
+                   nearestpoint,
+                   precision,
+                   loadDataLevels,
+                   pressure,
+                   height,
+                   queryLevelDataCache,
+                   aggregatedData);
       }
       else
       {
-		areaQuery(query,
-				  producer,
-				  paramfunc,
-				  tloc,
-				  querydata_tlist,
-				  tlist,
-				  cacheKey,
-				  state,
-				  qi,
-				  nearestpoint,
-				  precision,
-				  loadDataLevels,
-				  pressure,
-				  height,
-				  queryLevelDataCache,
-				  aggregatedData);
+        areaQuery(query,
+                  producer,
+                  paramfunc,
+                  tloc,
+                  querydata_tlist,
+                  tlist,
+                  cacheKey,
+                  state,
+                  qi,
+                  nearestpoint,
+                  precision,
+                  loadDataLevels,
+                  pressure,
+                  height,
+                  queryLevelDataCache,
+                  aggregatedData);
       }
-	}  // levels
+    }  // levels
 
     // store level-data
-	PostProcessing::store_data(aggregatedData, query, outputData);
+    PostProcessing::store_data(aggregatedData, query, outputData);
   }
   catch (...)
   {
@@ -593,8 +592,8 @@ void QEngineQuery::fetchQEngineValues(const State& state,
   }
 }
 
-TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateQEngineQueryTimes(const Query& query, 
-																			   const std::string& paramname) const
+TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateQEngineQueryTimes(
+    const Query& query, const std::string& paramname) const
 {
   try
   {
@@ -672,100 +671,101 @@ TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateQEngineQueryTimes(c
 }
 
 void QEngineQuery::pointQuery(const Query& theQuery,
-							  const std::string& theProducer,
-							  const TS::ParameterAndFunctions& theParamFunc,
-							  const Spine::TaggedLocation& theTLoc,
-							  const TS::TimeSeriesGenerator::LocalTimeList& theQueryDataTlist,
-							  const TS::TimeSeriesGenerator::LocalTimeList& theRequestedTList,
-							  const std::pair<float, std::string>& theCacheKey,
-							  const State& theState,
-							  const Engine::Querydata::Q& theQ,
-							  const NFmiPoint& theNearestPoint,
-							  int thePrecision,
-							  bool theLoadDataLevels,
-							  boost::optional<float> thePressure,
-							  boost::optional<float> theHeight,
-							  QueryLevelDataCache& theQueryLevelDataCache,
-							  std::vector<TS::TimeSeriesData>& theAggregatedData) const
+                              const std::string& theProducer,
+                              const TS::ParameterAndFunctions& theParamFunc,
+                              const Spine::TaggedLocation& theTLoc,
+                              const TS::TimeSeriesGenerator::LocalTimeList& theQueryDataTlist,
+                              const TS::TimeSeriesGenerator::LocalTimeList& theRequestedTList,
+                              const std::pair<float, std::string>& theCacheKey,
+                              const State& theState,
+                              const Engine::Querydata::Q& theQ,
+                              const NFmiPoint& theNearestPoint,
+                              int thePrecision,
+                              bool theLoadDataLevels,
+                              boost::optional<float> thePressure,
+                              boost::optional<float> theHeight,
+                              QueryLevelDataCache& theQueryLevelDataCache,
+                              std::vector<TS::TimeSeriesData>& theAggregatedData) const
 {
   try
-	{
-        TS::TimeSeriesPtr querydata_result;
-		const auto& paramname = theParamFunc.parameter.name();
-		auto loc = theTLoc.loc;
-		NFmiSvgPath svgPath;
-		bool isWkt = false;
-		loc = resolveLocation(theTLoc, theQuery, svgPath, isWkt);
-		const auto country = itsPlugin.itsEngines.geoEngine->countryName(loc->iso2, theQuery.language);
+  {
+    TS::TimeSeriesPtr querydata_result;
+    const auto& paramname = theParamFunc.parameter.name();
+    auto loc = theTLoc.loc;
+    NFmiSvgPath svgPath;
+    bool isWkt = false;
+    loc = resolveLocation(theTLoc, theQuery, svgPath, isWkt);
+    const auto country = itsPlugin.itsEngines.geoEngine->countryName(loc->iso2, theQuery.language);
 
-        // if we have fetched the data for this parameter earlier, use it
-        if (theQueryLevelDataCache.itsTimeSeries.find(theCacheKey) !=
-            theQueryLevelDataCache.itsTimeSeries.end())
+    // if we have fetched the data for this parameter earlier, use it
+    if (theQueryLevelDataCache.itsTimeSeries.find(theCacheKey) !=
+        theQueryLevelDataCache.itsTimeSeries.end())
+    {
+      querydata_result = theQueryLevelDataCache.itsTimeSeries[theCacheKey];
+    }
+    else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo")
+    {
+      querydata_result = boost::make_shared<TS::TimeSeries>(theState.getLocalTimePool());
+      for (const auto& t : theQueryDataTlist)
+      {
+        if (loc->fmisid && paramname == "fmisid")
         {
-          querydata_result = theQueryLevelDataCache.itsTimeSeries[theCacheKey];
-        }
-        else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo")
-        {
-          querydata_result = boost::make_shared<TS::TimeSeries>(theState.getLocalTimePool());
-          for (const auto& t : theQueryDataTlist)
-          {
-            if (loc->fmisid && paramname == "fmisid")
-            {
-              querydata_result->emplace_back(TS::TimedValue(t, *(loc->fmisid)));
-            }
-            else
-            {
-              querydata_result->emplace_back(TS::TimedValue(t, TS::None()));
-            }
-          }
-        }
-        else if (UtilityFunctions::is_special_parameter(paramname))
-        {
-          querydata_result = boost::make_shared<TS::TimeSeries>(theState.getLocalTimePool());
-          UtilityFunctions::get_special_parameter_values(paramname,
-                                                         thePrecision,
-                                                         theQueryDataTlist,
-                                                         loc,
-                                                         theQuery,
-                                                         theState,
-                                                         itsPlugin.itsEngines.geoEngine->getTimeZones(),
-                                                         querydata_result);
+          querydata_result->emplace_back(TS::TimedValue(t, *(loc->fmisid)));
         }
         else
         {
-          Spine::Parameter param = TS::get_query_param(theParamFunc.parameter);
-
-          Engine::Querydata::ParameterOptions querydata_param(param,
-                                                              theProducer,
-                                                              *loc,
-                                                              country,
-                                                              theTLoc.tag,
-                                                              *theQuery.timeformatter,
-                                                              theQuery.timestring,
-                                                              theQuery.language,
-                                                              theQuery.outlocale,
-                                                              theQuery.timezone,
-                                                              theQuery.findnearestvalidpoint,
-                                                              theNearestPoint,
-                                                              theQuery.lastpoint,
-                                                              theState.getLocalTimePool());
-
-          // one location, list of local times (no radius -> pointforecast)
-          querydata_result = theLoadDataLevels ? theQ->values(querydata_param, theQueryDataTlist)
-                             : thePressure
-                                 ? theQ->valuesAtPressure(querydata_param, theQueryDataTlist, *thePressure)
-                                 : theQ->valuesAtHeight(querydata_param, theQueryDataTlist, *theHeight);
+          querydata_result->emplace_back(TS::TimedValue(t, TS::None()));
         }
-        if (!querydata_result->empty())
-        {
-          if (theParamFunc.parameter.name() == "x" || theParamFunc.parameter.name() == "y")
-			TS::transform_wgs84_coordinates(theParamFunc.parameter.name(), theQuery.crs, *loc, *querydata_result);
+      }
+    }
+    else if (UtilityFunctions::is_special_parameter(paramname))
+    {
+      querydata_result = boost::make_shared<TS::TimeSeries>(theState.getLocalTimePool());
+      UtilityFunctions::get_special_parameter_values(paramname,
+                                                     thePrecision,
+                                                     theQueryDataTlist,
+                                                     loc,
+                                                     theQuery,
+                                                     theState,
+                                                     itsPlugin.itsEngines.geoEngine->getTimeZones(),
+                                                     querydata_result);
+    }
+    else
+    {
+      Spine::Parameter param = TS::get_query_param(theParamFunc.parameter);
 
-          theQueryLevelDataCache.itsTimeSeries.insert(make_pair(theCacheKey, querydata_result));
-        }
+      Engine::Querydata::ParameterOptions querydata_param(param,
+                                                          theProducer,
+                                                          *loc,
+                                                          country,
+                                                          theTLoc.tag,
+                                                          *theQuery.timeformatter,
+                                                          theQuery.timestring,
+                                                          theQuery.language,
+                                                          theQuery.outlocale,
+                                                          theQuery.timezone,
+                                                          theQuery.findnearestvalidpoint,
+                                                          theNearestPoint,
+                                                          theQuery.lastpoint,
+                                                          theState.getLocalTimePool());
 
-        theAggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
-            TS::aggregate(querydata_result, theParamFunc.functions), theRequestedTList)));
+      // one location, list of local times (no radius -> pointforecast)
+      querydata_result =
+          theLoadDataLevels ? theQ->values(querydata_param, theQueryDataTlist)
+          : thePressure ? theQ->valuesAtPressure(querydata_param, theQueryDataTlist, *thePressure)
+                        : theQ->valuesAtHeight(querydata_param, theQueryDataTlist, *theHeight);
+    }
+    if (!querydata_result->empty())
+    {
+      if (theParamFunc.parameter.name() == "x" || theParamFunc.parameter.name() == "y")
+        TS::transform_wgs84_coordinates(
+            theParamFunc.parameter.name(), theQuery.crs, *loc, *querydata_result);
+
+      theQueryLevelDataCache.itsTimeSeries.insert(make_pair(theCacheKey, querydata_result));
+    }
+
+    theAggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
+        TS::aggregate(querydata_result, theParamFunc.functions), theRequestedTList)));
   }
   catch (...)
   {
@@ -774,48 +774,47 @@ void QEngineQuery::pointQuery(const Query& theQuery,
 }
 
 Spine::LocationList QEngineQuery::getLocationListForPath(const Query& theQuery,
-														 const Spine::TaggedLocation& theTLoc,
-														 const std::string& place,
-														 const NFmiSvgPath svgPath,
-														 const State& theState,
-														 bool isWkt) const
+                                                         const Spine::TaggedLocation& theTLoc,
+                                                         const std::string& place,
+                                                         const NFmiSvgPath svgPath,
+                                                         const State& theState,
+                                                         bool isWkt) const
 {
   try
-	{
-	  Spine::LocationList llist;
+  {
+    Spine::LocationList llist;
 
-	  if (isWkt)
-		{
-		  OGRwkbGeometryType geomType =
-			theQuery.wktGeometries.getGeometry(place)->getGeometryType();
-		  if (geomType == wkbMultiLineString)
-			{
-			  // OGRMultiLineString -> handle each LineString separately
-			  std::list<NFmiSvgPath> svgList = theQuery.wktGeometries.getSvgPaths(place);
-			  for (const auto& svg : svgList)
-				{
-				  Spine::LocationList ll =
-					get_location_list(svg, theTLoc.tag, theQuery.step, theState.getGeoEngine());
-				  if (!ll.empty())
-					llist.insert(llist.end(), ll.begin(), ll.end());
-				}
-			}
-		  else if (geomType == wkbMultiPoint)
-			{
-			  llist = theQuery.wktGeometries.getLocations(place);
-			}
-		  else if (geomType == wkbLineString)
-			{
-			  // For LineString svgPath has been extracted earlier
-			  llist = get_location_list(svgPath, theTLoc.tag, theQuery.step, theState.getGeoEngine());
-			}
-		}
-	  else
-		{
-		  llist = get_location_list(svgPath, theTLoc.tag, theQuery.step, theState.getGeoEngine());
-		}
+    if (isWkt)
+    {
+      OGRwkbGeometryType geomType = theQuery.wktGeometries.getGeometry(place)->getGeometryType();
+      if (geomType == wkbMultiLineString)
+      {
+        // OGRMultiLineString -> handle each LineString separately
+        std::list<NFmiSvgPath> svgList = theQuery.wktGeometries.getSvgPaths(place);
+        for (const auto& svg : svgList)
+        {
+          Spine::LocationList ll =
+              get_location_list(svg, theTLoc.tag, theQuery.step, theState.getGeoEngine());
+          if (!ll.empty())
+            llist.insert(llist.end(), ll.begin(), ll.end());
+        }
+      }
+      else if (geomType == wkbMultiPoint)
+      {
+        llist = theQuery.wktGeometries.getLocations(place);
+      }
+      else if (geomType == wkbLineString)
+      {
+        // For LineString svgPath has been extracted earlier
+        llist = get_location_list(svgPath, theTLoc.tag, theQuery.step, theState.getGeoEngine());
+      }
+    }
+    else
+    {
+      llist = get_location_list(svgPath, theTLoc.tag, theQuery.step, theState.getGeoEngine());
+    }
 
-	  return llist;
+    return llist;
   }
   catch (...)
   {
@@ -823,77 +822,78 @@ Spine::LocationList QEngineQuery::getLocationListForPath(const Query& theQuery,
   }
 }
 
-
-TS::TimeSeriesGroupPtr QEngineQuery::getQEngineValuesForArea(const Query& theQuery,
-															 const std::string& theProducer,
-															 const TS::ParameterAndFunctions& theParamFunc,
-															 const Spine::TaggedLocation& theTLoc,
-															 const Spine::LocationPtr& loc,
-															 const TS::TimeSeriesGenerator::LocalTimeList& theQueryDataTlist,
-															 const State& theState,
-															 const Engine::Querydata::Q& theQ,
-															 const NFmiPoint& theNearestPoint,
-															 int thePrecision,
-															 bool theLoadDataLevels,
-															 boost::optional<float> thePressure,
-															 boost::optional<float> theHeight,
-															 const std::string& paramname,
-															 const Spine::LocationList& llist) const
+TS::TimeSeriesGroupPtr QEngineQuery::getQEngineValuesForArea(
+    const Query& theQuery,
+    const std::string& theProducer,
+    const TS::ParameterAndFunctions& theParamFunc,
+    const Spine::TaggedLocation& theTLoc,
+    const Spine::LocationPtr& loc,
+    const TS::TimeSeriesGenerator::LocalTimeList& theQueryDataTlist,
+    const State& theState,
+    const Engine::Querydata::Q& theQ,
+    const NFmiPoint& theNearestPoint,
+    int thePrecision,
+    bool theLoadDataLevels,
+    boost::optional<float> thePressure,
+    boost::optional<float> theHeight,
+    const std::string& paramname,
+    const Spine::LocationList& llist) const
 {
   try
-	{
-	  TS::TimeSeriesGroupPtr querydata_result;
+  {
+    TS::TimeSeriesGroupPtr querydata_result;
 
-	  if (UtilityFunctions::is_special_parameter(paramname))
-		{
-		  querydata_result = boost::make_shared<TS::TimeSeriesGroup>();
-		  UtilityFunctions::get_special_parameter_values(paramname,
-														 thePrecision,
-														 theQueryDataTlist,
-														 llist,
-														 theQuery,
-														 theState,
-														 itsPlugin.itsEngines.geoEngine->getTimeZones(),
-														 querydata_result);
-		}
-	  else
-		{
-		  Spine::Parameter param = TS::get_query_param(theParamFunc.parameter);
-		  const auto country = itsPlugin.itsEngines.geoEngine->countryName(loc->iso2, theQuery.language);
+    if (UtilityFunctions::is_special_parameter(paramname))
+    {
+      querydata_result = boost::make_shared<TS::TimeSeriesGroup>();
+      UtilityFunctions::get_special_parameter_values(paramname,
+                                                     thePrecision,
+                                                     theQueryDataTlist,
+                                                     llist,
+                                                     theQuery,
+                                                     theState,
+                                                     itsPlugin.itsEngines.geoEngine->getTimeZones(),
+                                                     querydata_result);
+    }
+    else
+    {
+      Spine::Parameter param = TS::get_query_param(theParamFunc.parameter);
+      const auto country =
+          itsPlugin.itsEngines.geoEngine->countryName(loc->iso2, theQuery.language);
 
-		  Engine::Querydata::ParameterOptions querydata_param(param,
-															  theProducer,
-															  *loc,
-															  country,
-															  theTLoc.tag,
-															  *theQuery.timeformatter,
-															  theQuery.timestring,
-															  theQuery.language,
-															  theQuery.outlocale,
-															  theQuery.timezone,
-															  theQuery.findnearestvalidpoint,
-															  theNearestPoint,
-															  theQuery.lastpoint,
-															  theState.getLocalTimePool());
-		  
-		  // list of locations, list of local times
-		  querydata_result =
-			theLoadDataLevels
-			? theQ->values(
-						   querydata_param, llist, theQueryDataTlist, theQuery.maxdistance_kilometers())
-			: thePressure ? theQ->valuesAtPressure(querydata_param,
-												   llist,
-												   theQueryDataTlist,
-												   theQuery.maxdistance_kilometers(),
-												   *thePressure)
-			: theQ->valuesAtHeight(querydata_param,
-								   llist,
-								   theQueryDataTlist,
-								   theQuery.maxdistance_kilometers(),
-								   *theHeight);
-		}
-	  
-	  return querydata_result;
+      Engine::Querydata::ParameterOptions querydata_param(param,
+                                                          theProducer,
+                                                          *loc,
+                                                          country,
+                                                          theTLoc.tag,
+                                                          *theQuery.timeformatter,
+                                                          theQuery.timestring,
+                                                          theQuery.language,
+                                                          theQuery.outlocale,
+                                                          theQuery.timezone,
+                                                          theQuery.findnearestvalidpoint,
+                                                          theNearestPoint,
+                                                          theQuery.lastpoint,
+                                                          theState.getLocalTimePool());
+
+      // list of locations, list of local times
+      querydata_result =
+          theLoadDataLevels
+              ? theQ->values(
+                    querydata_param, llist, theQueryDataTlist, theQuery.maxdistance_kilometers())
+          : thePressure ? theQ->valuesAtPressure(querydata_param,
+                                                 llist,
+                                                 theQueryDataTlist,
+                                                 theQuery.maxdistance_kilometers(),
+                                                 *thePressure)
+                        : theQ->valuesAtHeight(querydata_param,
+                                               llist,
+                                               theQueryDataTlist,
+                                               theQuery.maxdistance_kilometers(),
+                                               *theHeight);
+    }
+
+    return querydata_result;
   }
   catch (...)
   {
@@ -902,229 +902,212 @@ TS::TimeSeriesGroupPtr QEngineQuery::getQEngineValuesForArea(const Query& theQue
 }
 
 Spine::LocationList QEngineQuery::getLocationListForArea(const Spine::TaggedLocation& theTLoc,
-														 const Spine::LocationPtr& loc,
-														 const Engine::Querydata::Q& theQ,
-														 NFmiSvgPath& svgPath,
-														 bool isWkt) const
+                                                         const Spine::LocationPtr& loc,
+                                                         const Engine::Querydata::Q& theQ,
+                                                         NFmiSvgPath& svgPath,
+                                                         bool isWkt) const
 {
   try
-	{
-	  NFmiIndexMask mask;
+  {
+    NFmiIndexMask mask;
 
-	  if (loc->type == Spine::Location::BoundingBox)
-		{
-		  const auto place = get_name_base(loc->name);
-		  std::vector<std::string> coordinates;
-		  boost::algorithm::split(coordinates, place, boost::algorithm::is_any_of(","));
-		  if (coordinates.size() != 4)
-			throw Fmi::Exception(BCP,
-								 "Invalid bbox parameter " + place +
-								 ", should be in format 'lon,lat,lon,lat[:radius]'!");
-		  
-		  std::string lonstr1 = coordinates[0];
-		  std::string latstr1 = coordinates[1];
-		  std::string lonstr2 = coordinates[2];
-		  std::string latstr2 = coordinates[3];
-		  
-		  if (latstr2.find(':') != std::string::npos)
-			latstr2.erase(latstr2.begin() + latstr2.find(':'), latstr2.end());
-		  
-		  double lon1 = Fmi::stod(lonstr1);
-		  double lat1 = Fmi::stod(latstr1);
-		  double lon2 = Fmi::stod(lonstr2);
-		  double lat2 = Fmi::stod(latstr2);
-		  
-		  NFmiSvgPath boundingBoxPath;
-		  NFmiSvgTools::BBoxToSvgPath(boundingBoxPath, lon1, lat1, lon2, lat2);
-		  mask = NFmiIndexMaskTools::MaskExpand(theQ->grid(), boundingBoxPath, loc->radius);
-		}
-	  else if (loc->type == Spine::Location::Area || loc->type == Spine::Location::Place ||
-			   loc->type == Spine::Location::CoordinatePoint)
-		{
-		  if (!isWkt)  // SVG for WKT has been extracted earlier
-			get_svg_path(theTLoc, itsPlugin.itsGeometryStorage, svgPath);
-		  // If SVG has been extarcted earier the radius is already included
-		  mask = NFmiIndexMaskTools::MaskExpand(theQ->grid(), svgPath, isWkt ? 0 : loc->radius);
-		}
-	  // Indexmask (indexed locations on the area)
-	  return get_indexmask_locations(mask, loc, theQ, *itsPlugin.itsEngines.geoEngine);	  
- }
+    if (loc->type == Spine::Location::BoundingBox)
+    {
+      const auto place = get_name_base(loc->name);
+      std::vector<std::string> coordinates;
+      boost::algorithm::split(coordinates, place, boost::algorithm::is_any_of(","));
+      if (coordinates.size() != 4)
+        throw Fmi::Exception(BCP,
+                             "Invalid bbox parameter " + place +
+                                 ", should be in format 'lon,lat,lon,lat[:radius]'!");
+
+      std::string lonstr1 = coordinates[0];
+      std::string latstr1 = coordinates[1];
+      std::string lonstr2 = coordinates[2];
+      std::string latstr2 = coordinates[3];
+
+      if (latstr2.find(':') != std::string::npos)
+        latstr2.erase(latstr2.begin() + latstr2.find(':'), latstr2.end());
+
+      double lon1 = Fmi::stod(lonstr1);
+      double lat1 = Fmi::stod(latstr1);
+      double lon2 = Fmi::stod(lonstr2);
+      double lat2 = Fmi::stod(latstr2);
+
+      NFmiSvgPath boundingBoxPath;
+      NFmiSvgTools::BBoxToSvgPath(boundingBoxPath, lon1, lat1, lon2, lat2);
+      mask = NFmiIndexMaskTools::MaskExpand(theQ->grid(), boundingBoxPath, loc->radius);
+    }
+    else if (loc->type == Spine::Location::Area || loc->type == Spine::Location::Place ||
+             loc->type == Spine::Location::CoordinatePoint)
+    {
+      if (!isWkt)  // SVG for WKT has been extracted earlier
+        get_svg_path(theTLoc, itsPlugin.itsGeometryStorage, svgPath);
+      // If SVG has been extarcted earier the radius is already included
+      mask = NFmiIndexMaskTools::MaskExpand(theQ->grid(), svgPath, isWkt ? 0 : loc->radius);
+    }
+    // Indexmask (indexed locations on the area)
+    return get_indexmask_locations(mask, loc, theQ, *itsPlugin.itsEngines.geoEngine);
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
-
-
 void QEngineQuery::areaQuery(const Query& theQuery,
-							  const std::string& theProducer,
-							  const TS::ParameterAndFunctions& theParamFunc,
-							  const Spine::TaggedLocation& theTLoc,
-							  const TS::TimeSeriesGenerator::LocalTimeList& theQueryDataTlist,
-							  const TS::TimeSeriesGenerator::LocalTimeList& theRequestedTList,
-							  const std::pair<float, std::string>& theCacheKey,
-							  const State& theState,
-							  const Engine::Querydata::Q& theQ,
-							  const NFmiPoint& theNearestPoint,
-							  int thePrecision,
-							  bool theLoadDataLevels,
-							  boost::optional<float> thePressure,
-							  boost::optional<float> theHeight,
-							  QueryLevelDataCache& theQueryLevelDataCache,
-							  std::vector<TS::TimeSeriesData>& theAggregatedData) const
+                             const std::string& theProducer,
+                             const TS::ParameterAndFunctions& theParamFunc,
+                             const Spine::TaggedLocation& theTLoc,
+                             const TS::TimeSeriesGenerator::LocalTimeList& theQueryDataTlist,
+                             const TS::TimeSeriesGenerator::LocalTimeList& theRequestedTList,
+                             const std::pair<float, std::string>& theCacheKey,
+                             const State& theState,
+                             const Engine::Querydata::Q& theQ,
+                             const NFmiPoint& theNearestPoint,
+                             int thePrecision,
+                             bool theLoadDataLevels,
+                             boost::optional<float> thePressure,
+                             boost::optional<float> theHeight,
+                             QueryLevelDataCache& theQueryLevelDataCache,
+                             std::vector<TS::TimeSeriesData>& theAggregatedData) const
 {
   try
-	{
-	  auto loc = theTLoc.loc;
+  {
+    auto loc = theTLoc.loc;
 
+    auto place = get_name_base(loc->name);
+    const auto& paramname = theParamFunc.parameter.name();
+    bool isWkt = false;
+    NFmiSvgPath svgPath;
+    loc = resolveLocation(theTLoc, theQuery, svgPath, isWkt);
+    const auto country = itsPlugin.itsEngines.geoEngine->countryName(loc->iso2, theQuery.language);
 
-	  auto place = get_name_base(loc->name);
-	  const auto& paramname = theParamFunc.parameter.name();
-	  bool isWkt = false;
-	  NFmiSvgPath svgPath;
-	  loc = resolveLocation(theTLoc, theQuery, svgPath, isWkt);
-	  const auto country = itsPlugin.itsEngines.geoEngine->countryName(loc->iso2, theQuery.language);
+    TS::TimeSeriesGroupPtr querydata_result;
 
-	  TS::TimeSeriesGroupPtr querydata_result;
-	  
-	  if (theQueryLevelDataCache.itsTimeSeriesGroups.find(theCacheKey) !=
-		  theQueryLevelDataCache.itsTimeSeriesGroups.end())
+    if (theQueryLevelDataCache.itsTimeSeriesGroups.find(theCacheKey) !=
+        theQueryLevelDataCache.itsTimeSeriesGroups.end())
+    {
+      querydata_result = theQueryLevelDataCache.itsTimeSeriesGroups[theCacheKey];
+    }
+    else
+    {
+      if (loc->type == Spine::Location::Path)
+      {
+        Spine::LocationList llist =
+            getLocationListForPath(theQuery, theTLoc, place, svgPath, theState, isWkt);
+
+        check_request_limit(
+            itsPlugin.itsConfig.requestLimits(), llist.size(), TS::RequestLimitMember::LOCATIONS);
+
+        querydata_result = getQEngineValuesForArea(theQuery,
+                                                   theProducer,
+                                                   theParamFunc,
+                                                   theTLoc,
+                                                   loc,
+                                                   theQueryDataTlist,
+                                                   theState,
+                                                   theQ,
+                                                   theNearestPoint,
+                                                   thePrecision,
+                                                   theLoadDataLevels,
+                                                   thePressure,
+                                                   theHeight,
+                                                   paramname,
+                                                   llist);
+      }
+      else if (theQ->isGrid() &&
+               (loc->type == Spine::Location::BoundingBox || loc->type == Spine::Location::Area ||
+                loc->type == Spine::Location::Place ||
+                loc->type == Spine::Location::CoordinatePoint))
+      {
+        Spine::LocationList llist = getLocationListForArea(theTLoc, loc, theQ, svgPath, isWkt);
+        check_request_limit(
+            itsPlugin.itsConfig.requestLimits(), llist.size(), TS::RequestLimitMember::LOCATIONS);
+
+        querydata_result = getQEngineValuesForArea(theQuery,
+                                                   theProducer,
+                                                   theParamFunc,
+                                                   theTLoc,
+                                                   loc,
+                                                   theQueryDataTlist,
+                                                   theState,
+                                                   theQ,
+                                                   theNearestPoint,
+                                                   thePrecision,
+                                                   theLoadDataLevels,
+                                                   thePressure,
+                                                   theHeight,
+                                                   paramname,
+                                                   llist);
+      }
+      if (!querydata_result->empty())
+      {
+        // if the value is not dependent on location inside area
+        // we just need to have the first one
+        if (!TS::parameter_is_arithmetic(theParamFunc.parameter))
         {
-          querydata_result = theQueryLevelDataCache.itsTimeSeriesGroups[theCacheKey];
+          auto dataIndependentValue = querydata_result->at(0);
+          querydata_result->clear();
+          querydata_result->push_back(dataIndependentValue);
         }
-	  else
-        {
-          if (loc->type == Spine::Location::Path)
-			{
-			  Spine::LocationList llist = getLocationListForPath(theQuery,
-																 theTLoc,
-																 place,
-																 svgPath,
-																 theState,
-																 isWkt);
 
-			  check_request_limit(itsPlugin.itsConfig.requestLimits(),
-								  llist.size(),
-								  TS::RequestLimitMember::LOCATIONS);
+        if (theParamFunc.parameter.name() == "x" || theParamFunc.parameter.name() == "y")
+          TS::transform_wgs84_coordinates(
+              theParamFunc.parameter.name(), theQuery.crs, *querydata_result);
 
-			  querydata_result = getQEngineValuesForArea(theQuery,
-														 theProducer,
-														 theParamFunc,
-														 theTLoc,
-														 loc,
-														 theQueryDataTlist,
-														 theState,
-														 theQ,
-														 theNearestPoint,
-														 thePrecision,
-														 theLoadDataLevels,
-														 thePressure,
-														 theHeight,
-														 paramname,
-														 llist);			  
-			}
-          else if (theQ->isGrid() &&
-                   (loc->type == Spine::Location::BoundingBox ||
-                    loc->type == Spine::Location::Area || loc->type == Spine::Location::Place ||
-                    loc->type == Spine::Location::CoordinatePoint))
-			{		  
-			  Spine::LocationList llist = getLocationListForArea(theTLoc,
-																 loc,
-																 theQ,
-																 svgPath,
-																 isWkt);
-			  check_request_limit(
-								  itsPlugin.itsConfig.requestLimits(), llist.size(), TS::RequestLimitMember::LOCATIONS);
+        theQueryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(theCacheKey, querydata_result));
+      }  // area handling
+    }
 
-			  querydata_result = getQEngineValuesForArea(theQuery,
-														 theProducer,
-														 theParamFunc,
-														 theTLoc,
-														 loc,
-														 theQueryDataTlist,
-														 theState,
-														 theQ,
-														 theNearestPoint,
-														 thePrecision,
-														 theLoadDataLevels,
-														 thePressure,
-														 theHeight,
-														 paramname,
-														 llist);			  
-			}
-		  if (!querydata_result->empty())
-			{
-
-
-			  // if the value is not dependent on location inside area
-			  // we just need to have the first one
-			  if (!TS::parameter_is_arithmetic(theParamFunc.parameter))
-				{
-				  auto dataIndependentValue = querydata_result->at(0);
-				  querydata_result->clear();
-				  querydata_result->push_back(dataIndependentValue);
-				}
-			  
-			  if (theParamFunc.parameter.name() == "x" || theParamFunc.parameter.name() == "y")
-				TS::transform_wgs84_coordinates(theParamFunc.parameter.name(), theQuery.crs, *querydata_result);
-			  
-			  theQueryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(theCacheKey, querydata_result));			  
-			}  // area handling
-		}
-
-	  if (!querydata_result->empty())
-		theAggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
-																						TS::aggregate(querydata_result, theParamFunc.functions), theRequestedTList)));
-	  
-	}
+    if (!querydata_result->empty())
+      theAggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
+          TS::aggregate(querydata_result, theParamFunc.functions), theRequestedTList)));
+  }
   catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
 }
 
-
-
 Engine::Querydata::Producer QEngineQuery::selectProducer(const Spine::Location& location,
-														 const Query& query,
-														 const AreaProducers& areaproducers) const
+                                                         const Query& query,
+                                                         const AreaProducers& areaproducers) const
 {
   try
   {
     // Allow querydata to use data specific max distances if the maxdistance option
     // was not given in the query string
 
-
     bool use_data_max_distance = !query.maxdistanceOptionGiven;
 
     if (areaproducers.empty())
     {
       return itsPlugin.itsEngines.qEngine->find(location.longitude,
-												location.latitude,
-												query.maxdistance_kilometers(),
-												use_data_max_distance,
-												query.leveltype);
+                                                location.latitude,
+                                                query.maxdistance_kilometers(),
+                                                use_data_max_distance,
+                                                query.leveltype);
     }
-	
+
     // Allow listed producers only
     return itsPlugin.itsEngines.qEngine->find(areaproducers,
-											  location.longitude,
-											  location.latitude,
-											  query.maxdistance_kilometers(),
-											  use_data_max_distance,
-											  query.leveltype);
+                                              location.longitude,
+                                              location.latitude,
+                                              query.maxdistance_kilometers(),
+                                              use_data_max_distance,
+                                              query.leveltype);
   }
   catch (...)
-	{
+  {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
 Spine::LocationPtr QEngineQuery::resolveLocation(const Spine::TaggedLocation& tloc,
-												 const Query& query,
-												 NFmiSvgPath& svgPath,
-												 bool& isWkt) const
+                                                 const Query& query,
+                                                 NFmiSvgPath& svgPath,
+                                                 bool& isWkt) const
 {
   try
   {
@@ -1139,7 +1122,11 @@ Spine::LocationPtr QEngineQuery::resolveLocation(const Spine::TaggedLocation& tl
     }
     else if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
     {
-      loc = get_location_for_area(tloc, itsPlugin.itsGeometryStorage, query.language, *itsPlugin.itsEngines.geoEngine, &svgPath);
+      loc = get_location_for_area(tloc,
+                                  itsPlugin.itsGeometryStorage,
+                                  query.language,
+                                  *itsPlugin.itsEngines.geoEngine,
+                                  &svgPath);
     }
     else if (loc->type == Spine::Location::BoundingBox)
     {
@@ -1153,45 +1140,48 @@ Spine::LocationPtr QEngineQuery::resolveLocation(const Spine::TaggedLocation& tl
       loc.reset(tmp.release());
     }
 
-	return loc;
- }
+    return loc;
+  }
   catch (...)
-	{
+  {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
-TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateTList(const Query& query,
-																   const std::string& producer,
-																   const ProducerDataPeriod& producerDataPeriod) const
+TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateTList(
+    const Query& query,
+    const std::string& producer,
+    const ProducerDataPeriod& producerDataPeriod) const
 {
   try
-	{
-      auto tz = itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
-      auto tlist = *itsPlugin.itsTimeSeriesCache->generate(query.toptions, tz);
-      bool isClimatologyProducer =
-          (producer.empty() ? false : itsPlugin.itsEngines.qEngine->getProducerConfig(producer).isclimatology);
+  {
+    auto tz = itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
+    auto tlist = *itsPlugin.itsTimeSeriesCache->generate(query.toptions, tz);
+    bool isClimatologyProducer =
+        (producer.empty()
+             ? false
+             : itsPlugin.itsEngines.qEngine->getProducerConfig(producer).isclimatology);
 
-      // remove timesteps that are later than last timestep in query data file
-      // except from climatology
-      if (!tlist.empty() && !isClimatologyProducer)
+    // remove timesteps that are later than last timestep in query data file
+    // except from climatology
+    if (!tlist.empty() && !isClimatologyProducer)
+    {
+      boost::local_time::local_date_time data_period_endtime = producerDataPeriod.getLocalEndTime(
+          producer, query.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones());
+
+      while (!tlist.empty() && !data_period_endtime.is_not_a_date_time() &&
+             *(--tlist.end()) > data_period_endtime)
       {
-        boost::local_time::local_date_time data_period_endtime =
-            producerDataPeriod.getLocalEndTime(producer, query.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones());
-
-        while (!tlist.empty() && !data_period_endtime.is_not_a_date_time() &&
-               *(--tlist.end()) > data_period_endtime)
-        {
-          tlist.pop_back();
-        }
+        tlist.pop_back();
       }
+    }
 
-	  return tlist;
-	}
+    return tlist;
+  }
   catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
 }
 
 }  // namespace TimeSeries

@@ -10,7 +10,6 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-
 struct ObsQueryParams
 {
   ObsQueryParams(const Spine::HTTP::Request& req);
@@ -33,4 +32,3 @@ struct ObsQueryParams
 }  // namespace TimeSeries
 }  // namespace Plugin
 }  // namespace SmartMet
-

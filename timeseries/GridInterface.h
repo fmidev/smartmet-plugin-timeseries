@@ -8,13 +8,13 @@
 
 #include "Plugin.h"
 
+#include "ProducerDataPeriod.h"
 #include <engines/grid/Engine.h>
 #include <grid-content/queryServer/definition/QueryStreamer.h>
 #include <grid-files/common/AdditionalParameters.h>
 #include <grid-files/grid/Typedefs.h>
 #include <macgyver/TimeZones.h>
 #include <timeseries/TimeSeriesInclude.h>
-#include "ProducerDataPeriod.h"
 
 namespace SmartMet
 {

@@ -1,9 +1,9 @@
 #include "LocationTools.h"
 #include "LonLatDistance.h"
+#include <grid-files/common/GraphFunctions.h>
 #include <macgyver/Exception.h>
 #include <newbase/NFmiSvgTools.h>
 #include <timeseries/ParameterKeywords.h>
-#include <grid-files/common/GraphFunctions.h>
 
 namespace SmartMet
 {
@@ -54,7 +54,7 @@ const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
   const OGRGeometry* ret = nullptr;
 
   try
-  {   
+  {
     Spine::LocationPtr loc = tloc.loc;
     std::string place = get_name_base(loc->name);
     boost::algorithm::to_lower(place, stdlocale);
@@ -76,10 +76,10 @@ const OGRGeometry* get_ogr_geometry(const Spine::TaggedLocation& tloc,
         ret = geometryStorage.getOGRGeometry(place, wkbMultiLineString);
     }
     else if (loc->type == Spine::Location::Wkt)
-	  {
-		std::unique_ptr<OGRGeometry> ret = get_ogr_geometry(place, loc->radius);
-		return ret.release();
-	  }
+    {
+      std::unique_ptr<OGRGeometry> ret = get_ogr_geometry(place, loc->radius);
+      return ret.release();
+    }
   }
   catch (...)
   {
@@ -561,10 +561,10 @@ std::unique_ptr<Spine::Location> get_bbox_location(const std::string& bbox_strin
 }
 
 Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
-										 const Engine::Gis::GeometryStorage& geometryStorage,
-										 const std::string& language,
-										 const Engine::Geonames::Engine& geoengine,
-										 NFmiSvgPath* svgPath /*= nullptr*/)
+                                         const Engine::Gis::GeometryStorage& geometryStorage,
+                                         const std::string& language,
+                                         const Engine::Geonames::Engine& geoengine,
+                                         NFmiSvgPath* svgPath /*= nullptr*/)
 {
   try
   {
@@ -613,8 +613,7 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
 
     double lon = (right + left) / 2.0;
     double lat = (top + bottom) / 2.0;
-    std::unique_ptr<Spine::Location> tmp =
-        get_coordinate_location(lon, lat, language, geoengine);
+    std::unique_ptr<Spine::Location> tmp = get_coordinate_location(lon, lat, language, geoengine);
 
     tmp->name = tloc.tag;
     tmp->type = tloc.loc->type;
@@ -628,13 +627,12 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
   }
 }
 
-
 Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
-										 int radius,
-										 const Engine::Gis::GeometryStorage& geometryStorage,
-										 const std::string& language,
-										 const Engine::Geonames::Engine& geoengine,
-										 NFmiSvgPath* svgPath /*= nullptr*/)
+                                         int radius,
+                                         const Engine::Gis::GeometryStorage& geometryStorage,
+                                         const std::string& language,
+                                         const Engine::Geonames::Engine& geoengine,
+                                         NFmiSvgPath* svgPath /*= nullptr*/)
 {
   try
   {
@@ -750,7 +748,6 @@ Spine::TaggedLocationList get_locations_inside_geometry(const Spine::LocationLis
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
-
 
 }  // namespace TimeSeries
 }  // namespace Plugin

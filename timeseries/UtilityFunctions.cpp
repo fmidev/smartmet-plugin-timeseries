@@ -2,10 +2,10 @@
 #include "State.h"
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <timeseries/ParameterKeywords.h>
-#include <timeseries/ParameterTools.h>
 #include <engines/observation/ExternalAndMobileProducerId.h>
 #include <engines/observation/Keywords.h>
+#include <timeseries/ParameterKeywords.h>
+#include <timeseries/ParameterTools.h>
 
 namespace SmartMet
 {
@@ -15,7 +15,6 @@ namespace TimeSeries
 {
 namespace UtilityFunctions
 {
-
 bool is_special_parameter(const std::string& paramname)
 {
   if (paramname == ORIGINTIME_PARAM || paramname == LEVEL_PARAM)

@@ -1,13 +1,13 @@
 #include "ObsEngineQuery.h"
-#include "State.h"
 #include "LocationTools.h"
-#include "UtilityFunctions.h"
 #include "PostProcessing.h"
-#include <timeseries/ParameterKeywords.h>
-#include <timeseries/ParameterTools.h>
+#include "State.h"
+#include "UtilityFunctions.h"
 #include <macgyver/Exception.h>
 #include <macgyver/TimeParser.h>
 #include <newbase/NFmiSvgTools.h>
+#include <timeseries/ParameterKeywords.h>
+#include <timeseries/ParameterTools.h>
 #include <timeseries/TimeSeriesInclude.h>
 
 namespace SmartMet
@@ -27,12 +27,12 @@ TS::TimeSeriesGenerator::LocalTimeList get_timesteps(const TS::TimeSeries ts)
 {
   try
   {
-	TS::TimeSeriesGenerator::LocalTimeList timesteps;
-	  
-	for (const TS::TimedValue& tv : ts)
-	  timesteps.push_back(tv.time);
-	
-	return timesteps;
+    TS::TimeSeriesGenerator::LocalTimeList timesteps;
+
+    for (const TS::TimedValue& tv : ts)
+      timesteps.push_back(tv.time);
+
+    return timesteps;
   }
   catch (...)
   {
@@ -40,18 +40,19 @@ TS::TimeSeriesGenerator::LocalTimeList get_timesteps(const TS::TimeSeries ts)
   }
 }
 
-TS::TimeSeries generate_timeseries(const State& state,
-								   const std::vector<boost::local_time::local_date_time>& timestep_vector,
-								   const TS::Value& value)
+TS::TimeSeries generate_timeseries(
+    const State& state,
+    const std::vector<boost::local_time::local_date_time>& timestep_vector,
+    const TS::Value& value)
 {
   try
   {
-	TS::TimeSeries timeseries(state.getLocalTimePool());
+    TS::TimeSeries timeseries(state.getLocalTimePool());
 
-	for (const auto& timestep : timestep_vector)
-	  timeseries.emplace_back(TS::TimedValue(timestep, value));
+    for (const auto& timestep : timestep_vector)
+      timeseries.emplace_back(TS::TimedValue(timestep, value));
 
-	return timeseries;
+    return timeseries;
   }
   catch (...)
   {
@@ -62,21 +63,21 @@ TS::TimeSeries generate_timeseries(const State& state,
 bool is_wkt_point(const Spine::LocationPtr& loc)
 {
   try
-	{
-	  if(loc->type == Spine::Location::Wkt)
-		{
-		  auto geom = get_ogr_geometry(loc->name, loc->radius);
+  {
+    if (loc->type == Spine::Location::Wkt)
+    {
+      auto geom = get_ogr_geometry(loc->name, loc->radius);
 
-		  if(!geom)
-			return false;
+      if (!geom)
+        return false;
 
-		  auto type = geom->getGeometryType();
-	
-		  return (type == wkbPoint);
-		}
+      auto type = geom->getGeometryType();
 
-		return false;
-	}
+      return (type == wkbPoint);
+    }
+
+    return false;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
@@ -84,38 +85,36 @@ bool is_wkt_point(const Spine::LocationPtr& loc)
 }
 
 TS::TimeSeriesGenerator::LocalTimeList get_all_timesteps(const Query& query,
-														 const TS::TimeSeries& ts,
-														 const boost::local_time::time_zone_ptr& tz)
+                                                         const TS::TimeSeries& ts,
+                                                         const boost::local_time::time_zone_ptr& tz)
 {
   try
   {
-	TS::TimeSeriesGenerator::LocalTimeList ret;
+    TS::TimeSeriesGenerator::LocalTimeList ret;
 
-	boost::posix_time::ptime startTimeAsUTC = query.toptions.startTime;
-	boost::posix_time::ptime endTimeAsUTC = query.toptions.endTime;
-	if (!query.toptions.startTimeUTC)
-	  {
-		boost::local_time::local_date_time ldt = Fmi::TimeParser::make_time(query.toptions.startTime.date(),
-																			query.toptions.startTime.time_of_day(),
-																			tz);
-		startTimeAsUTC = ldt.utc_time();
-	  }
-	if (!query.toptions.endTimeUTC)
-	  {
-		boost::local_time::local_date_time ldt = Fmi::TimeParser::make_time(query.toptions.endTime.date(),
-																			query.toptions.endTime.time_of_day(),
-																			tz);
-		endTimeAsUTC = ldt.utc_time();
-	  }
-	
-	for (const TS::TimedValue& tv : ts)
-	  {
-		// Do not show timesteps beyond starttime/endtime
-		if (tv.time.utc_time() >= startTimeAsUTC && tv.time.utc_time() <= endTimeAsUTC)
-		  ret.push_back(tv.time);
-	  }
+    boost::posix_time::ptime startTimeAsUTC = query.toptions.startTime;
+    boost::posix_time::ptime endTimeAsUTC = query.toptions.endTime;
+    if (!query.toptions.startTimeUTC)
+    {
+      boost::local_time::local_date_time ldt = Fmi::TimeParser::make_time(
+          query.toptions.startTime.date(), query.toptions.startTime.time_of_day(), tz);
+      startTimeAsUTC = ldt.utc_time();
+    }
+    if (!query.toptions.endTimeUTC)
+    {
+      boost::local_time::local_date_time ldt = Fmi::TimeParser::make_time(
+          query.toptions.endTime.date(), query.toptions.endTime.time_of_day(), tz);
+      endTimeAsUTC = ldt.utc_time();
+    }
 
-	return ret;
+    for (const TS::TimedValue& tv : ts)
+    {
+      // Do not show timesteps beyond starttime/endtime
+      if (tv.time.utc_time() >= startTimeAsUTC && tv.time.utc_time() <= endTimeAsUTC)
+        ret.push_back(tv.time);
+    }
+
+    return ret;
   }
   catch (...)
   {
@@ -124,31 +123,31 @@ TS::TimeSeriesGenerator::LocalTimeList get_all_timesteps(const Query& query,
 }
 
 Spine::LocationPtr get_loc(const Query& query,
-						   const State& state,
-						   const std::string& producer,
-						   int fmisid)
+                           const State& state,
+                           const std::string& producer,
+                           int fmisid)
 {
   try
   {
-	Spine::LocationPtr loc;
+    Spine::LocationPtr loc;
 
-	if (!UtilityFunctions::is_flash_or_mobile_producer(producer))
+    if (!UtilityFunctions::is_flash_or_mobile_producer(producer))
+    {
+      loc = get_location(state.getGeoEngine(), fmisid, FMISID_PARAM, query.language);
+      if (!loc)
       {
-        loc = get_location(state.getGeoEngine(), fmisid, FMISID_PARAM, query.language);
-        if (!loc)
-		  {
-          // Most likely an old station not known to geoengine. The result will not
-          // contain name, lon or lat. Use stationname, stationlon, stationlat instead.
-          loc = boost::make_shared<Spine::Location>(0, 0, "", query.timezone);
-        }
+        // Most likely an old station not known to geoengine. The result will not
+        // contain name, lon or lat. Use stationname, stationlon, stationlat instead.
+        loc = boost::make_shared<Spine::Location>(0, 0, "", query.timezone);
       }
-      else
-      {
-        Spine::Location location(0, 0, "", query.timezone);
-        loc = boost::make_shared<Spine::Location>(location);
-      }
+    }
+    else
+    {
+      Spine::Location location(0, 0, "", query.timezone);
+      loc = boost::make_shared<Spine::Location>(location);
+    }
 
-	return loc;
+    return loc;
   }
   catch (...)
   {
@@ -160,13 +159,12 @@ std::vector<boost::local_time::local_date_time> get_actual_timesteps(const TS::T
 {
   try
   {
-	std::vector<boost::local_time::local_date_time> timestep_vector;
+    std::vector<boost::local_time::local_date_time> timestep_vector;
 
-	for (const auto& value : ts)
-	  timestep_vector.push_back(value.time);
+    for (const auto& value : ts)
+      timestep_vector.push_back(value.time);
 
-	return timestep_vector;
-
+    return timestep_vector;
   }
   catch (...)
   {
@@ -175,11 +173,11 @@ std::vector<boost::local_time::local_date_time> get_actual_timesteps(const TS::T
 }
 
 void resolve_parameter_settings(const ObsParameters& obsParameters,
-								const Query& query,
-								const std::string& producer,
-								Engine::Observation::Settings& settings,
-								unsigned int& aggregationIntervalBehind,
-								unsigned int& aggregationIntervalAhead)
+                                const Query& query,
+                                const std::string& producer,
+                                Engine::Observation::Settings& settings,
+                                unsigned int& aggregationIntervalBehind,
+                                unsigned int& aggregationIntervalAhead)
 {
   try
   {
@@ -202,7 +200,8 @@ void resolve_parameter_settings(const ObsParameters& obsParameters,
       // max_t(temperature))
       // location parameters are handled in timeseries plugin
       if (obsparam.duplicate ||
-          (TS::is_location_parameter(pname) && !UtilityFunctions::is_flash_or_mobile_producer(producer)) ||
+          (TS::is_location_parameter(pname) &&
+           !UtilityFunctions::is_flash_or_mobile_producer(producer)) ||
           TS::is_time_parameter(pname))
         continue;
 
@@ -230,13 +229,13 @@ void resolve_parameter_settings(const ObsParameters& obsParameters,
 }
 
 void resolve_time_settings(const std::string& producer,
-						   const ProducerDataPeriod& producerDataPeriod,
-						   const boost::posix_time::ptime& now,
-						   Query& query,
-						   unsigned int aggregationIntervalBehind,
-						   unsigned int aggregationIntervalAhead,
-						   Engine::Observation::Settings& settings,
-						   const Fmi::TimeZones& timezones)
+                           const ProducerDataPeriod& producerDataPeriod,
+                           const boost::posix_time::ptime& now,
+                           Query& query,
+                           unsigned int aggregationIntervalBehind,
+                           unsigned int aggregationIntervalAhead,
+                           Engine::Observation::Settings& settings,
+                           const Fmi::TimeZones& timezones)
 {
   try
   {
@@ -268,19 +267,16 @@ void resolve_time_settings(const std::string& producer,
     {
       if (query.toptions.startTimeUTC)
         query.toptions.startTime =
-            producerDataPeriod.getLocalStartTime(producer, query.timezone, timezones)
-                .utc_time();
+            producerDataPeriod.getLocalStartTime(producer, query.timezone, timezones).utc_time();
       else
         query.toptions.startTime =
-            producerDataPeriod.getLocalStartTime(producer, query.timezone, timezones)
-                .local_time();
+            producerDataPeriod.getLocalStartTime(producer, query.timezone, timezones).local_time();
       if (query.toptions.startTimeUTC)
         query.toptions.endTime =
             producerDataPeriod.getLocalEndTime(producer, query.timezone, timezones).utc_time();
       else
         query.toptions.endTime =
-            producerDataPeriod.getLocalEndTime(producer, query.timezone, timezones)
-                .local_time();
+            producerDataPeriod.getLocalEndTime(producer, query.timezone, timezones).local_time();
     }
 
     if (query.starttimeOptionGiven && !query.endtimeOptionGiven)
@@ -330,19 +326,17 @@ void resolve_time_settings(const std::string& producer,
     throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
-} // anonymous
+}  // namespace
 
-ObsEngineQuery::ObsEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin)
-{
-}
+ObsEngineQuery::ObsEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin) {}
 
 #ifndef WITHOUT_OBSERVATION
 void ObsEngineQuery::processObsEngineQuery(const State& state,
-										   Query& query,
-										   TS::OutputData& outputData,
-										   const AreaProducers& areaproducers,
-										   const ProducerDataPeriod& producerDataPeriod,
-										   const ObsParameters& obsParameters) const
+                                           Query& query,
+                                           TS::OutputData& outputData,
+                                           const AreaProducers& areaproducers,
+                                           const ProducerDataPeriod& producerDataPeriod,
+                                           const ObsParameters& obsParameters) const
 {
   try
   {
@@ -398,163 +392,164 @@ void ObsEngineQuery::processObsEngineQuery(const State& state,
   }
 }
 
-TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(const State& state,
-																	 const std::string& producer,
-																	 const Spine::LocationPtr& loc,
-																	 const Query& query,
-																	 const ObsParameters& obsParameters,
-																	 const TS::TimeSeriesVectorPtr& observation_result,
-																	 const std::vector<boost::local_time::local_date_time>& timestep_vector,
-																	 std::map<std::string, unsigned int>& parameterResultIndexes) const
+TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
+    const State& state,
+    const std::string& producer,
+    const Spine::LocationPtr& loc,
+    const Query& query,
+    const ObsParameters& obsParameters,
+    const TS::TimeSeriesVectorPtr& observation_result,
+    const std::vector<boost::local_time::local_date_time>& timestep_vector,
+    std::map<std::string, unsigned int>& parameterResultIndexes) const
 {
   try
-	{
-	  TS::TimeSeriesVectorPtr ret(new TS::TimeSeriesVector());
-      unsigned int obs_result_field_index = 0;
-	  TS::Value missing_value = TS::None();
-	  
-	  // Iterate parameters and store values for all parameters
-      // into ret data structure
-      for (unsigned int i = 0; i < obsParameters.size(); i++)
+  {
+    TS::TimeSeriesVectorPtr ret(new TS::TimeSeriesVector());
+    unsigned int obs_result_field_index = 0;
+    TS::Value missing_value = TS::None();
+
+    // Iterate parameters and store values for all parameters
+    // into ret data structure
+    for (unsigned int i = 0; i < obsParameters.size(); i++)
+    {
+      const ObsParameter& obsParam = obsParameters.at(i);
+
+      std::string paramname(obsParam.param.name());
+
+      if (TS::is_location_parameter(paramname) &&
+          !UtilityFunctions::is_flash_or_mobile_producer(producer))
       {
-        const ObsParameter& obsParam = obsParameters.at(i);
-
-        std::string paramname(obsParam.param.name());
-
-        if (TS::is_location_parameter(paramname) && !UtilityFunctions::is_flash_or_mobile_producer(producer))
-        {
-          // add data for location field
-		  TS::Value value = TS::location_parameter(loc,
-												   obsParam.param.name(),
-												   query.valueformatter,
-												   query.timezone,
-												   query.precisions[i],
-												   query.crs);
-		  auto timeseries = generate_timeseries(state, timestep_vector, value);
-          ret->emplace_back(timeseries);
-          parameterResultIndexes.insert(std::make_pair(paramname, ret->size() - 1));
-        }
-        else if (TS::is_time_parameter(paramname))
-        {
-          // add data for time fields
-          Spine::Location location(0, 0, "", query.timezone);
-          TS::TimeSeries timeseries(state.getLocalTimePool());
-          for (const auto& timestep : timestep_vector)
-          {
-            TS::Value value = TS::time_parameter(paramname,
-                                                 timestep,
-                                                 state.getTime(),
-                                                 *loc,
+        // add data for location field
+        TS::Value value = TS::location_parameter(loc,
+                                                 obsParam.param.name(),
+                                                 query.valueformatter,
                                                  query.timezone,
-                                                 itsPlugin.itsEngines.geoEngine->getTimeZones(),
-                                                 query.outlocale,
-                                                 *query.timeformatter,
-                                                 query.timestring);
-            timeseries.emplace_back(TS::TimedValue(timestep, value));
-          }
-          ret->emplace_back(timeseries);
-          parameterResultIndexes.insert(std::make_pair(paramname, ret->size() - 1));
-        }
-        else if (!obsParameters[i].duplicate)
+                                                 query.precisions[i],
+                                                 query.crs);
+        auto timeseries = generate_timeseries(state, timestep_vector, value);
+        ret->emplace_back(timeseries);
+        parameterResultIndexes.insert(std::make_pair(paramname, ret->size() - 1));
+      }
+      else if (TS::is_time_parameter(paramname))
+      {
+        // add data for time fields
+        Spine::Location location(0, 0, "", query.timezone);
+        TS::TimeSeries timeseries(state.getLocalTimePool());
+        for (const auto& timestep : timestep_vector)
         {
-          // add data fields fetched from observation
-          auto result = *observation_result;
-          if (result[obs_result_field_index].empty())
-          {
-            continue;
-          }
-          auto result_at_index = result[obs_result_field_index];
-
-          // If time independend special parameter contains missing values in some timesteps,
-          // replace them with existing values to keep aggregation working
-
-          if (TS::is_location_parameter(paramname))
-          {
-            TS::Value actual_value = missing_value;
-            bool missing_values_exists = false;
-            for (const auto& item : result_at_index)
-            {
-              if (item.value == missing_value)
-                missing_values_exists = true;
-              else
-                actual_value = item.value;
-              if (actual_value != missing_value && missing_values_exists)
-                break;
-            }
-            if (actual_value != missing_value && missing_values_exists)
-            {
-              for (auto& item : result_at_index)
-                if (item.value == missing_value)
-                  item.value = actual_value;
-            }
-          }
-
-          ret->push_back(result_at_index);
-          std::string pname_plus_snumber = TS::get_parameter_id(obsParameters[i].param);
-          parameterResultIndexes.insert(
-              std::make_pair(pname_plus_snumber, ret->size() - 1));
-          obs_result_field_index++;
+          TS::Value value = TS::time_parameter(paramname,
+                                               timestep,
+                                               state.getTime(),
+                                               *loc,
+                                               query.timezone,
+                                               itsPlugin.itsEngines.geoEngine->getTimeZones(),
+                                               query.outlocale,
+                                               *query.timeformatter,
+                                               query.timestring);
+          timeseries.emplace_back(TS::TimedValue(timestep, value));
         }
-	  }
-	  return ret;
+        ret->emplace_back(timeseries);
+        parameterResultIndexes.insert(std::make_pair(paramname, ret->size() - 1));
+      }
+      else if (!obsParameters[i].duplicate)
+      {
+        // add data fields fetched from observation
+        auto result = *observation_result;
+        if (result[obs_result_field_index].empty())
+        {
+          continue;
+        }
+        auto result_at_index = result[obs_result_field_index];
+
+        // If time independend special parameter contains missing values in some timesteps,
+        // replace them with existing values to keep aggregation working
+
+        if (TS::is_location_parameter(paramname))
+        {
+          TS::Value actual_value = missing_value;
+          bool missing_values_exists = false;
+          for (const auto& item : result_at_index)
+          {
+            if (item.value == missing_value)
+              missing_values_exists = true;
+            else
+              actual_value = item.value;
+            if (actual_value != missing_value && missing_values_exists)
+              break;
+          }
+          if (actual_value != missing_value && missing_values_exists)
+          {
+            for (auto& item : result_at_index)
+              if (item.value == missing_value)
+                item.value = actual_value;
+          }
+        }
+
+        ret->push_back(result_at_index);
+        std::string pname_plus_snumber = TS::get_parameter_id(obsParameters[i].param);
+        parameterResultIndexes.insert(std::make_pair(pname_plus_snumber, ret->size() - 1));
+        obs_result_field_index++;
+      }
     }
+    return ret;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 
-TS::TimeSeriesVectorPtr ObsEngineQuery::doAggregationForPlaces(const State& state,
-															   const ObsParameters& obsParameters,
-															   const TS::TimeSeriesVectorPtr& observation_result,
-															   std::map<std::string, unsigned int>& parameterResultIndexes) const
+TS::TimeSeriesVectorPtr ObsEngineQuery::doAggregationForPlaces(
+    const State& state,
+    const ObsParameters& obsParameters,
+    const TS::TimeSeriesVectorPtr& observation_result,
+    std::map<std::string, unsigned int>& parameterResultIndexes) const
 {
   try
-	{
-	  TS::TimeSeriesVectorPtr aggregated_observation_result(new TS::TimeSeriesVector());
-	  // iterate parameters and do aggregation
-	  for (const auto& obsParam : obsParameters)
-		{
-		  std::string paramname = obsParam.param.name();
-		  std::string pname_plus_snumber = TS::get_parameter_id(obsParam.param);
-		  if (parameterResultIndexes.find(pname_plus_snumber) != parameterResultIndexes.end())
-			paramname = pname_plus_snumber;
-		  else if (parameterResultIndexes.find(paramname) == parameterResultIndexes.end())
-			continue;
-		  
-		  unsigned int resultIndex = parameterResultIndexes.at(paramname);
-		  TS::TimeSeries ts = (*observation_result)[resultIndex];
-		  TS::DataFunctions pfunc = obsParam.functions;
-		  TS::TimeSeriesPtr tsptr;
-		  // If inner function exists aggregation happens
-		  if (pfunc.innerFunction.exists())
-			{
-			  tsptr = TS::Aggregator::aggregate(ts, pfunc);
-			  if (tsptr->empty())
-				continue;
-			}
-		  else
-			{
-			  tsptr = boost::make_shared<TS::TimeSeries>(state.getLocalTimePool());
-			  *tsptr = ts;
-			}
-		  aggregated_observation_result->push_back(*tsptr);
-		}
-	  return aggregated_observation_result;
+  {
+    TS::TimeSeriesVectorPtr aggregated_observation_result(new TS::TimeSeriesVector());
+    // iterate parameters and do aggregation
+    for (const auto& obsParam : obsParameters)
+    {
+      std::string paramname = obsParam.param.name();
+      std::string pname_plus_snumber = TS::get_parameter_id(obsParam.param);
+      if (parameterResultIndexes.find(pname_plus_snumber) != parameterResultIndexes.end())
+        paramname = pname_plus_snumber;
+      else if (parameterResultIndexes.find(paramname) == parameterResultIndexes.end())
+        continue;
+
+      unsigned int resultIndex = parameterResultIndexes.at(paramname);
+      TS::TimeSeries ts = (*observation_result)[resultIndex];
+      TS::DataFunctions pfunc = obsParam.functions;
+      TS::TimeSeriesPtr tsptr;
+      // If inner function exists aggregation happens
+      if (pfunc.innerFunction.exists())
+      {
+        tsptr = TS::Aggregator::aggregate(ts, pfunc);
+        if (tsptr->empty())
+          continue;
+      }
+      else
+      {
+        tsptr = boost::make_shared<TS::TimeSeries>(state.getLocalTimePool());
+        *tsptr = ts;
+      }
+      aggregated_observation_result->push_back(*tsptr);
     }
+    return aggregated_observation_result;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
-
 }
 
 void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
-												   const std::string& producer,												   
-												   const ObsParameters& obsParameterss,
-												   Engine::Observation::Settings& settings,
-												   Query& query,
-												   TS::OutputData& outputData) const
+                                                   const std::string& producer,
+                                                   const ObsParameters& obsParameterss,
+                                                   Engine::Observation::Settings& settings,
+                                                   Query& query,
+                                                   TS::OutputData& outputData) const
 {
   try
   {
@@ -602,14 +597,13 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       tlist = itsPlugin.itsTimeSeriesCache->generate(query.toptions, tz);
 
     TS::TimeSeriesByLocation observation_result_by_location =
-	  PostProcessing::get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
+        PostProcessing::get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
 
-	// If producer is syke or flash accept all timesteps
-	bool acceptAllTimesteps = (query.toptions.all() || 
-							   UtilityFunctions::is_flash_producer(producer) || 
-							   UtilityFunctions::is_mobile_producer(producer) || 
-							   producer == SYKE_PRODUCER);
-	
+    // If producer is syke or flash accept all timesteps
+    bool acceptAllTimesteps =
+        (query.toptions.all() || UtilityFunctions::is_flash_producer(producer) ||
+         UtilityFunctions::is_mobile_producer(producer) || producer == SYKE_PRODUCER);
+
     // iterate locations
     for (const auto& observation_result_location : observation_result_by_location)
     {
@@ -619,23 +613,22 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       // Get location
       Spine::LocationPtr loc = get_loc(query, state, producer, fmisid);
       // Actual timesteps
-      std::vector<boost::local_time::local_date_time> timestep_vector = get_actual_timesteps(observation_result->at(0));
+      std::vector<boost::local_time::local_date_time> timestep_vector =
+          get_actual_timesteps(observation_result->at(0));
 
       std::map<std::string, unsigned int> parameterResultIndexes;
 
-	  observation_result = handleObsParametersForPlaces(state,
-														producer,
-														loc,
-														query,
-														obsParameters,
-														observation_result,
-														timestep_vector,
-														parameterResultIndexes);
+      observation_result = handleObsParametersForPlaces(state,
+                                                        producer,
+                                                        loc,
+                                                        query,
+                                                        obsParameters,
+                                                        observation_result,
+                                                        timestep_vector,
+                                                        parameterResultIndexes);
 
-	  auto aggregated_observation_result = doAggregationForPlaces(state,
-																  obsParameters,
-																  observation_result,
-																  parameterResultIndexes);
+      auto aggregated_observation_result =
+          doAggregationForPlaces(state, obsParameters, observation_result, parameterResultIndexes);
 
       if (aggregated_observation_result->empty())
       {
@@ -651,7 +644,7 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
 
       if (acceptAllTimesteps)
       {
-		auto aggtimes = get_all_timesteps(query, aggregated_observation_result->at(0), tz);
+        auto aggtimes = get_all_timesteps(query, aggregated_observation_result->at(0), tz);
 
         // store observation data
         PostProcessing::store_data(
@@ -676,63 +669,62 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
 }
 
 void ObsEngineQuery::handleSpecialParameter(const ObsParameter& obsparam,
-											const std::string& areaName,
-											TS::TimeSeriesGroupPtr& tsg) const
+                                            const std::string& areaName,
+                                            TS::TimeSeriesGroupPtr& tsg) const
 {
   try
   {
-	// value of these special fields is different in different locations,
-	if (obsparam.param.name() != STATIONNAME_PARAM &&
-		obsparam.param.name() != STATION_NAME_PARAM && obsparam.param.name() != LON_PARAM &&
-		obsparam.param.name() != LAT_PARAM && obsparam.param.name() != LATLON_PARAM &&
-		obsparam.param.name() != LONLAT_PARAM && obsparam.param.name() != PLACE_PARAM &&
-		obsparam.param.name() != STATIONLON_PARAM &&
-		obsparam.param.name() != STATIONLAT_PARAM &&
-		obsparam.param.name() != STATIONLONGITUDE_PARAM &&
-		obsparam.param.name() != STATIONLATITUDE_PARAM &&
-		obsparam.param.name() != STATION_ELEVATION_PARAM &&
-		obsparam.param.name() != STATIONARY_PARAM &&
-		// obsparam.param.name() != DISTANCE_PARAM &&
-		// obsparam.param.name() != DIRECTION_PARAM &&
-		obsparam.param.name() != FMISID_PARAM && obsparam.param.name() != WMO_PARAM &&
-		obsparam.param.name() != GEOID_PARAM && obsparam.param.name() != LPNN_PARAM &&
-		obsparam.param.name() != RWSID_PARAM && obsparam.param.name() != SENSOR_NO_PARAM &&
-		obsparam.param.name() != LONGITUDE_PARAM && obsparam.param.name() != LATITUDE_PARAM)
-	  {
-		// handle possible empty fields to avoid spaces in
-		// the beginning and end of output vector
-		for (unsigned int k = 1; k < tsg->size(); k++)
-          {
-            TS::LonLatTimeSeries& llts = tsg->at(k);
-            TS::TimeSeries& ts = llts.timeseries;
-            TS::LonLatTimeSeries& lltsAt0 = tsg->at(0);
-            TS::TimeSeries& tsAt0 = lltsAt0.timeseries;
-			
-            for (unsigned int j = 0; j < ts.size(); j++)
-			  {
-				std::stringstream ss_val0;
-				ss_val0 << tsAt0[j].value;
-				std::stringstream ss_val;
-				ss_val << ts[j].value;
-				
-				if (ss_val0.str().empty() && !ss_val.str().empty())
-				  tsAt0[j].value = ts[j].value;
-			  }
-          }
-		
-		// delete all but first timeseries for parameters that are not location dependent,
-		// like time
-		tsg->erase(tsg->begin() + 1, tsg->end());
-		
-		// area name is replaced with the name given in URL
-		if (obsparam.param.name() == NAME_PARAM)
-          {
-            TS::LonLatTimeSeries& llts = tsg->at(0);
-            TS::TimeSeries& ts = llts.timeseries;
-            for (TS::TimedValue& tv : ts)
-              tv.value = areaName;
-          }
-	  }
+    // value of these special fields is different in different locations,
+    if (obsparam.param.name() != STATIONNAME_PARAM && obsparam.param.name() != STATION_NAME_PARAM &&
+        obsparam.param.name() != LON_PARAM && obsparam.param.name() != LAT_PARAM &&
+        obsparam.param.name() != LATLON_PARAM && obsparam.param.name() != LONLAT_PARAM &&
+        obsparam.param.name() != PLACE_PARAM && obsparam.param.name() != STATIONLON_PARAM &&
+        obsparam.param.name() != STATIONLAT_PARAM &&
+        obsparam.param.name() != STATIONLONGITUDE_PARAM &&
+        obsparam.param.name() != STATIONLATITUDE_PARAM &&
+        obsparam.param.name() != STATION_ELEVATION_PARAM &&
+        obsparam.param.name() != STATIONARY_PARAM &&
+        // obsparam.param.name() != DISTANCE_PARAM &&
+        // obsparam.param.name() != DIRECTION_PARAM &&
+        obsparam.param.name() != FMISID_PARAM && obsparam.param.name() != WMO_PARAM &&
+        obsparam.param.name() != GEOID_PARAM && obsparam.param.name() != LPNN_PARAM &&
+        obsparam.param.name() != RWSID_PARAM && obsparam.param.name() != SENSOR_NO_PARAM &&
+        obsparam.param.name() != LONGITUDE_PARAM && obsparam.param.name() != LATITUDE_PARAM)
+    {
+      // handle possible empty fields to avoid spaces in
+      // the beginning and end of output vector
+      for (unsigned int k = 1; k < tsg->size(); k++)
+      {
+        TS::LonLatTimeSeries& llts = tsg->at(k);
+        TS::TimeSeries& ts = llts.timeseries;
+        TS::LonLatTimeSeries& lltsAt0 = tsg->at(0);
+        TS::TimeSeries& tsAt0 = lltsAt0.timeseries;
+
+        for (unsigned int j = 0; j < ts.size(); j++)
+        {
+          std::stringstream ss_val0;
+          ss_val0 << tsAt0[j].value;
+          std::stringstream ss_val;
+          ss_val << ts[j].value;
+
+          if (ss_val0.str().empty() && !ss_val.str().empty())
+            tsAt0[j].value = ts[j].value;
+        }
+      }
+
+      // delete all but first timeseries for parameters that are not location dependent,
+      // like time
+      tsg->erase(tsg->begin() + 1, tsg->end());
+
+      // area name is replaced with the name given in URL
+      if (obsparam.param.name() == NAME_PARAM)
+      {
+        TS::LonLatTimeSeries& llts = tsg->at(0);
+        TS::TimeSeries& ts = llts.timeseries;
+        for (TS::TimedValue& tv : ts)
+          tv.value = areaName;
+      }
+    }
   }
   catch (...)
   {
@@ -740,74 +732,76 @@ void ObsEngineQuery::handleSpecialParameter(const ObsParameter& obsparam,
   }
 }
 
-TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(const State& state,
-																   const std::string& producer,
-																   const Spine::LocationPtr& loc,
-																   const ObsParameters& obsParameters,
-																   const TS::TimeSeriesVector* tsv_observation_result,
-																   const std::vector<boost::local_time::local_date_time>& ts_vector,
-																   const Query& query) const
+TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
+    const State& state,
+    const std::string& producer,
+    const Spine::LocationPtr& loc,
+    const ObsParameters& obsParameters,
+    const TS::TimeSeriesVector* tsv_observation_result,
+    const std::vector<boost::local_time::local_date_time>& ts_vector,
+    const Query& query) const
 {
   try
   {
-      TS::TimeSeriesVectorPtr observation_result_with_added_fields(new TS::TimeSeriesVector());
+    TS::TimeSeriesVectorPtr observation_result_with_added_fields(new TS::TimeSeriesVector());
 
-      unsigned int obs_result_field_index = 0;
-      for (unsigned int i = 0; i < obsParameters.size(); i++)
+    unsigned int obs_result_field_index = 0;
+    for (unsigned int i = 0; i < obsParameters.size(); i++)
+    {
+      std::string paramname = obsParameters[i].param.name();
+
+      // add data for location fields
+      if (TS::is_location_parameter(paramname) &&
+          !UtilityFunctions::is_flash_or_mobile_producer(producer))
       {
-        std::string paramname = obsParameters[i].param.name();
+        TS::TimeSeries location_ts(state.getLocalTimePool());
 
-        // add data for location fields
-        if (TS::is_location_parameter(paramname) && !UtilityFunctions::is_flash_or_mobile_producer(producer))
+        for (const auto& ts : ts_vector)
         {
-          TS::TimeSeries location_ts(state.getLocalTimePool());
+          TS::Value value = TS::location_parameter(loc,
+                                                   obsParameters[i].param.name(),
+                                                   query.valueformatter,
+                                                   query.timezone,
+                                                   query.precisions[i],
+                                                   query.crs);
 
-          for (const auto& ts : ts_vector)
-          {
-            TS::Value value = TS::location_parameter(loc,
-                                                     obsParameters[i].param.name(),
-                                                     query.valueformatter,
-                                                     query.timezone,
-                                                     query.precisions[i],
-                                                     query.crs);
-
-            location_ts.emplace_back(TS::TimedValue(ts, value));
-          }
-          observation_result_with_added_fields->push_back(location_ts);
+          location_ts.emplace_back(TS::TimedValue(ts, value));
         }
-        else if (TS::is_time_parameter(paramname))
-        {
-          // add data for time fields
-          Spine::Location dummyloc(0, 0, "", query.timezone);
-
-          TS::TimeSeriesGroupPtr grp(new TS::TimeSeriesGroup);
-          TS::TimeSeries time_ts(state.getLocalTimePool());
-
-          for (const auto& ts : ts_vector)
-          {
-            TS::Value value = TS::time_parameter(paramname,
-                                                 ts,
-                                                 state.getTime(),
-                                                 (loc ? *loc : dummyloc),
-                                                 query.timezone,
-                                                 itsPlugin.itsEngines.geoEngine->getTimeZones(),
-                                                 query.outlocale,
-                                                 *query.timeformatter,
-                                                 query.timestring);
-
-            time_ts.emplace_back(TS::TimedValue(ts, value));
-          }
-          observation_result_with_added_fields->push_back(time_ts);
-        }
-        else if (!obsParameters[i].duplicate)
-        {
-          observation_result_with_added_fields->push_back(
-              tsv_observation_result->at(obs_result_field_index));
-          obs_result_field_index++;
-        }
+        observation_result_with_added_fields->push_back(location_ts);
       }
+      else if (TS::is_time_parameter(paramname))
+      {
+        // add data for time fields
+        Spine::Location dummyloc(0, 0, "", query.timezone);
 
-	  return observation_result_with_added_fields;
+        TS::TimeSeriesGroupPtr grp(new TS::TimeSeriesGroup);
+        TS::TimeSeries time_ts(state.getLocalTimePool());
+
+        for (const auto& ts : ts_vector)
+        {
+          TS::Value value = TS::time_parameter(paramname,
+                                               ts,
+                                               state.getTime(),
+                                               (loc ? *loc : dummyloc),
+                                               query.timezone,
+                                               itsPlugin.itsEngines.geoEngine->getTimeZones(),
+                                               query.outlocale,
+                                               *query.timeformatter,
+                                               query.timestring);
+
+          time_ts.emplace_back(TS::TimedValue(ts, value));
+        }
+        observation_result_with_added_fields->push_back(time_ts);
+      }
+      else if (!obsParameters[i].duplicate)
+      {
+        observation_result_with_added_fields->push_back(
+            tsv_observation_result->at(obs_result_field_index));
+        obs_result_field_index++;
+      }
+    }
+
+    return observation_result_with_added_fields;
   }
   catch (...)
   {
@@ -822,17 +816,18 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(const State& 
 // ----------------------------------------------------------------------
 
 void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
-												 const std::string& producer,
-												 const ObsParameters& obsParameters,
-												 const std::string& areaName,
-												 Engine::Observation::Settings& settings,
-												 Query& query,
-												 TS::OutputData& outputData) const
+                                                 const std::string& producer,
+                                                 const ObsParameters& obsParameters,
+                                                 const std::string& areaName,
+                                                 Engine::Observation::Settings& settings,
+                                                 Query& query,
+                                                 TS::OutputData& outputData) const
 {
   try
   {
     // fetches results for all locations in the area and all parameters
-    TS::TimeSeriesVectorPtr observation_result = itsPlugin.itsEngines.obsEngine->values(settings, query.toptions);
+    TS::TimeSeriesVectorPtr observation_result =
+        itsPlugin.itsEngines.obsEngine->values(settings, query.toptions);
 
 #ifdef MYDEBYG
     std::cout << "observation_result for area: " << *observation_result << std::endl;
@@ -860,8 +855,8 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
 
     // Separate timeseries of different locations to their own data structures and add missing
     // timesteps
-    TS::TimeSeriesByLocation tsv_area =
-	  PostProcessing::get_timeseries_by_fmisid(producer, observation_result, tlist_all, fmisid_index);
+    TS::TimeSeriesByLocation tsv_area = PostProcessing::get_timeseries_by_fmisid(
+        producer, observation_result, tlist_all, fmisid_index);
 
     std::vector<TS::FmisidTSVectorPair> tsv_area_with_added_fields;
     // add data for location- and time-related fields; these fields are added by timeseries
@@ -877,14 +872,9 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
       int fmisid = get_fmisid_value(fmisid_ts);
       Spine::LocationPtr loc =
           get_location(state.getGeoEngine(), fmisid, FMISID_PARAM, query.language);
- 
-	  auto observation_result_with_added_fields = handleObsParametersForArea(state,
-																			 producer,
-																			 loc,
-																			 obsParameters,
-																			 tsv_observation_result,
-																			 ts_vector,
-																			 query);
+
+      auto observation_result_with_added_fields = handleObsParametersForArea(
+          state, producer, loc, obsParameters, tsv_observation_result, ts_vector, query);
 
       tsv_area_with_added_fields.emplace_back(
           TS::FmisidTSVectorPair(val.first, observation_result_with_added_fields));
@@ -962,10 +952,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
         continue;
 
       if (TS::special(obsparam.param))
-		handleSpecialParameter(obsparam,
-							   areaName,
-							   tsg);
-
+        handleSpecialParameter(obsparam, areaName, tsg);
 
       TS::DataFunctions pfunc = obsparam.functions;
       // Do the aggregation if requasted
@@ -987,26 +974,26 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
 
       std::vector<TS::TimeSeriesData> aggregatedData;
 
-	  TS::TimeSeriesGenerator::LocalTimeList tlist;
+      TS::TimeSeriesGenerator::LocalTimeList tlist;
 
       // If all timesteps are requested or producer is syke or flash accept all timesteps
-      if (query.toptions.all() || UtilityFunctions::is_flash_producer(producer) || UtilityFunctions::is_mobile_producer(producer) ||
-          producer == SYKE_PRODUCER)
+      if (query.toptions.all() || UtilityFunctions::is_flash_producer(producer) ||
+          UtilityFunctions::is_mobile_producer(producer) || producer == SYKE_PRODUCER)
       {
-		tlist = get_timesteps(aggregated_tsg->at(0).timeseries);
-     }
+        tlist = get_timesteps(aggregated_tsg->at(0).timeseries);
+      }
       else
       {
         // Else accept only the original generated timesteps
         // Generate requested timesteps
-        auto tz = itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
-		tlist = *(itsPlugin.itsTimeSeriesCache->generate(query.toptions, tz));
+        auto tz =
+            itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
+        tlist = *(itsPlugin.itsTimeSeriesCache->generate(query.toptions, tz));
       }
-	  // store observation data
-	  aggregatedData.emplace_back(
-								  TS::TimeSeriesData(TS::erase_redundant_timesteps(aggregated_tsg, tlist)));
-	  PostProcessing::store_data(aggregatedData, query, outputData);
-
+      // store observation data
+      aggregatedData.emplace_back(
+          TS::TimeSeriesData(TS::erase_redundant_timesteps(aggregated_tsg, tlist)));
+      PostProcessing::store_data(aggregatedData, query, outputData);
     }
   }
   catch (...)
@@ -1017,49 +1004,53 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
 
 bool ObsEngineQuery::isObsProducer(const std::string& producer) const
 {
-  return (itsPlugin.itsObsEngineStationTypes.find(producer) != itsPlugin.itsObsEngineStationTypes.end());
+  return (itsPlugin.itsObsEngineStationTypes.find(producer) !=
+          itsPlugin.itsObsEngineStationTypes.end());
 }
 
-void ObsEngineQuery::handleLocationSettings(const Query& query,
-											const std::string& producer,
-											const Spine::TaggedLocation& tloc,
-											Engine::Observation::Settings& settings,
-											std::vector<SettingsInfo>& settingsVector,
-											Engine::Observation::StationSettings& stationSettings) const
+void ObsEngineQuery::handleLocationSettings(
+    const Query& query,
+    const std::string& producer,
+    const Spine::TaggedLocation& tloc,
+    Engine::Observation::Settings& settings,
+    std::vector<SettingsInfo>& settingsVector,
+    Engine::Observation::StationSettings& stationSettings) const
 {
   try
   {
-	const auto& loc = tloc.loc;
+    const auto& loc = tloc.loc;
 
-	if (!loc)
-	  return;
+    if (!loc)
+      return;
 
-	bool point_location = (((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
-							loc->radius == 0) || is_wkt_point(loc));
+    bool point_location =
+        (((loc->type == Spine::Location::Place || loc->type == Spine::Location::CoordinatePoint) &&
+          loc->radius == 0) ||
+         is_wkt_point(loc));
 
-	if (point_location && !UtilityFunctions::is_flash_or_mobile_producer(producer))
-      {
-		// Note: We do not detect if there is an fmisid for the location since converting
-		// the search to be for a fmisid would lose the geoid tag for the location.
-		
-		stationSettings.nearest_station_settings.emplace_back(loc->longitude,
-															  loc->latitude,
-															  settings.maxdistance,
-															  settings.numberofstations,
-															  tloc.tag,
-															  loc->fmisid);
-      }
-	
-	if (!point_location)
-      {
-        Engine::Observation::Settings areaSettings = settings;
-		
-        std::string name;
-        if (resolveAreaStations(loc, producer, query, areaSettings, name))
-          settingsVector.emplace_back(areaSettings, query.groupareas, name);
-        else if (!areaSettings.wktArea.empty())
-          settings.wktArea = areaSettings.wktArea;
-      }
+    if (point_location && !UtilityFunctions::is_flash_or_mobile_producer(producer))
+    {
+      // Note: We do not detect if there is an fmisid for the location since converting
+      // the search to be for a fmisid would lose the geoid tag for the location.
+
+      stationSettings.nearest_station_settings.emplace_back(loc->longitude,
+                                                            loc->latitude,
+                                                            settings.maxdistance,
+                                                            settings.numberofstations,
+                                                            tloc.tag,
+                                                            loc->fmisid);
+    }
+
+    if (!point_location)
+    {
+      Engine::Observation::Settings areaSettings = settings;
+
+      std::string name;
+      if (resolveAreaStations(loc, producer, query, areaSettings, name))
+        settingsVector.emplace_back(areaSettings, query.groupareas, name);
+      else if (!areaSettings.wktArea.empty())
+        settings.wktArea = areaSettings.wktArea;
+    }
   }
   catch (...)
   {
@@ -1068,11 +1059,11 @@ void ObsEngineQuery::handleLocationSettings(const Query& query,
 }
 
 void ObsEngineQuery::getObsSettings(std::vector<SettingsInfo>& settingsVector,
-									const std::string& producer,
-									const ProducerDataPeriod& producerDataPeriod,
-									const boost::posix_time::ptime& now,
-									const ObsParameters& obsParameters,
-									Query& query) const
+                                    const std::string& producer,
+                                    const ProducerDataPeriod& producerDataPeriod,
+                                    const boost::posix_time::ptime& now,
+                                    const ObsParameters& obsParameters,
+                                    Query& query) const
 {
   try
   {
@@ -1086,21 +1077,21 @@ void ObsEngineQuery::getObsSettings(std::vector<SettingsInfo>& settingsVector,
 
     // Parameter related settings
     resolve_parameter_settings(obsParameters,
-                             query,
-                             producer,
-                             settings,
-                             aggregationIntervalBehind,
-                             aggregationIntervalAhead);
+                               query,
+                               producer,
+                               settings,
+                               aggregationIntervalBehind,
+                               aggregationIntervalAhead);
 
     // Time related settings
     resolve_time_settings(producer,
-						  producerDataPeriod,
-						  now,
-						  query,
-						  aggregationIntervalBehind,
-						  aggregationIntervalAhead,
-						  settings,
-						  itsPlugin.itsEngines.geoEngine->getTimeZones());
+                          producerDataPeriod,
+                          now,
+                          query,
+                          aggregationIntervalBehind,
+                          aggregationIntervalAhead,
+                          settings,
+                          itsPlugin.itsEngines.geoEngine->getTimeZones());
 
     // Handle endtime=now
     if (query.latestObservation)
@@ -1110,12 +1101,7 @@ void ObsEngineQuery::getObsSettings(std::vector<SettingsInfo>& settingsVector,
 
     for (const auto& tloc : query.loptions->locations())
     {
-	  handleLocationSettings(query,
-							 producer,
-							 tloc,
-							 settings,
-							 settingsVector,
-							 stationSettings);
+      handleLocationSettings(query, producer, tloc, settings, settingsVector, stationSettings);
     }  // for-loop
 
     // Note: GEOIDs are processed by the nearest station search settings above
@@ -1139,8 +1125,10 @@ void ObsEngineQuery::getObsSettings(std::vector<SettingsInfo>& settingsVector,
       stationSettings.bounding_box_settings["maxy"] = query.boundingBox.at("maxy");
     }
 
-    if (!UtilityFunctions::is_flash_or_mobile_producer(producer) || UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
-      settings.taggedFMISIDs = itsPlugin.itsEngines.obsEngine->translateToFMISID(settings, stationSettings);
+    if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
+        UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
+      settings.taggedFMISIDs =
+          itsPlugin.itsEngines.obsEngine->translateToFMISID(settings, stationSettings);
 
     if (!settings.taggedFMISIDs.empty() || !settings.boundingBox.empty() ||
         !settings.taggedLocations.empty())
@@ -1176,8 +1164,8 @@ void ObsEngineQuery::getObsSettings(std::vector<SettingsInfo>& settingsVector,
 }
 
 void ObsEngineQuery::getCommonObsSettings(Engine::Observation::Settings& settings,
-										  const std::string& producer,
-										  Query& query) const
+                                          const std::string& producer,
+                                          Query& query) const
 {
   try
   {
@@ -1228,10 +1216,10 @@ void ObsEngineQuery::getCommonObsSettings(Engine::Observation::Settings& setting
 }
 
 bool ObsEngineQuery::resolveAreaStations(const Spine::LocationPtr& location,
-										 const std::string& producer,
-										 const Query& query,
-										 Engine::Observation::Settings& settings,
-										 std::string& name) const
+                                         const std::string& producer,
+                                         const Query& query,
+                                         Engine::Observation::Settings& settings,
+                                         std::string& name) const
 {
   try
   {
@@ -1260,64 +1248,59 @@ bool ObsEngineQuery::resolveAreaStations(const Spine::LocationPtr& location,
       std::string wktString;
       if (loc->type == Spine::Location::Path)
       {
-		resolveStationsForPath(producer,
-							   loc,
-							   loc_name_original,
-							   loc_name,										 
-							   query,
-							   settings,
-							   isWkt,
-							   wktString,
-							   stationSettings);
-
+        resolveStationsForPath(producer,
+                               loc,
+                               loc_name_original,
+                               loc_name,
+                               query,
+                               settings,
+                               isWkt,
+                               wktString,
+                               stationSettings);
       }
       else if (loc->type == Spine::Location::Area)
       {
-		resolveStationsForArea(producer,
-							   loc,
-							   loc_name_original,
-							   loc_name,										 
-							   query,
-							   settings,
-							   isWkt,
-							   wktString,
-							   stationSettings);
+        resolveStationsForArea(producer,
+                               loc,
+                               loc_name_original,
+                               loc_name,
+                               query,
+                               settings,
+                               isWkt,
+                               wktString,
+                               stationSettings);
       }
-      else if (loc->type == Spine::Location::BoundingBox && !UtilityFunctions::is_flash_producer(producer))
+      else if (loc->type == Spine::Location::BoundingBox &&
+               !UtilityFunctions::is_flash_producer(producer))
       {
-		resolveStationsForBBox(producer,
-							   loc,
-							   loc_name_original,
-							   loc_name,										 
-							   query,
-							   settings,
-							   isWkt,
-							   wktString,
-							   stationSettings);
+        resolveStationsForBBox(producer,
+                               loc,
+                               loc_name_original,
+                               loc_name,
+                               query,
+                               settings,
+                               isWkt,
+                               wktString,
+                               stationSettings);
       }
-      else if (!UtilityFunctions::is_flash_producer(producer) && loc->type == Spine::Location::Place &&
-               loc->radius > 0)
+      else if (!UtilityFunctions::is_flash_producer(producer) &&
+               loc->type == Spine::Location::Place && loc->radius > 0)
       {
-		resolveStationsForPlaceWithRadius(producer,
-										  loc,
-										  loc_name,										 
-										  settings,
-										  wktString,
-										  stationSettings);
+        resolveStationsForPlaceWithRadius(
+            producer, loc, loc_name, settings, wktString, stationSettings);
       }
-      else if (!UtilityFunctions::is_flash_producer(producer) && loc->type == Spine::Location::CoordinatePoint &&
-               loc->radius > 0)
+      else if (!UtilityFunctions::is_flash_producer(producer) &&
+               loc->type == Spine::Location::CoordinatePoint && loc->radius > 0)
       {
-
-		resolveStationsForCoordinatePointWithRadius(producer,
-													loc,
-													loc_name_original,
-													loc_name,										 
-													query,
-													settings,
-													isWkt,
-													wktString,
-													stationSettings);
+        resolveStationsForCoordinatePointWithRadius(producer,
+                                                    loc,
+                                                    loc_name_original,
+                                                    loc_name,
+                                                    query,
+                                                    settings,
+                                                    isWkt,
+                                                    wktString,
+                                                    stationSettings);
       }
 
 #ifdef MYDEBUG
@@ -1332,9 +1315,11 @@ bool ObsEngineQuery::resolveAreaStations(const Spine::LocationPtr& location,
         settings.wktArea = wktString;
       }
       if (!stationSettings.fmisids.empty() &&
-          (!UtilityFunctions::is_flash_or_mobile_producer(producer) || UtilityFunctions::is_icebuoy_or_copernicus_producer(producer)))
+          (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
+           UtilityFunctions::is_icebuoy_or_copernicus_producer(producer)))
       {
-        settings.taggedFMISIDs = itsPlugin.itsEngines.obsEngine->translateToFMISID(settings, stationSettings);
+        settings.taggedFMISIDs =
+            itsPlugin.itsEngines.obsEngine->translateToFMISID(settings, stationSettings);
 
         name = loc->name;
         if (loc->type == Spine::Location::Wkt)
@@ -1354,249 +1339,261 @@ bool ObsEngineQuery::resolveAreaStations(const Spine::LocationPtr& location,
   }
 }
 
-void ObsEngineQuery::resolveStationsForPath(const std::string& producer,
-											const Spine::LocationPtr& loc,
-											const std::string& loc_name_original,
-											const std::string& loc_name,										 
-											const Query& query,
-											const Engine::Observation::Settings& settings,
-											bool isWkt,
-											std::string& wktString,
-											Engine::Observation::StationSettings& stationSettings) const
+void ObsEngineQuery::resolveStationsForPath(
+    const std::string& producer,
+    const Spine::LocationPtr& loc,
+    const std::string& loc_name_original,
+    const std::string& loc_name,
+    const Query& query,
+    const Engine::Observation::Settings& settings,
+    bool isWkt,
+    std::string& wktString,
+    Engine::Observation::StationSettings& stationSettings) const
 {
   try
   {
-	const OGRGeometry* pGeo = nullptr;
-	// if no radius has been given use 200 meters
-	double radius = (loc->radius == 0 ? 200 : loc->radius * 1000);
-		
-	if (isWkt)
-	  {
-		pGeo = query.wktGeometries.getGeometry(loc_name_original);
-		wktString = Fmi::OGR::exportToWkt(*pGeo);
-	  }
-	else
-	  {
-		if (loc_name.find(',') != std::string::npos)
-          {
-            std::vector<std::string> parts;
-            boost::algorithm::split(parts, loc_name, boost::algorithm::is_any_of(","));
-            if (parts.size() % 2)
-              throw Fmi::Exception(
-								   BCP,
-								   "Path " + loc_name + "is invalid, because it has odd number of coordinates!");
-			
-            std::string wkt = "LINESTRING(";
-            for (unsigned int i = 0; i < parts.size(); i += 2)
-			  {
-				if (i > 0)
-				  wkt += ", ";
-				wkt += parts[i];
-				wkt += " ";
-				wkt += parts[i + 1];
-			  }
-            wkt += ")";
-			
-            std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, radius);
-            wktString = Fmi::OGR::exportToWkt(*geom);
-          }
-		else
-          {
-            // path is fetched from database
-            pGeo = itsPlugin.itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiLineString);
-			
-            if (!pGeo)
-              throw Fmi::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
-			
-            std::unique_ptr<OGRGeometry> poly;
-            poly.reset(Fmi::OGR::expandGeometry(pGeo, radius));
-            wktString = Fmi::OGR::exportToWkt(*poly);
-          }
-	  }
-	if (!UtilityFunctions::is_flash_or_mobile_producer(producer) || UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
-	  stationSettings.fmisids = get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
-  }
-  catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
-}
+    const OGRGeometry* pGeo = nullptr;
+    // if no radius has been given use 200 meters
+    double radius = (loc->radius == 0 ? 200 : loc->radius * 1000);
 
-void ObsEngineQuery::resolveStationsForArea(const std::string& producer,
-											const Spine::LocationPtr& loc,
-											const std::string& loc_name_original,
-											const std::string& loc_name,										 
-											const Query& query,
-											const Engine::Observation::Settings& settings,
-											bool isWkt,
-											std::string& wktString,
-											Engine::Observation::StationSettings& stationSettings) const
-{
-  try
-  {
-#ifdef MYDEBUG
-	std::cout << loc_name << " is an Area" << std::endl;
-#endif
-	
-	const OGRGeometry* pGeo = nullptr;
-	
-	if (isWkt)
-	  {
-		pGeo = query.wktGeometries.getGeometry(loc_name_original);
-		
-		if (!pGeo)
-		  throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
-		
-		wktString = Fmi::OGR::exportToWkt(*pGeo);
-	  }
-	else
-	  {
-		pGeo = itsPlugin.itsGeometryStorage.getOGRGeometry(loc_name, wkbPolygon);
-		if (pGeo == nullptr)
-		  pGeo = itsPlugin.itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
-		
-		if (!pGeo)
-		  throw Fmi::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
-		
-		std::unique_ptr<OGRGeometry> poly;
-		poly.reset(Fmi::OGR::expandGeometry(pGeo, loc->radius * 1000));
-		
-		wktString = Fmi::OGR::exportToWkt(*poly);
-	  }
-	
-	if (!UtilityFunctions::is_flash_or_mobile_producer(producer) || UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
-	  stationSettings.fmisids = get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
-  }
-  catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
-}
+    if (isWkt)
+    {
+      pGeo = query.wktGeometries.getGeometry(loc_name_original);
+      wktString = Fmi::OGR::exportToWkt(*pGeo);
+    }
+    else
+    {
+      if (loc_name.find(',') != std::string::npos)
+      {
+        std::vector<std::string> parts;
+        boost::algorithm::split(parts, loc_name, boost::algorithm::is_any_of(","));
+        if (parts.size() % 2)
+          throw Fmi::Exception(
+              BCP, "Path " + loc_name + "is invalid, because it has odd number of coordinates!");
 
-void ObsEngineQuery::resolveStationsForBBox(const std::string& producer,
-											const Spine::LocationPtr& loc,
-											const std::string& loc_name_original,
-											const std::string& loc_name,										 
-											const Query& query,
-											const Engine::Observation::Settings& settings,
-											bool isWkt,
-											std::string& wktString,
-											Engine::Observation::StationSettings& stationSettings) const
-{
-  try
-  {
-#ifdef MYDEBUG
-	std::cout << loc_name << " is a BoundingBox" << std::endl;
-#endif
-	
-	Spine::BoundingBox bbox(loc_name);
-	
-	NFmiSvgPath svgPath;
-	NFmiSvgTools::BBoxToSvgPath(svgPath, bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
-	
-	std::string wkt;
-	for (const auto& element : svgPath)
-	  {
-		if (wkt.empty())
-		  wkt += "POLYGON((";
-		else
-		  wkt += ", ";
-		wkt += Fmi::to_string(element.itsX);
-		wkt += " ";
-		wkt += Fmi::to_string(element.itsY);
-	  }
-	if (!wkt.empty())
-	  wkt += "))";
-	
-	std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
-	wktString = Fmi::OGR::exportToWkt(*geom);
-	if (!UtilityFunctions::is_flash_or_mobile_producer(producer) || UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
-	  stationSettings.fmisids = get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
-  }
-  catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
-}
-
-
-void ObsEngineQuery::resolveStationsForPlaceWithRadius(const std::string& producer,
-													   const Spine::LocationPtr& loc,
-													   const std::string& loc_name,										 
-													   const Engine::Observation::Settings& settings,
-													   std::string& wktString,
-													   Engine::Observation::StationSettings& stationSettings) const
-{
-  try
-  {
-#ifdef MYDEBUG
-	std::cout << loc_name << " is an Area (Place + radius)" << std::endl;
-#endif
-	
-	std::string wkt = "POINT(";
-	wkt += Fmi::to_string(loc->longitude);
-	wkt += " ";
-	wkt += Fmi::to_string(loc->latitude);
-	wkt += ")";
-	
-	std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
-	wktString = Fmi::OGR::exportToWkt(*geom);
-	if (!UtilityFunctions::is_flash_or_mobile_producer(producer) || UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
-	  stationSettings.fmisids = get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);	
-  }
-  catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
-}
-
-void ObsEngineQuery::resolveStationsForCoordinatePointWithRadius(const std::string& producer,
-																 const Spine::LocationPtr& loc,
-																 const std::string& loc_name_original,
-																 const std::string& loc_name,										 
-																 const Query& query,
-																 const Engine::Observation::Settings& settings,
-																 bool isWkt,
-																 std::string& wktString,
-																 Engine::Observation::StationSettings& stationSettings) const
-
-{
-  try
-  {
-#ifdef MYDEBUG
-        std::cout << loc_name << " is an Area (coordinate point + radius)" << std::endl;
-#endif
-
-        if (isWkt)
+        std::string wkt = "LINESTRING(";
+        for (unsigned int i = 0; i < parts.size(); i += 2)
         {
-          const OGRGeometry* pGeo = query.wktGeometries.getGeometry(loc_name_original);
-
-          if (!pGeo)
-            throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
-
-          wktString = Fmi::OGR::exportToWkt(*pGeo);
-        }
-        else
-        {
-          std::string wkt = "POINT(";
-          wkt += Fmi::to_string(loc->longitude);
+          if (i > 0)
+            wkt += ", ";
+          wkt += parts[i];
           wkt += " ";
-          wkt += Fmi::to_string(loc->latitude);
-          wkt += ")";
-
-          std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
-          wktString = Fmi::OGR::exportToWkt(*geom);
+          wkt += parts[i + 1];
         }
+        wkt += ")";
 
-        if (!UtilityFunctions::is_flash_or_mobile_producer(producer) || UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
-          stationSettings.fmisids = get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+        std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, radius);
+        wktString = Fmi::OGR::exportToWkt(*geom);
+      }
+      else
+      {
+        // path is fetched from database
+        pGeo = itsPlugin.itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiLineString);
+
+        if (!pGeo)
+          throw Fmi::Exception(BCP, "Path " + loc_name + " not found in PostGIS database!");
+
+        std::unique_ptr<OGRGeometry> poly;
+        poly.reset(Fmi::OGR::expandGeometry(pGeo, radius));
+        wktString = Fmi::OGR::exportToWkt(*poly);
+      }
+    }
+    if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
+        UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
+      stationSettings.fmisids =
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
   }
   catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
 }
 
+void ObsEngineQuery::resolveStationsForArea(
+    const std::string& producer,
+    const Spine::LocationPtr& loc,
+    const std::string& loc_name_original,
+    const std::string& loc_name,
+    const Query& query,
+    const Engine::Observation::Settings& settings,
+    bool isWkt,
+    std::string& wktString,
+    Engine::Observation::StationSettings& stationSettings) const
+{
+  try
+  {
+#ifdef MYDEBUG
+    std::cout << loc_name << " is an Area" << std::endl;
+#endif
+
+    const OGRGeometry* pGeo = nullptr;
+
+    if (isWkt)
+    {
+      pGeo = query.wktGeometries.getGeometry(loc_name_original);
+
+      if (!pGeo)
+        throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
+
+      wktString = Fmi::OGR::exportToWkt(*pGeo);
+    }
+    else
+    {
+      pGeo = itsPlugin.itsGeometryStorage.getOGRGeometry(loc_name, wkbPolygon);
+      if (pGeo == nullptr)
+        pGeo = itsPlugin.itsGeometryStorage.getOGRGeometry(loc_name, wkbMultiPolygon);
+
+      if (!pGeo)
+        throw Fmi::Exception(BCP, "Area " + loc_name + " not found in PostGIS database!");
+
+      std::unique_ptr<OGRGeometry> poly;
+      poly.reset(Fmi::OGR::expandGeometry(pGeo, loc->radius * 1000));
+
+      wktString = Fmi::OGR::exportToWkt(*poly);
+    }
+
+    if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
+        UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
+      stationSettings.fmisids =
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+void ObsEngineQuery::resolveStationsForBBox(
+    const std::string& producer,
+    const Spine::LocationPtr& loc,
+    const std::string& loc_name_original,
+    const std::string& loc_name,
+    const Query& query,
+    const Engine::Observation::Settings& settings,
+    bool isWkt,
+    std::string& wktString,
+    Engine::Observation::StationSettings& stationSettings) const
+{
+  try
+  {
+#ifdef MYDEBUG
+    std::cout << loc_name << " is a BoundingBox" << std::endl;
+#endif
+
+    Spine::BoundingBox bbox(loc_name);
+
+    NFmiSvgPath svgPath;
+    NFmiSvgTools::BBoxToSvgPath(svgPath, bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
+
+    std::string wkt;
+    for (const auto& element : svgPath)
+    {
+      if (wkt.empty())
+        wkt += "POLYGON((";
+      else
+        wkt += ", ";
+      wkt += Fmi::to_string(element.itsX);
+      wkt += " ";
+      wkt += Fmi::to_string(element.itsY);
+    }
+    if (!wkt.empty())
+      wkt += "))";
+
+    std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+    wktString = Fmi::OGR::exportToWkt(*geom);
+    if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
+        UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
+      stationSettings.fmisids =
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+void ObsEngineQuery::resolveStationsForPlaceWithRadius(
+    const std::string& producer,
+    const Spine::LocationPtr& loc,
+    const std::string& loc_name,
+    const Engine::Observation::Settings& settings,
+    std::string& wktString,
+    Engine::Observation::StationSettings& stationSettings) const
+{
+  try
+  {
+#ifdef MYDEBUG
+    std::cout << loc_name << " is an Area (Place + radius)" << std::endl;
+#endif
+
+    std::string wkt = "POINT(";
+    wkt += Fmi::to_string(loc->longitude);
+    wkt += " ";
+    wkt += Fmi::to_string(loc->latitude);
+    wkt += ")";
+
+    std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+    wktString = Fmi::OGR::exportToWkt(*geom);
+    if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
+        UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
+      stationSettings.fmisids =
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+void ObsEngineQuery::resolveStationsForCoordinatePointWithRadius(
+    const std::string& producer,
+    const Spine::LocationPtr& loc,
+    const std::string& loc_name_original,
+    const std::string& loc_name,
+    const Query& query,
+    const Engine::Observation::Settings& settings,
+    bool isWkt,
+    std::string& wktString,
+    Engine::Observation::StationSettings& stationSettings) const
+
+{
+  try
+  {
+#ifdef MYDEBUG
+    std::cout << loc_name << " is an Area (coordinate point + radius)" << std::endl;
+#endif
+
+    if (isWkt)
+    {
+      const OGRGeometry* pGeo = query.wktGeometries.getGeometry(loc_name_original);
+
+      if (!pGeo)
+        throw Fmi::Exception(BCP, "Area " + loc_name + " is not a WKT geometry!");
+
+      wktString = Fmi::OGR::exportToWkt(*pGeo);
+    }
+    else
+    {
+      std::string wkt = "POINT(";
+      wkt += Fmi::to_string(loc->longitude);
+      wkt += " ";
+      wkt += Fmi::to_string(loc->latitude);
+      wkt += ")";
+
+      std::unique_ptr<OGRGeometry> geom = get_ogr_geometry(wkt, loc->radius);
+      wktString = Fmi::OGR::exportToWkt(*geom);
+    }
+
+    if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
+        UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
+      stationSettings.fmisids =
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
 
 std::vector<ObsParameter> ObsEngineQuery::getObsParameters(const Query& query) const
 {

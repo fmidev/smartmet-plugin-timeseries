@@ -277,44 +277,44 @@ void Config::parse_geometries()
 void Config::parse_grid_settings(const std::string& configfile)
 {
   try
+  {
+    const libconfig::Setting& gridGeometries = itsConfig.lookup("defaultGridGeometries");
+    if (!gridGeometries.isArray())
+      throw Fmi::Exception(BCP, "Configured value of 'defaultGridGeometries' must be an array");
+
+    for (int i = 0; i < gridGeometries.getLength(); ++i)
     {
-      const libconfig::Setting& gridGeometries = itsConfig.lookup("defaultGridGeometries");
-      if (!gridGeometries.isArray())
-        throw Fmi::Exception(BCP, "Configured value of 'defaultGridGeometries' must be an array");
-
-      for (int i = 0; i < gridGeometries.getLength(); ++i)
-      {
-        uint geomId = gridGeometries[i];
-        itsDefaultGridGeometries.push_back(geomId);
-      }
-
-      itsConfig.lookupValue("defaultProducerMappingName", itsDefaultProducerMappingName);
-
-      const libconfig::Setting& aliasFiles = itsConfig.lookup("parameterAliasFiles");
-
-      if (!aliasFiles.isArray())
-        throw Fmi::Exception(BCP, "Configured value of 'parameterAliasFiles' must be an array");
-
-      boost::filesystem::path path(configfile);
-
-      for (int i = 0; i < aliasFiles.getLength(); ++i)
-      {
-        std::string st = aliasFiles[i];
-        if (!st.empty())
-        {
-          if (st[0] == '/')
-            itsParameterAliasFiles.push_back(st);
-          else
-            itsParameterAliasFiles.push_back(path.parent_path().string() + "/" + st);
-        }
-      }
-
-      itsAliasFileCollection.init(itsParameterAliasFiles);
+      uint geomId = gridGeometries[i];
+      itsDefaultGridGeometries.push_back(geomId);
     }
-    catch (const libconfig::SettingNotFoundException& e)
+
+    itsConfig.lookupValue("defaultProducerMappingName", itsDefaultProducerMappingName);
+
+    const libconfig::Setting& aliasFiles = itsConfig.lookup("parameterAliasFiles");
+
+    if (!aliasFiles.isArray())
+      throw Fmi::Exception(BCP, "Configured value of 'parameterAliasFiles' must be an array");
+
+    boost::filesystem::path path(configfile);
+
+    for (int i = 0; i < aliasFiles.getLength(); ++i)
     {
-      // throw Fmi::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
+      std::string st = aliasFiles[i];
+      if (!st.empty())
+      {
+        if (st[0] == '/')
+          itsParameterAliasFiles.push_back(st);
+        else
+          itsParameterAliasFiles.push_back(path.parent_path().string() + "/" + st);
+      }
     }
+
+    itsAliasFileCollection.init(itsParameterAliasFiles);
+  }
+  catch (const libconfig::SettingNotFoundException& e)
+  {
+    // throw Fmi::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
+  }
 }
 
 string parse_config_key(const char* str1 = nullptr,
@@ -423,7 +423,7 @@ Config::Config(const string& configfile)
 
     parse_config_precisions();
 
-	parse_geometries();
+    parse_geometries();
 
     // We construct the default locale only once from the string,
     // creating it from scratch for every request is very expensive
@@ -431,7 +431,7 @@ Config::Config(const string& configfile)
 
     itsLastAliasCheck = time(nullptr);
 
-	parse_grid_settings(configfile);
+    parse_grid_settings(configfile);
   }
   catch (const libconfig::SettingNotFoundException& e)
   {

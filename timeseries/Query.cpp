@@ -5,13 +5,13 @@
 // ======================================================================
 
 #include "Query.h"
-#include <spine/Convenience.h>
-#include <macgyver/AnsiEscapeCodes.h>
-#include <macgyver/DistanceParser.h>
-#include <gis/CoordinateTransformation.h>
+#include "Config.h"
 #include <engines/observation/ExternalAndMobileProducerId.h>
 #include <engines/querydata/Engine.h>
-#include "Config.h"
+#include <gis/CoordinateTransformation.h>
+#include <macgyver/AnsiEscapeCodes.h>
+#include <macgyver/DistanceParser.h>
+#include <spine/Convenience.h>
 
 using namespace std;
 
@@ -25,16 +25,15 @@ const char* default_timezone = "localtime";
 
 namespace
 {
-
 void set_max_agg_interval_behind(TS::DataFunction& func, unsigned int& max_interval)
 {
   try
   {
-	if (func.type() == TS::FunctionType::TimeFunction)
-      {
-        if (max_interval < func.getAggregationIntervalBehind())
-          max_interval = func.getAggregationIntervalBehind();
-	  }
+    if (func.type() == TS::FunctionType::TimeFunction)
+    {
+      if (max_interval < func.getAggregationIntervalBehind())
+        max_interval = func.getAggregationIntervalBehind();
+    }
   }
   catch (...)
   {
@@ -46,11 +45,11 @@ void set_max_agg_interval_ahead(TS::DataFunction& func, unsigned int& max_interv
 {
   try
   {
-	if (func.type() == TS::FunctionType::TimeFunction)
-      {
-        if (max_interval < func.getAggregationIntervalAhead())
-          max_interval = func.getAggregationIntervalAhead();
-	  }
+    if (func.type() == TS::FunctionType::TimeFunction)
+    {
+      if (max_interval < func.getAggregationIntervalAhead())
+        max_interval = func.getAggregationIntervalAhead();
+    }
   }
   catch (...)
   {
@@ -62,8 +61,8 @@ void set_agg_interval_behind(TS::DataFunction& func, unsigned int interval)
 {
   try
   {
-	if (func.getAggregationIntervalBehind() == std::numeric_limits<unsigned int>::max())
-	  func.setAggregationIntervalBehind(interval);
+    if (func.getAggregationIntervalBehind() == std::numeric_limits<unsigned int>::max())
+      func.setAggregationIntervalBehind(interval);
   }
   catch (...)
   {
@@ -75,8 +74,8 @@ void set_agg_interval_ahead(TS::DataFunction& func, unsigned int interval)
 {
   try
   {
-	if (func.getAggregationIntervalAhead() == std::numeric_limits<unsigned int>::max())
-	  func.setAggregationIntervalAhead(interval);
+    if (func.getAggregationIntervalAhead() == std::numeric_limits<unsigned int>::max())
+      func.setAggregationIntervalAhead(interval);
   }
   catch (...)
   {
@@ -122,7 +121,6 @@ Fmi::ValueFormatterParam valueformatter_params(const Spine::HTTP::Request& req)
 
 }  // namespace
 
-
 // ----------------------------------------------------------------------
 /*!
  * \brief The constructor parses the query string
@@ -130,7 +128,9 @@ Fmi::ValueFormatterParam valueformatter_params(const Spine::HTTP::Request& req)
 // ----------------------------------------------------------------------
 
 Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config)
-  : ObsQueryParams(req), valueformatter(valueformatter_params(req)), timeAggregationRequested(false)
+    : ObsQueryParams(req),
+      valueformatter(valueformatter_params(req)),
+      timeAggregationRequested(false)
 {
   try
   {
@@ -153,9 +153,9 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 
     forecastSource = Spine::optional_string(req.getParameter("source"), "");
 
-	parse_attr(req);
+    parse_attr(req);
 
-	if(!parse_grib_loptions(state))
+    if (!parse_grib_loptions(state))
     {
       loptions.reset(
           new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(req)));
@@ -223,11 +223,11 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 
     keyword = Spine::optional_string(req.getParameter("keyword"), "");
 
-	parse_inkeyword_locations(req, state);
+    parse_inkeyword_locations(req, state);
 
     findnearestvalidpoint = Spine::optional_bool(req.getParameter("findnearestvalid"), false);
 
-	parse_origintime(req);
+    parse_origintime(req);
     parse_producers(req, state);
     parse_parameters(req);
 
@@ -284,72 +284,72 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
 void Query::parse_producers(const Spine::HTTP::Request& theReq, const State& theState)
 {
   try
-	{
-	  string opt = Spine::optional_string(theReq.getParameter("model"), "");
-	  string opt2 = Spine::optional_string(theReq.getParameter("producer"), "");
-	  
-	  if (opt == "default" || opt2 == "default")
-		{
-		  // Use default if it's forced by any option
-		  return;
-		}
-	  
-	  // observation uses stationtype-parameter
-	  if (opt.empty() && opt2.empty())
-		opt2 = Spine::optional_string(theReq.getParameter("stationtype"), "");
-	  
-	  std::list<std::string> resultProducers;
-	  
-	  // Handle time separation:: either 'model' or 'producer' keyword used
-	  if (!opt.empty())
-		boost::algorithm::split(resultProducers, opt, boost::algorithm::is_any_of(";"));
-	  else if (!opt2.empty())
-		boost::algorithm::split(resultProducers, opt2, boost::algorithm::is_any_of(";"));
-	  
-	  for (auto& p : resultProducers)
-		{
-		  boost::algorithm::to_lower(p);
-		  if (p == "itmf")
-			{
-			  p = Engine::Observation::FMI_IOT_PRODUCER;
-			  iot_producer_specifier = "itmf";
-			}
-		}
-	  
-	  // Verify the producer names are valid
-	  const auto obsProducers = getObsProducers(theState);
-	  
-	  for (const auto& p : resultProducers)
-		{
-		  const auto& qEngine = theState.getQEngine();
-		  bool ok = qEngine.hasProducer(p);
-		  if (!obsProducers.empty() && !ok)
-			ok = (obsProducers.find(p) != obsProducers.end());
-		  const auto* gridEngine = theState.getGridEngine();
-		  if (!ok && gridEngine)
-			ok = gridEngine->isGridProducer(p);
-		  
-		  if (!ok)
-			throw Fmi::Exception(BCP, "Unknown producer name '" + p + "'");
-		}
+  {
+    string opt = Spine::optional_string(theReq.getParameter("model"), "");
+    string opt2 = Spine::optional_string(theReq.getParameter("producer"), "");
 
-	  // Now split into location parts	  
-	  for (const auto& tproducers : resultProducers)
-		{
-		  AreaProducers producers;
-		  boost::algorithm::split(producers, tproducers, boost::algorithm::is_any_of(","));
-		  
-		  // FMI producer is deprecated, use OPENDATA instead
-		  // std::replace(producers.begin(), producers.end(), std::string("fmi"),
-		  // std::string("opendata"));
-		  
-		  timeproducers.push_back(producers);
-		}
-	}
+    if (opt == "default" || opt2 == "default")
+    {
+      // Use default if it's forced by any option
+      return;
+    }
+
+    // observation uses stationtype-parameter
+    if (opt.empty() && opt2.empty())
+      opt2 = Spine::optional_string(theReq.getParameter("stationtype"), "");
+
+    std::list<std::string> resultProducers;
+
+    // Handle time separation:: either 'model' or 'producer' keyword used
+    if (!opt.empty())
+      boost::algorithm::split(resultProducers, opt, boost::algorithm::is_any_of(";"));
+    else if (!opt2.empty())
+      boost::algorithm::split(resultProducers, opt2, boost::algorithm::is_any_of(";"));
+
+    for (auto& p : resultProducers)
+    {
+      boost::algorithm::to_lower(p);
+      if (p == "itmf")
+      {
+        p = Engine::Observation::FMI_IOT_PRODUCER;
+        iot_producer_specifier = "itmf";
+      }
+    }
+
+    // Verify the producer names are valid
+    const auto obsProducers = getObsProducers(theState);
+
+    for (const auto& p : resultProducers)
+    {
+      const auto& qEngine = theState.getQEngine();
+      bool ok = qEngine.hasProducer(p);
+      if (!obsProducers.empty() && !ok)
+        ok = (obsProducers.find(p) != obsProducers.end());
+      const auto* gridEngine = theState.getGridEngine();
+      if (!ok && gridEngine)
+        ok = gridEngine->isGridProducer(p);
+
+      if (!ok)
+        throw Fmi::Exception(BCP, "Unknown producer name '" + p + "'");
+    }
+
+    // Now split into location parts
+    for (const auto& tproducers : resultProducers)
+    {
+      AreaProducers producers;
+      boost::algorithm::split(producers, tproducers, boost::algorithm::is_any_of(","));
+
+      // FMI producer is deprecated, use OPENDATA instead
+      // std::replace(producers.begin(), producers.end(), std::string("fmi"),
+      // std::string("opendata"));
+
+      timeproducers.push_back(producers);
+    }
+  }
   catch (...)
-	{
-	  throw Fmi::Exception::Trace(BCP, "Operation failed!");
-	}
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
 }
 
 // ----------------------------------------------------------------------
@@ -477,10 +477,14 @@ void Query::parse_aggregation_intervals(const Spine::HTTP::Request& theReq)
     // set aggregation interval if it has not been set in parameter parser
     for (const TS::ParameterAndFunctions& paramfuncs : poptions.parameterFunctions())
     {
-	  set_agg_interval_behind(const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction), agg_interval_behind);
-	  set_agg_interval_ahead(const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction), agg_interval_ahead);
-	  set_agg_interval_behind(const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction), agg_interval_behind);
-	  set_agg_interval_ahead(const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction), agg_interval_ahead);
+      set_agg_interval_behind(const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction),
+                              agg_interval_behind);
+      set_agg_interval_ahead(const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction),
+                             agg_interval_ahead);
+      set_agg_interval_behind(const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction),
+                              agg_interval_behind);
+      set_agg_interval_ahead(const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction),
+                             agg_interval_ahead);
     }
 
     // store maximum aggregation intervals per parameter for later use
@@ -491,10 +495,14 @@ void Query::parse_aggregation_intervals(const Spine::HTTP::Request& theReq)
       if (maxAggregationIntervals.find(paramname) == maxAggregationIntervals.end())
         maxAggregationIntervals.insert(make_pair(paramname, AggregationInterval(0, 0)));
 
-	  set_max_agg_interval_behind(const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction), maxAggregationIntervals[paramname].behind);
-	  set_max_agg_interval_ahead(const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction), maxAggregationIntervals[paramname].ahead);
-	  set_max_agg_interval_behind(const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction), maxAggregationIntervals[paramname].behind);
-	  set_max_agg_interval_ahead(const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction), maxAggregationIntervals[paramname].ahead);
+      set_max_agg_interval_behind(const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction),
+                                  maxAggregationIntervals[paramname].behind);
+      set_max_agg_interval_ahead(const_cast<TS::DataFunction&>(paramfuncs.functions.innerFunction),
+                                 maxAggregationIntervals[paramname].ahead);
+      set_max_agg_interval_behind(const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction),
+                                  maxAggregationIntervals[paramname].behind);
+      set_max_agg_interval_ahead(const_cast<TS::DataFunction&>(paramfuncs.functions.outerFunction),
+                                 maxAggregationIntervals[paramname].ahead);
 
       if (maxAggregationIntervals[paramname].behind > 0 ||
           maxAggregationIntervals[paramname].ahead > 0)
@@ -506,7 +514,6 @@ void Query::parse_aggregation_intervals(const Spine::HTTP::Request& theReq)
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
-
 
 void Query::parse_parameters(const Spine::HTTP::Request& theReq)
 {
@@ -585,8 +592,7 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     }
     poptions.expandParameter("data_source");
 
-	parse_aggregation_intervals(theReq);
-
+    parse_aggregation_intervals(theReq);
   }
   catch (...)
   {
@@ -642,12 +648,11 @@ void Query::parse_attr(const Spine::HTTP::Request& theReq)
   }
 }
 
-
 bool Query::parse_grib_loptions(const State& state)
 {
   try
   {
-	T::Attribute* v1 = attributeList.getAttributeByNameEnd("Grib1.IndicatorSection.EditionNumber");
+    T::Attribute* v1 = attributeList.getAttributeByNameEnd("Grib1.IndicatorSection.EditionNumber");
     T::Attribute* v2 = attributeList.getAttributeByNameEnd("Grib2.IndicatorSection.EditionNumber");
 
     T::Attribute* lat = attributeList.getAttributeByNameEnd("LatitudeOfFirstGridPoint");
@@ -665,7 +670,7 @@ bool Query::parse_grib_loptions(const State& state)
       tmpReq.addParameter("latlon", val);
       loptions.reset(
           new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(tmpReq)));
-	  return true;
+      return true;
     }
     else if (v2 != nullptr && lat != nullptr && lon != nullptr)
     {
@@ -679,11 +684,11 @@ bool Query::parse_grib_loptions(const State& state)
       tmpReq.addParameter("latlon", val);
       loptions.reset(
           new Engine::Geonames::LocationOptions(state.getGeoEngine().parseLocations(tmpReq)));
-	  return true;
+      return true;
     }
 
-	return false;
- }
+    return false;
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
@@ -707,7 +712,7 @@ void Query::parse_inkeyword_locations(const Spine::HTTP::Request& theReq, const 
         inKeywordLocations.insert(inKeywordLocations.end(), places.begin(), places.end());
       }
     }
- }
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
@@ -728,7 +733,7 @@ void Query::parse_origintime(const Spine::HTTP::Request& theReq)
       else
         origintime = Fmi::TimeParser::parse(*tmp);
     }
-}
+  }
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
