@@ -119,6 +119,7 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
         std::vector<T::Coordinate> coordinates;
         coordinates.emplace_back(lon1, lat1);
         coordinates.emplace_back(lon1, lat2);
+        coordinates.emplace_back(lon2, lat2);
         coordinates.emplace_back(lon2, lat1);
         coordinates.emplace_back(lon1, lat1);
         polygonPath.emplace_back(coordinates);
