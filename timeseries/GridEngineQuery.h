@@ -37,6 +37,11 @@ class GridEngineQuery
   bool isGridEngineQuery(const AreaProducers& theProducers, const Query& theQuery) const;
 
  private:
+  void getLocationDefinition(Spine::LocationPtr& loc,
+                             std::vector<std::vector<T::Coordinate>>& polygonPath,
+                             const Spine::TaggedLocation& tloc,
+                             Query& query) const;
+
   const Plugin& itsPlugin;
 
   std::unique_ptr<GridInterface> itsGridInterface;

@@ -684,14 +684,10 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
 
         for (const auto& element : *svgPath)
         {
-          if (element.itsX < left)
-            left = element.itsX;
-          if (element.itsX > right)
-            right = element.itsX;
-          if (element.itsY < bottom)
-            bottom = element.itsY;
-          if (element.itsY > top)
-            top = element.itsY;
+          left = std::min(left, element.itsX);
+          right = std::max(right, element.itsX);
+          bottom = std::min(bottom, element.itsY);
+          top = std::max(top, element.itsY);
         }
       }
     }

@@ -240,28 +240,23 @@ void Config::parse_geometries()
         for (int i = 0; i < additionalTables.getLength(); i++)
         {
           libconfig::Setting& tableConfig = additionalTables[i];
-          std::string source_name;
-          std::string server = (default_server.empty() ? "" : default_server);
-          std::string schema = (default_schema.empty() ? "" : default_schema);
-          std::string table = (default_table.empty() ? "" : default_table);
-          std::string field = (default_field.empty() ? "" : default_field);
-          tableConfig.lookupValue("name", source_name);
-          tableConfig.lookupValue("server", server);
-          tableConfig.lookupValue("schema", schema);
-          tableConfig.lookupValue("table", table);
-          tableConfig.lookupValue("field", field);
 
           Engine::Gis::postgis_identifier postgis_id;
-          postgis_id.source_name = source_name;
-          postgis_id.pgname = server;
-          postgis_id.schema = schema;
-          postgis_id.table = table;
-          postgis_id.field = field;
+          postgis_id.pgname = default_server;
+          postgis_id.schema = default_schema;
+          postgis_id.table = default_table;
+          postgis_id.field = default_field;
+          tableConfig.lookupValue("name", postgis_id.source_name);
+          tableConfig.lookupValue("server", postgis_id.pgname);
+          tableConfig.lookupValue("schema", postgis_id.schema);
+          tableConfig.lookupValue("table", postgis_id.table);
+          tableConfig.lookupValue("field", postgis_id.field);
 
-          if (schema.empty() || table.empty() || field.empty())
+          if (postgis_id.source_name.empty() || postgis_id.schema.empty() ||
+              postgis_id.table.empty() || postgis_id.field.empty())
             throw Fmi::Exception(BCP,
                                  "Configuration file error. Some of the following fields "
-                                 "missing: server, schema, table, field!");
+                                 "missing: name, server, schema, table, field!");
 
           postgis_identifiers.insert(std::make_pair(postgis_id.key(), postgis_id));
         }
