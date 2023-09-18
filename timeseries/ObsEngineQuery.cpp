@@ -392,6 +392,28 @@ void ObsEngineQuery::processObsEngineQuery(const State& state,
   }
 }
 
+void fill_missing_location_params(TS::TimeSeries& ts)
+{
+  TS::Value missing_value = TS::None();
+  TS::Value actual_value = missing_value;
+  bool missing_values_exists = false;
+  for (const auto& item : ts)
+  {
+    if (item.value == missing_value)
+      missing_values_exists = true;
+    else
+      actual_value = item.value;
+    if (actual_value != missing_value && missing_values_exists)
+      break;
+  }
+  if (actual_value != missing_value && missing_values_exists)
+  {
+    for (auto& item : ts)
+      if (item.value == missing_value)
+        item.value = actual_value;
+  }
+}
+
 TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
     const State& state,
     const std::string& producer,
@@ -414,10 +436,10 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
     {
       const ObsParameter& obsParam = obsParameters.at(i);
 
-      std::string paramname(obsParam.param.name());
+      std::string paramname = obsParam.param.name();
+      bool is_location_p = TS::is_location_parameter(paramname);
 
-      if (TS::is_location_parameter(paramname) &&
-          !UtilityFunctions::is_flash_or_mobile_producer(producer))
+      if (is_location_p && !UtilityFunctions::is_flash_or_mobile_producer(producer))
       {
         // add data for location field
         TS::Value value = TS::location_parameter(loc,
@@ -456,34 +478,15 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
         // add data fields fetched from observation
         auto result = *observation_result;
         if (result[obs_result_field_index].empty())
-        {
           continue;
-        }
+
         auto result_at_index = result[obs_result_field_index];
 
         // If time independend special parameter contains missing values in some timesteps,
         // replace them with existing values to keep aggregation working
 
-        if (TS::is_location_parameter(paramname))
-        {
-          TS::Value actual_value = missing_value;
-          bool missing_values_exists = false;
-          for (const auto& item : result_at_index)
-          {
-            if (item.value == missing_value)
-              missing_values_exists = true;
-            else
-              actual_value = item.value;
-            if (actual_value != missing_value && missing_values_exists)
-              break;
-          }
-          if (actual_value != missing_value && missing_values_exists)
-          {
-            for (auto& item : result_at_index)
-              if (item.value == missing_value)
-                item.value = actual_value;
-          }
-        }
+        if (is_location_p)
+          fill_missing_location_params(result_at_index);
 
         ret->push_back(result_at_index);
         std::string pname_plus_snumber = TS::get_parameter_id(obsParameters[i].param);
