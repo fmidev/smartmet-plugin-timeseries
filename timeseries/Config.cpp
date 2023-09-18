@@ -252,11 +252,10 @@ void Config::parse_geometries()
           tableConfig.lookupValue("table", postgis_id.table);
           tableConfig.lookupValue("field", postgis_id.field);
 
-          if (postgis_id.source_name.empty() || postgis_id.schema.empty() ||
-              postgis_id.table.empty() || postgis_id.field.empty())
+          if (postgis_id.schema.empty() || postgis_id.table.empty() || postgis_id.field.empty())
             throw Fmi::Exception(BCP,
                                  "Configuration file error. Some of the following fields "
-                                 "missing: name, server, schema, table, field!");
+                                 "missing: server, schema, table, field!");
 
           postgis_identifiers.insert(std::make_pair(postgis_id.key(), postgis_id));
         }
