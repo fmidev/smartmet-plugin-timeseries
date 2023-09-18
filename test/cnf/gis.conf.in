@@ -28,14 +28,3 @@ gdal:
 	CPL_LOG	= "/dev/null";
 };
 
-epsg:
-(
-	{
-		id		= 2393
-		bbox		= [ 19.24, 31.59, 59.75, 70.09 ]
-		name		= "KKJ / Finland Uniform Coordinate System"
-		scope		= "Large and medium scale topographic mapping and engineering survey."
-		source		= "National Land Survey of Finland; http://www.maanmittauslaitos.fi"
-		deprecated	= false
-	}
-)
