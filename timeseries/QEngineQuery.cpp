@@ -20,6 +20,38 @@ namespace TimeSeries
 {
 namespace
 {
+
+void require_producer(const std::string& producer, const std::string& place)
+{
+  try
+  {
+    if (producer.empty())
+    {
+      Fmi::Exception ex(BCP, "No data available for " + place);
+      ex.disableLogging();
+      throw ex;
+    }
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+void require_validtimes(const boost::shared_ptr<Engine::Querydata::ValidTimeList>& validtimes,
+                        const std::string& producer)
+{
+  try
+  {
+    if (!validtimes || validtimes->empty())
+      throw Fmi::Exception(BCP, "Producer " + producer + " has no valid time steps");
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
 bool is_wkt_area(const Spine::LocationPtr& loc)
 {
   try
@@ -379,6 +411,86 @@ void QEngineQuery::processQEngineQuery(const State& state,
 }
 
 void QEngineQuery::fetchQEngineValues(const State& state,
+                                      const Query& query,
+                                      const std::string& producer,
+                                      const TS::ParameterAndFunctions& paramfunc,
+                                      const Spine::TaggedLocation& tloc,
+                                      const ProducerDataPeriod& producerDataPeriod,
+                                      const Engine::Querydata::Q& qi,
+                                      const NFmiPoint& nearestpoint,
+                                      int precision,
+                                      bool isPointQuery,
+                                      bool loadDataLevels,
+                                      float levelValue,
+                                      const std::string& levelType,
+                                      const boost::optional<float>& height,
+                                      const boost::optional<float>& pressure,
+                                      QueryLevelDataCache& queryLevelDataCache,
+                                      std::vector<TS::TimeSeriesData>& aggregatedData) const
+{
+  try
+  {
+    auto paramname = paramfunc.parameter.name();
+    auto tz = itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
+    auto tlist = generateTList(query, producer, producerDataPeriod);
+
+    if (tlist.empty())
+      return;
+
+    check_request_limit(
+        itsPlugin.itsConfig.requestLimits(), tlist.size(), TS::RequestLimitMember::TIMESTEPS);
+
+    auto querydata_tlist = generateQEngineQueryTimes(query, paramname);
+
+    std::pair<float, std::string> cacheKey(loadDataLevels ? qi->levelValue() : levelValue,
+                                           levelType + paramname);
+
+    if (isPointQuery)
+    {
+      pointQuery(query,
+                 producer,
+                 paramfunc,
+                 tloc,
+                 querydata_tlist,
+                 tlist,
+                 cacheKey,
+                 state,
+                 qi,
+                 nearestpoint,
+                 precision,
+                 loadDataLevels,
+                 pressure,
+                 height,
+                 queryLevelDataCache,
+                 aggregatedData);
+    }
+    else
+    {
+      areaQuery(query,
+                producer,
+                paramfunc,
+                tloc,
+                querydata_tlist,
+                tlist,
+                cacheKey,
+                state,
+                qi,
+                nearestpoint,
+                precision,
+                loadDataLevels,
+                pressure,
+                height,
+                queryLevelDataCache,
+                aggregatedData);
+    }
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+void QEngineQuery::fetchQEngineValues(const State& state,
                                       const TS::ParameterAndFunctions& paramfunc,
                                       int precision,
                                       const Spine::TaggedLocation& tloc,
@@ -392,7 +504,6 @@ void QEngineQuery::fetchQEngineValues(const State& state,
   {
     Spine::LocationPtr loc = tloc.loc;
     std::string place = get_name_base(loc->name);
-    std::string paramname = paramfunc.parameter.name();
 
     NFmiSvgPath svgPath;
     bool isWkt = false;
@@ -404,18 +515,13 @@ void QEngineQuery::fetchQEngineValues(const State& state,
     // Select the producer for the coordinate
     auto producer = selectProducer(*loc, query, areaproducers);
 
-    if (producer.empty())
-    {
-      Fmi::Exception ex(BCP, "No data available for " + place);
-      ex.disableLogging();
-      throw ex;
-    }
+    require_producer(producer, place);
 
     auto qi = (query.origintime ? state.get(producer, *query.origintime) : state.get(producer));
 
     const auto validtimes = qi->validTimes();
-    if (validtimes->empty())
-      throw Fmi::Exception(BCP, "Producer " + producer + " has no valid time steps");
+    require_validtimes(validtimes, producer);
+
     query.toptions.setDataTimes(validtimes, qi->isClimatology());
 
     // No area operations allowed for non-grid data
@@ -443,145 +549,99 @@ void QEngineQuery::fetchQEngineValues(const State& state,
 
     bool loadDataLevels =
         (!query.levels.empty() || (query.pressures.empty() && query.heights.empty()));
-    std::string levelType(loadDataLevels ? "data:" : "");
-    auto itPressure = query.pressures.begin();
-    auto itHeight = query.heights.begin();
+
+    // Check the total number of levels
+    std::set<float> received_levels;
+    if (loadDataLevels)
+    {
+      for (qi->resetLevel(); qi->nextLevel();)
+      {
+        float levelValue = qi->levelValue();
+
+        // check if only some levels are chosen
+        int level = static_cast<int>(levelValue);
+        if (!query.levels.empty() && query.levels.find(level) == query.levels.end())
+          continue;
+
+        received_levels.insert(levelValue);
+      }
+    }
+
+    check_request_limit(itsPlugin.itsConfig.requestLimits(),
+                        received_levels.size() + query.heights.size() + query.pressures.size(),
+                        TS::RequestLimitMember::LEVELS);
 
     if (loadDataLevels)
-      check_request_limit(
-          itsPlugin.itsConfig.requestLimits(), query.levels.size(), TS::RequestLimitMember::LEVELS);
-    if (itPressure != query.pressures.end())
-      check_request_limit(itsPlugin.itsConfig.requestLimits(),
-                          query.pressures.size(),
-                          TS::RequestLimitMember::LEVELS);
-    if (itHeight != query.heights.end())
-      check_request_limit(itsPlugin.itsConfig.requestLimits(),
-                          query.heights.size(),
-                          TS::RequestLimitMember::LEVELS);
-
-    std::set<int> received_levels;
-    // Loop over the levels
-    for (qi->resetLevel();;)
     {
-      boost::optional<float> pressure;
-      boost::optional<float> height;
-      float levelValue = 0;
-
-      if (loadDataLevels)
+      for (qi->resetLevel(); qi->nextLevel();)
       {
-        if (!qi->nextLevel())
-        {
-          // No more native/data levels; load/interpolate pressure and height
-          // levels if any
-          loadDataLevels = false;
-        }
-        else
-        {
-          // check if only some levels are chosen
-          int level = static_cast<int>(qi->levelValue());
-          if (!query.levels.empty())
-          {
-            if (query.levels.find(level) == query.levels.end())
-              continue;
-          }
-          received_levels.insert(level);
-          check_request_limit(itsPlugin.itsConfig.requestLimits(),
-                              received_levels.size(),
-                              TS::RequestLimitMember::LEVELS);
-        }
+        float levelValue = qi->levelValue();
+
+        int level = static_cast<int>(levelValue);
+        if (!query.levels.empty() && query.levels.find(level) == query.levels.end())
+          continue;
+
+        fetchQEngineValues(state,
+                           query,
+                           producer,
+                           paramfunc,
+                           tloc,
+                           producerDataPeriod,
+                           qi,
+                           nearestpoint,
+                           precision,
+                           isPointQuery,
+                           loadDataLevels,
+                           levelValue,
+                           "data:",
+                           {},
+                           {},
+                           queryLevelDataCache,
+                           aggregatedData);
       }
+    }
 
-      if (!loadDataLevels)
-      {
-        if (itPressure != query.pressures.end())
-        {
-          levelType = "pressure:";
-          pressure = levelValue = *(itPressure++);
-        }
-        else if (itHeight != query.heights.end())
-        {
-          levelType = "height:";
-          height = levelValue = *(itHeight++);
-        }
-        else
-          break;
-      }
+    for (auto pressure : query.pressures)
+    {
+      fetchQEngineValues(state,
+                         query,
+                         producer,
+                         paramfunc,
+                         tloc,
+                         producerDataPeriod,
+                         qi,
+                         nearestpoint,
+                         precision,
+                         isPointQuery,
+                         loadDataLevels,
+                         pressure,
+                         "pressure:",
+                         {},
+                         pressure,
+                         queryLevelDataCache,
+                         aggregatedData);
+    }
 
-      auto tz =
-          itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
-      auto tlist = generateTList(query, producer, producerDataPeriod);
-
-      if (tlist.empty())
-        return;
-
-      check_request_limit(
-          itsPlugin.itsConfig.requestLimits(), tlist.size(), TS::RequestLimitMember::TIMESTEPS);
-
-      auto querydata_tlist = generateQEngineQueryTimes(query, paramname);
-
-#ifdef MYDEBUG
-      std::cout << std::endl << "producer: " << producer << std::endl;
-      std::cout << "data period start time: "
-                << producerDataPeriod.getLocalStartTime(
-                       producer, query.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones())
-                << std::endl;
-      std::cout << "data period end time: "
-                << producerDataPeriod.getLocalEndTime(
-                       producer, query.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones())
-                << std::endl;
-      std::cout << "paramname: " << paramname << std::endl;
-      std::cout << "query.timezone: " << query.timezone << std::endl;
-      std::cout << query.toptions;
-
-      std::cout << "generated timesteps: " << std::endl;
-      for (const boost::local_time::local_date_time& ldt : tlist)
-      {
-        std::cout << ldt << std::endl;
-      }
-#endif
-
-      std::pair<float, std::string> cacheKey(loadDataLevels ? qi->levelValue() : levelValue,
-                                             levelType + paramname);
-
-      if (isPointQuery)
-      {
-        pointQuery(query,
-                   producer,
-                   paramfunc,
-                   tloc,
-                   querydata_tlist,
-                   tlist,
-                   cacheKey,
-                   state,
-                   qi,
-                   nearestpoint,
-                   precision,
-                   loadDataLevels,
-                   pressure,
-                   height,
-                   queryLevelDataCache,
-                   aggregatedData);
-      }
-      else
-      {
-        areaQuery(query,
-                  producer,
-                  paramfunc,
-                  tloc,
-                  querydata_tlist,
-                  tlist,
-                  cacheKey,
-                  state,
-                  qi,
-                  nearestpoint,
-                  precision,
-                  loadDataLevels,
-                  pressure,
-                  height,
-                  queryLevelDataCache,
-                  aggregatedData);
-      }
-    }  // levels
+    for (auto height : query.heights)
+    {
+      fetchQEngineValues(state,
+                         query,
+                         producer,
+                         paramfunc,
+                         tloc,
+                         producerDataPeriod,
+                         qi,
+                         nearestpoint,
+                         precision,
+                         isPointQuery,
+                         loadDataLevels,
+                         height,
+                         "height:",
+                         height,
+                         {},
+                         queryLevelDataCache,
+                         aggregatedData);
+    }
 
     // store level-data
     PostProcessing::store_data(aggregatedData, query, outputData);
@@ -978,6 +1038,7 @@ void QEngineQuery::areaQuery(const Query& theQuery,
 
     auto place = get_name_base(loc->name);
     const auto& paramname = theParamFunc.parameter.name();
+
     bool isWkt = false;
     NFmiSvgPath svgPath;
     loc = resolveLocation(theTLoc, theQuery, svgPath, isWkt);

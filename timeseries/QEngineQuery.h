@@ -24,6 +24,7 @@ namespace Plugin
 {
 namespace TimeSeries
 {
+
 class QEngineQuery
 {
  public:
@@ -51,6 +52,25 @@ class QEngineQuery
                           const ProducerDataPeriod& producerDataPeriod,
                           QueryLevelDataCache& queryLevelDataCache,
                           TS::OutputData& outputData) const;
+
+  void fetchQEngineValues(const State& state,
+                          const Query& query,
+                          const std::string& producer,
+                          const TS::ParameterAndFunctions& paramfunc,
+                          const Spine::TaggedLocation& tloc,
+                          const ProducerDataPeriod& producerDataPeriod,
+                          const Engine::Querydata::Q& qi,
+                          const NFmiPoint& nearestpoint,
+                          int precision,
+                          bool isPointQuery,
+                          bool loadDataLevels,
+                          float levelValue,
+                          const std::string& levelType,
+                          const boost::optional<float>& height,
+                          const boost::optional<float>& pressure,
+                          QueryLevelDataCache& queryLevelDataCache,
+                          std::vector<TS::TimeSeriesData>& aggregatedData) const;
+
   TS::TimeSeriesGenerator::LocalTimeList generateQEngineQueryTimes(
       const Query& query, const std::string& paramname) const;
 
