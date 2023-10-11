@@ -23,6 +23,30 @@ void print_settings(const Engine::Observation::Settings& settings)
   std::cout << settings;
 }
 
+TS::TimeSeriesByLocation timeseries_by_fmisid(
+    const std::string& producer,
+    const TS::TimeSeriesVectorPtr& observation_result,
+    const TS::TimeSeriesGeneratorCache::TimeList& tlist,
+    int fmisid_index)
+{
+  try
+  {
+    TS::TimeSeriesByLocation ret;
+
+    if (UtilityFunctions::is_flash_or_mobile_producer(producer))
+    {
+      ret.emplace_back(make_pair(0, observation_result));
+      return ret;
+    }
+
+	return TS::get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
 TS::TimeSeriesGenerator::LocalTimeList get_timesteps(const TS::TimeSeries ts)
 {
   try
@@ -600,7 +624,7 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       tlist = itsPlugin.itsTimeSeriesCache->generate(query.toptions, tz);
 
     TS::TimeSeriesByLocation observation_result_by_location =
-        PostProcessing::get_timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
+        timeseries_by_fmisid(producer, observation_result, tlist, fmisid_index);
 
     // If producer is syke or flash accept all timesteps
     bool acceptAllTimesteps =
@@ -858,7 +882,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
 
     // Separate timeseries of different locations to their own data structures and add missing
     // timesteps
-    TS::TimeSeriesByLocation tsv_area = PostProcessing::get_timeseries_by_fmisid(
+    TS::TimeSeriesByLocation tsv_area = timeseries_by_fmisid(
         producer, observation_result, tlist_all, fmisid_index);
 
     std::vector<TS::FmisidTSVectorPair> tsv_area_with_added_fields;

@@ -40,8 +40,6 @@ Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
                                 const std::string& idtype,
                                 const std::string& language);
 
-int get_fmisid_value(const TS::TimeSeries& ts);
-
 #ifndef WITHOUT_OBSERVATION
 
 std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
@@ -50,7 +48,6 @@ std::vector<int> get_fmisids_for_wkt(Engine::Observation::Engine* observation,
 
 int get_fmisid_index(const Engine::Observation::Settings& settings);
 #endif
-int get_fmisid_value(const TS::Value& value);
 
 std::unique_ptr<Spine::Location> get_coordinate_location(double lon,
                                                          double lat,

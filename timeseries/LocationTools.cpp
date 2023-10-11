@@ -444,68 +444,6 @@ int get_fmisid_index(const Engine::Observation::Settings& settings)
 
 // ----------------------------------------------------------------------
 /*!
- * \brief
- */
-// ----------------------------------------------------------------------
-
-#ifndef WITHOUT_OBSERVATION
-
-int get_fmisid_value(const TS::Value& value)
-{
-  try
-  {
-    // fmisid can be std::string or double
-    if (boost::get<std::string>(&value))
-    {
-      std::string fmisidstr = boost::get<std::string>(value);
-      boost::algorithm::trim(fmisidstr);
-      if (!fmisidstr.empty())
-        return std::stoi(fmisidstr);
-
-      throw Fmi::Exception(BCP, "fmisid value is an empty string");
-    }
-    if (boost::get<int>(&value))
-      return boost::get<int>(value);
-    if (boost::get<double>(&value))
-      return boost::get<double>(value);
-    if (boost::get<TS::None>(&value))
-      throw Fmi::Exception(BCP, "Station with null fmisid encountered!");
-    if (boost::get<TS::LonLat>(&value))
-      throw Fmi::Exception(BCP, "Station with latlon as fmisid encountered!");
-
-    throw Fmi::Exception(BCP, "Unknown fmisid type");
-  }
-  catch (...)
-  {
-    throw Fmi::Exception::Trace(BCP, "Operation failed!");
-  }
-}
-
-#endif
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Extract fmisid from a timeseries vector where fmisid may not be set for all rows
- */
-// ----------------------------------------------------------------------
-
-int get_fmisid_value(const TS::TimeSeries& ts)
-{
-  for (const auto& tv : ts)
-  {
-    try
-    {
-      return get_fmisid_value(tv.value);
-    }
-    catch (...)
-    {
-    }
-  }
-  return -1;
-}
-
-// ----------------------------------------------------------------------
-/*!
  * \brief Fetch Location from geoengine for lon-lat coordinate
  */
 // ----------------------------------------------------------------------

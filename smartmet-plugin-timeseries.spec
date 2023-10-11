@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.9.29
+Version: 23.10.11
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,7 +27,7 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 23.9.18
+BuildRequires: smartmet-library-timeseries-devel >= 23.10.11
 BuildRequires: smartmet-library-spine-devel >= 23.8.31
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 23.8.31
@@ -52,7 +52,7 @@ Requires: smartmet-library-locus >= 23.7.28
 Requires: smartmet-library-macgyver >= 23.8.31
 Requires: smartmet-library-newbase >= 23.8.30
 Requires: smartmet-library-spine >= 23.8.31
-Requires: smartmet-library-timeseries >= 23.9.18
+Requires: smartmet-library-timeseries >= 23.10.11
 Requires: smartmet-engine-geonames >= 23.9.6
 Requires: smartmet-engine-querydata >= 23.8.31
 Requires: smartmet-engine-gis >= 23.8.28
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Oct 11 2023 Anssi Reponen <anssi.reponen@fmi.fi> - 23.10.11-1.fmi
+- Moved some aggregation related functions to timeseries-library (BRAINSTORM-2457)
+
 * Fri Sep 29 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.9.29-1.fmi
 - Refactored code
 
