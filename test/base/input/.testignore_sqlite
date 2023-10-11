@@ -11,3 +11,6 @@ magneto_observations.get
 fmi_icebuoy_observations.get
 fmi_icebuoy_observations_bbox.get
 fmi_copernicus_observations.get
+buoy-bbox.get
+open-latlons.get
+open-lonlats.get
