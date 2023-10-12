@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.10.11
-Release: 2%{?dist}.fmi
+Version: 23.10.12
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -31,8 +31,8 @@ BuildRequires: smartmet-library-timeseries-devel >= 23.10.11
 BuildRequires: smartmet-library-spine-devel >= 23.10.10
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 23.10.10
-BuildRequires: smartmet-library-grid-content-devel >= 23.9.29
-BuildRequires: smartmet-library-grid-files-devel >= 23.10.3
+BuildRequires: smartmet-library-grid-content-devel >= 23.10.12
+BuildRequires: smartmet-library-grid-files-devel >= 23.10.12
 BuildRequires: smartmet-library-newbase-devel >= 23.10.11
 BuildRequires: smartmet-library-gis-devel >= 23.9.12
 BuildRequires: smartmet-engine-geonames-devel >= 23.9.6
@@ -41,7 +41,7 @@ BuildRequires: smartmet-engine-observation-devel >= 23.10.11
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 23.8.31
 BuildRequires: smartmet-engine-gis-devel >= 23.8.28
-BuildRequires: smartmet-engine-grid-devel >= 23.9.29
+BuildRequires: smartmet-engine-grid-devel >= 23.10.12
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 23.10.11
@@ -56,7 +56,7 @@ Requires: smartmet-library-timeseries >= 23.10.11
 Requires: smartmet-engine-geonames >= 23.9.6
 Requires: smartmet-engine-querydata >= 23.8.31
 Requires: smartmet-engine-gis >= 23.8.28
-Requires: smartmet-engine-grid >= 23.9.29
+Requires: smartmet-engine-grid >= 23.10.12
 Requires: smartmet-server >= 23.8.30
 Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
@@ -80,7 +80,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 23.10.11
 %endif
-#TestRequires: smartmet-engine-grid >= 23.9.29
+#TestRequires: smartmet-engine-grid >= 23.10.12
 #TestRequires: gdal35
 #TestRequires: libwebp13
 
@@ -107,6 +107,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Oct 12 2023 Andris Pavēnis <andris.pavenis@fmi.fi> 23.10.12-1.fmi
+- Grid supportrelated updates and fixes
+- QEngineQuery: do not try to load data levels for pressures and heights
+
 * Wed Oct 11 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.10.11-2.fmi
 - Do not resolve host names for exceptions for normal requests
 
