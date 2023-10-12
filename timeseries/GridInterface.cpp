@@ -552,6 +552,12 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
         grid_endTime = "21000101T000000";
       }
 
+
+      if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes)
+      {
+        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::TimeStepIsData;
+      }
+
       if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::TimeSteps)
       {
         gridQuery.mTimesteps = 0;
@@ -1747,18 +1753,23 @@ void GridInterface::exteractQueryResult(
 
 
               std::string n;
+              int idx = -1;
 
               if (gridQuery->mQueryParameterList[pid].mParam.substr(2,1) == "-")
+              {
                 n = gridQuery->mQueryParameterList[pid].mParam.substr(1,1);
+                idx = std::stoi(gridQuery->mQueryParameterList[pid].mParam.substr(3));
+              }
               else
               if (gridQuery->mQueryParameterList[pid].mParam.substr(3,1) == "-")
-                n = gridQuery->mQueryParameterList[pid].mParam.substr(1,2);
-
-
-              auto opt_idx = Fmi::stoi_opt(gridQuery->mQueryParameterList[pid].mParam.substr(3));
-              if (opt_idx && *opt_idx >= 0 && *opt_idx < pLen)
               {
-                auto cpid = pidList.find(((ulonglong)(*opt_idx) << 32) + t);
+                n = gridQuery->mQueryParameterList[pid].mParam.substr(1,2);
+                idx = std::stoi(gridQuery->mQueryParameterList[pid].mParam.substr(4));
+              }
+
+              if (idx >= 0 && idx < pLen)
+              {
+                auto cpid = pidList.find(((ulonglong)(idx) << 32) + t);
                 if (cpid != pidList.end())
                 {
                   uint i = cpid->second;
@@ -1783,8 +1794,17 @@ void GridInterface::exteractQueryResult(
                   }
                   else if (n == "G") // Generation
                   {
-                    TS::TimedValue tsValue(queryTime, C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mGenerationId));
-                    tsForNonGridParam->emplace_back(tsValue);
+                    T::GenerationInfo info;
+                    if (itsGridEngine->getGenerationInfoById(C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mGenerationId), info))
+                    {
+                      TS::TimedValue tsValue(queryTime,info.mName);
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
+                    else
+                    {
+                      TS::TimedValue tsValue(queryTime, C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mGenerationId));
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
                   }
                   else if (n == "GM") // Geometry
                   {
