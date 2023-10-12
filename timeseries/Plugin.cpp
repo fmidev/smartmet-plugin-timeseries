@@ -581,7 +581,13 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
     Fmi::Exception ex(BCP, "Request processing exception!", nullptr);
     ex.addParameter("URI", theRequest.getURI());
     ex.addParameter("ClientIP", theRequest.getClientIP());
-    ex.addParameter("HostName", Spine::HostInfo::getHostName(theRequest.getClientIP()));
+
+    // Do not resolve the host unless we're clearly debugging, since resolving hostnames
+    // may take several seconds. Using a separate cache in front of the one in the operating
+    // system would be a further improvement.
+
+    if (isdebug)
+      ex.addParameter("HostName", Spine::HostInfo::getHostName(theRequest.getClientIP()));
 
     const bool check_token = true;
     auto apikey = Spine::FmiApiKey::getFmiApiKey(theRequest, check_token);
