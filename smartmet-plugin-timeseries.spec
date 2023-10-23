@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.10.12
+Version: 23.10.20
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,7 +27,7 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 23.10.11
+BuildRequires: smartmet-library-timeseries-devel >= 23.10.20
 BuildRequires: smartmet-library-spine-devel >= 23.10.10
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 23.10.10
@@ -52,7 +52,7 @@ Requires: smartmet-library-locus >= 23.7.28
 Requires: smartmet-library-macgyver >= 23.10.10
 Requires: smartmet-library-newbase >= 23.10.11
 Requires: smartmet-library-spine >= 23.10.10
-Requires: smartmet-library-timeseries >= 23.10.11
+Requires: smartmet-library-timeseries >= 23.10.20
 Requires: smartmet-engine-geonames >= 23.9.6
 Requires: smartmet-engine-querydata >= 23.8.31
 Requires: smartmet-engine-gis >= 23.8.28
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri Oct 20 2023 Anssi Reponen <anssi.reponen@fmi.fi> - 23.10.20-1.fmi
+- Added tests for amean_t function (BRAINSTORM-2575)
+
 * Thu Oct 12 2023 Andris Pavēnis <andris.pavenis@fmi.fi> 23.10.12-1.fmi
 - Grid supportrelated updates and fixes
 - QEngineQuery: do not try to load data levels for pressures and heights
