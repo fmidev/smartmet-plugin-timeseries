@@ -703,7 +703,8 @@ necessary returned to the user.
 |interpolatedir_t(field/btime/atime) |Same as above but for direction parameters in range 0...360. |
 |nearest_t(field/btime/atime) |Replaces the missing value with nearest value inside given time interval. |
 |median_t(field/btime/atime) |The median value of the field evaluated over the given time interval.|
-|mean_t(field/btime/atime) |The mean value of the field evaluated over the given time interval. |
+|amean_t(field/btime/atime) |The arithmetic mean value of the field evaluated over the given time interval. |
+|mean_t(field/btime/atime) |The mean value of the field evaluated over the given time interval by using the trapezoidal rule. |
 |meandir_t(field/btime/atime) |Same as above but for direction parameters in range 0...360. |
 |min_t(field/btime/atime) |The minimum value of the field in the given time interval.|
 |max_t(field/btime/atime) |The maximum value of the field in the given time interval.|
@@ -740,6 +741,11 @@ during that interval which are used in calculating the min, max and mean
 temperatures.
 
 Modular means and standard deviations are calculated using the Mitsuta algorithm.
+
+mean_t uses the trapezoidal rule instead of the normal arithmetic
+formula mostly for historical reasons. Certain observations were
+measured in irregular intervals, and for such cases the arithmetic
+mean could distort the mean value significantly.
 
 ### Aggregate functions over an area and time
 
