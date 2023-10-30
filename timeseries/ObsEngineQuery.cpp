@@ -710,6 +710,7 @@ void ObsEngineQuery::handleSpecialParameter(const ObsParameter& obsparam,
         obsparam.param.name() != STATIONLONGITUDE_PARAM &&
         obsparam.param.name() != STATIONLATITUDE_PARAM &&
         obsparam.param.name() != STATION_ELEVATION_PARAM &&
+        obsparam.param.name() != STATIONTYPE_PARAM &&
         obsparam.param.name() != STATIONARY_PARAM &&
         // obsparam.param.name() != DISTANCE_PARAM &&
         // obsparam.param.name() != DIRECTION_PARAM &&

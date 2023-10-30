@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.10.20
+Version: 23.10.26
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,7 +27,7 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 23.10.20
+BuildRequires: smartmet-library-timeseries-devel >= 23.10.26
 BuildRequires: smartmet-library-spine-devel >= 23.10.20
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 23.10.10
@@ -37,14 +37,14 @@ BuildRequires: smartmet-library-newbase-devel >= 23.10.11
 BuildRequires: smartmet-library-gis-devel >= 23.9.12
 BuildRequires: smartmet-engine-geonames-devel >= 23.9.6
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 23.10.18
+BuildRequires: smartmet-engine-observation-devel >= 23.10.26
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 23.10.12
 BuildRequires: smartmet-engine-gis-devel >= 23.8.28
 BuildRequires: smartmet-engine-grid-devel >= 23.10.12
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 23.10.18
+#Requires: smartmet-engine-observation >= 23.10.26
 #%endif
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 23.9.12
@@ -52,7 +52,7 @@ Requires: smartmet-library-locus >= 23.7.28
 Requires: smartmet-library-macgyver >= 23.10.10
 Requires: smartmet-library-newbase >= 23.10.11
 Requires: smartmet-library-spine >= 23.10.20
-Requires: smartmet-library-timeseries >= 23.10.20
+Requires: smartmet-library-timeseries >= 23.10.26
 Requires: smartmet-engine-geonames >= 23.9.6
 Requires: smartmet-engine-querydata >= 23.10.12
 Requires: smartmet-engine-gis >= 23.8.28
@@ -78,7 +78,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 23.8.28
 #TestRequires: smartmet-engine-querydata >= 23.10.12
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 23.10.18
+#TestRequires: smartmet-engine-observation >= 23.10.26
 %endif
 #TestRequires: smartmet-engine-grid >= 23.10.12
 #TestRequires: gdal35
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Oct 26 2023 Anssi Reponen <anssi.reponen@fmi.fi> - 23.10.26-1.fmi
+- Added handling of stationtype parameter (BRAINSTORM-2756)
+
 * Fri Oct 20 2023 Anssi Reponen <anssi.reponen@fmi.fi> - 23.10.20-1.fmi
 - Added tests for amean_t function (BRAINSTORM-2575)
 
