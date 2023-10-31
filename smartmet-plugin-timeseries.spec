@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.10.30
+Version: 23.10.31
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Oct 31 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.10.31-1.fmi
+- Fix to DST change handling
+
 * Mon Oct 30 2023 Anssi Reponen <anssi.reponen@fmi.fi> - 23.10.30-1.fmi
 - Added handling of stationtype parameter (BRAINSTORM-2756)
 
