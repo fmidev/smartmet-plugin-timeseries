@@ -1310,36 +1310,48 @@ void GridInterface::exteractCoordinatesAndAggrecationTimes(
   FUNCTION_TRACE
   try
   {
+    bool timezoneIsUTC = false;
+    if (!tz || strcasecmp(tz->std_zone_name().c_str(),"UTC") == 0)
+      timezoneIsUTC = true;
+
     int pLen = C_INT(gridQuery->mQueryParameterList.size());
     for (int p = 0; p < pLen; p++)
     {
-      uint xLen = gridQuery->mQueryParameterList[p].mValueList.size();
-      for (uint x = 0; x < xLen; x++)
+      uint tLen = gridQuery->mQueryParameterList[p].mValueList.size();
+      if (tLen > 0)
       {
-        if ((gridQuery->mQueryParameterList[p].mValueList[x]->mFlags & QueryServer::ParameterValues::Flags::AggregationValue) != 0)
+        std::string prevLocalTime;
+        for (uint t = 0; t < tLen; t++)
         {
-          // This value is added for aggregation. We should remove it later.
-
-          auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[p].mValueList[x]->mForecastTimeUTC);
+          auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[p].mValueList[t]->mForecastTimeUTC);
           boost::local_time::local_date_time queryTime(dt, tz);
+          std::string lt = Fmi::to_iso_string(queryTime.local_time());
 
-          aggregationTimes.insert(queryTime);
-        }
-
-        if (coordinates.empty())
-        {
-          uint len = gridQuery->mQueryParameterList[p].mValueList[x]->mValueList.getLength();
-          if (len > 0)
+          if ((gridQuery->mQueryParameterList[p].mValueList[t]->mFlags & QueryServer::ParameterValues::Flags::AggregationValue) != 0 ||
+              (!timezoneIsUTC  &&  prevLocalTime == lt))
           {
-            for (uint v = 0; v < len; v++)
+            // This value is added for aggregation or it has same localtime
+            // as the previous timestep. We should remove it after aggregation.
+
+            aggregationTimes.insert(queryTime);
+          }
+
+          if (coordinates.empty())
+          {
+            uint len = gridQuery->mQueryParameterList[p].mValueList[t]->mValueList.getLength();
+            if (len > 0)
             {
-              T::GridValue val;
-              if (gridQuery->mQueryParameterList[p].mValueList[x]->mValueList.getGridValueByIndex(v, val))
+              for (uint v = 0; v < len; v++)
               {
-                coordinates.emplace_back(T::Coordinate(val.mX, val.mY));
+                T::GridValue val;
+                if (gridQuery->mQueryParameterList[p].mValueList[t]->mValueList.getGridValueByIndex(v, val))
+                {
+                  coordinates.emplace_back(T::Coordinate(val.mX, val.mY));
+                }
               }
             }
           }
+          prevLocalTime = lt;
         }
       }
     }
