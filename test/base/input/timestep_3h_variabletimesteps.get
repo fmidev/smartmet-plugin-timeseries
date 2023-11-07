@@ -1,0 +1,1 @@
+GET /timeseries?model=fmiforecast&timestep=3h&starttime=data&place=Helsinki&param=time,Temperature&endtime=data HTTP/1.0
