@@ -16,7 +16,7 @@
 // ======================================================================
 
 #pragma once
-#include <boost/date_time/posix_time/ptime.hpp>
+#include <macgyver/DateTime.h>
 #include <engines/querydata/OriginTime.h>
 #include <engines/querydata/Producer.h>
 #include <engines/querydata/Q.h>
@@ -83,8 +83,8 @@ class State
   const Fmi::TimeZones& getTimeZones() const;
   // The fixed time during the query may also be overridden
   // for testing purposes
-  const boost::posix_time::ptime& getTime() const;
-  void setTime(const boost::posix_time::ptime& theTime);
+  const Fmi::DateTime& getTime() const;
+  void setTime(const Fmi::DateTime& theTime);
 
   // Get querydata for the given input
   Engine::Querydata::Q get(const Engine::Querydata::Producer& theProducer) const;
@@ -94,7 +94,7 @@ class State
 
  private:
   const Plugin& itsPlugin;
-  boost::posix_time::ptime itsTime;
+  Fmi::DateTime itsTime;
   TS::LocalTimePoolPtr itsLocalTimePool{nullptr};
 
   // Querydata caches - always make the same choice for same locations and producers

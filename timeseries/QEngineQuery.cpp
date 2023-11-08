@@ -334,7 +334,7 @@ void QEngineQuery::processQEngineQuery(const State& state,
                         TS::RequestLimitMember::PARAMETERS);
 
     // first timestep is here in utc
-    boost::posix_time::ptime first_timestep = masterquery.latestTimestep;
+    Fmi::DateTime first_timestep = masterquery.latestTimestep;
 
     bool firstProducer = outputData.empty();
 
@@ -358,7 +358,7 @@ void QEngineQuery::processQEngineQuery(const State& state,
 
       q.toptions.startTime = first_timestep;
       if (!firstProducer)
-        q.toptions.startTime += boost::posix_time::minutes(1);
+        q.toptions.startTime += Fmi::Minutes(1);
 
       // producer can be alias, get actual producer
       std::string producer(selectProducer(*(tloc.loc), q, areaproducers));
@@ -367,7 +367,7 @@ void QEngineQuery::processQEngineQuery(const State& state,
                ? false
                : itsPlugin.itsEngines.qEngine->getProducerConfig(producer).isclimatology);
 
-      boost::local_time::local_date_time data_period_endtime(producerDataPeriod.getLocalEndTime(
+      Fmi::LocalDateTime data_period_endtime(producerDataPeriod.getLocalEndTime(
           producer, q.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones()));
 
       // Reset for each new location, since fetchQEngineValues modifies it
@@ -676,13 +676,13 @@ TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateQEngineQueryTimes(
 
     // If we are going to do aggregation, we get all timesteps between starttime and endtime from
     // query data file. After aggregation only the requested timesteps are shown to user
-    std::set<boost::local_time::local_date_time> qdtimesteps(tlist->begin(), tlist->end());
+    std::set<Fmi::LocalDateTime> qdtimesteps(tlist->begin(), tlist->end());
 
     // time frame is extended by aggregation interval
-    boost::local_time::local_date_time timeseriesStartTime = *(tlist->begin());
-    boost::local_time::local_date_time timeseriesEndTime = *(--tlist->end());
-    timeseriesStartTime -= boost::posix_time::minutes(aggregationIntervalBehind);
-    timeseriesEndTime += boost::posix_time::minutes(aggregationIntervalAhead);
+    Fmi::LocalDateTime timeseriesStartTime = *(tlist->begin());
+    Fmi::LocalDateTime timeseriesEndTime = *(--tlist->end());
+    timeseriesStartTime -= Fmi::Minutes(aggregationIntervalBehind);
+    timeseriesEndTime += Fmi::Minutes(aggregationIntervalAhead);
 
     TS::TimeSeriesGeneratorOptions topt = query.toptions;
 
@@ -716,7 +716,7 @@ TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateQEngineQueryTimes(
 
 #ifdef MYDEBUG
     std::cout << "Timesteps for timeseries: " << std::endl;
-    for (const boost::local_time::local_date_time& ldt : ret)
+    for (const Fmi::LocalDateTime& ldt : ret)
     {
       std::cout << ldt << std::endl;
     }
@@ -1227,7 +1227,7 @@ TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateTList(
     // except from climatology
     if (!tlist.empty() && !isClimatologyProducer)
     {
-      boost::local_time::local_date_time data_period_endtime = producerDataPeriod.getLocalEndTime(
+      Fmi::LocalDateTime data_period_endtime = producerDataPeriod.getLocalEndTime(
           producer, query.timezone, itsPlugin.itsEngines.geoEngine->getTimeZones());
 
       while (!tlist.empty() && !data_period_endtime.is_not_a_date_time() &&

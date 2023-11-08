@@ -188,7 +188,7 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
     if (itsPlugin.itsConfig.gridEngineDisabled())
       return false;
 
-    boost::posix_time::ptime latestTimestep = query.latestTimestep;
+    Fmi::DateTime latestTimestep = query.latestTimestep;
 
     for (const auto& tloc : query.loptions->locations())
     {

@@ -7,8 +7,8 @@
 #include <engines/observation/Engine.h>
 #endif
 
-#include <boost/date_time/local_time/local_time.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <macgyver/LocalDateTime.h>
+#include <macgyver/DateTime.h>
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <map>
@@ -40,12 +40,12 @@ class ProducerDataPeriod
 
   DataPeriod itsDataPeriod;
 
-  boost::local_time::local_date_time getTime(const std::string& producer,
+  Fmi::LocalDateTime getTime(const std::string& producer,
                                              const std::string& timezone,
                                              const Fmi::TimeZones& timezones,
                                              eTime time_enum) const;
 
-  boost::posix_time::ptime getTime(const std::string& producer, eTime time_enum) const;
+  Fmi::DateTime getTime(const std::string& producer, eTime time_enum) const;
 
   void getQEngineDataPeriods(const Engine::Querydata::Engine& querydata,
                              const TimeProducers& producers);
@@ -53,21 +53,21 @@ class ProducerDataPeriod
 #ifndef WITHOUT_OBSERVATION
   void getObsEngineDataPeriods(const Engine::Observation::Engine& observation,
                                const TimeProducers& producers,
-                               const boost::posix_time::ptime& now);
+                               const Fmi::DateTime& now);
 #endif
 
  public:
-  boost::local_time::local_date_time getLocalStartTime(const std::string& producer,
+  Fmi::LocalDateTime getLocalStartTime(const std::string& producer,
                                                        const std::string& timezone,
                                                        const Fmi::TimeZones& timezones) const;
 
-  boost::posix_time::ptime getUTCStartTime(const std::string& producer) const;
+  Fmi::DateTime getUTCStartTime(const std::string& producer) const;
 
-  boost::local_time::local_date_time getLocalEndTime(const std::string& producer,
+  Fmi::LocalDateTime getLocalEndTime(const std::string& producer,
                                                      const std::string& timezone,
                                                      const Fmi::TimeZones& timezones) const;
 
-  boost::posix_time::ptime getUTCEndTime(const std::string& producer) const;
+  Fmi::DateTime getUTCEndTime(const std::string& producer) const;
 
 #ifndef WITHOUT_OBSERVATION
   void init(const State& state,
