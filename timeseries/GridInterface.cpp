@@ -460,10 +460,14 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
       startTimeUTC = false;
       grid_startTime = startT.substr(0, 9) + "000000";
 
+      uint tstep = step;
+      if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
+        tstep = 3600;
+
       while (grid_startTime < startT)
       {
         auto ptime = toTimeStamp(grid_startTime);
-        ptime = ptime + boost::posix_time::seconds(step);
+        ptime = ptime + boost::posix_time::seconds(tstep);
         grid_startTime = Fmi::to_iso_string(ptime);
       }
 
@@ -543,6 +547,9 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
         // startTime is "data", which means that we should read all the data from the beginning
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeFromData;
         grid_startTime = "19000101T000000";
+
+        if (!masterquery.toptions.endTimeData)
+          gridQuery.mTimesteps = *masterquery.toptions.timeSteps;
       }
 
       if (masterquery.toptions.endTimeData)
@@ -556,6 +563,11 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
       if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes)
       {
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::TimeStepIsData;
+      }
+
+      if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
+      {
+        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::TimeStepIsData | QueryServer::Query::Flags::ForceStartTime;
       }
 
       if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::TimeSteps)
@@ -583,6 +595,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
         if (daylightSavingActive)
           gridQuery.mMaxParameterValues++;
 
+        gridQuery.mTimesteps = gridQuery.mMaxParameterValues;
         if (grid_startTime == grid_endTime)
           grid_endTime = "21000101T000000";
       }
@@ -919,7 +932,7 @@ void GridInterface::prepareQueryParameters(
 
       // Agregation intervals:
 
-      if (masterquery.maxAggregationIntervals.find(param.name()) != masterquery.maxAggregationIntervals.end())
+      if ((paramfunc->functions.innerFunction.exists() || paramfunc->functions.outerFunction.exists()) &&  masterquery.maxAggregationIntervals.find(param.name()) != masterquery.maxAggregationIntervals.end())
       {
         unsigned int aggregationIntervalBehind = masterquery.maxAggregationIntervals.at(param.name()).behind;
         unsigned int aggregationIntervalAhead = masterquery.maxAggregationIntervals.at(param.name()).ahead;
@@ -929,6 +942,7 @@ void GridInterface::prepareQueryParameters(
           qParam.mTimestepsBefore = aggregationIntervalBehind / 60;
           qParam.mTimestepsAfter = aggregationIntervalAhead / 60;
           qParam.mTimestepSizeInMinutes = 60;
+          qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::AggregationParameter;
         }
       }
 
@@ -1439,6 +1453,17 @@ void GridInterface::exteractQueryResult(
 
             for (int t = 0; t < tLen; t++)
             {
+              if (t > rLen)
+              {
+                Fmi::Exception exception(BCP, "Not enough timesteps!");
+                exception.addParameter("Parameter",gridQuery->mQueryParameterList[pid].mParam);
+                exception.addParameter("t",std::to_string(t));
+                exception.addParameter("rLen",std::to_string(rLen));
+                exception.addParameter("tLen",std::to_string(tLen));
+                exception.addDetail("A possible reason: grid-engine and timeseries aggregation used at the same time.");
+                throw exception;
+              }
+
               auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastTimeUTC);
               boost::local_time::local_date_time queryTime(dt, tz);
 
