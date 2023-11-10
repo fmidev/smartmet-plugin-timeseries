@@ -41,14 +41,14 @@ namespace TimeSeries
 namespace
 {
 
-void erase_redundant_timesteps(TS::TimeSeries& ts, std::set<boost::local_time::local_date_time>& aggregationTimes)
+void erase_redundant_timesteps(TS::TimeSeries& ts, std::set<Fmi::LocalDateTime>& aggregationTimes)
 {
   FUNCTION_TRACE
   try
   {
     TS::TimeSeries no_redundant(ts.getLocalTimePool());
     no_redundant.reserve(ts.size());
-    std::set < boost::local_time::local_date_time > newTimes;
+    std::set < Fmi::LocalDateTime > newTimes;
 
     for (const auto& tv : ts)
     {
@@ -74,7 +74,7 @@ void erase_redundant_timesteps(TS::TimeSeries& ts, std::set<boost::local_time::l
 
 
 
-TS::TimeSeriesPtr erase_redundant_timesteps(TS::TimeSeriesPtr ts, std::set<boost::local_time::local_date_time>& aggregationTimes)
+TS::TimeSeriesPtr erase_redundant_timesteps(TS::TimeSeriesPtr ts, std::set<Fmi::LocalDateTime>& aggregationTimes)
 {
   FUNCTION_TRACE
   try
@@ -91,7 +91,7 @@ TS::TimeSeriesPtr erase_redundant_timesteps(TS::TimeSeriesPtr ts, std::set<boost
 
 
 
-TS::TimeSeriesGroupPtr erase_redundant_timesteps(TS::TimeSeriesGroupPtr tsg, std::set<boost::local_time::local_date_time>& aggregationTimes)
+TS::TimeSeriesGroupPtr erase_redundant_timesteps(TS::TimeSeriesGroupPtr tsg, std::set<Fmi::LocalDateTime>& aggregationTimes)
 {
   FUNCTION_TRACE
   try
@@ -397,7 +397,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
     // Timezone accoring to the requested location.
 
     std::string timezoneName = loc->timezone;
-    boost::local_time::time_zone_ptr tz = itsTimezones.time_zone_from_string(loc->timezone);
+    Fmi::TimeZonePtr tz = itsTimezones.time_zone_from_string(loc->timezone);
 
 
     // If the query contains a specific timezone definition then we should use it instead of
@@ -453,7 +453,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
       std::string startT = startTime;
       if (startTimeUTC)
       {
-        boost::local_time::local_date_time localTime(toTimeStamp(startTime), tz);
+        Fmi::LocalDateTime localTime(toTimeStamp(startTime), tz);
         startT = Fmi::to_iso_string(localTime.local_time());
       }
 
@@ -612,21 +612,21 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
         if (daylightSavingActive)
           steps = steps + 3600 / step;
 
-        e = s + boost::posix_time::seconds(steps * step);
+        e = s + Fmi::Seconds(steps * step);
       }
 
       if (!masterquery.toptions.timeList.empty())
       {
         step = 60;
         if (masterquery.toptions.timeSteps && *masterquery.toptions.timeSteps > 0)
-          e = s + boost::posix_time::hours(10 * 365 * 24);
+          e = s + Fmi::Hours(10 * 365 * 24);
       }
 
       uint stepCount = 0;
       while (s <= e)
       {
         std::string str = Fmi::to_iso_string(s);
-        boost::local_time::local_date_time localTime(s, tz);
+        Fmi::LocalDateTime localTime(s, tz);
 
         bool additionOk = true;
 
@@ -653,7 +653,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
           if (masterquery.toptions.timeSteps && stepCount == steps)
             s = e;
         }
-        s = s + boost::posix_time::seconds(step);
+        s = s + Fmi::Seconds(step);
       }
     }
 
@@ -726,12 +726,12 @@ void GridInterface::prepareGeneration(QueryServer::Query& gridQuery,const Query&
 
     if (masterquery.origintime)
     {
-      if (masterquery.origintime == boost::posix_time::ptime(boost::date_time::pos_infin))
+      if (masterquery.origintime == Fmi::DateTime(boost::date_time::pos_infin))
       {
         // Generation: latest, newest
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::LatestGeneration;
       }
-      else if (masterquery.origintime == boost::posix_time::ptime(boost::date_time::neg_infin))
+      else if (masterquery.origintime == Fmi::DateTime(boost::date_time::neg_infin))
       {
         // Generation: oldest
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::OldestGeneration;
@@ -1317,9 +1317,9 @@ void GridInterface::findLevels(Query& masterquery,const AreaProducers& areaprodu
 
 void GridInterface::exteractCoordinatesAndAggrecationTimes(
     std::shared_ptr<QueryServer::Query>& gridQuery,
-    boost::local_time::time_zone_ptr tz,
+    Fmi::TimeZonePtr tz,
     T::Coordinate_vec& coordinates,
-    std::set<boost::local_time::local_date_time>& aggregationTimes)
+    std::set<Fmi::LocalDateTime>& aggregationTimes)
 {
   FUNCTION_TRACE
   try
@@ -1338,7 +1338,7 @@ void GridInterface::exteractCoordinatesAndAggrecationTimes(
         for (uint t = 0; t < tLen; t++)
         {
           auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[p].mValueList[t]->mForecastTimeUTC);
-          boost::local_time::local_date_time queryTime(dt, tz);
+          Fmi::LocalDateTime queryTime(dt, tz);
           std::string lt = Fmi::to_iso_string(queryTime.local_time());
 
           if ((gridQuery->mQueryParameterList[p].mValueList[t]->mFlags & QueryServer::ParameterValues::Flags::AggregationValue) != 0 ||
@@ -1387,7 +1387,7 @@ void GridInterface::exteractQueryResult(
     TS::OutputData& outputData,
     const QueryServer::QueryStreamer_sptr& queryStreamer,
     const AreaProducers& areaproducers,
-    boost::local_time::time_zone_ptr tz,
+    Fmi::TimeZonePtr tz,
     const Spine::TaggedLocation& tloc,
     const Spine::LocationPtr& loc,
     const std::string& country,
@@ -1403,7 +1403,7 @@ void GridInterface::exteractQueryResult(
     const TS::OptionParsers::ParameterFunctionList& paramFuncs = masterquery.poptions.parameterFunctions();
 
     T::Coordinate_vec coordinates;
-    std::set<boost::local_time::local_date_time> aggregationTimes;
+    std::set<Fmi::LocalDateTime> aggregationTimes;
     exteractCoordinatesAndAggrecationTimes(gridQuery,tz,coordinates,aggregationTimes);
 
 
@@ -1465,7 +1465,7 @@ void GridInterface::exteractQueryResult(
               }
 
               auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastTimeUTC);
-              boost::local_time::local_date_time queryTime(dt, tz);
+              Fmi::LocalDateTime queryTime(dt, tz);
 
               T::GridValue val;
 
@@ -1576,7 +1576,7 @@ void GridInterface::exteractQueryResult(
               for (int t = 0; t < tLen; t++)
               {
                 auto dt = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastTimeUTC);
-                boost::local_time::local_date_time queryTime(dt, tz);
+                Fmi::LocalDateTime queryTime(dt, tz);
 
                 switch (aaa)
                 {
@@ -1624,7 +1624,7 @@ void GridInterface::exteractQueryResult(
           for (auto ft = gridQuery->mForecastTimeList.begin(); ft != gridQuery->mForecastTimeList.end(); ++ft)
           {
             auto dt = boost::posix_time::from_time_t(*ft);
-            boost::local_time::local_date_time queryTime(dt, tz);
+            Fmi::LocalDateTime queryTime(dt, tz);
 /*
                 if (xLen == 1)
                 {
@@ -1974,7 +1974,7 @@ void GridInterface::exteractQueryResult(
                   bool res = itsGridEngine->getGenerationInfoById(gridQuery->mQueryParameterList[idx].mValueList[t]->mGenerationId, info);
                   if (res)
                   {
-                    boost::local_time::local_date_time origTime(toTimeStamp(info.mAnalysisTime), tz);
+                    Fmi::LocalDateTime origTime(toTimeStamp(info.mAnalysisTime), tz);
                     TS::TimedValue tsValue(queryTime, masterquery.timeformatter->format(origTime));
                     tsForNonGridParam->emplace_back(tsValue);
                     idx = pLen + 10;
@@ -2003,7 +2003,7 @@ void GridInterface::exteractQueryResult(
                 if (gridQuery->mQueryParameterList[idx].mValueList[t]->mModificationTime > 0)
                 {
                   auto utcT = boost::posix_time::from_time_t(gridQuery->mQueryParameterList[idx].mValueList[t]->mModificationTime);
-                  boost::local_time::local_date_time modTime(utcT, tz);
+                  Fmi::LocalDateTime modTime(utcT, tz);
                   TS::TimedValue tsValue(queryTime, masterquery.timeformatter->format(modTime));
                   tsForNonGridParam->emplace_back(tsValue);
                   idx = pLen + 10;
@@ -2142,8 +2142,8 @@ void GridInterface::processGridQuery(
     auto latestTimestep = masterquery.latestTimestep;
 
     std::string timezoneName = loc->timezone;
-    boost::local_time::time_zone_ptr localtz = itsTimezones.time_zone_from_string(loc->timezone);
-    boost::local_time::time_zone_ptr tz = localtz;
+    Fmi::TimeZonePtr localtz = itsTimezones.time_zone_from_string(loc->timezone);
+    Fmi::TimeZonePtr tz = localtz;
 
     if (masterquery.timezone != "localtime")
     {

@@ -4,8 +4,8 @@
 #include <macgyver/Exception.h>
 #include <macgyver/TimeZones.h>
 
-#include <boost/date_time/local_time/local_time.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <macgyver/LocalDateTime.h>
+#include <macgyver/DateTime.h>
 #include <boost/utility.hpp>
 
 #include <map>
@@ -21,7 +21,7 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-boost::local_time::local_date_time ProducerDataPeriod::getTime(const std::string& producer,
+Fmi::LocalDateTime ProducerDataPeriod::getTime(const std::string& producer,
                                                                const std::string& timezone,
                                                                const Fmi::TimeZones& timezones,
                                                                eTime time_enum) const
@@ -30,10 +30,10 @@ boost::local_time::local_date_time ProducerDataPeriod::getTime(const std::string
   {
     try
     {
-      time_zone_ptr tz = timezones.time_zone_from_string(timezone);
+      Fmi::TimeZonePtr tz = timezones.time_zone_from_string(timezone);
 
       if (itsDataPeriod.find(producer) == itsDataPeriod.end())
-        return local_date_time(not_a_date_time, tz);
+        return Fmi::LocalDateTime(not_a_date_time, tz);
 
       if (time_enum == STARTTIME)
         return {itsDataPeriod.at(producer).begin(), tz};
@@ -51,7 +51,7 @@ boost::local_time::local_date_time ProducerDataPeriod::getTime(const std::string
   }
 }
 
-boost::posix_time::ptime ProducerDataPeriod::getTime(const std::string& producer,
+Fmi::DateTime ProducerDataPeriod::getTime(const std::string& producer,
                                                      eTime time_enum) const
 {
   try
@@ -96,7 +96,7 @@ void ProducerDataPeriod::getQEngineDataPeriods(const Engine::Querydata::Engine& 
 #ifndef WITHOUT_OBSERVATION
 void ProducerDataPeriod::getObsEngineDataPeriods(const Engine::Observation::Engine& observation,
                                                  const TimeProducers& producers,
-                                                 const boost::posix_time::ptime& now)
+                                                 const Fmi::DateTime& now)
 {
   try
   {
@@ -110,7 +110,7 @@ void ProducerDataPeriod::getObsEngineDataPeriods(const Engine::Observation::Engi
           continue;
 
         itsDataPeriod.insert(make_pair(
-            producer, boost::posix_time::time_period(now - boost::posix_time::hours(24), now)));
+            producer, boost::posix_time::time_period(now - Fmi::Hours(24), now)));
       }
     }
   }
@@ -122,7 +122,7 @@ void ProducerDataPeriod::getObsEngineDataPeriods(const Engine::Observation::Engi
 #endif
 
 // localtime
-boost::local_time::local_date_time ProducerDataPeriod::getLocalStartTime(
+Fmi::LocalDateTime ProducerDataPeriod::getLocalStartTime(
     const std::string& producer, const std::string& timezone, const Fmi::TimeZones& timezones) const
 {
   try
@@ -136,7 +136,7 @@ boost::local_time::local_date_time ProducerDataPeriod::getLocalStartTime(
 }
 
 // utc
-boost::posix_time::ptime ProducerDataPeriod::getUTCStartTime(const std::string& producer) const
+Fmi::DateTime ProducerDataPeriod::getUTCStartTime(const std::string& producer) const
 {
   try
   {
@@ -149,7 +149,7 @@ boost::posix_time::ptime ProducerDataPeriod::getUTCStartTime(const std::string& 
 }
 
 // localtime
-boost::local_time::local_date_time ProducerDataPeriod::getLocalEndTime(
+Fmi::LocalDateTime ProducerDataPeriod::getLocalEndTime(
     const std::string& producer, const std::string& timezone, const Fmi::TimeZones& timezones) const
 {
   try
@@ -163,7 +163,7 @@ boost::local_time::local_date_time ProducerDataPeriod::getLocalEndTime(
 }
 
 // utc
-boost::posix_time::ptime ProducerDataPeriod::getUTCEndTime(const std::string& producer) const
+Fmi::DateTime ProducerDataPeriod::getUTCEndTime(const std::string& producer) const
 {
   try
   {

@@ -565,8 +565,8 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
       std::string cachecontrol = "public, max-age=" + Fmi::to_string(expires_seconds);
       theResponse.setHeader("Cache-Control", cachecontrol);
 
-      boost::posix_time::ptime t_expires =
-          state.getTime() + boost::posix_time::seconds(expires_seconds);
+      Fmi::DateTime t_expires =
+          state.getTime() + Fmi::Seconds(expires_seconds);
       std::string expiration = tformat->format(t_expires);
       theResponse.setHeader("Expires", expiration);
     }

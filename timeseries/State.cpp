@@ -1,6 +1,6 @@
 #include "State.h"
 #include "Plugin.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <macgyver/DateTime.h>
 #include <engines/observation/ExternalAndMobileProducerId.h>
 #include <engines/querydata/Engine.h>
 #include <macgyver/Exception.h>
@@ -20,7 +20,7 @@ namespace TimeSeries
 
 State::State(const Plugin& thePlugin)
     : itsPlugin(thePlugin),
-      itsTime(boost::posix_time::second_clock::universal_time()),
+      itsTime(Fmi::SecondClock::universal_time()),
       itsLocalTimePool(boost::make_shared<TS::LocalTimePool>())
 {
 }
@@ -135,7 +135,7 @@ const Fmi::TimeZones& State::getTimeZones() const
  */
 // ----------------------------------------------------------------------
 
-const boost::posix_time::ptime& State::getTime() const
+const Fmi::DateTime& State::getTime() const
 {
   return itsTime;
 }
@@ -150,7 +150,7 @@ const boost::posix_time::ptime& State::getTime() const
  */
 // ----------------------------------------------------------------------
 
-void State::setTime(const boost::posix_time::ptime& theTime)
+void State::setTime(const Fmi::DateTime& theTime)
 {
   itsTime = theTime;
 }

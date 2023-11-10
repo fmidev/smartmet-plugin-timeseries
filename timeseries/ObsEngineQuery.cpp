@@ -66,7 +66,7 @@ TS::TimeSeriesGenerator::LocalTimeList get_timesteps(const TS::TimeSeries ts)
 
 TS::TimeSeries generate_timeseries(
     const State& state,
-    const std::vector<boost::local_time::local_date_time>& timestep_vector,
+    const std::vector<Fmi::LocalDateTime>& timestep_vector,
     const TS::Value& value)
 {
   try
@@ -110,23 +110,23 @@ bool is_wkt_point(const Spine::LocationPtr& loc)
 
 TS::TimeSeriesGenerator::LocalTimeList get_all_timesteps(const Query& query,
                                                          const TS::TimeSeries& ts,
-                                                         const boost::local_time::time_zone_ptr& tz)
+                                                         const Fmi::TimeZonePtr& tz)
 {
   try
   {
     TS::TimeSeriesGenerator::LocalTimeList ret;
 
-    boost::posix_time::ptime startTimeAsUTC = query.toptions.startTime;
-    boost::posix_time::ptime endTimeAsUTC = query.toptions.endTime;
+    Fmi::DateTime startTimeAsUTC = query.toptions.startTime;
+    Fmi::DateTime endTimeAsUTC = query.toptions.endTime;
     if (!query.toptions.startTimeUTC)
     {
-      boost::local_time::local_date_time ldt = Fmi::TimeParser::make_time(
+      Fmi::LocalDateTime ldt = Fmi::TimeParser::make_time(
           query.toptions.startTime.date(), query.toptions.startTime.time_of_day(), tz);
       startTimeAsUTC = ldt.utc_time();
     }
     if (!query.toptions.endTimeUTC)
     {
-      boost::local_time::local_date_time ldt = Fmi::TimeParser::make_time(
+      Fmi::LocalDateTime ldt = Fmi::TimeParser::make_time(
           query.toptions.endTime.date(), query.toptions.endTime.time_of_day(), tz);
       endTimeAsUTC = ldt.utc_time();
     }
@@ -179,11 +179,11 @@ Spine::LocationPtr get_loc(const Query& query,
   }
 }
 
-std::vector<boost::local_time::local_date_time> get_actual_timesteps(const TS::TimeSeries& ts)
+std::vector<Fmi::LocalDateTime> get_actual_timesteps(const TS::TimeSeries& ts)
 {
   try
   {
-    std::vector<boost::local_time::local_date_time> timestep_vector;
+    std::vector<Fmi::LocalDateTime> timestep_vector;
 
     for (const auto& value : ts)
       timestep_vector.push_back(value.time);
@@ -254,7 +254,7 @@ void resolve_parameter_settings(const ObsParameters& obsParameters,
 
 void resolve_time_settings(const std::string& producer,
                            const ProducerDataPeriod& producerDataPeriod,
-                           const boost::posix_time::ptime& now,
+                           const Fmi::DateTime& now,
                            Query& query,
                            unsigned int aggregationIntervalBehind,
                            unsigned int aggregationIntervalAhead,
@@ -266,14 +266,14 @@ void resolve_time_settings(const std::string& producer,
     // Below are listed optional settings, defaults are set while constructing an
     // ObsEngine::Oracle instance.
 
-    boost::local_time::time_zone_ptr tz = timezones.time_zone_from_string(query.timezone);
-    boost::local_time::local_date_time ldt_now(now, tz);
-    boost::posix_time::ptime ptime_now =
+    Fmi::TimeZonePtr tz = timezones.time_zone_from_string(query.timezone);
+    Fmi::LocalDateTime ldt_now(now, tz);
+    Fmi::DateTime ptime_now =
         (query.toptions.startTimeUTC ? ldt_now.utc_time() : ldt_now.local_time());
 
     if (query.toptions.startTimeData)
     {
-      query.toptions.startTime = ptime_now - boost::posix_time::hours(24);
+      query.toptions.startTime = ptime_now - Fmi::Hours(24);
       query.toptions.startTimeData = false;
     }
     if (query.toptions.endTimeData)
@@ -310,15 +310,15 @@ void resolve_time_settings(const std::string& producer,
 
     if (!query.starttimeOptionGiven && query.endtimeOptionGiven)
     {
-      query.toptions.startTime = query.toptions.endTime - boost::posix_time::hours(24);
+      query.toptions.startTime = query.toptions.endTime - Fmi::Hours(24);
       query.toptions.startTimeUTC = query.toptions.endTimeUTC;
     }
 
     // observation requires the times to be in UTC. The correct way to do it
     // is to use the make_time function IF the times are assumed to be in local time
 
-    boost::local_time::local_date_time local_starttime(query.toptions.startTime, tz);
-    boost::local_time::local_date_time local_endtime(query.toptions.endTime, tz);
+    Fmi::LocalDateTime local_starttime(query.toptions.startTime, tz);
+    Fmi::LocalDateTime local_endtime(query.toptions.endTime, tz);
 
     if (!query.toptions.startTimeUTC)
       local_starttime = Fmi::TimeParser::make_time(
@@ -333,8 +333,8 @@ void resolve_time_settings(const std::string& producer,
 
     // Adjust to accommodate aggregation
 
-    settings.starttime = settings.starttime - boost::posix_time::minutes(aggregationIntervalBehind);
-    settings.endtime = settings.endtime + boost::posix_time::minutes(aggregationIntervalAhead);
+    settings.starttime = settings.starttime - Fmi::Minutes(aggregationIntervalBehind);
+    settings.endtime = settings.endtime + Fmi::Minutes(aggregationIntervalAhead);
 
     // observations up till now
     if (settings.endtime > now)
@@ -445,7 +445,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
     const Query& query,
     const ObsParameters& obsParameters,
     const TS::TimeSeriesVectorPtr& observation_result,
-    const std::vector<boost::local_time::local_date_time>& timestep_vector,
+    const std::vector<Fmi::LocalDateTime>& timestep_vector,
     std::map<std::string, unsigned int>& parameterResultIndexes) const
 {
   try
@@ -640,7 +640,7 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       // Get location
       Spine::LocationPtr loc = get_loc(query, state, producer, fmisid);
       // Actual timesteps
-      std::vector<boost::local_time::local_date_time> timestep_vector =
+      std::vector<Fmi::LocalDateTime> timestep_vector =
           get_actual_timesteps(observation_result->at(0));
 
       std::map<std::string, unsigned int> parameterResultIndexes;
@@ -766,7 +766,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
     const Spine::LocationPtr& loc,
     const ObsParameters& obsParameters,
     const TS::TimeSeriesVector* tsv_observation_result,
-    const std::vector<boost::local_time::local_date_time>& ts_vector,
+    const std::vector<Fmi::LocalDateTime>& ts_vector,
     const Query& query) const
 {
   try
@@ -864,8 +864,8 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
       return;
 
     // lets find out actual timesteps: different locations may have different timesteps
-    std::vector<boost::local_time::local_date_time> ts_vector;
-    std::set<boost::local_time::local_date_time> ts_set;
+    std::vector<Fmi::LocalDateTime> ts_vector;
+    std::set<Fmi::LocalDateTime> ts_set;
     const TS::TimeSeries& ts = observation_result->at(0);
     for (const TS::TimedValue& tval : ts)
       ts_set.insert(tval.time);
@@ -995,7 +995,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
       }
 
 #ifdef MYDEBUG
-      std::cout << boost::posix_time::second_clock::universal_time() << " - aggregated group: "
+      std::cout << Fmi::SecondClock::universal_time() << " - aggregated group: "
                 << ": " << std::endl
                 << *aggregated_tsg << std::endl;
 #endif
@@ -1089,7 +1089,7 @@ void ObsEngineQuery::handleLocationSettings(
 void ObsEngineQuery::getObsSettings(std::vector<SettingsInfo>& settingsVector,
                                     const std::string& producer,
                                     const ProducerDataPeriod& producerDataPeriod,
-                                    const boost::posix_time::ptime& now,
+                                    const Fmi::DateTime& now,
                                     const ObsParameters& obsParameters,
                                     Query& query) const
 {

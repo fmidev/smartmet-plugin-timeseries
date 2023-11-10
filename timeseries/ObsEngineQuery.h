@@ -68,7 +68,7 @@ class ObsEngineQuery
   void getObsSettings(std::vector<SettingsInfo>& settingsVector,
                       const std::string& producer,
                       const ProducerDataPeriod& producerDataPeriod,
-                      const boost::posix_time::ptime& now,
+                      const Fmi::DateTime& now,
                       const ObsParameters& obsParameters,
                       Query& query) const;
   void getCommonObsSettings(Engine::Observation::Settings& settings,
@@ -130,7 +130,7 @@ class ObsEngineQuery
       const Query& query,
       const ObsParameters& obsParameters,
       const TS::TimeSeriesVectorPtr& observation_result,
-      const std::vector<boost::local_time::local_date_time>& timestep_vector,
+      const std::vector<Fmi::LocalDateTime>& timestep_vector,
       std::map<std::string, unsigned int>& parameterResultIndexes) const;
   TS::TimeSeriesVectorPtr doAggregationForPlaces(
       const State& state,
@@ -146,7 +146,7 @@ class ObsEngineQuery
       const Spine::LocationPtr& loc,
       const ObsParameters& obsParameters,
       const TS::TimeSeriesVector* tsv_observation_result,
-      const std::vector<boost::local_time::local_date_time>& ts_vector,
+      const std::vector<Fmi::LocalDateTime>& ts_vector,
       const Query& query) const;
 
   void handleLocationSettings(const Query& query,
