@@ -301,6 +301,36 @@ void parse_wmos(const boost::optional<std::string>& wmo,
   }
 }
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Quick check on request limits
+ */
+// ----------------------------------------------------------------------
+
+void check_limits(const Spine::TaggedLocationList& locations, const TS::RequestLimits& limits)
+{
+  if (limits.maxlocations > 0)
+  {
+    if (locations.size() > limits.maxlocations)
+      throw Fmi::Exception(BCP, "Too many locations requested")
+          .addParameter("Locations", Fmi::to_string(locations.size()))
+          .addParameter("Limit", Fmi::to_string(limits.maxlocations));
+  }
+
+  if (limits.maxradius > 0)
+  {
+    double maxradius = 0;
+    for (const auto& tloc : locations)
+      if (tloc.loc)
+        maxradius = std::max(maxradius, tloc.loc->radius);
+
+    if (maxradius > limits.maxradius)
+      throw Fmi::Exception(BCP, "Too large radius requested")
+          .addParameter("Radius", Fmi::to_string(maxradius))
+          .addParameter("Limit", Fmi::to_string(limits.maxradius));
+  }
+}
+
 }  // namespace
 
 // ----------------------------------------------------------------------
@@ -333,6 +363,8 @@ void Plugin::query(const State& state,
     Spine::TaggedLocationList tagged_ll = q.loptions->locations();
     tagged_ll.insert(tagged_ll.end(), locations.begin(), locations.end());
     q.loptions->setLocations(tagged_ll);
+
+    check_limits(locations, itsConfig.requestLimits());
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
@@ -565,8 +597,7 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
       std::string cachecontrol = "public, max-age=" + Fmi::to_string(expires_seconds);
       theResponse.setHeader("Cache-Control", cachecontrol);
 
-      Fmi::DateTime t_expires =
-          state.getTime() + Fmi::Seconds(expires_seconds);
+      Fmi::DateTime t_expires = state.getTime() + Fmi::Seconds(expires_seconds);
       std::string expiration = tformat->format(t_expires);
       theResponse.setHeader("Expires", expiration);
     }
