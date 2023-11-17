@@ -448,7 +448,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,const Query&
     // from the beginning of the day (by using localtime).
 
     if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::TimeSteps ||
-        masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::FixedTimes)
+        masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::FixedTimes ||
+        masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
     {
       std::string startT = startTime;
       if (startTimeUTC)
