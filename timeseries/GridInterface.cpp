@@ -835,6 +835,24 @@ void GridInterface::prepareLocation(QueryServer::Query& gridQuery,const Query& m
         break;
 
       case Spine::Location::Wkt:
+      {
+        OGRwkbGeometryType geomType = masterquery.wktGeometries.getGeometry(loc->name)->getGeometryType();
+
+        switch (geomType)
+        {
+          case wkbMultiLineString:
+          case wkbMultiPoint:
+          case wkbLineString:
+            locationType = QueryServer::QueryParameter::LocationType::Path;
+            break;
+
+          default:
+            locationType = QueryServer::QueryParameter::LocationType::Polygon;
+            break;
+        }
+      }
+      break;
+
       case Spine::Location::Area:
       case Spine::Location::BoundingBox:
         locationType = QueryServer::QueryParameter::LocationType::Polygon;
@@ -1598,13 +1616,13 @@ void GridInterface::exteractQueryResult(
                   break;
                   case 4: // latlon
                   {
-                    TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].x(), coordinates[i].y()));
+                    TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].y(), coordinates[i].x()));
                     ts.emplace_back(tsValue);
                   }
                   break;
                   case 5: //lonlat
                   {
-                    TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].y(), coordinates[i].x()));
+                    TS::TimedValue tsValue(queryTime, TS::LonLat(coordinates[i].x(), coordinates[i].y()));
                     ts.emplace_back(tsValue);
                   }
                   break;

@@ -30,9 +30,10 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
   {
     case Spine::Location::Wkt:
     {
-      NFmiSvgPath svgPath;
+      //NFmiSvgPath svgPath;
       loc = query.wktGeometries.getLocation(tloc.loc->name);
-      svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+      //svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+      /*
       convertSvgPathToPolygonPath(svgPath, polygonPath);
 
       if (polygonPath.size() > 1 && getPolygonPathLength(polygonPath) == polygonPath.size())
@@ -41,6 +42,53 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
         convertToPointVector(polygonPath, polygonPoints);
         polygonPath.clear();
         polygonPath.push_back(polygonPoints);
+      }
+      */
+
+      OGRwkbGeometryType geomType = query.wktGeometries.getGeometry(tloc.loc->name)->getGeometryType();
+      if (geomType == wkbMultiLineString)
+      {
+        T::Coordinate_vec polygonPoints;
+        std::list<NFmiSvgPath> svgList = query.wktGeometries.getSvgPaths(tloc.loc->name);
+        for (const auto& svg : svgList)
+        {
+          Spine::LocationList ll = get_location_list(svg, tloc.tag, query.step,*itsPlugin.itsEngines.geoEngine);
+          for (auto it=ll.begin(); it!=ll.end();++it)
+            polygonPoints.emplace_back((*it)->longitude,(*it)->latitude);
+        }
+        polygonPath.push_back(polygonPoints);
+      }
+      else if (geomType == wkbMultiPoint)
+      {
+        T::Coordinate_vec polygonPoints;
+        Spine::LocationList ll = query.wktGeometries.getLocations(tloc.loc->name);
+        for (auto it=ll.begin(); it!=ll.end();++it)
+          polygonPoints.emplace_back((*it)->longitude,(*it)->latitude);
+        polygonPath.push_back(polygonPoints);
+      }
+      else if (geomType == wkbLineString)
+      {
+        NFmiSvgPath svgPath;
+        svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+        T::Coordinate_vec polygonPoints;
+        Spine::LocationList ll = get_location_list(svgPath, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine);
+        for (auto it=ll.begin(); it!=ll.end();++it)
+          polygonPoints.emplace_back((*it)->longitude,(*it)->latitude);
+        polygonPath.push_back(polygonPoints);
+      }
+      else
+      {
+        NFmiSvgPath svgPath;
+        loc = query.wktGeometries.getLocation(tloc.loc->name);
+        svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+        convertSvgPathToPolygonPath(svgPath, polygonPath);
+        if (polygonPath.size() > 1 && getPolygonPathLength(polygonPath) == polygonPath.size())
+        {
+          T::Coordinate_vec polygonPoints;
+          convertToPointVector(polygonPath, polygonPoints);
+          polygonPath.clear();
+          polygonPath.push_back(polygonPoints);
+        }
       }
       break;
     }
