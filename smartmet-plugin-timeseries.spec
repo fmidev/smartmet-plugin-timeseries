@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 23.12.1
+Version: 23.12.4
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -32,14 +32,14 @@ BuildRequires: smartmet-library-spine-devel >= 23.10.20
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 23.11.21
 BuildRequires: smartmet-library-grid-content-devel >= 23.11.27
-BuildRequires: smartmet-library-grid-files-devel >= 23.11.23
+BuildRequires: smartmet-library-grid-files-devel >= 23.11.28
 BuildRequires: smartmet-library-newbase-devel >= 23.11.21
 BuildRequires: smartmet-library-gis-devel >= 23.11.21
 BuildRequires: smartmet-engine-geonames-devel >= 23.9.6
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 23.11.8
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 23.11.16
+BuildRequires: smartmet-engine-querydata-devel >= 23.12.1
 BuildRequires: smartmet-engine-gis-devel >= 23.8.28
 BuildRequires: smartmet-engine-grid-devel >= 23.11.17
 # obsengine can be disabled in configuration: not included intentionally
@@ -54,7 +54,7 @@ Requires: smartmet-library-newbase >= 23.11.21
 Requires: smartmet-library-spine >= 23.10.20
 Requires: smartmet-library-timeseries >= 23.11.21
 Requires: smartmet-engine-geonames >= 23.9.6
-Requires: smartmet-engine-querydata >= 23.11.16
+Requires: smartmet-engine-querydata >= 23.12.1
 Requires: smartmet-engine-gis >= 23.8.28
 Requires: smartmet-engine-grid >= 23.11.17
 Requires: smartmet-server >= 23.8.30
@@ -76,7 +76,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis >= 23.11.21
 #TestRequires: smartmet-engine-geonames >= 23.9.6
 #TestRequires: smartmet-engine-gis >= 23.8.28
-#TestRequires: smartmet-engine-querydata >= 23.11.16
+#TestRequires: smartmet-engine-querydata >= 23.12.1
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 23.11.8
 %endif
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon Dec  4 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.12.4-1.fmi
+- Repackaged due to QEngine ABI changes
+
 * Fri Dec  1 2023 Mika Heiskanen <mika.heiskanen@fmi.fi> - 23.12.1-1.fmi
 - Fixed handling of WKT input to properly consider each type of WKT (not just polygons)
 
