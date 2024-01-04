@@ -25,8 +25,8 @@ void parameters_hash_value(const Spine::HTTP::Request& request, std::size_t& has
     for (const auto& name_value : request.getParameterMap())
     {
       const auto& name = name_value.first;
-      if (name != "hour" && name != "time" && name != "timestep" && name != "timesteps" &&
-          name != "starttime" && name != "startstep" && name != "endtime")
+      if (name != "hour" && name != "time" && name != "day" && name != "timestep" &&
+          name != "timesteps" && name != "starttime" && name != "startstep" && name != "endtime")
       {
         Fmi::hash_combine(hash, Fmi::hash_value(name_value.first));
         Fmi::hash_combine(hash, Fmi::hash_value(name_value.second));
