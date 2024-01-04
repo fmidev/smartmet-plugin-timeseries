@@ -40,7 +40,6 @@ namespace TimeSeries
 {
 namespace
 {
-
 void erase_redundant_timesteps(TS::TimeSeries& ts, std::set<Fmi::LocalDateTime>& aggregationTimes)
 {
   FUNCTION_TRACE
@@ -495,9 +494,10 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
 
     // At this point we should know the actual start and end times of the request.
 
-    if (masterquery.toptions.startTimeData || masterquery.toptions.endTimeData ||
-        masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes ||
-        masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
+    if (masterquery.toptions.days.empty() &&
+        (masterquery.toptions.startTimeData || masterquery.toptions.endTimeData ||
+         masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes ||
+         masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes))
     {
       // This is a time-range request, which means that
       //
@@ -602,7 +602,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
         if (latestTime != startTime && str <= latestTimeUTC)
           additionOk = false;
 
-        if (!masterquery.toptions.timeList.empty())
+        if (additionOk && !masterquery.toptions.timeList.empty())
         {
           // If we have a list of predefined hours (for example, hour=4,8,12) the we should
           // ignore timesteps that does not match these hours. These hours are defined in
@@ -612,12 +612,13 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
           uint idx = Fmi::stoi(ss.substr(9, 4));
           if (masterquery.toptions.timeList.find(idx) == masterquery.toptions.timeList.end())
             additionOk = false;
-          else if (!masterquery.toptions.days.empty())
-          {
-            if (masterquery.toptions.days.find(localTime.local_time().date().day()) ==
-                masterquery.toptions.days.end())
-              additionOk = false;
-          }
+        }
+
+        if (additionOk && !masterquery.toptions.days.empty())
+        {
+          auto d = localTime.local_time().date().day();
+          if (masterquery.toptions.days.find(d) == masterquery.toptions.days.end())
+            additionOk = false;
         }
 
         if (additionOk)
