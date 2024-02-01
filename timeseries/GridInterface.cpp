@@ -261,9 +261,9 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
         // newQuery.mProducerNameList;
         newQuery.mForecastTimeList.insert((*val)->mForecastTimeUTC);
         newQuery.mAttributeList = query.mAttributeList;
-        // newQuery.mCoordinateType;
-        // newQuery.mAreaCoordinates;
-        // newQuery.mRadius;
+        newQuery.mCoordinateType = query.mCoordinateType;
+        newQuery.mAreaCoordinates = query.mAreaCoordinates;
+        newQuery.mRadius = query.mRadius;
         newQuery.mTimezone = query.mTimezone;
         newQuery.mStartTime = (*val)->mForecastTimeUTC;
         newQuery.mEndTime = (*val)->mForecastTimeUTC;
