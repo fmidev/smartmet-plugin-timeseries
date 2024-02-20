@@ -4,7 +4,7 @@
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
 Version: 24.2.20
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -31,20 +31,20 @@ BuildRequires: smartmet-library-timeseries-devel >= 24.1.30
 BuildRequires: smartmet-library-spine-devel >= 24.2.8
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
-BuildRequires: smartmet-library-grid-content-devel >= 24.2.8
-BuildRequires: smartmet-library-grid-files-devel >= 24.2.6
+BuildRequires: smartmet-library-grid-content-devel >= 24.2.20
+BuildRequires: smartmet-library-grid-files-devel >= 24.2.20
 BuildRequires: smartmet-library-newbase-devel >= 24.1.30
 BuildRequires: smartmet-library-gis-devel >= 24.1.3
 BuildRequires: smartmet-engine-geonames-devel >= 24.1.30
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 24.2.20
+BuildRequires: smartmet-engine-observation-devel >= 24.1.17
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 24.1.19
 BuildRequires: smartmet-engine-gis-devel >= 24.1.30
-BuildRequires: smartmet-engine-grid-devel >= 24.2.5
+BuildRequires: smartmet-engine-grid-devel >= 24.2.20
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 24.2.20
+#Requires: smartmet-engine-observation >= 24.1.17
 #%endif
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 24.1.3
@@ -56,7 +56,7 @@ Requires: smartmet-library-timeseries >= 24.1.30
 Requires: smartmet-engine-geonames >= 24.1.30
 Requires: smartmet-engine-querydata >= 24.1.19
 Requires: smartmet-engine-gis >= 24.1.30
-Requires: smartmet-engine-grid >= 24.2.5
+Requires: smartmet-engine-grid >= 24.2.20
 Requires: smartmet-server >= 24.1.29
 Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
@@ -72,15 +72,15 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 23.7.21
 #TestRequires: smartmet-test-data >= 23.11.8
-#TestRequires: smartmet-engine-grid-test >= 24.2.5
+#TestRequires: smartmet-engine-grid-test >= 24.2.20
 #TestRequires: smartmet-library-gis >= 24.1.3
 #TestRequires: smartmet-engine-geonames >= 24.1.30
 #TestRequires: smartmet-engine-gis >= 24.1.30
 #TestRequires: smartmet-engine-querydata >= 24.1.19
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 24.2.20
+#TestRequires: smartmet-engine-observation >= 24.1.17
 %endif
-#TestRequires: smartmet-engine-grid >= 24.2.5
+#TestRequires: smartmet-engine-grid >= 24.2.20
 #TestRequires: gdal35
 #TestRequires: libwebp13
 
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Feb 20 2024 Mika Heiskanen <mheiskan@rhel8.dev.fmi.fi> - 24.2.20-2.fmi
+- Repackaged due to grid-files ABI changes
+
 * Tue Feb 20 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.2.20-1.fmi
 - Removed support for BK_HYDROMETA data (BRAINSTORM-2867)
 
