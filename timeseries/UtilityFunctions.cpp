@@ -110,8 +110,7 @@ bool is_mobile_producer(const std::string& producer)
     return (producer == Engine::Observation::ROADCLOUD_PRODUCER ||
             producer == Engine::Observation::TECONER_PRODUCER ||
             producer == Engine::Observation::FMI_IOT_PRODUCER ||
-            producer == Engine::Observation::NETATMO_PRODUCER ||
-            producer == Engine::Observation::BK_HYDROMETA_PRODUCER);
+            producer == Engine::Observation::NETATMO_PRODUCER);
   }
   catch (...)
   {
