@@ -110,6 +110,12 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Feb 20 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.2.20-1.fmi
 - Removed support for BK_HYDROMETA data (BRAINSTORM-2867)
 
+* Mon Feb  5 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> 24.2.5-1.fmi
+- Repackaged due to grid-files ABI changes
+
+* Tue Jan 30 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> 24.1.30-1.fmi
+- Repackaged due to newbase ABI changes
+
 * Thu Jan  4 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.1.4-1.fmi
 - Added option 'day' for timeseries generation (BRAINSTORM-2826)
 
