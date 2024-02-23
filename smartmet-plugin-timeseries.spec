@@ -27,36 +27,36 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 24.2.20
+BuildRequires: smartmet-library-timeseries-devel >= 24.2.23
 BuildRequires: smartmet-library-spine-devel >= 24.2.8
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
-BuildRequires: smartmet-library-grid-content-devel >= 24.2.20
-BuildRequires: smartmet-library-grid-files-devel >= 24.2.22
-BuildRequires: smartmet-library-newbase-devel >= 24.1.30
+BuildRequires: smartmet-library-grid-content-devel >= 24.2.23
+BuildRequires: smartmet-library-grid-files-devel >= 24.2.23
+BuildRequires: smartmet-library-newbase-devel >= 24.2.23
 BuildRequires: smartmet-library-gis-devel >= 24.1.3
-BuildRequires: smartmet-engine-geonames-devel >= 24.1.30
+BuildRequires: smartmet-engine-geonames-devel >= 24.2.23
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 24.2.21
+BuildRequires: smartmet-engine-observation-devel >= 24.2.23
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 24.2.21
-BuildRequires: smartmet-engine-gis-devel >= 24.1.30
-BuildRequires: smartmet-engine-grid-devel >= 24.2.20
+BuildRequires: smartmet-engine-querydata-devel >= 24.2.23
+BuildRequires: smartmet-engine-gis-devel >= 24.2.23
+BuildRequires: smartmet-engine-grid-devel >= 24.2.23
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 24.2.21
+#Requires: smartmet-engine-observation >= 24.2.23
 #%endif
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 24.1.3
 Requires: smartmet-library-locus >= 23.7.28
 Requires: smartmet-library-macgyver >= 24.1.17
-Requires: smartmet-library-newbase >= 24.1.30
+Requires: smartmet-library-newbase >= 24.2.23
 Requires: smartmet-library-spine >= 24.2.8
-Requires: smartmet-library-timeseries >= 24.2.20
-Requires: smartmet-engine-geonames >= 24.1.30
-Requires: smartmet-engine-querydata >= 24.2.21
-Requires: smartmet-engine-gis >= 24.1.30
-Requires: smartmet-engine-grid >= 24.2.20
+Requires: smartmet-library-timeseries >= 24.2.23
+Requires: smartmet-engine-geonames >= 24.2.23
+Requires: smartmet-engine-querydata >= 24.2.23
+Requires: smartmet-engine-gis >= 24.2.23
+Requires: smartmet-engine-grid >= 24.2.23
 Requires: smartmet-server >= 24.2.22
 Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
@@ -68,19 +68,19 @@ Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 23.9.6
 #TestRequires: smartmet-library-spine-plugin-test >= 24.2.8
-#TestRequires: smartmet-library-newbase-devel >= 24.1.30
+#TestRequires: smartmet-library-newbase-devel >= 24.2.23
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 23.7.21
 #TestRequires: smartmet-test-data >= 23.11.8
-#TestRequires: smartmet-engine-grid-test >= 24.2.20
+#TestRequires: smartmet-engine-grid-test >= 24.2.23
 #TestRequires: smartmet-library-gis >= 24.1.3
-#TestRequires: smartmet-engine-geonames >= 24.1.30
-#TestRequires: smartmet-engine-gis >= 24.1.30
-#TestRequires: smartmet-engine-querydata >= 24.2.21
+#TestRequires: smartmet-engine-geonames >= 24.2.23
+#TestRequires: smartmet-engine-gis >= 24.2.23
+#TestRequires: smartmet-engine-querydata >= 24.2.23
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 24.2.21
+#TestRequires: smartmet-engine-observation >= 24.2.23
 %endif
-#TestRequires: smartmet-engine-grid >= 24.2.20
+#TestRequires: smartmet-engine-grid >= 24.2.23
 #TestRequires: gdal35
 #TestRequires: libwebp13
 
