@@ -30,7 +30,7 @@ class State;
 class ProducerDataPeriod
 {
  private:
-  using DataPeriod = std::map<std::string, boost::posix_time::time_period>;
+  using DataPeriod = std::map<std::string, Fmi::TimePeriod>;
 
   enum eTime
   {
@@ -94,7 +94,7 @@ class ProducerDataPeriod
       str.append("producer -> period: ")
           .append(producer)
           .append(" -> ")
-          .append(to_simple_string(itsDataPeriod.at(producer)))
+          .append(Fmi::date_time::to_simple_string(itsDataPeriod.at(producer)))
           .append("\n");
     }
     return str;

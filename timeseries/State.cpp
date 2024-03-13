@@ -21,7 +21,7 @@ namespace TimeSeries
 State::State(const Plugin& thePlugin)
     : itsPlugin(thePlugin),
       itsTime(Fmi::SecondClock::universal_time()),
-      itsLocalTimePool(boost::make_shared<TS::LocalTimePool>())
+      itsLocalTimePool(std::make_shared<TS::LocalTimePool>())
 {
 }
 

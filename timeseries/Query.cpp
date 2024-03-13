@@ -731,9 +731,9 @@ void Query::parse_origintime(const Spine::HTTP::Request& theReq)
     if (tmp)
     {
       if (*tmp == "latest" || *tmp == "newest")
-        origintime = Fmi::DateTime(boost::date_time::pos_infin);
+        origintime = Fmi::DateTime(Fmi::DateTime::POS_INFINITY);
       else if (*tmp == "oldest")
-        origintime = Fmi::DateTime(boost::date_time::neg_infin);
+        origintime = Fmi::DateTime(Fmi::DateTime::NEG_INFINITY);
       else
         origintime = Fmi::TimeParser::parse(*tmp);
     }

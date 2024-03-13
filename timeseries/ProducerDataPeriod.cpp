@@ -12,8 +12,6 @@
 #include <string>
 
 using namespace boost;
-using namespace local_time;
-using namespace gregorian;
 
 namespace SmartMet
 {
@@ -33,7 +31,7 @@ Fmi::LocalDateTime ProducerDataPeriod::getTime(const std::string& producer,
       Fmi::TimeZonePtr tz = timezones.time_zone_from_string(timezone);
 
       if (itsDataPeriod.find(producer) == itsDataPeriod.end())
-        return Fmi::LocalDateTime(not_a_date_time, tz);
+          return Fmi::LocalDateTime(Fmi::LocalDateTime::NOT_A_DATE_TIME, tz);
 
       if (time_enum == STARTTIME)
         return {itsDataPeriod.at(producer).begin(), tz};
@@ -110,7 +108,7 @@ void ProducerDataPeriod::getObsEngineDataPeriods(const Engine::Observation::Engi
           continue;
 
         itsDataPeriod.insert(make_pair(
-            producer, boost::posix_time::time_period(now - Fmi::Hours(24), now)));
+            producer, Fmi::TimePeriod(now - Fmi::Hours(24), now)));
       }
     }
   }
