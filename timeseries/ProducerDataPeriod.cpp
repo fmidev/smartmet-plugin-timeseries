@@ -36,7 +36,7 @@ Fmi::LocalDateTime ProducerDataPeriod::getTime(const std::string& producer,
       if (time_enum == STARTTIME)
         return {itsDataPeriod.at(producer).begin(), tz};
 
-      return {itsDataPeriod.at(producer).last() + boost::posix_time::microseconds(1), tz};
+      return {itsDataPeriod.at(producer).last() + Fmi::Microseconds(1), tz};
     }
     catch (...)
     {
@@ -59,10 +59,10 @@ Fmi::DateTime ProducerDataPeriod::getTime(const std::string& producer,
       if (time_enum == STARTTIME)
         return itsDataPeriod.at(producer).begin();
 
-      return (itsDataPeriod.at(producer).last() + boost::posix_time::microseconds(1));
+      return (itsDataPeriod.at(producer).last() + Fmi::Microseconds(1));
     }
 
-    return not_a_date_time;
+    return Fmi::DateTime::NOT_A_DATE_TIME;
   }
   catch (...)
   {

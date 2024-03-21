@@ -28,9 +28,6 @@
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
 using namespace std;
-using namespace boost::posix_time;
-using namespace boost::gregorian;
-using namespace boost::local_time;
 
 namespace SmartMet
 {
