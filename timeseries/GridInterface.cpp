@@ -28,6 +28,16 @@
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
 using namespace std;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
+using namespace boost::local_time;
+
+namespace
+{
+  Fmi::DateTime y1900(Fmi::Date(1900, 1, 1));
+  Fmi::DateTime y1970(Fmi::Date(1970, 1, 1));
+  Fmi::DateTime y2100(Fmi::Date(2100, 1, 1));
+} // anonymous namespace
 
 namespace SmartMet
 {
@@ -387,8 +397,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
 
     // The orginal start time and the end time of the query
 
-    std::string startTime = Fmi::to_iso_string(masterquery.toptions.startTime);
-    std::string endTime = Fmi::to_iso_string(masterquery.toptions.endTime);
+    Fmi::DateTime startTime = masterquery.toptions.startTime;
+    Fmi::DateTime endTime = masterquery.toptions.endTime;
 
     // These boolean variables define if the start time and the end time is defined in UTC.
 
@@ -398,8 +408,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
     // These variables will contain the actual start time and end time used in grid-query after
     // we have fixed and checked some things.
 
-    std::string grid_startTime = startTime;
-    std::string grid_endTime = endTime;
+    Fmi::DateTime grid_startTime = startTime;
+    Fmi::DateTime grid_endTime = endTime;
 
     // Number of the requested timesteps.
 
@@ -421,39 +431,32 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
         masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::FixedTimes ||
         masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
     {
-      std::string startT = startTime;
+      Fmi::DateTime startT = startTime;
       if (startTimeUTC)
       {
-        Fmi::LocalDateTime localTime(toTimeStamp(startTime), tz);
-        startT = Fmi::to_iso_string(localTime.local_time());
+        Fmi::LocalDateTime localTime(startTime, tz);
+        startT = localTime.local_time();
       }
 
       startTimeUTC = false;
-      grid_startTime = startT.substr(0, 9) + "000000";
+      unsigned seconds = startT.time_of_day().total_seconds();
 
       uint tstep = step;
       if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
         tstep = 3600;
 
-      while (grid_startTime < startT)
-      {
-        auto ptime = toTimeStamp(grid_startTime);
-        ptime = ptime + Fmi::Seconds(tstep);
-        grid_startTime = Fmi::to_iso_string(ptime);
-      }
-
-      grid_endTime = endTime.substr(0, 11) + "0000";
+      grid_startTime = Fmi::DateTime(startT.date(), Fmi::Seconds(seconds - seconds % tstep));
     }
 
     // If the daylight saving time is in the request time interval then we need
     // to add an extra hour to the end time of the query.
 
     bool daylightSavingActive = false;
-    std::string daylightSavingTime;
-    std::string year = startTime.substr(0, 4);
+    Fmi::DateTime daylightSavingTime;
+    int year = startTime.date().year();
 
     if (tz->has_dst())
-      daylightSavingTime = Fmi::to_iso_string(tz->dst_local_end_time(Fmi::stoi(year)));
+      daylightSavingTime = tz->dst_local_end_time(year);
 
     if (grid_startTime <= daylightSavingTime && grid_endTime >= daylightSavingTime)
     {
@@ -462,9 +465,9 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       {
         // Adding one hour to the end time because of the daylight saving.
 
-        auto ptime = toTimeStamp(grid_endTime);
-        ptime = ptime + Fmi::Minutes(60);
-        grid_endTime = Fmi::to_iso_string(ptime);
+        auto ptime = grid_endTime;
+        ptime = ptime + boost::posix_time::minutes(60);
+        grid_endTime = ptime;
       }
     }
 
@@ -480,8 +483,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
     // This is a request in a request sequence. The start time in this case is the same as
     // the end time of the previous request.
 
-    std::string latestTime = Fmi::to_iso_string(masterquery.latestTimestep);
-    std::string latestTimeUTC = latestTime;
+    Fmi::DateTime latestTime = masterquery.latestTimestep;
+    Fmi::DateTime latestTimeUTC = latestTime;
 
     if (!masterquery.toptions.startTimeUTC)
       latestTimeUTC = localTimeToUtc(latestTime, tz);
@@ -512,7 +515,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       {
         // startTime is "data", which means that we should read all the data from the beginning
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeFromData;
-        grid_startTime = "19000101T000000";
+        grid_startTime = y1900; // "19000101T000000";
 
         if (!masterquery.toptions.endTimeData)
           gridQuery.mTimesteps = *masterquery.toptions.timeSteps;
@@ -522,7 +525,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       {
         // endTime is "data", which means that we should read all the data to the end
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::EndTimeFromData;
-        grid_endTime = "21000101T000000";
+        grid_endTime = y2100;
       }
 
       if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes)
@@ -563,15 +566,15 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
 
         gridQuery.mTimesteps = gridQuery.mMaxParameterValues;
         if (grid_startTime == grid_endTime)
-          grid_endTime = "21000101T000000";
+          grid_endTime = y2100; // "21000101T000000"
       }
     }
     else
     {
       // This is a time-step request, which means that we shoud generate valid timesteps
 
-      auto s = toTimeStamp(grid_startTime);
-      auto e = toTimeStamp(grid_endTime);
+      Fmi::DateTime s = grid_startTime;
+      Fmi::DateTime e = grid_endTime;
 
       if (masterquery.toptions.timeSteps)
       {
@@ -591,12 +594,11 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       uint stepCount = 0;
       while (s <= e)
       {
-        std::string str = Fmi::to_iso_string(s);
         Fmi::LocalDateTime localTime(s, tz);
 
         bool additionOk = true;
 
-        if (latestTime != startTime && str <= latestTimeUTC)
+        if (latestTime != startTime && s <= latestTimeUTC)
           additionOk = false;
 
         if (additionOk && !masterquery.toptions.timeList.empty())
@@ -630,8 +632,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       }
     }
 
-    gridQuery.mStartTime = utcTimeToTimeT(grid_startTime);
-    gridQuery.mEndTime = utcTimeToTimeT(grid_endTime);
+    gridQuery.mStartTime = (grid_startTime - y1970).total_seconds();
+    gridQuery.mEndTime = (grid_endTime - y1970).total_seconds();
   }
   catch (...)
   {
@@ -691,12 +693,12 @@ void GridInterface::prepareGeneration(QueryServer::Query& gridQuery,
 
     if (masterquery.origintime)
     {
-      if (masterquery.origintime == Fmi::DateTime(Fmi::DateTime::POS_INFINITY))
+      if (masterquery.origintime == Fmi::DateTime(boost::date_time::pos_infin))
       {
         // Generation: latest, newest
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::LatestGeneration;
       }
-      else if (masterquery.origintime == Fmi::DateTime(Fmi::DateTime::NEG_INFINITY))
+      else if (masterquery.origintime == Fmi::DateTime(boost::date_time::neg_infin))
       {
         // Generation: oldest
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::OldestGeneration;
@@ -1313,7 +1315,7 @@ void GridInterface::exteractCoordinatesAndAggrecationTimes(
         std::string prevLocalTime;
         for (uint t = 0; t < tLen; t++)
         {
-          auto dt = Fmi::date_time::from_time_t(
+          auto dt = boost::posix_time::from_time_t(
               gridQuery->mQueryParameterList[p].mValueList[t]->mForecastTimeUTC);
           Fmi::LocalDateTime queryTime(dt, tz);
           std::string lt = Fmi::to_iso_string(queryTime.local_time());
@@ -1444,7 +1446,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                 throw exception;
               }
 
-              auto dt = Fmi::date_time::from_time_t(
+              auto dt = boost::posix_time::from_time_t(
                   gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastTimeUTC);
               Fmi::LocalDateTime queryTime(dt, tz);
 
@@ -1558,7 +1560,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
               TS::TimeSeries ts(state.getLocalTimePool());
               for (int t = 0; t < tLen; t++)
               {
-                auto dt = Fmi::date_time::from_time_t(
+                auto dt = boost::posix_time::from_time_t(
                     gridQuery->mQueryParameterList[pid].mValueList[t]->mForecastTimeUTC);
                 Fmi::LocalDateTime queryTime(dt, tz);
 
@@ -1611,7 +1613,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                ft != gridQuery->mForecastTimeList.end();
                ++ft)
           {
-            auto dt = Fmi::date_time::from_time_t(*ft);
+            auto dt = boost::posix_time::from_time_t(*ft);
             Fmi::LocalDateTime queryTime(dt, tz);
             /*
                             if (xLen == 1)
@@ -2043,7 +2045,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
               {
                 if (gridQuery->mQueryParameterList[idx].mValueList[t]->mModificationTime > 0)
                 {
-                  auto utcT = Fmi::date_time::from_time_t(
+                  auto utcT = boost::posix_time::from_time_t(
                       gridQuery->mQueryParameterList[idx].mValueList[t]->mModificationTime);
                   Fmi::LocalDateTime modTime(utcT, tz);
                   TS::TimedValue tsValue(queryTime, masterquery.timeformatter->format(modTime));
