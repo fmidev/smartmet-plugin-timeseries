@@ -548,8 +548,9 @@ std::size_t QueryProcessingHub::hash_value(const State& state,
           // We do not need to iterate over the parameters here like processQEngineQuery does
 
           // every parameter starts from the same row
-          if (subquery.toptions.endTime > data_period_endtime.local_time() &&
-              !data_period_endtime.is_not_a_date_time() && !isClimatologyProducer)
+          if (!data_period_endtime.is_not_a_date_time()
+               && subquery.toptions.endTime > data_period_endtime.local_time()
+               && !isClimatologyProducer)
           {
             subquery.toptions.endTime = data_period_endtime.local_time();
           }

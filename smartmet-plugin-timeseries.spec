@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 24.2.23
+Version: 24.3.22
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -32,7 +32,7 @@ BuildRequires: smartmet-library-spine-devel >= 24.2.8
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
 BuildRequires: smartmet-library-grid-content-devel >= 24.2.23
-BuildRequires: smartmet-library-grid-files-devel >= 24.2.23
+BuildRequires: smartmet-library-grid-files-devel >= 24.3.22
 BuildRequires: smartmet-library-newbase-devel >= 24.2.23
 BuildRequires: smartmet-library-gis-devel >= 24.1.3
 BuildRequires: smartmet-engine-geonames-devel >= 24.2.23
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri Mar 22 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.3.22-1.fmi
+- Avoid string use for time value manipulations in GridInterface::prepareQueryTimes
+
 * Fri Feb 23 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> 24.2.23-1.fmi
 - Full repackaging
 
