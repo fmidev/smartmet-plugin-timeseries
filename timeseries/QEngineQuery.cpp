@@ -380,8 +380,9 @@ void QEngineQuery::processQEngineQuery(const State& state,
         q.toptions.startTime = old_start_time;
 
         // every parameter starts from the same row
-        if (q.toptions.endTime > data_period_endtime.local_time() &&
-            !data_period_endtime.is_not_a_date_time() && !isClimatologyProducer)
+        if (!data_period_endtime.is_not_a_date_time()
+           && q.toptions.endTime > data_period_endtime.local_time()
+           && !isClimatologyProducer)
         {
           q.toptions.endTime = data_period_endtime.local_time();
         }

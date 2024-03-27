@@ -282,9 +282,9 @@ void resolve_time_settings(const std::string& producer,
       query.toptions.endTimeData = false;
     }
 
-    if (query.toptions.startTime > ptime_now)
+    if (query.toptions.startTime.is_not_a_date_time() && query.toptions.startTime > ptime_now)
       query.toptions.startTime = ptime_now;
-    if (query.toptions.endTime > ptime_now)
+    if (query.toptions.endTime.is_not_a_date_time() && query.toptions.endTime > ptime_now)
       query.toptions.endTime = ptime_now;
 
     if (!query.starttimeOptionGiven && !query.endtimeOptionGiven)
