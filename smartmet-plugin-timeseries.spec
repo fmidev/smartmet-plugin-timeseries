@@ -4,7 +4,7 @@
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
 Version: 24.4.3
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Apr  3 2024 Mika Heiskanen <mheiskan@rhel8.dev.fmi.fi> - 24.4.3-2.fmi
+- Fixed potential dereference of an empty boost::optional
+
 * Wed Apr  3 2024 Mika Heiskanen <mheiskan@rhel8.dev.fmi.fi> - 24.4.3-1.fmi
 - Fixed start time to the next valid timestep (was previous)
 
