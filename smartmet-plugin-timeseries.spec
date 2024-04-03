@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 24.3.22
-Release: 1%{?dist}.fmi
+Version: 24.4.3
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -28,12 +28,12 @@ BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 24.2.23
-BuildRequires: smartmet-library-spine-devel >= 24.2.8
+BuildRequires: smartmet-library-spine-devel >= 24.3.15
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
-BuildRequires: smartmet-library-grid-content-devel >= 24.2.23
+BuildRequires: smartmet-library-grid-content-devel >= 24.3.14
 BuildRequires: smartmet-library-grid-files-devel >= 24.3.22
-BuildRequires: smartmet-library-newbase-devel >= 24.2.23
+BuildRequires: smartmet-library-newbase-devel >= 24.3.11
 BuildRequires: smartmet-library-gis-devel >= 24.1.3
 BuildRequires: smartmet-engine-geonames-devel >= 24.2.23
 %if %{with observation}
@@ -50,8 +50,8 @@ Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 24.1.3
 Requires: smartmet-library-locus >= 23.7.28
 Requires: smartmet-library-macgyver >= 24.1.17
-Requires: smartmet-library-newbase >= 24.2.23
-Requires: smartmet-library-spine >= 24.2.8
+Requires: smartmet-library-newbase >= 24.3.11
+Requires: smartmet-library-spine >= 24.3.15
 Requires: smartmet-library-timeseries >= 24.2.23
 Requires: smartmet-engine-geonames >= 24.2.23
 Requires: smartmet-engine-querydata >= 24.2.23
@@ -66,9 +66,9 @@ Requires: %{smartmet_boost}-thread
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
-#TestRequires: smartmet-utils-devel >= 23.9.6
-#TestRequires: smartmet-library-spine-plugin-test >= 24.2.8
-#TestRequires: smartmet-library-newbase-devel >= 24.2.23
+#TestRequires: smartmet-utils-devel >= 24.3.13
+#TestRequires: smartmet-library-spine-plugin-test >= 24.3.15
+#TestRequires: smartmet-library-newbase-devel >= 24.3.11
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 23.7.21
 #TestRequires: smartmet-test-data >= 23.11.8
@@ -107,6 +107,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Apr  3 2024 Mika Heiskanen <mheiskan@rhel8.dev.fmi.fi> - 24.4.3-2.fmi
+- Fixed potential dereference of an empty boost::optional
+
+* Wed Apr  3 2024 Mika Heiskanen <mheiskan@rhel8.dev.fmi.fi> - 24.4.3-1.fmi
+- Fixed start time to the next valid timestep (was previous)
+
 * Fri Mar 22 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.3.22-1.fmi
 - Avoid string use for time value manipulations in GridInterface::prepareQueryTimes
 
