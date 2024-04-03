@@ -523,7 +523,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
         grid_startTime = y1900; // "19000101T000000";
 
         if (!masterquery.toptions.endTimeData)
-          gridQuery.mTimesteps = *masterquery.toptions.timeSteps;
+          gridQuery.mTimesteps = steps;
       }
 
       if (masterquery.toptions.endTimeData)
