@@ -445,7 +445,12 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
         tstep = 3600;
 
-      grid_startTime = Fmi::DateTime(startT.date(), Fmi::Seconds(seconds - seconds % tstep));
+      uint diff = seconds % tstep;
+      uint next = tstep;
+      if (diff == 0)
+        next = 0;
+
+      grid_startTime = Fmi::DateTime(startT.date(), Fmi::Seconds(seconds - diff + next));
     }
 
     // If the daylight saving time is in the request time interval then we need
