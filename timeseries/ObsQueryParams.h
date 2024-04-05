@@ -18,6 +18,8 @@ struct ObsQueryParams
   std::vector<int> wmos;
   std::vector<int> lpnns;
   std::vector<int> fmisids;
+  std::vector<int> rwsids;
+  std::vector<std::string> wsis;
   std::map<std::string, double> boundingBox;
   TS::DataFilter dataFilter;
   int numberofstations;
@@ -26,7 +28,7 @@ struct ObsQueryParams
   bool latestObservation;
   bool useDataCache;
 #endif
-  std::set<std::string> getObsProducers(const State& state) const;
+  static std::set<std::string> getObsProducers(const State& state);
 };
 
 }  // namespace TimeSeries

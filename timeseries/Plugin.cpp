@@ -18,7 +18,7 @@
 #include <spine/TableFormatterFactory.h>
 #include <timeseries/ParameterKeywords.h>
 
-//#define MYDEBUG ON
+// #define MYDEBUG ON
 
 namespace SmartMet
 {

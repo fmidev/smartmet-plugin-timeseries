@@ -60,6 +60,7 @@ struct Query : public ObsQueryParams
 
   std::string wmo;
   std::string fmisid;
+  std::string wsi;
   std::string lpnn;
   std::string language;
   std::string keyword;
