@@ -614,7 +614,7 @@ void QEngineQuery::fetchQEngineValues(const State& state,
                          nearestpoint,
                          precision,
                          isPointQuery,
-                         false, // loadDataLevels
+                         false,  // loadDataLevels
                          pressure,
                          "pressure:",
                          {},
@@ -635,7 +635,7 @@ void QEngineQuery::fetchQEngineValues(const State& state,
                          nearestpoint,
                          precision,
                          isPointQuery,
-                         false, // loadDataLevels
+                         false,  // loadDataLevels
                          height,
                          "height:",
                          height,
@@ -764,7 +764,8 @@ void QEngineQuery::pointQuery(const Query& theQuery,
     {
       querydata_result = theQueryLevelDataCache.itsTimeSeries[theCacheKey];
     }
-    else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo")
+    else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo" ||
+             paramname == "wsi")
     {
       querydata_result = boost::make_shared<TS::TimeSeries>(theState.getLocalTimePool());
       for (const auto& t : theQueryDataTlist)

@@ -17,7 +17,7 @@ namespace TimeSeries
 {
 namespace
 {
-void parse_ids(const boost::optional<std::string> string_param, std::vector<int>& id_vector)
+void parse_ids(const boost::optional<std::string>& string_param, std::vector<int>& id_vector)
 {
   try
   {
@@ -32,6 +32,20 @@ void parse_ids(const boost::optional<std::string> string_param, std::vector<int>
         id_vector.push_back(id_int);
       }
     }
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+void parse_ids(const boost::optional<std::string>& string_param,
+               std::vector<std::string>& id_vector)
+{
+  try
+  {
+    if (string_param)
+      boost::algorithm::split(id_vector, *string_param, boost::algorithm::is_any_of(","));
   }
   catch (...)
   {
@@ -81,36 +95,36 @@ ObsQueryParams::ObsQueryParams(const Spine::HTTP::Request& req)
     // WMOs
     name = req.getParameter("wmo");
     parse_ids(name, wmos);
+    // RWSIDs
+    name = req.getParameter("rwsid");
+    parse_ids(name, rwsids);
     // LPNNs
     name = req.getParameter("lpnn");
     parse_ids(name, lpnns);
+    // WIGOS Station identifiers
+    name = req.getParameter("wsi");
+    parse_ids(name, wsis);
+
     if (!!req.getParameter("bbox"))
     {
+      // First remove a possible radius setting
       string bbox = *req.getParameter("bbox");
+      auto radius_pos = bbox.find(':');
+      if (radius_pos != string::npos)
+        bbox.resize(radius_pos);
+
       vector<string> parts;
       boost::algorithm::split(parts, bbox, boost::algorithm::is_any_of(","));
-      std::string lat2(parts[3]);
-      auto radius_pos = lat2.find(':');
-      if (radius_pos != string::npos)
-        lat2.resize(radius_pos);
 
       // Bounding box must contain exactly 4 elements
-      if (parts.size() != 4)
-      {
+      if (parts.size() != 4 || parts[0].empty() || parts[1].empty() || parts[2].empty() ||
+          parts[3].empty())
         throw Fmi::Exception(BCP, "Invalid bounding box '" + bbox + "'!");
-      }
 
-      if (!parts[0].empty())
-        boundingBox["minx"] = Fmi::stod(parts[0]);
-
-      if (!parts[1].empty())
-        boundingBox["miny"] = Fmi::stod(parts[1]);
-
-      if (!parts[2].empty())
-        boundingBox["maxx"] = Fmi::stod(parts[2]);
-
-      if (!parts[3].empty())
-        boundingBox["maxy"] = Fmi::stod(lat2);
+      boundingBox["minx"] = Fmi::stod(parts[0]);
+      boundingBox["miny"] = Fmi::stod(parts[1]);
+      boundingBox["maxx"] = Fmi::stod(parts[2]);
+      boundingBox["maxy"] = Fmi::stod(parts[3]);
     }
     // Data filter options
     add_sql_data_filter(req, "station_id", dataFilter);
@@ -131,13 +145,13 @@ ObsQueryParams::ObsQueryParams(const Spine::HTTP::Request& req)
   }
 }
 
-std::set<std::string> ObsQueryParams::getObsProducers(const State& state) const
+std::set<std::string> ObsQueryParams::getObsProducers(const State& state)
 {
   try
   {
     std::set<std::string> ret;
 #ifndef WITHOUT_OBSERVATION
-    auto obsengine = state.getObsEngine();
+    auto* obsengine = state.getObsEngine();
     if (obsengine != nullptr)
       ret = obsengine->getValidStationTypes();
 #endif

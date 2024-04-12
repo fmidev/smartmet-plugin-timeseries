@@ -83,23 +83,6 @@ void set_agg_interval_ahead(TS::DataFunction& func, unsigned int interval)
   }
 }
 
-void add_sql_data_filter(const Spine::HTTP::Request& req,
-                         const std::string& param_name,
-                         TS::DataFilter& dataFilter)
-{
-  try
-  {
-    auto param = req.getParameter(param_name);
-
-    if (param)
-      dataFilter.setDataFilter(param_name, *param);
-  }
-  catch (...)
-  {
-    throw Fmi::Exception::Trace(BCP, "Operation failed!");
-  }
-}
-
 void report_unsupported_option(const std::string& name, const boost::optional<std::string>& value)
 {
   if (value)
@@ -629,9 +612,9 @@ void Query::parse_attr(const Spine::HTTP::Request& theReq)
       for (const auto& part : partList)
       {
         std::vector<std::string> list;
-        char buf[part.length()+10];
-        strcpy(buf,part.c_str());
-        char *p = strstr(buf,":");
+        char buf[part.length() + 10];
+        strcpy(buf, part.c_str());
+        char* p = strstr(buf, ":");
         if (p)
         {
           *p = '\0';
