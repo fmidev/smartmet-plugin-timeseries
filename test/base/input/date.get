@@ -1,1 +1,1 @@
-GET /timeseries?starttime=200808051200&place=Helsinki&param=time,Temperature,date(%25a),date(%25Y-%25m-%25d%20%25H:%25M:%25S%25F%25Q) HTTP/1.0
+GET /timeseries?starttime=200808051200&place=Helsinki&param=time,Temperature,date(%25a),date(%25Y-%25m-%25d%20%25H:%25M:%25S%25Ez) HTTP/1.0
