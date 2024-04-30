@@ -57,7 +57,7 @@ class GridInterface
       void            exteractQueryResult(std::shared_ptr<QueryServer::Query>& gridQuery,const State& state,
                         Query& masterquery,TS::OutputData& outputData,const QueryServer::QueryStreamer_sptr& queryStreamer,
                         const AreaProducers& areaproducers,Fmi::TimeZonePtr tz,const Spine::TaggedLocation& tloc,
-                        const Spine::LocationPtr& loc,const std::string& country,double level);
+                        const Spine::LocationPtr& loc,const std::string& country,int levelId,double level);
 
       void            getDataTimes(const AreaProducers& areaproducers,std::string& startTime,std::string& endTime);
       static int      getParameterIndex(QueryServer::Query& gridQuery, const std::string& param);

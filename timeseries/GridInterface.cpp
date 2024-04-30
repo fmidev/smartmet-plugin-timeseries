@@ -964,37 +964,35 @@ void GridInterface::prepareQueryParameters(QueryServer::Query& gridQuery,
             qParam.mGeometryId = toInt32(parameters[0].mGeometryId);
           }
         }
+      }
 
-        if (qParam.mParameterLevel < 0)
-          qParam.mParameterLevel = origLevel;
-
-        switch (mode)
-        {
-          case 0:
-            if (qParam.mParameterLevelId == 2)
-            {
-              // Grib uses Pa and querydata hPa, so we have to convert the value.
-              qParam.mParameterLevel = C_INT(qParam.mParameterLevel * 100);
-              qParam.mFlags =
-                  qParam.mFlags | QueryServer::QueryParameter::Flags::PressureLevelInterpolation;
-            }
-            break;
-
-          case 1:
-            qParam.mFlags =
-                qParam.mFlags | QueryServer::QueryParameter::Flags::PressureLevelInterpolation;
-            qParam.mParameterLevelId = 2;
+      switch (mode)
+      {
+        case 0:
+          if (qParam.mParameterLevelId == 2)
+          {
             // Grib uses Pa and querydata hPa, so we have to convert the value.
             qParam.mParameterLevel = C_INT(qParam.mParameterLevel * 100);
-            break;
+            //qParam.mFlags |= QueryServer::QueryParameter::Flags::PressureLevels;
+          }
+          break;
 
-          case 2:
-            qParam.mParameterLevelId = 0;
-            qParam.mFlags =
-                qParam.mFlags | QueryServer::QueryParameter::Flags::HeightLevelInterpolation;
-            break;
-        }
+        case 1:
+          qParam.mParameterLevelId = 2;
+          // Grib uses Pa and querydata hPa, so we have to convert the value.
+          qParam.mParameterLevel = C_INT(qParam.mParameterLevel * 100);
+          qParam.mFlags |= QueryServer::QueryParameter::Flags::PressureLevels;
+          break;
+
+        case 2:
+          //qParam.mParameterLevelId = 0;
+          qParam.mFlags |= QueryServer::QueryParameter::Flags::MetricLevels;
+          break;
       }
+
+
+      if (qParam.mParameterLevel < 0)
+        qParam.mParameterLevel = origLevel;
 
       size_t len = parameters.size();
       if (len > 1)
@@ -1123,9 +1121,13 @@ void GridInterface::findLevelId(Query& masterquery,
     // Checking if the level type is defined in the request.
 
     if (strcasecmp(masterquery.leveltype.c_str(), "pressure") == 0)
+    {
       levelId = 2;
+    }
     else if (strcasecmp(masterquery.leveltype.c_str(), "model") == 0)
+    {
       levelId = 3;
+    }
 
     // Checking it the level type is defined in the producer's alias definition.
 
@@ -1199,7 +1201,7 @@ void GridInterface::findLevels(Query& masterquery,
               // Fetching pressure levels.
               itsGridEngine->getProducerParameterLevelList(producerName, 2, 0.01, tmpLevels);
               for (auto lev = tmpLevels.rbegin(); lev != tmpLevels.rend(); ++lev)
-                levels.emplace_back(*lev);
+                levels.emplace_back(*lev*100);
             }
             else if (levelId == 3)
             {
@@ -1222,7 +1224,7 @@ void GridInterface::findLevels(Query& masterquery,
                   case 2:  // Pressure level
                     itsGridEngine->getProducerParameterLevelList(producerName, 2, 0.01, tmpLevels);
                     for (auto lev = tmpLevels.rbegin(); lev != tmpLevels.rend(); ++lev)
-                      levels.emplace_back(*lev);
+                      levels.emplace_back(*lev*100);
                     break;
 
                   case 3:  // model
@@ -1247,7 +1249,7 @@ void GridInterface::findLevels(Query& masterquery,
             // If the level type is "pressure" then we should use these levels in reverse order.
             for (auto level = masterquery.levels.rbegin(); level != masterquery.levels.rend();
                  ++level)
-              levels.emplace_back((double)(*level));
+              levels.emplace_back((double)(*level*100));
           }
           else
           {
@@ -1258,14 +1260,16 @@ void GridInterface::findLevels(Query& masterquery,
         }
         break;
 
-      case 1:
+      case 1:  // OP
         levelId = 2;
         for (const auto& level : masterquery.pressures)
-          levels.emplace_back((double)level);
+          levels.emplace_back((double)level*100);
         break;
 
       case 2:
-        levelId = 3;
+        if (levelId == 2)
+          levelId = 0;
+
         for (auto level : masterquery.heights)
           levels.push_back(static_cast<double>(level));
         break;
@@ -1351,6 +1355,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                                         const Spine::TaggedLocation& tloc,
                                         const Spine::LocationPtr& loc,
                                         const std::string& country,
+                                        int levelId,
                                         double level)
 {
   FUNCTION_TRACE
@@ -1920,6 +1925,9 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
 
               int idx = 0;
               int levelValue = level;
+              if (levelValue > 0  &&  levelId == 2)
+                levelValue = level / 100;
+
               while (idx < pLen && levelValue <= 0)
               {
                 if (gridQuery->mQueryParameterList[idx].mValueList[t]->mParameterLevel > 0)
@@ -2258,6 +2266,7 @@ void GridInterface::processGridQuery(const State& state,
                             tloc,
                             loc,
                             country,
+                            qLevelId,
                             level);
       }
     }
