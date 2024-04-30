@@ -34,6 +34,8 @@ namespace
   Fmi::DateTime y1900(Fmi::Date(1900, 1, 1));
   Fmi::DateTime y1970(Fmi::Date(1970, 1, 1));
   Fmi::DateTime y2100(Fmi::Date(2100, 1, 1));
+
+  Fmi::TimeZonePtr utc("Etc/UTC");
 } // anonymous namespace
 
 namespace SmartMet
@@ -436,26 +438,22 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
         masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
     {
       Fmi::DateTime startT = startTime.local_time();
-      startTimeUTC = false;
       unsigned seconds = startT.time_of_day().total_seconds();
 
       uint tstep = step;
       if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
         tstep = 3600;
 
-      uint diff = seconds % tstep;
-      uint next = tstep;
-      if (diff == 0)
-        next = 0;
-
-      grid_startTime = Fmi::DateTime(startT.date(), Fmi::Seconds(seconds - diff + next));
+      seconds = tstep * ((seconds + tstep - 1) / tstep);
+      grid_startTime = Fmi::LocalDateTime(startT.date(), Fmi::Seconds(seconds), startTime.zone());
     }
+
 
     // If the daylight saving time is in the request time interval then we need
     // to add an extra hour to the end time of the query.
 
-    bool daylightSavingActive = not grid_startTime.dst_on() and grid_endTime.dst_on();
-    if (daylightSavingActive)
+    bool daylightSavingEnds = grid_startTime.dst_on() and not grid_endTime.dst_on();
+    if (daylightSavingEnds)
     {
       if (masterquery.toptions.timeSteps && *masterquery.toptions.timeSteps != 0)
       {
@@ -467,23 +465,18 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       }
     }
 
-    // The grid queries are using only UTC times, so we should convert all the times
-    // to use UTC.
-
-    grid_startTime = grid_startTime.utc_time();
-    grid_endTime = grid_endTime.utc_time();
-
     // This is a request in a request sequence. The start time in this case is the same as
     // the end time of the previous request.
 
-    Fmi::DateTime latestTime = masterquery.latestTimestep;
-    Fmi::DateTime latestTimeUTC = latestTime;
+    // FIXME: masterquery.latestTimestamp can be in UTC or localtime depending on startTimeUTC
+    //        That causes problem when lastTimestep happens to be exactly at change from DST to
+    //        normal time (requires changes in Query.cpp and probaly somwhere else).
 
-    if (!masterquery.toptions.startTimeUTC)
-      latestTimeUTC = localTimeToUtc(latestTime, tz);
+    Fmi::LocalDateTime latestTime = mk_ldt(masterquery.latestTimestep, tz, startTimeUTC);
+    Fmi::DateTime latestTimeUTC = latestTime.utc_time();
 
-    if (latestTime != startTime.utc_time())
-      grid_startTime = latestTimeUTC;
+    if (latestTime != startTime)
+      grid_startTime = latestTime;
 
     // At this point we should know the actual start and end times of the request.
 
@@ -538,7 +531,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
         gridQuery.mTimestepSizeInMinutes = step / 60;
       }
 
-      if (latestTime != startTime.utc_time())
+      if (latestTime != startTime)
       {
         // This is a request which start time is that same as the end time of the previous
         // requests. That's why we should inform the QueryServer that it should ignore
@@ -554,7 +547,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       if (masterquery.toptions.timeSteps && *masterquery.toptions.timeSteps > 0)
       {
         gridQuery.mMaxParameterValues = *masterquery.toptions.timeSteps;
-        if (daylightSavingActive)
+        if (daylightSavingEnds)
           gridQuery.mMaxParameterValues++;
 
         gridQuery.mTimesteps = gridQuery.mMaxParameterValues;
@@ -571,7 +564,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
 
       if (masterquery.toptions.timeSteps)
       {
-        if (daylightSavingActive)
+        if (daylightSavingEnds)
           steps = steps + 3600 / step;
         e = s + Fmi::Seconds(steps * step);
       }
@@ -586,9 +579,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       uint stepCount = 0;
       while (s <= e)
       {
-        Fmi::LocalDateTime localTime(s, tz);
-
         bool additionOk = true;
+        const Fmi::LocalDateTime sLoc(s, tz);
 
         if (latestTime != startTime.utc_time() && s <= latestTimeUTC)
           additionOk = false;
@@ -599,15 +591,15 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
           // ignore timesteps that does not match these hours. These hours are defined in
           // localtime and that's why need to convert UTC timesteps back to localtimes.
 
-          std::string ss = Fmi::to_iso_string(localTime.local_time());
-          uint idx = Fmi::stoi(ss.substr(9, 4));
+          std::string ss = Fmi::format_time("%H%M", sLoc);
+          uint idx = Fmi::stoi(ss);
           if (masterquery.toptions.timeList.find(idx) == masterquery.toptions.timeList.end())
             additionOk = false;
         }
 
         if (additionOk && !masterquery.toptions.days.empty())
         {
-          auto d = localTime.local_time().date().day();
+          auto d = sLoc.local_time().date().day();
           if (masterquery.toptions.days.find(d) == masterquery.toptions.days.end())
             additionOk = false;
         }
@@ -624,8 +616,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       }
     }
 
-    gridQuery.mStartTime = (grid_startTime - y1970).total_seconds();
-    gridQuery.mEndTime = (grid_endTime - y1970).total_seconds();
+    gridQuery.mStartTime = (grid_startTime.utc_time() - y1970).total_seconds();
+    gridQuery.mEndTime = (grid_endTime.utc_time() - y1970).total_seconds();
   }
   catch (...)
   {
