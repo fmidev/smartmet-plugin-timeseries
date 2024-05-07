@@ -44,20 +44,20 @@ BuildRequires: smartmet-engine-gis-devel >= 24.4.17
 BuildRequires: smartmet-engine-grid-devel >= 24.5.3
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 24.49
+#Requires: smartmet-engine-observation >= 24.5.6
 #%endif
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 24.4.24
 Requires: smartmet-library-locus >= 23.7.28
-Requires: smartmet-library-macgyver >= 24.1.17
-Requires: smartmet-library-newbase >= 24.4.24
-Requires: smartmet-library-spine >= 24.4.23
-Requires: smartmet-library-timeseries >= 24.4.5
-Requires: smartmet-engine-geonames >= 24.2.23
-Requires: smartmet-engine-querydata >= 24.2.23
-Requires: smartmet-engine-gis >= 24.4.17
-Requires: smartmet-engine-grid >= 24.5.3
-Requires: smartmet-server >= 24.2.22
+Requires: smartmet-library-macgyver >= 24.5.6
+Requires: smartmet-library-newbase >= 24.5.6
+Requires: smartmet-library-spine >= 24.5.6
+Requires: smartmet-library-timeseries >= 24.5.6
+Requires: smartmet-engine-geonames >= 24.5.6
+Requires: smartmet-engine-querydata >= 24.5.6
+Requires: smartmet-engine-gis >= 24.5.6
+Requires: smartmet-engine-grid >= 24.5.7
+Requires: smartmet-server >= 24.5.6
 Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
@@ -74,13 +74,13 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-data >= 24.4.5
 #TestRequires: smartmet-engine-grid-test >= 24.5.3
 #TestRequires: smartmet-library-gis >= 24.4.24
-#TestRequires: smartmet-engine-geonames >= 24.2.23
-#TestRequires: smartmet-engine-gis >= 24.4.17
-#TestRequires: smartmet-engine-querydata >= 24.2.23
+#TestRequires: smartmet-engine-geonames >= 24.5.6
+#TestRequires: smartmet-engine-gis >= 24.5.6
+#TestRequires: smartmet-engine-querydata >= 24.5.6
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 24.49
+#TestRequires: smartmet-engine-observation >= 24.5.6
 %endif
-#TestRequires: smartmet-engine-grid >= 24.5.3
+#TestRequires: smartmet-engine-grid >= 24.5.7
 #TestRequires: gdal35
 #TestRequires: libwebp13
 
