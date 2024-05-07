@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 24.4.5
+Version: 24.5.3
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -28,35 +28,35 @@ BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 24.4.5
-BuildRequires: smartmet-library-spine-devel >= 24.4.5
+BuildRequires: smartmet-library-spine-devel >= 24.4.23
 BuildRequires: smartmet-library-locus-devel >= 23.7.28
 BuildRequires: smartmet-library-macgyver-devel >= 24.1.17
-BuildRequires: smartmet-library-grid-content-devel >= 24.4.4
-BuildRequires: smartmet-library-grid-files-devel >= 24.3.26
-BuildRequires: smartmet-library-newbase-devel >= 24.3.11
-BuildRequires: smartmet-library-gis-devel >= 24.3.25
+BuildRequires: smartmet-library-grid-content-devel >= 24.5.3
+BuildRequires: smartmet-library-grid-files-devel >= 24.5.3
+BuildRequires: smartmet-library-newbase-devel >= 24.4.24
+BuildRequires: smartmet-library-gis-devel >= 24.4.24
 BuildRequires: smartmet-engine-geonames-devel >= 24.2.23
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 24.4.5
+BuildRequires: smartmet-engine-observation-devel >= 24.49
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 24.2.23
-BuildRequires: smartmet-engine-gis-devel >= 24.2.23
-BuildRequires: smartmet-engine-grid-devel >= 24.4.4
+BuildRequires: smartmet-engine-gis-devel >= 24.4.17
+BuildRequires: smartmet-engine-grid-devel >= 24.5.3
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 24.4.5
+#Requires: smartmet-engine-observation >= 24.49
 #%endif
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
-Requires: smartmet-library-gis >= 24.3.25
+Requires: smartmet-library-gis >= 24.4.24
 Requires: smartmet-library-locus >= 23.7.28
 Requires: smartmet-library-macgyver >= 24.1.17
-Requires: smartmet-library-newbase >= 24.3.11
-Requires: smartmet-library-spine >= 24.4.5
+Requires: smartmet-library-newbase >= 24.4.24
+Requires: smartmet-library-spine >= 24.4.23
 Requires: smartmet-library-timeseries >= 24.4.5
 Requires: smartmet-engine-geonames >= 24.2.23
 Requires: smartmet-engine-querydata >= 24.2.23
-Requires: smartmet-engine-gis >= 24.2.23
-Requires: smartmet-engine-grid >= 24.4.4
+Requires: smartmet-engine-gis >= 24.4.17
+Requires: smartmet-engine-grid >= 24.5.3
 Requires: smartmet-server >= 24.2.22
 Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
@@ -67,20 +67,20 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 24.3.13
-#TestRequires: smartmet-library-spine-plugin-test >= 24.4.5
-#TestRequires: smartmet-library-newbase-devel >= 24.3.11
+#TestRequires: smartmet-library-spine-plugin-test >= 24.4.23
+#TestRequires: smartmet-library-newbase-devel >= 24.4.24
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 23.7.21
 #TestRequires: smartmet-test-data >= 24.4.5
-#TestRequires: smartmet-engine-grid-test >= 24.4.4
-#TestRequires: smartmet-library-gis >= 24.3.25
+#TestRequires: smartmet-engine-grid-test >= 24.5.3
+#TestRequires: smartmet-library-gis >= 24.4.24
 #TestRequires: smartmet-engine-geonames >= 24.2.23
-#TestRequires: smartmet-engine-gis >= 24.2.23
+#TestRequires: smartmet-engine-gis >= 24.4.17
 #TestRequires: smartmet-engine-querydata >= 24.2.23
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 24.4.5
+#TestRequires: smartmet-engine-observation >= 24.49
 %endif
-#TestRequires: smartmet-engine-grid >= 24.4.4
+#TestRequires: smartmet-engine-grid >= 24.5.3
 #TestRequires: gdal35
 #TestRequires: libwebp13
 
@@ -107,6 +107,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri May  3 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.5.3-1.fmi
+- Repackaged due to GRID library changes
+
 * Fri Apr  5 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.4.5-1.fmi
 - Added support for WIGOS wsi
 
