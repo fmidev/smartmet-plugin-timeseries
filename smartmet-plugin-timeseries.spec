@@ -58,7 +58,6 @@ Requires: smartmet-engine-querydata >= 24.5.6
 Requires: smartmet-engine-gis >= 24.5.6
 Requires: smartmet-engine-grid >= 24.5.7
 Requires: smartmet-server >= 24.5.6
-Requires: %{smartmet_boost}-date-time
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-system
