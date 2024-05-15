@@ -24,7 +24,6 @@ LIBS += -L$(libdir) \
         -lsmartmet-gis \
 	-lsmartmet-macgyver \
 	-lsmartmet-grid-content \
-	-lboost_date_time \
 	-lboost_thread \
 	-lboost_iostreams \
 	$(REQUIRED_LIBS) \
