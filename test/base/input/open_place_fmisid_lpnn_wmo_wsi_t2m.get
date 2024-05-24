@@ -1,0 +1,1 @@
+GET /timeseries?format=ascii&geoid=-16000150&fmisid=101311&lpnn=1&wmo=2989&wsi=0-20000-0-02998&lang=fi&param=time,place,name,Temperature,fmisid,geoid,wmo,wsi,lat,lon&producer=opendata&starttime=1375646400&endtime=1375682400&timeformat=xml&timestep=360 HTTP/1.0
