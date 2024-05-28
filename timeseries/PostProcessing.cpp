@@ -138,7 +138,7 @@ void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
     if (boost::get<TS::TimeSeriesPtr>(aggregatedData.data()))
     {
       TS::TimeSeriesPtr ts_first = *(boost::get<TS::TimeSeriesPtr>(aggregatedData.data()));
-      TS::TimeSeriesPtr ts_result(new TS::TimeSeries(ts_first->getLocalTimePool()));
+      TS::TimeSeriesPtr ts_result(new TS::TimeSeries);
       // first merge timeseries of all levels of one parameter
       for (const auto& data : aggregatedData)
       {

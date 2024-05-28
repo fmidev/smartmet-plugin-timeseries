@@ -767,7 +767,7 @@ void QEngineQuery::pointQuery(const Query& theQuery,
     else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo" ||
              paramname == "wsi")
     {
-      querydata_result = boost::make_shared<TS::TimeSeries>(theState.getLocalTimePool());
+      querydata_result = boost::make_shared<TS::TimeSeries>();
       for (const auto& t : theQueryDataTlist)
       {
         if (loc->fmisid && paramname == "fmisid")
@@ -782,7 +782,7 @@ void QEngineQuery::pointQuery(const Query& theQuery,
     }
     else if (UtilityFunctions::is_special_parameter(paramname))
     {
-      querydata_result = boost::make_shared<TS::TimeSeries>(theState.getLocalTimePool());
+      querydata_result = boost::make_shared<TS::TimeSeries>();
       UtilityFunctions::get_special_parameter_values(paramname,
                                                      thePrecision,
                                                      theQueryDataTlist,
@@ -808,8 +808,7 @@ void QEngineQuery::pointQuery(const Query& theQuery,
                                                           theQuery.timezone,
                                                           theQuery.findnearestvalidpoint,
                                                           theNearestPoint,
-                                                          theQuery.lastpoint,
-                                                          theState.getLocalTimePool());
+                                                          theQuery.lastpoint);
 
       // one location, list of local times (no radius -> pointforecast)
       querydata_result =
@@ -935,8 +934,7 @@ TS::TimeSeriesGroupPtr QEngineQuery::getQEngineValuesForArea(
                                                           theQuery.timezone,
                                                           theQuery.findnearestvalidpoint,
                                                           theNearestPoint,
-                                                          theQuery.lastpoint,
-                                                          theState.getLocalTimePool());
+                                                          theQuery.lastpoint);
 
       // list of locations, list of local times
       querydata_result =

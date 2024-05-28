@@ -55,7 +55,7 @@ void erase_redundant_timesteps(TS::TimeSeries& ts, std::set<Fmi::LocalDateTime>&
   FUNCTION_TRACE
   try
   {
-    TS::TimeSeries no_redundant(ts.getLocalTimePool());
+    TS::TimeSeries no_redundant;
     no_redundant.reserve(ts.size());
     std::set<Fmi::LocalDateTime> newTimes;
 
@@ -1393,8 +1393,8 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
       {
         std::vector<TS::TimeSeriesData> aggregatedData;
 
-        TS::TimeSeriesPtr tsForParameter(new TS::TimeSeries(state.getLocalTimePool()));
-        TS::TimeSeriesPtr tsForNonGridParam(new TS::TimeSeries(state.getLocalTimePool()));
+        TS::TimeSeriesPtr tsForParameter(new TS::TimeSeries);
+        TS::TimeSeriesPtr tsForNonGridParam(new TS::TimeSeries);
         TS::TimeSeriesGroupPtr tsForGroup(new TS::TimeSeriesGroup());
 
         int columns = 0, rows = 0;
@@ -1425,7 +1425,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
 
           for (int col = 0; col < columns; col++)
           {
-            TS::TimeSeries ts(state.getLocalTimePool());
+            TS::TimeSeries ts;
 
             for (int t = 0; t < tLen; t++)
             {
@@ -1553,7 +1553,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
             int len = coordinates.size();
             for (int i = 0; i < len; i++)
             {
-              TS::TimeSeries ts(state.getLocalTimePool());
+              TS::TimeSeries ts;
               for (int t = 0; t < tLen; t++)
               {
                 auto dt = Fmi::date_time::from_time_t(

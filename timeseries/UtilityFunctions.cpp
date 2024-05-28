@@ -71,7 +71,7 @@ void get_special_parameter_values(const std::string& paramname,
   bool is_location_parameter = TS::is_location_parameter(paramname);
   for (const auto& loc : llist)
   {
-    auto timeseries = TS::TimeSeries(state.getLocalTimePool());
+    auto timeseries = TS::TimeSeries();
     for (const auto& timestep : tlist)
     {
       if (is_time_parameter)
