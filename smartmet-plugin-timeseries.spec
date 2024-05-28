@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 24.5.24
+Version: 24.5.28
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -106,6 +106,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue May 28 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.5.28-1.fmi
+- Remove uses of LocalTimePool
+- Enable function calls with single parameter
+
 * Fri May 24 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.5.24-1.fmi
 - WSI improvements
 
