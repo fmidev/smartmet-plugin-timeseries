@@ -595,8 +595,10 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
           // ignore timesteps that does not match these hours. These hours are defined in
           // localtime and that's why need to convert UTC timesteps back to localtimes.
 
-          std::string ss = Fmi::format_time("%H%M", sLoc);
-          uint idx = Fmi::stoi(ss);
+          const Fmi::TimeDuration part = sLoc.local_time().time_of_day();
+          const int hours = part.hours();
+          const int minutes = part.minutes();
+          uint idx = hours * 100 + minutes;
           if (masterquery.toptions.timeList.find(idx) == masterquery.toptions.timeList.end())
             additionOk = false;
         }
