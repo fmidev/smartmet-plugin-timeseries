@@ -2,7 +2,7 @@
 # How To Use the Timeseries API <!-- omit in toc -->
 
 This page describes more indepth the different quesrystring fields and how they
-work. For example queries see the [Examples-page](Examples).
+work. For example queries see the [Examples-page](Examples.md).
 
 - [Introduction](#introduction)
 - [Request and Response](#request-and-response)
