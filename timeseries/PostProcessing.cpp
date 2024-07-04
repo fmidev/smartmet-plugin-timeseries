@@ -135,27 +135,27 @@ void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
       return;
 
     TS::TimeSeriesData tsdata;
-    if (boost::get<TS::TimeSeriesPtr>(aggregatedData.data()))
+    if (const auto* ptr = std::get_if<TS::TimeSeriesPtr>(aggregatedData.data()))
     {
-      TS::TimeSeriesPtr ts_first = *(boost::get<TS::TimeSeriesPtr>(aggregatedData.data()));
+      TS::TimeSeriesPtr ts_first = *ptr;
       TS::TimeSeriesPtr ts_result(new TS::TimeSeries);
       // first merge timeseries of all levels of one parameter
       for (const auto& data : aggregatedData)
       {
-        TS::TimeSeriesPtr ts = *(boost::get<TS::TimeSeriesPtr>(&data));
+        TS::TimeSeriesPtr ts = std::get<TS::TimeSeriesPtr>(data);
         ts_result->insert(ts_result->end(), ts->begin(), ts->end());
       }
       // update the latest timestep, so that next query (if exists) knows from where to continue
       update_latest_timestep(query, *ts_result);
       tsdata = ts_result;
     }
-    else if (boost::get<TS::TimeSeriesGroupPtr>(aggregatedData.data()))
+    else if (std::get_if<TS::TimeSeriesGroupPtr>(aggregatedData.data()))
     {
       TS::TimeSeriesGroupPtr tsg_result(new TS::TimeSeriesGroup);
       // first merge timeseries of all levels of one parameter
       for (const auto& data : aggregatedData)
       {
-        TS::TimeSeriesGroupPtr tsg = *(boost::get<TS::TimeSeriesGroupPtr>(&data));
+        TS::TimeSeriesGroupPtr tsg = *(std::get_if<TS::TimeSeriesGroupPtr>(&data));
         tsg_result->insert(tsg_result->end(), tsg->begin(), tsg->end());
       }
       // update the latest timestep, so that next query (if exists) knows from where to continue
@@ -210,14 +210,14 @@ void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
           tf << TS::LonLatFormat::LONLAT;
         }
 
-        if (boost::get<TS::TimeSeriesPtr>(&tsdata))
+        if (const auto* ptr = std::get_if<TS::TimeSeriesPtr>(&tsdata))
         {
-          TS::TimeSeriesPtr ts = *(boost::get<TS::TimeSeriesPtr>(&tsdata));
+          TS::TimeSeriesPtr ts = *ptr;
           tf << *ts;
         }
-        else if (boost::get<TS::TimeSeriesVectorPtr>(&tsdata))
+        else if (const auto* ptr = std::get_if<TS::TimeSeriesVectorPtr>(&tsdata))
         {
-          TS::TimeSeriesVectorPtr tsv = *(boost::get<TS::TimeSeriesVectorPtr>(&tsdata));
+          TS::TimeSeriesVectorPtr tsv = *ptr;
           for (unsigned int k = 0; k < tsv->size(); k++)
           {
             tf.setCurrentColumn(k);
@@ -226,9 +226,9 @@ void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
           }
           startRow = tf.getCurrentRow();
         }
-        else if (boost::get<TS::TimeSeriesGroupPtr>(&tsdata))
+        else if (const auto* ptr = std::get_if<TS::TimeSeriesGroupPtr>(&tsdata))
         {
-          TS::TimeSeriesGroupPtr tsg = *(boost::get<TS::TimeSeriesGroupPtr>(&tsdata));
+          TS::TimeSeriesGroupPtr tsg = *ptr;
           tf << *tsg;
         }
 

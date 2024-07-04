@@ -75,11 +75,11 @@ struct Query : public ObsQueryParams
   std::string crs;
 
   Fmi::DateTime latestTimestep;
-  boost::optional<Fmi::DateTime> origintime;
+  std::optional<Fmi::DateTime> origintime;
 
   TimeProducers timeproducers;
   std::shared_ptr<Engine::Geonames::LocationOptions> loptions;
-  boost::shared_ptr<Fmi::TimeFormatter> timeformatter;
+  std::shared_ptr<Fmi::TimeFormatter> timeformatter;
 
   // last coordinate used while forming the output
   mutable NFmiPoint lastpoint;

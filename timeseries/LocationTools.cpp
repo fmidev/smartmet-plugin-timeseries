@@ -403,7 +403,7 @@ Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
       {
         Spine::Location location(*loc);
         location.dem = geonames.demHeight(location.longitude, location.latitude);
-        loc = boost::make_shared<Spine::Location>(location);
+        loc = std::make_shared<Spine::Location>(location);
       }
     }
 

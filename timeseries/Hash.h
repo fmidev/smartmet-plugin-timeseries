@@ -6,7 +6,7 @@
 
 #pragma once
 #include "State.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <macgyver/Hash.h>
 #include <macgyver/StringConversion.h>
 #include <list>
@@ -28,7 +28,7 @@ inline std::size_t hash_value(const T& obj, const State& theState)
 
 // Optional objects with a member hash_value implementation
 template <typename T>
-inline std::size_t hash_value(const boost::optional<T>& obj, const State& theState)
+inline std::size_t hash_value(const std::optional<T>& obj, const State& theState)
 {
   if (!obj)
     return Fmi::hash_value(false);
@@ -40,7 +40,7 @@ inline std::size_t hash_value(const boost::optional<T>& obj, const State& theSta
 
 // Shared objects with a member hash_value implementation
 template <typename T>
-inline std::size_t hash_value(const boost::shared_ptr<T>& obj, const State& theState)
+inline std::size_t hash_value(const std::shared_ptr<T>& obj, const State& theState)
 {
   if (!obj)
     return Fmi::hash_value(false);

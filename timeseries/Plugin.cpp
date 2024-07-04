@@ -77,7 +77,7 @@ Spine::TableFormatter::Names get_headers(const std::vector<Spine::Parameter>& pa
       }
       else
       {
-        const boost::optional<int>& sensor_no = p.getSensorNumber();
+        const std::optional<int>& sensor_no = p.getSensorNumber();
         if (sensor_no)
         {
           header_name += ("_#" + Fmi::to_string(*sensor_no));
@@ -149,7 +149,7 @@ bool etag_only(const Spine::HTTP::Request& request,
   }
 }
 
-void parse_lonlats(const boost::optional<std::string>& lonlats,
+void parse_lonlats(const std::optional<std::string>& lonlats,
                    Spine::HTTP::Request& theRequest,
                    std::string& wkt_multipoint)
 {
@@ -178,7 +178,7 @@ void parse_lonlats(const boost::optional<std::string>& lonlats,
   }
 }
 
-void parse_latlons(const boost::optional<std::string>& latlons,
+void parse_latlons(const std::optional<std::string>& latlons,
                    Spine::HTTP::Request& theRequest,
                    std::string& wkt_multipoint)
 {
@@ -207,7 +207,7 @@ void parse_latlons(const boost::optional<std::string>& latlons,
   }
 }
 
-void parse_places(const boost::optional<std::string>& places,
+void parse_places(const std::optional<std::string>& places,
                   Spine::HTTP::Request& theRequest,
                   std::string& wkt_multipoint,
                   const Engine::Geonames::Engine* geoEngine)
@@ -238,7 +238,7 @@ void parse_places(const boost::optional<std::string>& places,
   }
 }
 
-void parse_fmisids(const boost::optional<std::string>& fmisid,
+void parse_fmisids(const std::optional<std::string>& fmisid,
                    Spine::HTTP::Request& theRequest,
                    std::vector<int>& fmisids)
 {
@@ -259,7 +259,7 @@ void parse_fmisids(const boost::optional<std::string>& fmisid,
   }
 }
 
-void parse_lpnns(const boost::optional<std::string>& lpnn,
+void parse_lpnns(const std::optional<std::string>& lpnn,
                  Spine::HTTP::Request& theRequest,
                  std::vector<int>& lpnns)
 {
@@ -280,7 +280,7 @@ void parse_lpnns(const boost::optional<std::string>& lpnn,
   }
 }
 
-void parse_wmos(const boost::optional<std::string>& wmo,
+void parse_wmos(const std::optional<std::string>& wmo,
                 Spine::HTTP::Request& theRequest,
                 std::vector<int>& wmos)
 {
@@ -395,7 +395,7 @@ void Plugin::query(const State& state,
          strcasecmp(itsConfig.primaryForecastSource().c_str(), "grid") == 0))
       gridEnabled = true;
 
-    boost::shared_ptr<Spine::TableFormatter> formatter(fmt);
+    std::shared_ptr<Spine::TableFormatter> formatter(fmt);
     std::string mime = formatter->mimetype() + "; charset=UTF-8";
     response.setHeader("Content-Type", mime);
 
@@ -461,7 +461,7 @@ void Plugin::query(const State& state,
         Fmi::to_string(std::chrono::duration_cast<std::chrono::microseconds>(t5 - t4).count()));
 
     // TODO: Should use std::move when it has become available
-    boost::shared_ptr<std::string> result(new std::string());
+    std::shared_ptr<std::string> result(new std::string());
     std::swap(out, *result);
 
     // Too many flash data requests with empty output filling the logs...
@@ -585,7 +585,7 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
 
     // Adding response headers
 
-    boost::shared_ptr<Fmi::TimeFormatter> tformat(Fmi::TimeFormatter::create("http"));
+    std::shared_ptr<Fmi::TimeFormatter> tformat(Fmi::TimeFormatter::create("http"));
 
     if (expires_seconds == 0)
     {
