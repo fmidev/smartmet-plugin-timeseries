@@ -83,7 +83,7 @@ void set_agg_interval_ahead(TS::DataFunction& func, unsigned int interval)
   }
 }
 
-void report_unsupported_option(const std::string& name, const boost::optional<std::string>& value)
+void report_unsupported_option(const std::string& name, const std::optional<std::string>& value)
 {
   if (value)
     std::cerr << (Spine::log_time_str() + ANSI_FG_RED + " [timeseries] Deprecated option '" + name +
@@ -710,7 +710,7 @@ void Query::parse_origintime(const Spine::HTTP::Request& theReq)
 {
   try
   {
-    boost::optional<std::string> tmp = theReq.getParameter("origintime");
+    std::optional<std::string> tmp = theReq.getParameter("origintime");
     if (tmp)
     {
       if (*tmp == "latest" || *tmp == "newest")

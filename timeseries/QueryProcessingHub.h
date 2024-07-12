@@ -23,7 +23,7 @@ class QueryProcessingHub
  public:
   QueryProcessingHub(const Plugin& thePlugin);
 
-  boost::shared_ptr<std::string> processQuery(const State& state,
+  std::shared_ptr<std::string> processQuery(const State& state,
                                               Spine::Table& table,
                                               Query& masterquery,
                                               const QueryServer::QueryStreamer_sptr& queryStreamer,

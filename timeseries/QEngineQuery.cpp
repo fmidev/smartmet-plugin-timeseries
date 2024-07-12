@@ -38,7 +38,7 @@ void require_producer(const std::string& producer, const std::string& place)
   }
 }
 
-void require_validtimes(const boost::shared_ptr<Engine::Querydata::ValidTimeList>& validtimes,
+void require_validtimes(const std::shared_ptr<Engine::Querydata::ValidTimeList>& validtimes,
                         const std::string& producer)
 {
   try
@@ -115,7 +115,7 @@ Spine::LocationList get_indexmask_locations(const NFmiIndexMask& indexmask,
       location.dem = geoengine.demHeight(location.longitude, location.latitude);
       location.covertype = geoengine.coverType(location.longitude, location.latitude);
       location.type = Spine::Location::CoordinatePoint;
-      Spine::LocationPtr locPtr = boost::make_shared<Spine::Location>(location);
+      Spine::LocationPtr locPtr = std::make_shared<Spine::Location>(location);
       loclist.emplace_back(locPtr);
     }
 
@@ -147,7 +147,7 @@ Spine::TaggedLocationList get_locations_for_area(const NFmiIndexMask& indexmask,
       location.covertype = geoengine.coverType(location.longitude, location.latitude);
       location.type = Spine::Location::CoordinatePoint;
       location.radius = 0;
-      Spine::LocationPtr locPtr = boost::make_shared<Spine::Location>(location);
+      Spine::LocationPtr locPtr = std::make_shared<Spine::Location>(location);
       Spine::TaggedLocation new_tloc(tloc.tag, locPtr);
       tloclist.emplace_back(new_tloc);
     }
@@ -424,8 +424,8 @@ void QEngineQuery::fetchQEngineValues(const State& state,
                                       bool loadDataLevels,
                                       float levelValue,
                                       const std::string& levelType,
-                                      const boost::optional<float>& height,
-                                      const boost::optional<float>& pressure,
+                                      const std::optional<float>& height,
+                                      const std::optional<float>& pressure,
                                       QueryLevelDataCache& queryLevelDataCache,
                                       std::vector<TS::TimeSeriesData>& aggregatedData) const
 {
@@ -701,8 +701,8 @@ TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateQEngineQueryTimes(
         topt.mode == TS::TimeSeriesGeneratorOptions::TimeSteps)
     {
       topt.mode = TS::TimeSeriesGeneratorOptions::DataTimes;
-      topt.timeSteps = boost::none;
-      topt.timeStep = boost::none;
+      topt.timeSteps = std::nullopt;
+      topt.timeStep = std::nullopt;
       topt.timeList.clear();
 
       // generate timelist for aggregation
@@ -743,8 +743,8 @@ void QEngineQuery::pointQuery(const Query& theQuery,
                               const NFmiPoint& theNearestPoint,
                               int thePrecision,
                               bool theLoadDataLevels,
-                              boost::optional<float> thePressure,
-                              boost::optional<float> theHeight,
+                              std::optional<float> thePressure,
+                              std::optional<float> theHeight,
                               QueryLevelDataCache& theQueryLevelDataCache,
                               std::vector<TS::TimeSeriesData>& theAggregatedData) const
 {
@@ -767,7 +767,7 @@ void QEngineQuery::pointQuery(const Query& theQuery,
     else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo" ||
              paramname == "wsi")
     {
-      querydata_result = boost::make_shared<TS::TimeSeries>();
+      querydata_result = std::make_shared<TS::TimeSeries>();
       for (const auto& t : theQueryDataTlist)
       {
         if (loc->fmisid && paramname == "fmisid")
@@ -782,7 +782,7 @@ void QEngineQuery::pointQuery(const Query& theQuery,
     }
     else if (UtilityFunctions::is_special_parameter(paramname))
     {
-      querydata_result = boost::make_shared<TS::TimeSeries>();
+      querydata_result = std::make_shared<TS::TimeSeries>();
       UtilityFunctions::get_special_parameter_values(paramname,
                                                      thePrecision,
                                                      theQueryDataTlist,
@@ -895,8 +895,8 @@ TS::TimeSeriesGroupPtr QEngineQuery::getQEngineValuesForArea(
     const NFmiPoint& theNearestPoint,
     int thePrecision,
     bool theLoadDataLevels,
-    boost::optional<float> thePressure,
-    boost::optional<float> theHeight,
+    std::optional<float> thePressure,
+    std::optional<float> theHeight,
     const std::string& paramname,
     const Spine::LocationList& llist) const
 {
@@ -906,7 +906,7 @@ TS::TimeSeriesGroupPtr QEngineQuery::getQEngineValuesForArea(
 
     if (UtilityFunctions::is_special_parameter(paramname))
     {
-      querydata_result = boost::make_shared<TS::TimeSeriesGroup>();
+      querydata_result = std::make_shared<TS::TimeSeriesGroup>();
       UtilityFunctions::get_special_parameter_values(paramname,
                                                      thePrecision,
                                                      theQueryDataTlist,
@@ -1027,8 +1027,8 @@ void QEngineQuery::areaQuery(const Query& theQuery,
                              const NFmiPoint& theNearestPoint,
                              int thePrecision,
                              bool theLoadDataLevels,
-                             boost::optional<float> thePressure,
-                             boost::optional<float> theHeight,
+                             std::optional<float> thePressure,
+                             std::optional<float> theHeight,
                              QueryLevelDataCache& theQueryLevelDataCache,
                              std::vector<TS::TimeSeriesData>& theAggregatedData) const
 {

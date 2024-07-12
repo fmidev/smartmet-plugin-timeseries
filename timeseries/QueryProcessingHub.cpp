@@ -274,7 +274,7 @@ QueryProcessingHub::QueryProcessingHub(const Plugin& thePlugin)
 {
 }
 
-boost::shared_ptr<std::string> QueryProcessingHub::processQuery(
+std::shared_ptr<std::string> QueryProcessingHub::processQuery(
     const State& state,
     Spine::Table& table,
     Query& masterquery,

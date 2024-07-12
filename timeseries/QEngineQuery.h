@@ -66,8 +66,8 @@ class QEngineQuery
                           bool loadDataLevels,
                           float levelValue,
                           const std::string& levelType,
-                          const boost::optional<float>& height,
-                          const boost::optional<float>& pressure,
+                          const std::optional<float>& height,
+                          const std::optional<float>& pressure,
                           QueryLevelDataCache& queryLevelDataCache,
                           std::vector<TS::TimeSeriesData>& aggregatedData) const;
 
@@ -86,8 +86,8 @@ class QEngineQuery
                   const NFmiPoint& theNearestPoint,
                   int thePrecision,
                   bool theLoadDataLevels,
-                  boost::optional<float> thePressure,
-                  boost::optional<float> theHeight,
+                  std::optional<float> thePressure,
+                  std::optional<float> theHeight,
                   QueryLevelDataCache& theQueryLevelDataCache,
                   std::vector<TS::TimeSeriesData>& theAggregateData) const;
 
@@ -103,8 +103,8 @@ class QEngineQuery
                  const NFmiPoint& theNearestPoint,
                  int thePrecision,
                  bool theLoadDataLevels,
-                 boost::optional<float> thePressure,
-                 boost::optional<float> theHeight,
+                 std::optional<float> thePressure,
+                 std::optional<float> theHeight,
                  QueryLevelDataCache& theQueryLevelDataCache,
                  std::vector<TS::TimeSeriesData>& theAggregatedData) const;
 
@@ -134,8 +134,8 @@ class QEngineQuery
       const NFmiPoint& theNearestPoint,
       int thePrecision,
       bool theLoadDataLevels,
-      boost::optional<float> thePressure,
-      boost::optional<float> theHeight,
+      std::optional<float> thePressure,
+      std::optional<float> theHeight,
       const std::string& paramname,
       const Spine::LocationList& llist) const;
   Spine::LocationList getLocationListForArea(const Spine::TaggedLocation& theTLoc,
