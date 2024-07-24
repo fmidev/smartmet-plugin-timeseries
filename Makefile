@@ -12,11 +12,12 @@ CFLAGS += -Wno-maybe-uninitialized -Wno-pedantic
 
 DEFINES = -DUNIX -D_REENTRANT
 
-INCLUDES += -isystem $(includedir)/mysql \
+INCLUDES += \
 	-isystem $(includedir)/soci \
 	-isystem $(includedir)/oracle/11.2/client64
 
-LIBS += -L$(libdir) \
+LIBS += \
+	$(PREFIX_LDFLAGS) \
 	-lsmartmet-timeseries \
 	-lsmartmet-spine \
 	-lsmartmet-newbase \
