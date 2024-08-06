@@ -17,8 +17,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define smartmet_boost boost
 %endif
 
-%define smartmet_fmt_min 8.1.1
-%define smartmet_fmt_max 8.2.0
+%define smartmet_fmt_min 11.0.0
+%define smartmet_fmt_max 12.0.0
 
 BuildRequires: rpm-build
 BuildRequires: gcc-c++
@@ -46,7 +46,7 @@ BuildRequires: smartmet-engine-grid-devel >= 24.7.12
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 24.7.12
 #%endif
-Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
+Requires: fmt-libs >= %{smartmet_fmt_min}, fmt-libs < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 24.7.12
 Requires: smartmet-library-locus >= 24.7.12
 Requires: smartmet-library-macgyver >= 24.7.12
