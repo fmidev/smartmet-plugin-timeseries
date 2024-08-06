@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 24.6.7
+Version: 24.7.22
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -27,37 +27,37 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: fmt-devel >= %{smartmet_fmt_min}, fmt-devel < %{smartmet_fmt_max}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 24.5.28
-BuildRequires: smartmet-library-spine-devel >= 24.5.27
-BuildRequires: smartmet-library-locus-devel >= 23.7.28
-BuildRequires: smartmet-library-macgyver-devel >= 24.5.30
-BuildRequires: smartmet-library-grid-content-devel >= 24.6.3
-BuildRequires: smartmet-library-grid-files-devel >= 24.5.30
-BuildRequires: smartmet-library-newbase-devel >= 24.5.17
-BuildRequires: smartmet-library-gis-devel >= 24.5.27
-BuildRequires: smartmet-engine-geonames-devel >= 24.5.16
+BuildRequires: smartmet-library-timeseries-devel >= 24.7.12
+BuildRequires: smartmet-library-spine-devel >= 24.7.12
+BuildRequires: smartmet-library-locus-devel >= 24.7.12
+BuildRequires: smartmet-library-macgyver-devel >= 24.7.12
+BuildRequires: smartmet-library-grid-content-devel >= 24.7.12
+BuildRequires: smartmet-library-grid-files-devel >= 24.7.12
+BuildRequires: smartmet-library-newbase-devel >= 24.7.12
+BuildRequires: smartmet-library-gis-devel >= 24.7.12
+BuildRequires: smartmet-engine-geonames-devel >= 24.7.12
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 24.5.28
+BuildRequires: smartmet-engine-observation-devel >= 24.7.12
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 24.5.29
-BuildRequires: smartmet-engine-gis-devel >= 24.5.24
-BuildRequires: smartmet-engine-grid-devel >= 24.6.3
+BuildRequires: smartmet-engine-querydata-devel >= 24.7.12
+BuildRequires: smartmet-engine-gis-devel >= 24.7.12
+BuildRequires: smartmet-engine-grid-devel >= 24.7.12
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 24.5.28
+#Requires: smartmet-engine-observation >= 24.7.12
 #%endif
 Requires: fmt >= %{smartmet_fmt_min}, fmt < %{smartmet_fmt_max}
-Requires: smartmet-library-gis >= 24.5.27
-Requires: smartmet-library-locus >= 23.7.28
-Requires: smartmet-library-macgyver >= 24.5.30
-Requires: smartmet-library-newbase >= 24.5.17
-Requires: smartmet-library-spine >= 24.5.27
-Requires: smartmet-library-timeseries >= 24.5.28
-Requires: smartmet-engine-geonames >= 24.5.16
-Requires: smartmet-engine-querydata >= 24.5.29
-Requires: smartmet-engine-gis >= 24.5.24
-Requires: smartmet-engine-grid >= 24.6.3
-Requires: smartmet-server >= 24.5.16
+Requires: smartmet-library-gis >= 24.7.12
+Requires: smartmet-library-locus >= 24.7.12
+Requires: smartmet-library-macgyver >= 24.7.12
+Requires: smartmet-library-newbase >= 24.7.12
+Requires: smartmet-library-spine >= 24.7.12
+Requires: smartmet-library-timeseries >= 24.7.12
+Requires: smartmet-engine-geonames >= 24.7.12
+Requires: smartmet-engine-querydata >= 24.7.12
+Requires: smartmet-engine-gis >= 24.7.12
+Requires: smartmet-engine-grid >= 24.7.12
+Requires: smartmet-server >= 24.7.12
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-system
@@ -66,20 +66,20 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 24.5.31
-#TestRequires: smartmet-library-spine-plugin-test >= 24.5.27
-#TestRequires: smartmet-library-newbase-devel >= 24.5.17
+#TestRequires: smartmet-library-spine-plugin-test >= 24.7.12
+#TestRequires: smartmet-library-newbase-devel >= 24.7.12
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 24.5.14
 #TestRequires: smartmet-test-data >= 24.5.22
-#TestRequires: smartmet-engine-grid-test >= 24.6.3
-#TestRequires: smartmet-library-gis >= 24.5.27
-#TestRequires: smartmet-engine-geonames >= 24.5.16
-#TestRequires: smartmet-engine-gis >= 24.5.24
-#TestRequires: smartmet-engine-querydata >= 24.5.29
+#TestRequires: smartmet-engine-grid-test >= 24.7.12
+#TestRequires: smartmet-library-gis >= 24.7.12
+#TestRequires: smartmet-engine-geonames >= 24.7.12
+#TestRequires: smartmet-engine-gis >= 24.7.12
+#TestRequires: smartmet-engine-querydata >= 24.7.12
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 24.5.28
+#TestRequires: smartmet-engine-observation >= 24.7.12
 %endif
-#TestRequires: smartmet-engine-grid >= 24.6.3
+#TestRequires: smartmet-engine-grid >= 24.7.12
 #TestRequires: gdal38-libs
 #TestRequires: libwebp13
 
@@ -106,6 +106,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon Jul 22 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.7.22-1.fmi
+- Rebuild dues to smartmet-library-macgyver changes
+
+* Fri Jul 12 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.7.12-1.fmi
+- Replace many boost library types with C++ standard library ones
+
 * Fri Jun  7 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.6.7-1.fmi
 - Optimization: avoid using Fmi::format_time
 

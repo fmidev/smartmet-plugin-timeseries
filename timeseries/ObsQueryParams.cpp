@@ -17,7 +17,7 @@ namespace TimeSeries
 {
 namespace
 {
-void parse_ids(const boost::optional<std::string>& string_param, std::vector<int>& id_vector)
+void parse_ids(const std::optional<std::string>& string_param, std::vector<int>& id_vector)
 {
   try
   {
@@ -39,7 +39,7 @@ void parse_ids(const boost::optional<std::string>& string_param, std::vector<int
   }
 }
 
-void parse_ids(const boost::optional<std::string>& string_param,
+void parse_ids(const std::optional<std::string>& string_param,
                std::vector<std::string>& id_vector)
 {
   try

@@ -162,13 +162,13 @@ Spine::LocationPtr get_loc(const Query& query,
       {
         // Most likely an old station not known to geoengine. The result will not
         // contain name, lon or lat. Use stationname, stationlon, stationlat instead.
-        loc = boost::make_shared<Spine::Location>(0, 0, "", query.timezone);
+        loc = std::make_shared<Spine::Location>(0, 0, "", query.timezone);
       }
     }
     else
     {
       Spine::Location location(0, 0, "", query.timezone);
-      loc = boost::make_shared<Spine::Location>(location);
+      loc = std::make_shared<Spine::Location>(location);
     }
 
     return loc;
@@ -557,7 +557,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::doAggregationForPlaces(
       }
       else
       {
-        tsptr = boost::make_shared<TS::TimeSeries>();
+        tsptr = std::make_shared<TS::TimeSeries>();
         *tsptr = ts;
       }
       aggregated_observation_result->push_back(*tsptr);
