@@ -162,7 +162,11 @@ Spine::LocationPtr get_loc(const Query& query,
       {
         // Most likely an old station not known to geoengine. The result will not
         // contain name, lon or lat. Use stationname, stationlon, stationlat instead.
-        loc = std::make_shared<Spine::Location>(0, 0, "", query.timezone);
+        // If the station is not in the Geonames database due to being old, we want to make
+        // sure at least the requested fmisid is correct:
+        Spine::Location l(0, 0, "", query.timezone);
+        l.fmisid = fmisid;
+        loc.reset(new Spine::Location(l));
       }
     }
     else
