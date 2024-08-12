@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 24.8.7
+Version: 24.8.12
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -37,14 +37,14 @@ BuildRequires: smartmet-library-newbase-devel >= 24.8.7
 BuildRequires: smartmet-library-gis-devel >= 24.8.7
 BuildRequires: smartmet-engine-geonames-devel >= 24.8.7
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 24.8.7
+BuildRequires: smartmet-engine-observation-devel >= 24.8.9
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 24.8.7
 BuildRequires: smartmet-engine-gis-devel >= 24.8.7
 BuildRequires: smartmet-engine-grid-devel >= 24.8.7
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 24.8.7
+#Requires: smartmet-engine-observation >= 24.8.9
 #%endif
 Requires: fmt-libs >= %{smartmet_fmt_min}, fmt-libs < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 24.8.7
@@ -70,14 +70,14 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-newbase-devel >= 24.8.7
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 24.8.7
-#TestRequires: smartmet-test-data >= 24.5.22
+#TestRequires: smartmet-test-data >= 24.8.12
 #TestRequires: smartmet-engine-grid-test >= 24.8.7
 #TestRequires: smartmet-library-gis >= 24.8.7
 #TestRequires: smartmet-engine-geonames >= 24.8.7
 #TestRequires: smartmet-engine-gis >= 24.8.7
 #TestRequires: smartmet-engine-querydata >= 24.8.7
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 24.8.7
+#TestRequires: smartmet-engine-observation >= 24.8.9
 %endif
 #TestRequires: smartmet-engine-grid >= 24.8.7
 #TestRequires: gdal38-libs
@@ -106,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Mon Aug 12 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.8.12-1.fmi
+- Fixed fmisid to be returned correctly for outdated stations
+
 * Wed Aug  7 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.8.7-1.fmi
 - Update to gdal-3.8, geos-3.12, proj-94 and fmt-11
 
