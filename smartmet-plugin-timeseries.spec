@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 24.8.12
+Version: 24.9.3
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -106,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Sep  3 2024 Andris Pavēnis <andris.pavenis@fmi.fi> 24.9.3-1.fmi
+- Repackage due smartmlibrary-grid-data and smartmet-engine-querydata changes
+
 * Mon Aug 12 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.8.12-1.fmi
 - Fixed fmisid to be returned correctly for outdated stations
 
