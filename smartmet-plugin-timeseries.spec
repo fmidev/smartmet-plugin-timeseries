@@ -31,17 +31,17 @@ BuildRequires: smartmet-library-timeseries-devel >= 24.8.7
 BuildRequires: smartmet-library-spine-devel >= 24.8.7
 BuildRequires: smartmet-library-locus-devel >= 24.8.7
 BuildRequires: smartmet-library-macgyver-devel >= 24.8.7
-BuildRequires: smartmet-library-grid-content-devel >= 24.8.7
-BuildRequires: smartmet-library-grid-files-devel >= 24.8.7
+BuildRequires: smartmet-library-grid-content-devel >= 24.9.3
+BuildRequires: smartmet-library-grid-files-devel >= 24.9.3
 BuildRequires: smartmet-library-newbase-devel >= 24.8.7
 BuildRequires: smartmet-library-gis-devel >= 24.8.7
 BuildRequires: smartmet-engine-geonames-devel >= 24.8.7
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 24.8.9
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 24.8.7
+BuildRequires: smartmet-engine-querydata-devel >= 24.9.2
 BuildRequires: smartmet-engine-gis-devel >= 24.8.7
-BuildRequires: smartmet-engine-grid-devel >= 24.8.7
+BuildRequires: smartmet-engine-grid-devel >= 24.9.3
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 24.8.9
@@ -54,9 +54,9 @@ Requires: smartmet-library-newbase >= 24.8.7
 Requires: smartmet-library-spine >= 24.8.7
 Requires: smartmet-library-timeseries >= 24.8.7
 Requires: smartmet-engine-geonames >= 24.8.7
-Requires: smartmet-engine-querydata >= 24.8.7
+Requires: smartmet-engine-querydata >= 24.9.2
 Requires: smartmet-engine-gis >= 24.8.7
-Requires: smartmet-engine-grid >= 24.8.7
+Requires: smartmet-engine-grid >= 24.9.3
 Requires: smartmet-server >= 24.8.7
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
@@ -71,15 +71,15 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 24.8.7
 #TestRequires: smartmet-test-data >= 24.8.12
-#TestRequires: smartmet-engine-grid-test >= 24.8.7
+#TestRequires: smartmet-engine-grid-test >= 24.9.3
 #TestRequires: smartmet-library-gis >= 24.8.7
 #TestRequires: smartmet-engine-geonames >= 24.8.7
 #TestRequires: smartmet-engine-gis >= 24.8.7
-#TestRequires: smartmet-engine-querydata >= 24.8.7
+#TestRequires: smartmet-engine-querydata >= 24.9.2
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 24.8.9
 %endif
-#TestRequires: smartmet-engine-grid >= 24.8.7
+#TestRequires: smartmet-engine-grid >= 24.9.3
 #TestRequires: gdal38-libs
 #TestRequires: libwebp13
 
