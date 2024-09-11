@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&geoid=-16000150&fmisid=101311&lpnn=1&wmo=2989&wsi=0-20000-0-02998&precision=double&param=fmisid,lpnn,wmo,wsi,name,time,Temperature&producer=pal&timesteps=1 HTTP/1.0
+

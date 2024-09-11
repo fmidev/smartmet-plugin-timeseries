@@ -8,3 +8,4 @@ magneto_observations.get
 fmi_icebuoy_observations.get
 fmi_icebuoy_observations_bbox.get
 fmi_copernicus_observations.get
+place_fmisid_lpnn_wmo_wsi_t2m.get
