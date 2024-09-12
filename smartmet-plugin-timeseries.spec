@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 24.9.10
+Version: 24.9.12
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -37,14 +37,14 @@ BuildRequires: smartmet-library-newbase-devel >= 24.8.21
 BuildRequires: smartmet-library-gis-devel >= 24.8.7
 BuildRequires: smartmet-engine-geonames-devel >= 24.8.7
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 24.9.10
+BuildRequires: smartmet-engine-observation-devel >= 24.9.12
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 24.9.2
 BuildRequires: smartmet-engine-gis-devel >= 24.8.7
 BuildRequires: smartmet-engine-grid-devel >= 24.9.3
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 24.9.10
+#Requires: smartmet-engine-observation >= 24.9.12
 #%endif
 Requires: fmt-libs >= %{smartmet_fmt_min}, fmt-libs < %{smartmet_fmt_max}
 Requires: smartmet-library-gis >= 24.8.7
@@ -77,7 +77,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 24.8.7
 #TestRequires: smartmet-engine-querydata >= 24.9.2
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 24.9.10
+#TestRequires: smartmet-engine-observation >= 24.9.12
 %endif
 #TestRequires: smartmet-engine-grid >= 24.9.3
 #TestRequires: gdal38-libs
@@ -106,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Sep 12 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.9.12-1.fmi
+- Repackaged due to observation engine changes
+
 * Tue Sep 10 2024 Pertti Kinnia <pertti.kinnia@fmi.fi> - 24.9.10-1.fmi
 - TAPSI observations support (BRAINSTORM-3008)
 - Accepted some test result changes for fmi_iot
