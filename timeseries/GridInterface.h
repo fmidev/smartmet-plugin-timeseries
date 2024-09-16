@@ -23,10 +23,13 @@ namespace Plugin
 namespace TimeSeries
 {
 
+using TaggedLocationVec = std::vector<Spine::TaggedLocation>;
+
+
 class GridInterface
 {
   public:
-                      GridInterface(Engine::Grid::Engine* engine, const Fmi::TimeZones& timezones);
+                      GridInterface(const Engines *engines,const Fmi::TimeZones& timezones);
                       GridInterface() = delete;
                       GridInterface(const GridInterface& other) = delete;
                       GridInterface(GridInterface&& other) = delete;
@@ -44,8 +47,8 @@ class GridInterface
 
       void            processGridQuery(const State& state,Query& query,TS::OutputData& outputData,
                         const QueryServer::QueryStreamer_sptr& queryStreamer,const AreaProducers& areaproducers,
-                        const ProducerDataPeriod& producerDataPeriod,const Spine::TaggedLocation& tloc,
-                        const Spine::LocationPtr& loc,const std::string& country,T::GeometryId_set& geometryIdList,
+                        const ProducerDataPeriod& producerDataPeriod,const TaggedLocationVec& tloc,
+                        std::vector<Spine::LocationPtr>& locVec,T::GeometryId_set& geometryIdList,
                         std::vector<std::vector<T::Coordinate>>& polygonPath);
 
   private:
@@ -56,8 +59,8 @@ class GridInterface
 
       void            exteractQueryResult(std::shared_ptr<QueryServer::Query>& gridQuery,const State& state,
                         Query& masterquery,TS::OutputData& outputData,const QueryServer::QueryStreamer_sptr& queryStreamer,
-                        const AreaProducers& areaproducers,Fmi::TimeZonePtr tz,const Spine::TaggedLocation& tloc,
-                        const Spine::LocationPtr& loc,const std::string& country,int levelId,double level);
+                        const AreaProducers& areaproducers,Fmi::TimeZonePtr tz,const TaggedLocationVec& tloc,
+                        std::vector<Spine::LocationPtr>& locVec,int levelId,double level);
 
       void            getDataTimes(const AreaProducers& areaproducers,std::string& startTime,std::string& endTime);
       static int      getParameterIndex(QueryServer::Query& gridQuery, const std::string& param);
@@ -87,13 +90,13 @@ class GridInterface
 
       void            prepareGridQuery(QueryServer::Query& gridQuery,const Query& masterquery,
                         uint mode,int origLevelId,double origLevel,const AreaProducers& areaproducers,
-                        const Spine::TaggedLocation& tloc,const Spine::LocationPtr& loc,
+                        const TaggedLocationVec& tloc,std::vector<Spine::LocationPtr>& locVec,/*const Spine::LocationPtr& loc,*/
                         const T::GeometryId_set& geometryIdList,std::vector<std::vector<T::Coordinate>>& polygonPath);
 
 
   private:
 
-      Engine::Grid::Engine* itsGridEngine;
+      const Engines*        itsEngines;
       const Fmi::TimeZones& itsTimezones;
 
 };  // class GridInterface

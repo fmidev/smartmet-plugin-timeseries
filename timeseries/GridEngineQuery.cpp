@@ -6,6 +6,11 @@
 #include "UtilityFunctions.h"
 #include <fmt/format.h>
 
+//#include <timeseries/TimeSeriesInclude.h>
+#include <timeseries/TimeSeries.h>
+
+
+
 namespace SmartMet
 {
 namespace Plugin
@@ -16,7 +21,7 @@ GridEngineQuery::GridEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin)
 {
   if (!itsPlugin.itsConfig.gridEngineDisabled())
   {
-    itsGridInterface.reset(new GridInterface(itsPlugin.itsEngines.gridEngine,
+    itsGridInterface.reset(new GridInterface(&itsPlugin.itsEngines,
                                              itsPlugin.itsEngines.geoEngine->getTimeZones()));
   }
 }
@@ -236,19 +241,101 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
     if (itsPlugin.itsConfig.gridEngineDisabled())
       return false;
 
+    bool multipointForced = false;
+
+    T::Attribute* attr = query.attributeList.getAttribute("multipoint");
+    if (attr != nullptr)
+    {
+      // This attribute forces the usage of multipoint query
+
+      if (strcasecmp(attr->mValue.c_str(), "yes") == 0 || strcasecmp(attr->mValue.c_str(), "true") == 0 || strcasecmp(attr->mValue.c_str(), "1") == 0)
+        multipointForced = true;
+    }
+
     Fmi::DateTime latestTimestep = query.latestTimestep;
+    T::GeometryId_set geometryIdList;
+
+    auto tlocList = query.loptions->locations();
+
+
+    if (multipointForced  &&  query.loptions->size() > 1)
+    {
+      TaggedLocationVec tlocVec;
+      std::vector<Spine::LocationPtr> locVec;
+
+      for (auto it = tlocList.begin();it != tlocList.end(); ++it)
+      {
+        tlocVec.push_back(*it);
+      }
+
+      auto tloc = tlocVec[0];
+      Spine::LocationPtr loc = tloc.loc;
+
+      std::vector<std::vector<T::Coordinate>> tmpPolygonPath;
+      getLocationDefinition(loc, tmpPolygonPath, tloc, query);
+
+      if (tmpPolygonPath.size() == 1  &&  tmpPolygonPath[0].size() == 1)
+      {
+        std::vector<std::vector<T::Coordinate>> polygonPath;
+
+        std::vector<T::Coordinate> cc;
+
+        for (const auto& tloc : query.loptions->locations())
+        {
+          query.latestTimestep = latestTimestep;
+
+          Spine::LocationPtr loc = tloc.loc;
+
+          std::vector<std::vector<T::Coordinate>> pp;
+
+          getLocationDefinition(loc, pp, tloc, query);
+          locVec.push_back(loc);
+
+          if (pp.size() == 1  &&  pp[0].size() == 1)
+          {
+            cc.push_back(pp[0][0]);
+          }
+        }
+        polygonPath.push_back(cc);
+
+        AreaProducers producers = areaproducers;
+        auto defaultProducer = itsPlugin.itsConfig.defaultProducerMappingName();
+
+        if (producers.empty() && !defaultProducer.empty())
+          producers.push_back(defaultProducer);
+
+        itsGridInterface->processGridQuery(state,
+                                           query,
+                                           outputData,
+                                           queryStreamer,
+                                           producers,
+                                           producerDataPeriod,
+                                           tlocVec,
+                                           locVec,
+                                           geometryIdList,
+                                           polygonPath);
+
+        return true;
+      }
+    }
+
 
     for (const auto& tloc : query.loptions->locations())
     {
-      query.latestTimestep = latestTimestep;
+      TaggedLocationVec tlocVec;
+      std::vector<Spine::LocationPtr> locVec;
 
-      Spine::LocationPtr loc = tloc.loc;
+      query.latestTimestep = latestTimestep;
+      tlocVec.push_back(tloc);
+
+      Spine::LocationPtr loc = tlocVec[0].loc;
+      locVec.push_back(loc);
 
       std::vector<std::vector<T::Coordinate>> polygonPath;
 
-      getLocationDefinition(loc, polygonPath, tloc, query);
+      getLocationDefinition(locVec[0], polygonPath, tlocVec[0], query);
 
-      T::GeometryId_set geometryIdList;
+
       if (areaproducers.empty() && !itsGridInterface->containsParameterWithGridProducer(query) &&
           !GridInterface::isValidDefaultRequest(
               itsPlugin.itsConfig.defaultGridGeometries(), polygonPath, geometryIdList))
@@ -256,10 +343,6 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
         outputData.clear();
         return false;
       }
-
-      std::string country = itsPlugin.itsEngines.geoEngine->countryName(loc->iso2, query.language);
-      // std::cout << formatLocation(*loc) << endl;
-      // std::cout << formatLocation(*(tloc.loc)) << endl;
 
       AreaProducers producers = areaproducers;
       auto defaultProducer = itsPlugin.itsConfig.defaultProducerMappingName();
@@ -273,12 +356,12 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
                                          queryStreamer,
                                          producers,
                                          producerDataPeriod,
-                                         tloc,
-                                         loc,
-                                         country,
+                                         tlocVec,
+                                         locVec,
                                          geometryIdList,
                                          polygonPath);
     }
+
     return true;
   }
   catch (...)
