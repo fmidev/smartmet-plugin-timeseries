@@ -657,6 +657,7 @@ over a given geographical area
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | median(field)               | The median value of the field evaluated over the given area.                                                                                                                  |
 | mean(field)                 | The mean value of the field evaluated over the given area.                                                                                                                    |
+| circlemean(field)           | The circular mean value of a direction parameter over the given area or time.                                                                                                 |
 | min(field)                  | The minimum value of the field in the given area.                                                                                                                             |
 | max(field)                  | The maximum value of the field in the given area.                                                                                                                             |
 | sum(field)                  | The sum of the field values calculated over the given area.                                                                                                                   |
