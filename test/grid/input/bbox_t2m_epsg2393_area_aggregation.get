@@ -1,1 +1,0 @@
-GET /timeseries?starttime=200808051200&bbox=24.96,60.17,25.25,63.15&precision=double&param=name,time,lon,lat,x,y,min_a(t2m),max_a(t2m),mean_a(t2m)&crs=EPSG:2393 HTTP/1.0

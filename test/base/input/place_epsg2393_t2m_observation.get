@@ -1,1 +1,0 @@
-GET /timeseries?starttime=201308050800&endtime=201308051000&x=3386583.4&y=6679159.1&precision=double&param=name,lon,lat,x,y,time,Temperature&producer=fmi&crs=EPSG:2393 HTTP/1.0
