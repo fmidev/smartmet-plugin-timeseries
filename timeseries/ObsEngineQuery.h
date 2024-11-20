@@ -136,6 +136,7 @@ class ObsEngineQuery
       const State& state,
       const ObsParameters& obsParameters,
       const TS::TimeSeriesVectorPtr& observation_result,
+      const TS::TimeSeriesGenerator::LocalTimeList& agg_times,
       std::map<std::string, unsigned int>& parameterResultIndexes) const;
   void handleSpecialParameter(const ObsParameter& obsparam,
                               const std::string& areaName,

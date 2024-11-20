@@ -533,6 +533,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::doAggregationForPlaces(
     const State& state,
     const ObsParameters& obsParameters,
     const TS::TimeSeriesVectorPtr& observation_result,
+    const TS::TimeSeriesGenerator::LocalTimeList& agg_times,
     std::map<std::string, unsigned int>& parameterResultIndexes) const
 {
   try
@@ -555,7 +556,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::doAggregationForPlaces(
       // If inner function exists aggregation happens
       if (pfunc.innerFunction.exists())
       {
-        tsptr = TS::Aggregator::aggregate(ts, pfunc);
+        tsptr = TS::Aggregator::aggregate(ts, pfunc, agg_times);
         if (tsptr->empty())
           continue;
       }
@@ -657,8 +658,20 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
                                                         timestep_vector,
                                                         parameterResultIndexes);
 
+      TS::TimeSeriesGenerator::LocalTimeList agg_times_full;
+      TS::TimeSeriesGenerator::LocalTimeList* agg_times = nullptr;
+      if (acceptAllTimesteps)
+      {
+        agg_times_full = get_all_timesteps(query, observation_result->at(0), tz);
+        agg_times = &agg_times_full;
+      }
+      else
+      {
+        agg_times = tlist.get();
+      }
+
       auto aggregated_observation_result =
-          doAggregationForPlaces(state, obsParameters, observation_result, parameterResultIndexes);
+          doAggregationForPlaces(state, obsParameters, observation_result, *agg_times, parameterResultIndexes);
 
       if (aggregated_observation_result->empty())
       {
@@ -672,24 +685,12 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       std::cout << *aggregated_observation_result << std::endl;
 #endif
 
-      if (acceptAllTimesteps)
-      {
-        auto aggtimes = get_all_timesteps(query, aggregated_observation_result->at(0), tz);
+      aggregated_observation_result = TS::erase_redundant_timesteps(aggregated_observation_result, *agg_times);
 
-        // store observation data
-        PostProcessing::store_data(
-            TS::erase_redundant_timesteps(aggregated_observation_result, aggtimes),
-            query,
-            outputData);
-      }
-      else
-      {
-        // Else accept only the originally generated timesteps
-        PostProcessing::store_data(
-            TS::erase_redundant_timesteps(aggregated_observation_result, *tlist),
-            query,
-            outputData);
-      }
+      PostProcessing::store_data(
+          aggregated_observation_result,
+          query,
+          outputData);
     }
   }
   catch (...)
@@ -985,33 +986,13 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
       if (TS::special(obsparam.param))
         handleSpecialParameter(obsparam, areaName, tsg);
 
-      TS::DataFunctions pfunc = obsparam.functions;
-      // Do the aggregation if requasted
-      TS::TimeSeriesGroupPtr aggregated_tsg(new TS::TimeSeriesGroup);
-      if (pfunc.innerFunction.exists())
-      {
-        *aggregated_tsg = *(TS::aggregate(tsg, pfunc));
-      }
-      else
-      {
-        *aggregated_tsg = *tsg;
-      }
-
-#ifdef MYDEBUG
-      std::cout << Fmi::SecondClock::universal_time() << " - aggregated group: "
-                << ": " << std::endl
-                << *aggregated_tsg << std::endl;
-#endif
-
-      std::vector<TS::TimeSeriesData> aggregatedData;
-
       TS::TimeSeriesGenerator::LocalTimeList tlist;
 
       // If all timesteps are requested or producer is syke or flash accept all timesteps
       if (query.toptions.all() || UtilityFunctions::is_flash_producer(producer) ||
           UtilityFunctions::is_mobile_producer(producer) || producer == SYKE_PRODUCER)
       {
-        tlist = get_timesteps(aggregated_tsg->at(0).timeseries);
+        tlist = get_timesteps(tsg->at(0).timeseries);
       }
       else
       {
@@ -1021,6 +1002,29 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
             itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
         tlist = *(itsPlugin.itsTimeSeriesCache->generate(query.toptions, tz));
       }
+
+      TS::DataFunctions pfunc = obsparam.functions;
+      // Do the aggregation if requasted
+      TS::TimeSeriesGroupPtr aggregated_tsg(new TS::TimeSeriesGroup);
+      if (pfunc.innerFunction.exists())
+      {
+        *aggregated_tsg = *(TS::aggregate(tsg, pfunc, tlist));
+      }
+      else
+      {
+        *aggregated_tsg = *tsg;
+      }
+
+      aggregated_tsg = TS::erase_redundant_timesteps(aggregated_tsg, tlist);
+
+#ifdef MYDEBUG
+      std::cout << Fmi::SecondClock::universal_time() << " - aggregated group: "
+                << ": " << std::endl
+                << *aggregated_tsg << std::endl;
+#endif
+
+      std::vector<TS::TimeSeriesData> aggregatedData;
+
       // store observation data
       aggregatedData.emplace_back(
           TS::TimeSeriesData(TS::erase_redundant_timesteps(aggregated_tsg, tlist)));
