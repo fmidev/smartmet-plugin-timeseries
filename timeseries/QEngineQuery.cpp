@@ -825,8 +825,9 @@ void QEngineQuery::pointQuery(const Query& theQuery,
       theQueryLevelDataCache.itsTimeSeries.insert(make_pair(theCacheKey, querydata_result));
     }
 
-    theAggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
-        TS::aggregate(querydata_result, theParamFunc.functions), theRequestedTList)));
+    auto aggregated_querydata_result = TS::aggregate(querydata_result, theParamFunc.functions, theRequestedTList);
+    aggregated_querydata_result = TS::erase_redundant_timesteps(aggregated_querydata_result, theRequestedTList);
+    theAggregatedData.emplace_back(aggregated_querydata_result);
   }
   catch (...)
   {
@@ -1121,9 +1122,13 @@ void QEngineQuery::areaQuery(const Query& theQuery,
       }  // area handling
     }
 
+    auto aggregated_query_data_result = TS::aggregate(querydata_result, theParamFunc.functions, theRequestedTList);
+
     if (!querydata_result->empty())
-      theAggregatedData.emplace_back(TS::TimeSeriesData(TS::erase_redundant_timesteps(
-          TS::aggregate(querydata_result, theParamFunc.functions), theRequestedTList)));
+    {
+      aggregated_query_data_result = TS::erase_redundant_timesteps(aggregated_query_data_result, theRequestedTList);
+      theAggregatedData.emplace_back(aggregated_query_data_result);
+    }
   }
   catch (...)
   {
