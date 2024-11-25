@@ -175,66 +175,59 @@ void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
 
 void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
                        TS::TableFeeder& tf,
-                       const TS::OutputData& outputData,
-                       const std::string& location_name,
+                       const std::vector<SmartMet::TimeSeries::TimeSeriesData>& outdata,
                        int& startRow)
 {
   try
   {
     unsigned int numberOfParameters = paramlist.size();
     // iterate different locations
-    for (const auto& output : outputData)
+
+    startRow = tf.getCurrentRow();
+
+    // iterate columns (parameters)
+    int j = 0;
+    for (const TS::TimeSeriesData& tsdata : outdata)
     {
-      const auto& locationName = output.first;
-      if (locationName != location_name)
-        continue;
+      tf.setCurrentRow(startRow);
+      tf.setCurrentColumn(j);
 
-      startRow = tf.getCurrentRow();
-
-      const std::vector<TS::TimeSeriesData>& outdata = output.second;
-
-      // iterate columns (parameters)
-      for (unsigned int j = 0; j < outdata.size(); j++)
+      const auto& paramName = paramlist[j % numberOfParameters].name();
+      if (paramName == LATLON_PARAM || paramName == NEARLATLON_PARAM)
       {
-        const TS::TimeSeriesData& tsdata = outdata[j];
-        tf.setCurrentRow(startRow);
-        tf.setCurrentColumn(j);
-
-        const auto& paramName = paramlist[j % numberOfParameters].name();
-        if (paramName == LATLON_PARAM || paramName == NEARLATLON_PARAM)
-        {
-          tf << TS::LonLatFormat::LATLON;
-        }
-        else if (paramName == LONLAT_PARAM || paramName == NEARLONLAT_PARAM)
-        {
-          tf << TS::LonLatFormat::LONLAT;
-        }
-
-        if (const auto* ptr = std::get_if<TS::TimeSeriesPtr>(&tsdata))
-        {
-          TS::TimeSeriesPtr ts = *ptr;
-          tf << *ts;
-        }
-        else if (const auto* ptr = std::get_if<TS::TimeSeriesVectorPtr>(&tsdata))
-        {
-          TS::TimeSeriesVectorPtr tsv = *ptr;
-          for (unsigned int k = 0; k < tsv->size(); k++)
-          {
-            tf.setCurrentColumn(k);
-            tf.setCurrentRow(startRow);
-            tf << tsv->at(k);
-          }
-          startRow = tf.getCurrentRow();
-        }
-        else if (const auto* ptr = std::get_if<TS::TimeSeriesGroupPtr>(&tsdata))
-        {
-          TS::TimeSeriesGroupPtr tsg = *ptr;
-          tf << *tsg;
-        }
-
-        // Reset formatting to the default value
+        tf << TS::LonLatFormat::LATLON;
+      }
+      else if (paramName == LONLAT_PARAM || paramName == NEARLONLAT_PARAM)
+      {
         tf << TS::LonLatFormat::LONLAT;
       }
+
+      if (const auto* ptr = std::get_if<TS::TimeSeriesPtr>(&tsdata))
+      {
+        TS::TimeSeriesPtr ts = *ptr;
+        tf << *ts;
+      }
+      else if (const auto* ptr = std::get_if<TS::TimeSeriesVectorPtr>(&tsdata))
+      {
+        TS::TimeSeriesVectorPtr tsv = *ptr;
+        for (unsigned int k = 0; k < tsv->size(); k++)
+        {
+          tf.setCurrentColumn(k);
+          tf.setCurrentRow(startRow);
+          tf << tsv->at(k);
+        }
+        startRow = tf.getCurrentRow();
+      }
+      else if (const auto* ptr = std::get_if<TS::TimeSeriesGroupPtr>(&tsdata))
+      {
+        TS::TimeSeriesGroupPtr tsg = *ptr;
+        tf << *tsg;
+      }
+
+      // Reset formatting to the default value
+      tf << TS::LonLatFormat::LONLAT;
+
+      j++;
     }
   }
   catch (...)
@@ -262,16 +255,30 @@ void fill_table(Query& query, TS::OutputData& outputData, Spine::Table& table)
 
     std::string locationName(outputData[0].first);
 
-    // if observations exists they are first in the result set
-    if (locationName == "_obs_")
-      add_data_to_table(query.poptions.parameters(), tf, outputData, "_obs_", startRow);
+    // At first check whether observations exist and put them at begin of result set when found
+    TS::OutputData::const_iterator it = outputData.begin();
+    if (it->first == "_obs_")
+    {
+      add_data_to_table(query.poptions.parameters(), tf, it->second, startRow);
+      it++;
+    }
+
+    // Make index for locations to speed up the search (exclude observations when found from index)
+    std::multimap<std::string, TS::OutputData::const_iterator> locationIndex;
+    for (; it != outputData.end(); ++it)
+    {
+      locationIndex.emplace(it->first, it);
+    }
 
     // iterate locations
     for (const auto& tloc : query.loptions->locations())
     {
       std::string locationId = get_location_id(tloc.loc);
-
-      add_data_to_table(query.poptions.parameters(), tf, outputData, locationId, startRow);
+      auto range = locationIndex.equal_range(locationId);
+      for (auto it = range.first; it != range.second; ++it)
+      {
+        add_data_to_table(query.poptions.parameters(), tf, it->second->second, startRow);
+      }
     }
   }
   catch (...)
