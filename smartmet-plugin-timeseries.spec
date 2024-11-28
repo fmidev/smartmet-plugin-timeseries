@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 24.11.28
+Version: 24.11.26
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -106,9 +106,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
-* Thu Nov 28 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.11.28-1.fmi
-- Improved speed of icebuoy queries when a BBOX is used
-
 * Tue Nov 26 2024 Mika Heiskanen <mika.heiskanen@fmi.fi> - 24.11.26-1.fmi
 - Fixed aggregation to handle empty query results such as flashes during the winter
 
