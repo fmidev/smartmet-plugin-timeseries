@@ -1418,7 +1418,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
         bool processed = false;
 
         bool funct = false;
-        if (gridQuery->mQueryParameterList[pid].mFlags && TimeseriesFunctionFlag)
+        if (gridQuery->mQueryParameterList[pid].mFlags & TimeseriesFunctionFlag)
           funct = true;
 
         if (columns > 0 && rLen <= tLen)
