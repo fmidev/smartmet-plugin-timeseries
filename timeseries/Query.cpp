@@ -612,16 +612,11 @@ void Query::parse_attr(const Spine::HTTP::Request& theReq)
       for (const auto& part : partList)
       {
         std::vector<std::string> list;
-        char buf[part.length() + 10];
-        strcpy(buf, part.c_str());
-        char* p = strstr(buf, ":");
-        if (p)
+        const std::size_t pos = part.find(":");
+        if (pos != std::string::npos)
         {
-          *p = '\0';
-          p++;
-          std::string name = buf;
-          std::string value = p;
-
+          std::string name = part.substr(0, pos);
+          std::string value = part.substr(pos + 1);
           attributeList.addAttribute(name, value);
         }
       }
