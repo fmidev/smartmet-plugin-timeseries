@@ -170,29 +170,17 @@ bool GridInterface::containsParameterWithGridProducer(const Query& masterquery)
       Spine::Parameter param = paramfunc.parameter;
       // printf("PARAM %s\n",param.name().c_str());
 
-      const uint len = param.name().length();
-      char buf[len + 1];
-      strcpy(buf, param.name().c_str());
-      for (uint t = 0; t < len; t++)
+      const std::string& pname = param.name();
+      std::size_t pos = 0;
+      for (bool last = false; !last;)
       {
-        for (uint c = 0; c < 12; c++)
-        {
-          if (buf[t] == replaceChar[c])
-          {
-            buf[t] = ':';
-            c = 12;
-          }
-        }
-      }
-
-      std::vector<std::string> partList;
-
-      splitString(buf, ':', partList);
-      for (const auto& producer : partList)
-      {
-        // printf("  -- PRODUCER [%s]\n",producer.c_str());
+        const std::size_t new_pos = pname.find_first_of(replaceChar, pos);
+        last = new_pos == std::string::npos;
+        const std::string producer = last ? pname.substr(pos) : pname.substr(pos, new_pos - pos);
         if (!producer.empty() && isGridProducer(producer))
           return true;
+        if (!last)
+          pos = new_pos + 1;
       }
     }
     return false;
