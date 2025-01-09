@@ -17,6 +17,8 @@
 #include <spine/ImageFormatter.h>
 #include <spine/TableFormatterFactory.h>
 #include <timeseries/ParameterKeywords.h>
+#include <timeseries/LocationParameters.h>
+#include <timeseries/TimeParameters.h>
 
 // #define MYDEBUG ON
 
@@ -748,6 +750,42 @@ void Plugin::init()
                                          callRequestHandler(theReactor, theRequest, theResponse);
                                        }))
       throw Fmi::Exception(BCP, "Failed to register timeseries content handler");
+
+    itsReactor->addAdminTableRequestHandler(
+        this,
+        "locationparameters",
+        false,
+        [] (Spine::Reactor& theReactor, const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
+        {
+          const std::vector<std::pair<std::string, std::string>> data =
+            TS::SpecialParameters::LocationParameters::instance.get_descriptions();
+          auto result = std::make_unique<Spine::Table>();
+          for (std::size_t i = 0; i < data.size(); i++)
+          {
+            result->set(0, i, data[i].first);
+            result->set(1, i, data[i].second);
+          }
+          return result;
+        },
+        "List available location parameters");
+
+    itsReactor->addAdminTableRequestHandler(
+        this,
+        "timeparameters",
+        false,
+        [] (Spine::Reactor& theReactor, const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
+        {
+          const std::vector<std::pair<std::string, std::string>> data =
+            TS::SpecialParameters::TimeParameters::instance.get_descriptions();
+          auto result = std::make_unique<Spine::Table>();
+          for (std::size_t i = 0; i < data.size(); i++)
+          {
+            result->set(0, i, data[i].first);
+            result->set(1, i, data[i].second);
+          }
+          return result;
+        },
+        "List available time parameters");
 
     // DEPRECATED:
 
