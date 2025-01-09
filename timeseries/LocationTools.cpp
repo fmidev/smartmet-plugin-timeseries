@@ -163,6 +163,11 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
         // path given as a query parameter in format "lon,lat,lon,lat,lon,lat,..."
         std::vector<std::string> lonLatVector;
         boost::algorithm::split(lonLatVector, place, boost::algorithm::is_any_of(","));
+
+        if (lonLatVector.size() % 2)
+          throw Fmi::Exception(BCP,
+                               "Path is required to have even number of coordinates. Got '" + place + "'");
+
         for (unsigned int i = 0; i < lonLatVector.size(); i += 2)
         {
           double longitude = Fmi::stod(lonLatVector[i]);
