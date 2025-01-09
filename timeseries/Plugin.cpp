@@ -760,6 +760,8 @@ void Plugin::init()
           const std::vector<std::pair<std::string, std::string>> data =
             TS::SpecialParameters::LocationParameters::instance.get_descriptions();
           auto result = std::make_unique<Spine::Table>();
+          result->setTitle("Location parameters");
+          result->setNames({"Parameter", "Description"});
           for (std::size_t i = 0; i < data.size(); i++)
           {
             result->set(0, i, data[i].first);
@@ -778,6 +780,8 @@ void Plugin::init()
           const std::vector<std::pair<std::string, std::string>> data =
             TS::SpecialParameters::TimeParameters::instance.get_descriptions();
           auto result = std::make_unique<Spine::Table>();
+          result->setTitle("Time parameters");
+          result->setNames({"Parameter", "Description"});
           for (std::size_t i = 0; i < data.size(); i++)
           {
             result->set(0, i, data[i].first);
