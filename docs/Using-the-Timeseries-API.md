@@ -586,6 +586,67 @@ This feature is thought to be useful for example when trying to
 establish wave heights at the shore simply by specifying the name of
 the harbour or the city.
 
+### Unique Parameter Keys
+When forecast data is requested from the grid-engine (instead of the querydata-engine) it is quite typical that the same parameter name refers to several grids. For example, if we request "Temperature" parameter without any additional details we get values from grids that use default values for the details that are needed in order to uniquely identify the requested data. The point is that we have millions of different grids with different parameter names, producers, geometries, level types, levels, forecast types and forecast numbers. So, if we want to find exact data we need to use exact parameter keys instead of simple parameter names.
+
+When requesting data from the grid-engine, we can use parameter keys like "T-K:MEPS:1093:6:2:3:1", where:
+
+| Field | Description                                            |
+| ------| ------------------------------------------------------ |
+| 1     | Parameter name (T-K = Temperature in Kelvins)          | 
+| 2     | Producer name (MEPS)                                   | 
+| 3     | Number of the grid geometry (1093 = Scandinavian area) | 
+| 4     | Level type (6 = Height above ground)                   |
+| 5     | Level (2  = 2 meters)                                  |
+| 6     | Forecast type (3 = Enseble forecast)                   |
+| 7     | Forecast number (1 = 1st Ensemble member)              |
+
+A parameter key can contain all parameter details (including the producer name), which means that we can use parameters from multiple producers and multiple levels with the same request. 
+
+For example, the following request fetches temperature values from two different producers (SMARTMETNWC,ECMOSKRIGING)
+
+```text
+smartmet.fmi.fi/timeseries?place=espoo&format=debug&param=name,time,T-K:SMARTMETNWC::6:2,Temperature:ECMOSKRIGING::6:2
+```
+Notice, that we can also leave some field empty when there are no multiple values avaiable for the current field. In the previous example, we left the third field (= geometry number) empty, because these producers do not have multiple grid geometries.
+
+It is also good to notice that if we are using "traditional" parameter names like "Temperature" instead of new names like "T-K", it usually means that the original data (= Temperature in Kelvins) is converted (Kelvin => Celcius) during the request. These conversions are defined in the SmartMet Server configuration / mapping files. The same files are used in order to define interpolation methods for different parameters. For example, temperature values are usully interpolated linearly, meanwhile direction parameters (like wind directions) are not necessary interpolated at all (i.e. the request picks the value from the nearest grid point).
+
+The easies way to find out unique parameter keys is to use the grid-gui-plugin.
+
+
+### Additional Parameters
+When forecast data is requested from the grid-engine (instead of the querydata-engine) there are some additional parameters available that can be used in order to find out more information about the returned data. These additional parameters are needed because we can request data from multiple producers, geometries and levels at the same time. So, in these cases it does make sense to use 'producer', 'origintime' or 'level' parameters, because this information is not necessary same for all of the parameters.
+
+If we want to get more information about the requested parameters, we can use the following additional parameters:
+
+| Parameter           | Description                                                                                                                                                                                                                                                                                  |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| @I-N                | The unique parameter key (FMI key) of the parameter in the field/column N.                                                                                                                                                                                                                             |
+| @P-N                | The producer name of the parameter in the field/column N.                                                                                                                                                                                                                                    |
+| @G-N                | The generation name of the parameter in the field/column N.                                                                                                                                                                                                                                  |
+| @GM-N               | The geometry identifier of the parameter in the field/column N.                                                                                                                                                                                                                              |
+| @LT-N               | The level type of the parameter in the field/column N.                                                                                                                                                                                                                                       |
+| @L-N                | The level value of the parameter in the field/column N.                                                                                                                                                                                                                                      |
+| @FT-N               | The forecast type of the parameter in the field/column N.                                                                                                                                                                                                                                    |
+| @FN-N               | The forecast number of the parameter in the field/column N.                                                                                                                                                                                                                                  |
+| @AT-N               | The analysis time of the parameter in the field/column N.                                                                                                                                                                                                                                    |
+
+The 'N' is the index of the field/column that contains the parameter that we are investigating. The leftmost / first index is 0 (zero), which means that the index of the 2nd field/column is 1.
+
+Example 1
+
+```text
+smartmet.fmi.fi/timeseries?place=espoo&format=debug&param=name,time,Temperature:SMARTMETNWC,@I-2,@P-2,@G-2,@GM-2,@LT-2,@L-2,@FT-2,,@FN-2,@AT-2
+```
+
+Example 2
+
+```text
+smartmet.fmi.fi/timeseries?place=espoo&format=debug&param=name,time,T-K:SMARTMETNWC,T-K:ECMOSKRIGING,Temperature:MEPS,@I-2,@I-3,@I-4
+```
+
+
 ### Computed Parameters
 
 The table with the computed parameters is given below.
