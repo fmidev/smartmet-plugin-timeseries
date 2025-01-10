@@ -751,10 +751,12 @@ void Plugin::init()
                                        }))
       throw Fmi::Exception(BCP, "Failed to register timeseries content handler");
 
+    using AdminRequestAccess = Spine::Reactor::AdminRequestAccess;
+
     itsReactor->addAdminTableRequestHandler(
         this,
         "locationparameters",
-        false,
+        AdminRequestAccess::Public,
         [] (Spine::Reactor& theReactor, const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
         {
           const std::vector<std::pair<std::string, std::string>> data =
@@ -774,7 +776,7 @@ void Plugin::init()
     itsReactor->addAdminTableRequestHandler(
         this,
         "timeparameters",
-        false,
+        AdminRequestAccess::Public,
         [] (Spine::Reactor& theReactor, const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
         {
           const std::vector<std::pair<std::string, std::string>> data =
