@@ -396,14 +396,16 @@ Spine::LocationPtr get_location(const Engine::Geonames::Engine& geonames,
     opts.SetResultLimit(1);
     opts.SetFeatures({"SYNOP", "FINAVIA", "STUK"});
 
-    Spine::LocationList ll = geonames.nameSearch(opts, Fmi::to_string(id));
+    const std::string id_str = Fmi::to_string(id);
+    Spine::LocationList ll = geonames.nameSearch(opts, id_str);
 
     Spine::LocationPtr loc;
 
     // lets just take the first one
     if (!ll.empty())
     {
-      loc = geonames.idSearch((*ll.begin())->geoid, language);
+      const long geoid = (*ll.begin())->geoid;
+      loc = geonames.idSearch(geoid, language);
       if (loc)
       {
         Spine::Location location(*loc);

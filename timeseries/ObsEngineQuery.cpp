@@ -903,8 +903,9 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
       // fmisid may be missing for rows for which there is no data. Hence we extract
       // it from the full time timeseries once.
       int fmisid = get_fmisid_value(fmisid_ts);
+      auto& geoengine = state.getGeoEngine();
       Spine::LocationPtr loc =
-          get_location(state.getGeoEngine(), fmisid, FMISID_PARAM, query.language);
+          get_location(geoengine, fmisid, FMISID_PARAM, query.language);
 
       auto observation_result_with_added_fields = handleObsParametersForArea(
           state, producer, loc, obsParameters, tsv_observation_result, ts_vector, query);
