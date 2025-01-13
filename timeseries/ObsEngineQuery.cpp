@@ -469,12 +469,14 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
       if (is_location_p && !UtilityFunctions::is_flash_or_mobile_producer(producer))
       {
         // add data for location field
-        TS::Value value = TS::location_parameter(loc,
-                                                 obsParam.param.name(),
-                                                 query.valueformatter,
-                                                 query.timezone,
-                                                 query.precisions[i],
-                                                 query.crs);
+        TS::Value value;
+        if (loc)
+          value = TS::location_parameter(loc,
+                                         obsParam.param.name(),
+                                         query.valueformatter,
+                                         query.timezone,
+                                         query.precisions[i],
+                                         query.crs);
         auto timeseries = generate_timeseries(state, timestep_vector, value);
         ret->emplace_back(timeseries);
         parameterResultIndexes.insert(std::make_pair(paramname, ret->size() - 1));
@@ -791,12 +793,14 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
 
         for (const auto& ts : ts_vector)
         {
-          TS::Value value = TS::location_parameter(loc,
-                                                   obsParameters[i].param.name(),
-                                                   query.valueformatter,
-                                                   query.timezone,
-                                                   query.precisions[i],
-                                                   query.crs);
+          TS::Value value;
+          if (loc)
+            value = TS::location_parameter(loc,
+                                           obsParameters[i].param.name(),
+                                           query.valueformatter,
+                                           query.timezone,
+                                           query.precisions[i],
+                                           query.crs);
 
           location_ts.emplace_back(TS::TimedValue(ts, value));
         }
@@ -906,6 +910,11 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
       auto& geoengine = state.getGeoEngine();
       Spine::LocationPtr loc =
           get_location(geoengine, fmisid, FMISID_PARAM, query.language);
+
+      if (!loc)
+        std::cout << "SmartMet::Plugin::TimeSeries::ObsEngineQuery::fetchObsEngineValuesForArea:"
+                  << " Location not found for fmisid " << fmisid << std::endl;
+      // Value is checked also in handleObsParametersForArea, so continue to it
 
       auto observation_result_with_added_fields = handleObsParametersForArea(
           state, producer, loc, obsParameters, tsv_observation_result, ts_vector, query);
