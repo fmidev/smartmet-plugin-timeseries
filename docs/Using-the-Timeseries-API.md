@@ -862,7 +862,7 @@ Example
 
 ```text
 http://smartmet.fmi.fi/timeseries?place=espoo&format=debug&param=name,time,T-K,SUM{T-K;-273.15},MUL{SUM{T-K;-273.15};100}
-...
+```
 
 If the query is fetching values from an area and we want to use these values in a function, then we need to put '@' character on the front of the function name. Without this character each value is value is processed separately in the area queries.
 
@@ -870,7 +870,7 @@ Example
 
 ```text
 http://smartmet.fmi.fi/timeseries?area=espoo&format=debug&param=name,time,T-K,SUM{T-K;-273.15},@SUM{T-K;-273.15}
-...
+```
 
 The following functions are implemented with C++:
 
