@@ -912,8 +912,8 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
           get_location(geoengine, fmisid, FMISID_PARAM, query.language);
 
       if (!loc)
-        std::cout << "SmartMet::Plugin::TimeSeries::ObsEngineQuery::fetchObsEngineValuesForArea:"
-                  << " Location not found for fmisid " << fmisid << std::endl;
+        std::cout << "TimeSeries::ObsEngineQuery::fetchObsEngineValuesForArea:"
+                  << " GeoNames entry not found for fmisid " << fmisid << std::endl;
       // Value is checked also in handleObsParametersForArea, so continue to it
 
       auto observation_result_with_added_fields = handleObsParametersForArea(
