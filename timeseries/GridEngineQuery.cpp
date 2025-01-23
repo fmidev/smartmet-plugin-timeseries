@@ -132,6 +132,9 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
       // Split bounding box coordinates from the query string
       std::vector<std::string> parts;
       boost::algorithm::split(parts, place, boost::algorithm::is_any_of(","));
+      if (parts.size() != 4)
+        throw Fmi::Exception(
+            BCP, "Bounding box '" + place + "' is invalid (exactly 4 values required)");
 
       double lon1 = Fmi::stod(parts[0]);
       double lat1 = Fmi::stod(parts[1]);
