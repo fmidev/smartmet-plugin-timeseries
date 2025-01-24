@@ -496,7 +496,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeFromData;
         grid_startTime = y1900; // "19000101T000000";
 
-        if (!masterquery.toptions.endTimeData)
+        if (!masterquery.toptions.endTimeData  &&  masterquery.toptions.mode != TS::TimeSeriesGeneratorOptions::DataTimes)
           gridQuery.mTimesteps = steps;
       }
 
@@ -510,6 +510,9 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes)
       {
         gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::TimeStepIsData;
+
+        if (masterquery.toptions.startTimeData  && masterquery.toptions.endTimeData)
+          gridQuery.mTimesteps = 0;
       }
 
       if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
