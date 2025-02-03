@@ -852,6 +852,60 @@ mean_t[0:](temperature/1h/1h)
 Filtering can be done for all aggregate functions except count- and
 percentage-function.
 
+### Grid-Engine Functions
+
+In addition to the functions described earlier, it is possible to use functions that are implemented in the grid-engine. Techically the grid-engine allows dynamical loading of new functions into the SmartMet Server. In this case these functions are written with LUA programming language. This also means that the SmartMet Server does not need to be rebuilt or restarted when new LUA functions are added. There are also some build-in functions available which are written with C++. The point is that C++ is faster than LUA and that's why the most popular functions are usually implemented with C++.
+
+The basic idea of the grid-engine functions is that they usually get one or multiple values as parameters and return just one value. For example function SUM{T-K;-273.15} adds 273.15 into the value of T-K (Temperature in Kelvins) parameter. This means in practice that it converts Kelvins to Celsius. Notice that in this case parameters are separated with ';' character. It is also possible to use functions inside other functions.
+
+Example
+
+```text
+http://smartmet.fmi.fi/timeseries?place=espoo&format=debug&param=name,time,T-K,SUM{T-K;-273.15},MUL{SUM{T-K;-273.15};100}
+```
+
+If the query is fetching values from an area and we want to use these values in a function, then we need to put '@' character on the front of the function name. Without this character each value is value is processed separately in the area queries.
+
+Example
+
+```text
+http://smartmet.fmi.fi/timeseries?area=espoo&format=debug&param=name,time,T-K,SUM{T-K;-273.15},@SUM{T-K;-273.15}
+```
+
+The following functions are implemented with C++:
+
+| Function  | Description                                     | Example                                          |
+| --------- | ----------------------------------------------- | ------------------------------------------------ |
+| ASIN      | Arcsine / inverse sine (uses radians)           | ASIN{value}                                      |
+| ACOS      | Arccosine / inverse cosine (uses radians)       | ACOS{value}                                      |
+| ATAN      | Arctangent / inverse tangent (uses radians)     | ATAN{value}                                      |
+| AVG       | Average                                         | @AVG{T-K}                                        |
+| COS       | Cosine (uses radians)                           | COS{DD-RAD}                                      |
+| DEG2RAD   | Degrees to radians                              | DEG2RAD{DD-D}                                    |
+| DIFF      | Difference / subtraction                        | DIFF{T-K;273.15}                                 |
+| DIV       | Division                                        | DIV{T-K;100}                                     |
+| IN_COUNT  | Number of values inside of the given range      | @IN_COUNT{0;274;T-K}                             |
+| IN_PRCNT  | Percentage of values inside of the given range  | @IN_PERCENT{0;274;T-K}                           |
+| K2C       | Kelvins to Celsius                              | K2C{T-K}, same as SUM{T-K;-273.15}               |
+| K2F       | Kelvins to Fahrenheits                          | K2F{T-K}                                         |
+| MAX       | Maximum value                                   | @MAX{T-K}                                        |
+| MEDIAN    | Median                                          | @MEDIAN{T-K}                                     |
+| MIN       | Minumum value                                   | @MIN{T-K}                                        |
+| MUL       | Multiplication                                  | MUL{T-K;0.001}                                   |
+| SDEV      | Standard deviation                              | SDEV{T-K}                                        |
+| SDEV_DIR  | Standard deviation for direction parameters     | SDEV_DIR{DD-D}                                   |
+| SIN       | Sine (uses radians)                             | SIN{DD-RAD}                                      |
+| TAN       | Tangent (uses radians)                          | TAN{DD-RAD}                                      |
+| OUT_COUNT | Number of values outside of the given range     | @OUT_COUNT{0;274;T-K}                            |
+| OUT_PRCNT | Percentage of values outside of the given range | @OUT_PRCNT{0;274;T-K}                            |
+| RAD2DEG   | Radians to degrees                              | @RAD2DEG{DD-RAD}                                 |
+| REPLACE   | Replaces values if they are in given range      | REPLACE{T-K;0;1;274;2;275;3;500}                 |
+| SUM       | Addition                                        | SUM{T-K;-273.15}                                 |
+| SUB       | Subraction                                      | SUB{T-K;273.15}                                  |
+| VARIANCE  | Variance                                        | @VARIANCE{T-K}                                   |
+
+
+
 ## Response Formatting
 
 Before the response is delivered to the user it is formatted according to the
