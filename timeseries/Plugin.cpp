@@ -406,7 +406,7 @@ void Plugin::query(const State& state,
     std::size_t product_hash = Fmi::bad_hash;
 
     QueryProcessingHub qph(*this);
-
+/*
     try
     {
       product_hash = qph.hash_value(state, request, q);
@@ -416,20 +416,24 @@ void Plugin::query(const State& state,
       if (!gridEnabled)
         throw Fmi::Exception::Trace(BCP, "Operation failed!");
     }
-
+*/
     high_resolution_clock::time_point t3 = high_resolution_clock::now();
 
     std::string timeheader = Fmi::to_string(duration_cast<microseconds>(t2 - t1).count()) + '+' +
                              Fmi::to_string(duration_cast<microseconds>(t3 - t2).count());
 
-    if (etag_only(request, response, product_hash))
-      return;
+    //if (etag_only(request, response, product_hash))
+    //  return;
 
     // If obj is not nullptr it is from cache
     auto obj = qph.processQuery(state, data, q, queryStreamer, product_hash);
 
     if (obj)
     {
+      product_hash = Fmi::hash_value(*obj);
+      if (etag_only(request, response, product_hash))
+        return;
+
       response.setHeader("X-Duration", timeheader);
       response.setHeader("X-TimeSeries-Cache", "yes");
       response.setContent(obj);
@@ -491,6 +495,10 @@ void Plugin::query(const State& state,
     }
     else
     {
+      product_hash = Fmi::hash_value(*result);
+      if (etag_only(request, response, product_hash))
+        return;
+
       response.setContent(*result);
     }
   }
