@@ -245,6 +245,7 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
   FUNCTION_TRACE
   try
   {
+    const std::set<std::string> extra_special_parameters = {"place", "distance", "direction"};
     // Adding queries into the QueryStreamer. These queries fetch actual GRIB1/GRIB2 files
     // accoding to the file attribute definitions (query.mAttributeList). The queryStreamer sends
     // these queries to the queryServer and returns the results (= GRIB files) to the HTTP client.
@@ -255,6 +256,11 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
       for (auto val = param->mValueList.begin(); val != param->mValueList.end(); ++val)
       {
         QueryServer::Query newQuery;
+
+        // FIXME: handle also such parameters as 'place'
+        const bool isSpecial = SmartMet::TimeSeries::is_location_parameter(param->mParam)
+            || SmartMet::TimeSeries::is_time_parameter(param->mParam)
+            || extra_special_parameters.count(param->mParam);
 
         newQuery.mSearchType = QueryServer::Query::SearchType::TimeSteps;
         // newQuery.mProducerNameList;
@@ -274,7 +280,7 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
 
         newQuery.mLanguage = query.mLanguage;
         newQuery.mGenerationFlags = 0;
-        newQuery.mFlags = 0;
+        newQuery.mFlags = isSpecial ? QueryServer::Query::Flags::GeometryHitNotRequired : 0;
         newQuery.mMaxParameterValues = 10;
 
         QueryServer::QueryParameter newParam;
