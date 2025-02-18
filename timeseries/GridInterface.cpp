@@ -1358,6 +1358,9 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
   FUNCTION_TRACE
   try
   {
+    std::shared_ptr<ContentServer::ServiceInterface> contentServer =
+        itsGridEngine->getContentServer_sptr();
+
     TS::Value missing_value = TS::None();
     AdditionalParameters additionalParameters(itsTimezones,
                                               masterquery.outlocale,
@@ -1841,6 +1844,16 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                   else if (n == "P")  // Produceer
                   {
                     TS::TimedValue tsValue(queryTime, producerName);
+                    tsForNonGridParam->emplace_back(tsValue);
+                  }
+                  else if (n == "F")  // File
+                  {
+                    std::string fileName;
+                    T::FileInfo fInfo;
+                    if (contentServer->getFileInfoById(0,gridQuery->mQueryParameterList[i].mValueList[t]->mFileId[0], fInfo) == 0)
+                      fileName = fInfo.mName;
+
+                    TS::TimedValue tsValue(queryTime, fileName);
                     tsForNonGridParam->emplace_back(tsValue);
                   }
                   else if (n == "G")  // Generation
