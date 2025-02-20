@@ -80,7 +80,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-observation >= 25.2.5
 %endif
 #TestRequires: smartmet-engine-grid >= 25.1.24
-#TestRequires: gdal38-libs
+#TestRequires: gdal310-libs
 #TestRequires: libwebp13
 
 %description
