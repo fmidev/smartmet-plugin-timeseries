@@ -874,35 +874,62 @@ http://smartmet.fmi.fi/timeseries?area=espoo&format=debug&param=name,time,T-K,SU
 
 The following functions are implemented with C++:
 
-| Function  | Description                                     | Example                                          |
-| --------- | ----------------------------------------------- | ------------------------------------------------ |
-| ASIN      | Arcsine / inverse sine (uses radians)           | ASIN{value}                                      |
-| ACOS      | Arccosine / inverse cosine (uses radians)       | ACOS{value}                                      |
-| ATAN      | Arctangent / inverse tangent (uses radians)     | ATAN{value}                                      |
-| AVG       | Average                                         | @AVG{T-K}                                        |
-| COS       | Cosine (uses radians)                           | COS{DD-RAD}                                      |
-| DEG2RAD   | Degrees to radians                              | DEG2RAD{DD-D}                                    |
-| DIFF      | Difference / subtraction                        | DIFF{T-K;273.15}                                 |
-| DIV       | Division                                        | DIV{T-K;100}                                     |
-| IN_COUNT  | Number of values inside of the given range      | @IN_COUNT{0;274;T-K}                             |
-| IN_PRCNT  | Percentage of values inside of the given range  | @IN_PERCENT{0;274;T-K}                           |
-| K2C       | Kelvins to Celsius                              | K2C{T-K}, same as SUM{T-K;-273.15}               |
-| K2F       | Kelvins to Fahrenheits                          | K2F{T-K}                                         |
-| MAX       | Maximum value                                   | @MAX{T-K}                                        |
-| MEDIAN    | Median                                          | @MEDIAN{T-K}                                     |
-| MIN       | Minumum value                                   | @MIN{T-K}                                        |
-| MUL       | Multiplication                                  | MUL{T-K;0.001}                                   |
-| SDEV      | Standard deviation                              | SDEV{T-K}                                        |
-| SDEV_DIR  | Standard deviation for direction parameters     | SDEV_DIR{DD-D}                                   |
-| SIN       | Sine (uses radians)                             | SIN{DD-RAD}                                      |
-| TAN       | Tangent (uses radians)                          | TAN{DD-RAD}                                      |
-| OUT_COUNT | Number of values outside of the given range     | @OUT_COUNT{0;274;T-K}                            |
-| OUT_PRCNT | Percentage of values outside of the given range | @OUT_PRCNT{0;274;T-K}                            |
-| RAD2DEG   | Radians to degrees                              | @RAD2DEG{DD-RAD}                                 |
-| REPLACE   | Replaces values if they are in given range      | REPLACE{T-K;0;1;274;2;275;3;500}                 |
-| SUM       | Addition                                        | SUM{T-K;-273.15}                                 |
-| SUB       | Subraction                                      | SUB{T-K;273.15}                                  |
-| VARIANCE  | Variance                                        | @VARIANCE{T-K}                                   |
+| Function  | Description                                                        | Example                                          |
+| --------- | ------------------------------------------------------------------ | ------------------------------------------------ |
+| ASIN      | Arcsine / inverse sine (uses radians)                              | ASIN{value}                                      |
+| ACOS      | Arccosine / inverse cosine (uses radians)                          | ACOS{value}                                      |
+| AND       | Returns 1 if all parameters != 0. Otherwise the function           | AND{param1;param2}                               |
+|           | returns 0.                                                         | AND{param1;param2;param3;...;paramN}             |
+| ATAN      | Arctangent / inverse tangent (uses radians)                        | ATAN{value}                                      |
+| AVG       | Average                                                            | @AVG{T-K}                                        |
+| COS       | Cosine (uses radians)                                              | COS{DD-RAD}                                      |
+| DEG2RAD   | Degrees to radians                                                 | DEG2RAD{DD-D}                                    |
+| DIFF      | Difference / subtraction                                           | DIFF{T-K;273.15}                                 |
+| DIV       | Division                                                           | DIV{T-K;100}                                     |
+| EQ        | Returns 1 if the 1st and the 2nd parameters are equal. Otherwise   | EQ{T-K;273.15}                                   |
+|           | the function returns 0. The 3rd parameter can be used to define    | EQ{T-K;273;0}                                    |
+|           | comparison precision (= decimals)                                  | EQ{T-K;273.2;1}                                  |
+| GT        | Greater than. If (param1 > param2) return 1 else return 0.         | GT{T-K;273.15}                                   |
+| GTE       | Greater or equal. If (param1 >= param2) return 1 else return 0.    | GTE{T-K;273.15}                                  |
+| IF        | If the first parameter != 0 the function returns the second        | IF{comparsion;then;else)                         |
+|           | parameter, otherwise the third parameter.                          | IF{LT{T-K;273.15};1;2}                           |
+|           |                                                                    | IF{OR{LT{T-K;273.15};GT{T-K;283.15}};1;2}        |
+| IN        | Returns 1 if the first parameter is inside the given range.        | IN{value;rangeStart;rangeEnd}                    |
+|           | Otherwise the function returns 0.                                  | IN{T-K;0;274}                                    |
+| IN_COUNT  | Number of values inside of the given range                         | IN_COUNT{rangeStart;rangeEnd;n1;n2;...;nN}       |
+|           |                                                                    | @IN_COUNT{0;274;T-K}                             |
+| IN_PRCNT  | Percentage of values inside of the given range                     | IN_PERCENT{rangeStart;rangeEnd;n1;n2;...;nN}     |
+|           |                                                                    | @IN_PERCENT{0;274;T-K}                           |
+| K2C       | Kelvins to Celsius                                                 | K2C{T-K}, same as SUM{T-K;-273.15}               |
+| K2F       | Kelvins to Fahrenheits                                             | K2F{T-K}                                         |
+| LT        | Less than. If (param1<param2) return 1;else return 0;              | LT{T-K;273.15}                                   |
+| LTE       | Less or equal. If (param1<=param2) return 1;else return 0;         | LTE{T-K;273.15}                                  |
+| MAX       | Maximum value                                                      | MAX{n1;n2;n3;n4;...;nN}                          |
+|           |                                                                    | @MAX{T-K}                                        |
+| MEDIAN    | Median                                                             | MEDIAN{n1;n2;n3;n4;...;nN}                       |
+|           |                                                                    | @MEDIAN{T-K}                                     |
+| MIN       | Minumum value                                                      | MIN{n1;n2;n3;n4;...;nN}                          |
+|           |                                                                    | @MIN{T-K}                                        |
+| MUL       | Multiplication                                                     | MUL{T-K;0.001}                                   |
+| NOT       | Returns 0 if the parameter != 0. Otherwise the function returns 1. | NOT{param}                                       |
+| OR        | Returns 1 if any of the parameters != 0. Otherwise the function    | OR{param1;param2}                                |
+|           | returns 0.                                                         | OR{param1;param2;param3;...;paramN}              |
+| SDEV      | Standard deviation                                                 | @SDEV{T-K}                                       |
+| SDEV_DIR  | Standard deviation for direction parameters                        | @SDEV_DIR{DD-D}                                  |
+| SIN       | Sine (uses radians)                                                | SIN{DD-RAD}                                      |
+| TAN       | Tangent (uses radians)                                             | TAN{DD-RAD}                                      |
+| OUT       | Returns 1 if the first parameter is outnside the given range.      | OUT{value;rangeStart;rangeEnd}                   |
+|           | Otherwise the function returns 0.                                  | OUT{T-K;0;274}                                   |
+| OUT_COUNT | Number of values outside of the given range                        | OUT_COUNT{rangeStart;rangeEnd;n1;n2;...;nN}      |
+|           |                                                                    | @OUT_COUNT{0;274;T-K}                            |
+| OUT_PRCNT | Percentage of values outside of the given range                    | OUT_PRCNT{rangeStart;rangeEnd;n1;n2;...;nN}      |
+|           | Percentage of values outside of the given range                    | @OUT_PRCNT{0;274;T-K}                            |
+| RAD2DEG   | Radians to degrees                                                 | RAD2DEG{DD-RAD}                                  |
+| REPLACE   | Replaces values if they are in given range                         | REPLACE{T-K;0;1;274;2;275;3;500}                 |
+| SUM       | Addition                                                           | SUM{T-K;-273.15}                                 |
+| SUB       | Subraction                                                         | SUB{T-K;273.15}                                  |
+| VALID     | Returns the first parameter which value is not "missing".          | VALID{T-K:VIRENWC;T-K:VIRE}                      |
+| VARIANCE  | Variance                                                           | @VARIANCE{T-K}                                   |
 
 
 
