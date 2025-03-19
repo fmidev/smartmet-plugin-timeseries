@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&model=pal_skandinavia&place=Helsinki&precision=double&param=time,Temperature,SUM{Temperature;10},SUB{Temperature;10},MUL{Temperature;10},DIV{Temperature;10},DIFF{Temperature;10} HTTP/1.0

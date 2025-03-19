@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808090000&place=Helsinki&precision=double&param=time,Temperature:pal_skandinavia,Temperature:ecmwf_eurooppa_pinta,VALID{Temperature:pal_skandinavia;Temperature:ecmwf_eurooppa_pinta} HTTP/1.0

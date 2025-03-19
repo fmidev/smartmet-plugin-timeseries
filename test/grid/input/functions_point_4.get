@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&model=pal_skandinavia&place=Helsinki&precision=full&param=time,Temperature,ROUND{Temperature;0},ROUND{Temperature;1},ROUND{Temperature;2},ROUND{Temperature;3},ROUND{Temperature;4},ROUND{Temperature;5} HTTP/1.0
