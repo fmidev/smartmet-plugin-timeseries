@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&model=pal_skandinavia&area=Kokkola&precision=double&param=time,Temperature,@SUM{Temperature},@AVG{Temperature},@MAX{Temperature},@MIN{Temperature},@MEDIAN{Temperature},@SMEDIAN{-1;Temperature},@SMEDIAN{1;Temperature} HTTP/1.0

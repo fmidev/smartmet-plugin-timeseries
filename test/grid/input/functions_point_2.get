@@ -1,0 +1,1 @@
+GET /timeseries?starttime=200808051200&model=pal_skandinavia&place=Helsinki&precision=double&param=time,WindDirection,SIN{WindDirection},COS{WindDirection},TAN{WindDirection},ASIN{SIN{WindDirection}},ACOS{COS{WindDirection}},ATAN{TAN{WindDirection}} HTTP/1.0
