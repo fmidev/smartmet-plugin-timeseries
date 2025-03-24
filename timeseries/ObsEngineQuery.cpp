@@ -908,8 +908,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
       // it from the full time timeseries once.
       int fmisid = get_fmisid_value(fmisid_ts);
       auto& geoengine = state.getGeoEngine();
-      Spine::LocationPtr loc =
-          get_location(geoengine, fmisid, FMISID_PARAM, query.language);
+      Spine::LocationPtr loc = get_location(geoengine, fmisid, FMISID_PARAM, query.language);
 
       if (!loc)
         std::cout << "TimeSeries::ObsEngineQuery::fetchObsEngineValuesForArea:"
@@ -1037,8 +1036,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
       std::vector<TS::TimeSeriesData> aggregatedData;
 
       // store observation data
-      aggregatedData.emplace_back(
-          TS::TimeSeriesData(TS::erase_redundant_timesteps(aggregated_tsg, tlist)));
+      aggregatedData.emplace_back(aggregated_tsg);
       PostProcessing::store_data(aggregatedData, query, outputData);
     }
   }
