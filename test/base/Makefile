@@ -14,12 +14,19 @@ TEST_TARGETS := test-sqlite test-oracle test-postgresql
 EXTRA_IGNORE :=
 endif
 
+ifdef TEST_FILTER
+SMARTMET_PLUGIN_TEST_FILTER := --filter "$(TEST_FILTER)"
+else
+SMARTMET_PLUGIN_TEST_FILTER :=
+endif
+
 test-sqlite test-oracle test-postgresql:
 	rm -rf failures-$(DB_TYPE)
 	rm -rf tmp && mkdir tmp && cp output/* tmp/
 	mkdir -p failures-$(DB_TYPE)
 	ok=true; $(TEST_RUNNER) smartmet-plugin-test --handler /timeseries -e output/ \
 		--reactor-config cnf/reactor_$(DB_TYPE).conf \
+		$(SMARTMET_PLUGIN_TEST_FILTER) \
 		--failures-dir failures-$(DB_TYPE) \
 		$(foreach fn, input/.testignore_$(DB_TYPE) $(EXTRA_IGNORE), --ignore $(fn)) \
 		--timeout $(TEST_TIMEOUT) || ok=false; \
