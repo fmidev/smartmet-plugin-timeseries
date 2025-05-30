@@ -1804,15 +1804,14 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
               std::string n;
               int idx = -1;
 
-              if (gridQuery->mQueryParameterList[pid].mParam.substr(2, 1) == "-")
+              char ptmp[100];
+              strcpy(ptmp,gridQuery->mQueryParameterList[pid].mParam.c_str());
+              char *pp = strchr(ptmp,'-');
+              if (pp)
               {
-                n = gridQuery->mQueryParameterList[pid].mParam.substr(1, 1);
-                idx = std::stoi(gridQuery->mQueryParameterList[pid].mParam.substr(3));
-              }
-              else if (gridQuery->mQueryParameterList[pid].mParam.substr(3, 1) == "-")
-              {
-                n = gridQuery->mQueryParameterList[pid].mParam.substr(1, 2);
-                idx = std::stoi(gridQuery->mQueryParameterList[pid].mParam.substr(4));
+                *pp = '\0';
+                n = ptmp+1;
+                idx = atoi(pp+1);
               }
 
               if (idx >= 0 && idx < pLen)
@@ -1914,6 +1913,122 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                     TS::TimedValue tsValue(
                         queryTime, gridQuery->mQueryParameterList[i].mValueList[t]->mAnalysisTime);
                     tsForNonGridParam->emplace_back(tsValue);
+                  }
+                  else if (n == "LON")  // Longitude
+                  {
+                    uint vlen = gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getLength();
+                    if (vlen > 0)
+                    {
+
+                      std::ostringstream output;
+                      if (vlen > 1)
+                        output << "[";
+
+                      for (uint v = 0; v < vlen; v++)
+                      {
+                        T::GridValue val;
+                        if (gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getGridValueByIndex(v, val))
+                        {
+                          output << masterquery.valueformatter.format(val.mY, 7);
+                          if ((v + 1) < vlen)
+                            output << " ";
+                        }
+                      }
+
+                      if (vlen > 1)
+                        output << "]";
+
+                      TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
+                  }
+                  else if (n == "LAT")  // Latitude
+                  {
+                    uint vlen = gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getLength();
+                    if (vlen > 0)
+                    {
+
+                      std::ostringstream output;
+                      if (vlen > 1)
+                        output << "[";
+
+                      for (uint v = 0; v < vlen; v++)
+                      {
+                        T::GridValue val;
+                        if (gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getGridValueByIndex(v, val))
+                        {
+                          output << masterquery.valueformatter.format(val.mX, 7);
+                          if ((v + 1) < vlen)
+                            output << " ";
+                        }
+                      }
+
+                      if (vlen > 1)
+                        output << "]";
+
+                      TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
+                  }
+                  else if (n == "LATLON")  // Latlon
+                  {
+                    uint vlen = gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getLength();
+                    if (vlen > 0)
+                    {
+
+                      std::ostringstream output;
+                      if (vlen > 1)
+                        output << "[";
+
+                      for (uint v = 0; v < vlen; v++)
+                      {
+                        T::GridValue val;
+                        if (gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getGridValueByIndex(v, val))
+                        {
+                          output << masterquery.valueformatter.format(val.mY, 7);
+                          output << ",";
+                          output << masterquery.valueformatter.format(val.mX, 7);
+                          if ((v + 1) < vlen)
+                            output << " ";
+                        }
+                      }
+
+                      if (vlen > 1)
+                        output << "]";
+
+                      TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
+                  }
+                  else if (n == "LONLAT")  // Latlon
+                  {
+                    uint vlen = gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getLength();
+                    if (vlen > 0)
+                    {
+
+                      std::ostringstream output;
+                      if (vlen > 1)
+                        output << "[";
+
+                      for (uint v = 0; v < vlen; v++)
+                      {
+                        T::GridValue val;
+                        if (gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getGridValueByIndex(v, val))
+                        {
+                          output << masterquery.valueformatter.format(val.mX, 7);
+                          output << ",";
+                          output << masterquery.valueformatter.format(val.mY, 7);
+                          if ((v + 1) < vlen)
+                            output << " ";
+                        }
+                      }
+
+                      if (vlen > 1)
+                        output << "]";
+
+                      TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
+                      tsForNonGridParam->emplace_back(tsValue);
+                    }
                   }
                   else
                   {
