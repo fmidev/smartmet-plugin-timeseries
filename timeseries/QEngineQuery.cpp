@@ -380,9 +380,8 @@ void QEngineQuery::processQEngineQuery(const State& state,
         q.toptions.startTime = old_start_time;
 
         // every parameter starts from the same row
-        if (!data_period_endtime.is_not_a_date_time()
-           && q.toptions.endTime > data_period_endtime.local_time()
-           && !isClimatologyProducer)
+        if (!data_period_endtime.is_not_a_date_time() &&
+            q.toptions.endTime > data_period_endtime.local_time() && !isClimatologyProducer)
         {
           q.toptions.endTime = data_period_endtime.local_time();
         }
@@ -752,6 +751,7 @@ void QEngineQuery::pointQuery(const Query& theQuery,
   {
     TS::TimeSeriesPtr querydata_result;
     const auto& paramname = theParamFunc.parameter.name();
+
     auto loc = theTLoc.loc;
     NFmiSvgPath svgPath;
     bool isWkt = false;
@@ -764,24 +764,23 @@ void QEngineQuery::pointQuery(const Query& theQuery,
     {
       querydata_result = theQueryLevelDataCache.itsTimeSeries[theCacheKey];
     }
-    else if (paramname == "fmisid" || paramname == "lpnn" || paramname == "wmo" ||
-             paramname == "wsi")
+    else if ((paramname == "fmisid" && loc->fmisid) || paramname == "wsi")
     {
+      // WmoStationNumber, Wmo, RWSID may be obtained from point querydata, hence Q.cpp handles
+      // them. If the location has no fmisid, we try using point querydata station number instead
+
       querydata_result = std::make_shared<TS::TimeSeries>();
       for (const auto& t : theQueryDataTlist)
       {
         if (loc->fmisid && paramname == "fmisid")
-        {
           querydata_result->emplace_back(TS::TimedValue(t, *(loc->fmisid)));
-        }
         else
-        {
           querydata_result->emplace_back(TS::TimedValue(t, TS::None()));
-        }
       }
     }
-    else if (UtilityFunctions::is_special_parameter(paramname))
+    else if (UtilityFunctions::is_special_parameter(paramname) && paramname != "fmisid")
     {
+      // we want to get fmisid from point querydata instead
       querydata_result = std::make_shared<TS::TimeSeries>();
       UtilityFunctions::get_special_parameter_values(paramname,
                                                      thePrecision,
@@ -825,8 +824,10 @@ void QEngineQuery::pointQuery(const Query& theQuery,
       theQueryLevelDataCache.itsTimeSeries.insert(make_pair(theCacheKey, querydata_result));
     }
 
-    auto aggregated_querydata_result = TS::aggregate(querydata_result, theParamFunc.functions, theRequestedTList);
-    aggregated_querydata_result = TS::erase_redundant_timesteps(aggregated_querydata_result, theRequestedTList);
+    auto aggregated_querydata_result =
+        TS::aggregate(querydata_result, theParamFunc.functions, theRequestedTList);
+    aggregated_querydata_result =
+        TS::erase_redundant_timesteps(aggregated_querydata_result, theRequestedTList);
     theAggregatedData.emplace_back(aggregated_querydata_result);
   }
   catch (...)
@@ -1122,11 +1123,13 @@ void QEngineQuery::areaQuery(const Query& theQuery,
       }  // area handling
     }
 
-    auto aggregated_query_data_result = TS::aggregate(querydata_result, theParamFunc.functions, theRequestedTList);
+    auto aggregated_query_data_result =
+        TS::aggregate(querydata_result, theParamFunc.functions, theRequestedTList);
 
     if (!querydata_result->empty())
     {
-      aggregated_query_data_result = TS::erase_redundant_timesteps(aggregated_query_data_result, theRequestedTList);
+      aggregated_query_data_result =
+          TS::erase_redundant_timesteps(aggregated_query_data_result, theRequestedTList);
       theAggregatedData.emplace_back(aggregated_query_data_result);
     }
   }
