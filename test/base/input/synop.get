@@ -1,0 +1,1 @@
+GET /timeseries?starttime=20081129T0000&producer=synop&place=Helsinki&numberofstations=5&maxdistance=50000&param=time,fmisid,wmo,rwsid,geoid,Temperature,distance,direction,stationlongitude,stationlatitude,stationname,stationtype&timesteps=4&format=csv HTTP/1.0
