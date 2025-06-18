@@ -1,1 +1,1 @@
-GET /timeseries?param=name,time,AverageTemperature,MinimumTemperature,AverageTemperature,MaximumTemperature&starttime=data&timestep=data&producer=weeklyclimatology&places=Helsinki,Tampere&timesteps=3&timeformat=timestamp&format=ascii HTTP/1.0
+GET /timeseries?param=name,time,MinimumTemperature,AverageTemperature,MaximumTemperature&starttime=data&timestep=data&producer=weeklyclimatology&places=Helsinki,Tampere&timesteps=3&timeformat=timestamp&format=ascii HTTP/1.0
