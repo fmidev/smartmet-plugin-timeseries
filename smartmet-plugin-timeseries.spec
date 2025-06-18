@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 25.6.17
+Version: 25.6.18
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -69,7 +69,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-spine-plugin-test >= 25.5.13
 #TestRequires: smartmet-library-newbase-devel >= 25.3.20
 #TestRequires: redis
-#TestRequires: smartmet-test-db >= 25.2.18
+#TestRequires: smartmet-test-db >= 25.6.18
 #TestRequires: smartmet-test-data >= 24.8.12
 #TestRequires: smartmet-engine-grid-test >= 25.6.3
 #TestRequires: smartmet-library-gis >= 25.2.18
@@ -106,6 +106,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Jun 18 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> - 25.6.18-1.fmi
+- Disallow duplicates in 'param' option to prevent ddos attacks
+
 * Tue Jun 17 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> - 25.6.17-1.fmi
 - Improved support for point querydata
 
