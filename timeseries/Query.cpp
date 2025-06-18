@@ -576,6 +576,18 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     poptions.expandParameter("data_source");
 
     parse_aggregation_intervals(theReq);
+
+    // Make sure parameter names are unique to avoid simple ddos attacks
+    std::set<std::string> unique_names;
+    std::set<std::string> duplicate_names;
+    for (const auto& paramname : names)
+    {
+      if (unique_names.insert(paramname).second == false)
+        duplicate_names.insert(paramname);
+    }
+    if (!duplicate_names.empty())
+      throw Fmi::Exception(BCP, "Duplicate parameters in the query")
+          .addParameter("Duplicates", boost::algorithm::join(duplicate_names, ","));
   }
   catch (...)
   {
