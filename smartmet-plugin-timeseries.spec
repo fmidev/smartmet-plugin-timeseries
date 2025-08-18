@@ -79,7 +79,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-spine-plugin-test >= 25.5.13
 #TestRequires: smartmet-library-newbase-devel >= 25.3.20
 #TestRequires: redis
-#TestRequires: smartmet-test-db >= package smartmet-test-db is not installed
+#TestRequires: smartmet-test-db >= 25.6.18
 #TestRequires: smartmet-test-data >= 25.8.13
 #TestRequires: smartmet-engine-grid-test >= 25.6.3
 #TestRequires: smartmet-library-gis >= 25.7.24
