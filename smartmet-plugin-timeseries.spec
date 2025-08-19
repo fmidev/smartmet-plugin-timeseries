@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 25.8.17
+Version: 25.8.19
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -116,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Aug 19 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> - 25.8.19-1.fmi
+- Warn on duplicate parameters, do not throw
+
 * Sun Aug 17 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> - 25.8.17-1.fmi
 - Repackaged due to ObsEngine ABI changes
 
