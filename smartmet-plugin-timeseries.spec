@@ -4,7 +4,7 @@
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
 Version: 25.8.19
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -116,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Aug 19 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> - 25.8.19-2.fmi
+- Improved error messages on duplicate parameters
+
 * Tue Aug 19 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> - 25.8.19-1.fmi
 - Warn on duplicate parameters, do not throw
 
