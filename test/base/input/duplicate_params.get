@@ -1,0 +1,1 @@
+GET /timeseries?param=name,localtime,utctime,time,t2m,name,localtime,utctime,time,t2m&places=Kaisaniemi&timeformat=timestamp&precision=double&producer=fmi&starttime=201308050800&endtime=201308051100&timestep=all&tz=Europe/Helsinki HTTP/1.0

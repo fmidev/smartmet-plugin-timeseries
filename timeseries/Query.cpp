@@ -498,6 +498,22 @@ void Query::parse_aggregation_intervals(const Spine::HTTP::Request& theReq)
   }
 }
 
+void remove_duplicates(std::list<std::string>& names)
+{
+  std::set<std::string> unique_names;
+  std::list<std::string> output;
+
+  for (const auto& name : names)
+  {
+    if (unique_names.find(name) == unique_names.end())
+    {
+      output.push_back(name);
+      unique_names.insert(name);
+    }
+  }
+  names = output;
+}
+
 void Query::parse_parameters(const Spine::HTTP::Request& theReq)
 {
   try
@@ -558,6 +574,8 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
         tmpNames = names;
     }
 
+    remove_duplicates(names);
+
     // Validate and convert
     for (const string& paramname : names)
     {
@@ -576,24 +594,6 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
     poptions.expandParameter("data_source");
 
     parse_aggregation_intervals(theReq);
-
-    // Make sure parameter names are unique to avoid simple ddos attacks
-    std::set<std::string> unique_names;
-    std::set<std::string> duplicate_names;
-    for (const auto& paramname : names)
-    {
-      if (unique_names.insert(paramname).second == false)
-        duplicate_names.insert(paramname);
-    }
-    if (!duplicate_names.empty())
-#if 1
-      std::cerr << Spine::log_time_str() << " Warning: Duplicate parameters in query " + theReq.getQueryString() + " : " +
-          boost::algorithm::join(duplicate_names, ",")
-                << std::endl;
-#else
-      throw Fmi::Exception(BCP, "Duplicate parameters in the query")
-          .addParameter("Duplicates", boost::algorithm::join(duplicate_names, ","));
-#endif
   }
   catch (...)
   {
