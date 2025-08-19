@@ -586,8 +586,14 @@ void Query::parse_parameters(const Spine::HTTP::Request& theReq)
         duplicate_names.insert(paramname);
     }
     if (!duplicate_names.empty())
+#if 1
+      std::cerr << "Warning: Duplicate parameters in query " + opt + " : " +
+                       boost::algorithm::join(duplicate_names, ",")
+                << std::endl;
+#else
       throw Fmi::Exception(BCP, "Duplicate parameters in the query")
           .addParameter("Duplicates", boost::algorithm::join(duplicate_names, ","));
+#endif
   }
   catch (...)
   {
