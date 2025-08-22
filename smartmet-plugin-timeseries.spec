@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 25.8.19
-Release: 3%{?dist}.fmi
+Version: 25.8.22
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -116,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri Aug 22 2025 Andris Pavēnis <andris.pavenis@fmi.fi> 25.8.22-1.fmi
+- Repackaged due to smartmet-engine-observation changes
+
 * Tue Aug 19 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> - 25.8.19-3.fmi
 - Automatically remove duplicate parameters instead of warning/throwing on them
 
