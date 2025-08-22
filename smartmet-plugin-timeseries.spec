@@ -47,7 +47,7 @@ BuildRequires: smartmet-library-newbase-devel >= 25.3.20
 BuildRequires: smartmet-library-gis-devel >= 25.7.24
 BuildRequires: smartmet-engine-geonames-devel >= 25.2.18
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 25.8.17
+BuildRequires: smartmet-engine-observation-devel >= 25.8.22
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 25.6.17
 BuildRequires: smartmet-engine-gis-devel >= 25.2.18
@@ -87,7 +87,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 25.2.18
 #TestRequires: smartmet-engine-querydata >= 25.6.17
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 25.8.17
+#TestRequires: smartmet-engine-observation >= 25.8.22
 %endif
 #TestRequires: smartmet-engine-grid >= 25.6.3
 #TestRequires: gdal310-libs
