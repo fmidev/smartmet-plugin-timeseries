@@ -51,7 +51,7 @@ BuildRequires: smartmet-engine-observation-devel >= 25.8.22
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 25.6.17
 BuildRequires: smartmet-engine-gis-devel >= 25.2.18
-BuildRequires: smartmet-engine-grid-devel >= 25.6.3
+BuildRequires: smartmet-engine-grid-devel >= 25.8.25
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 25.8.17
@@ -66,7 +66,7 @@ Requires: smartmet-library-timeseries >= 25.8.1
 Requires: smartmet-engine-geonames >= 25.2.18
 Requires: smartmet-engine-querydata >= 25.6.17
 Requires: smartmet-engine-gis >= 25.2.18
-Requires: smartmet-engine-grid >= 25.6.3
+Requires: smartmet-engine-grid >= 25.8.25
 Requires: smartmet-server >= 25.5.13
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
@@ -89,7 +89,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 25.8.22
 %endif
-#TestRequires: smartmet-engine-grid >= 25.6.3
+#TestRequires: smartmet-engine-grid >= 25.8.25
 #TestRequires: gdal310-libs
 #TestRequires: libwebp13
 
