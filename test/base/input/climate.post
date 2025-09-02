@@ -1,0 +1,8 @@
+POST /timeseries HTTP/1.1
+Host: back2.dev.weatherproof.fi:8081
+User-Agent: curl/8.15.0
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 165
+
+starttime=200808051200&place=Helsinki&hour=15&timesteps=10&model=climate_tmax&param=localtime,NormalMaxTemperatureF12,NormalMaxTemperatureF50,NormalMaxTemperatureF98
