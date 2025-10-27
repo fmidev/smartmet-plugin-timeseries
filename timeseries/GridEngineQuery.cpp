@@ -16,7 +16,7 @@ GridEngineQuery::GridEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin)
 {
   if (!itsPlugin.itsConfig.gridEngineDisabled())
   {
-    itsGridInterface.reset(new GridInterface(itsPlugin.itsEngines.gridEngine,
+    itsGridInterface.reset(new GridInterface(itsPlugin.itsEngines.gridEngine.get(),
                                              itsPlugin.itsEngines.geoEngine->getTimeZones()));
   }
 }

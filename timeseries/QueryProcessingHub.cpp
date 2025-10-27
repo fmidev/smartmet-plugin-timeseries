@@ -323,7 +323,7 @@ std::shared_ptr<std::string> QueryProcessingHub::processQuery(
     // producerDataPeriod contains information of data periods of different producers
 #ifndef WITHOUT_OBSERVATION
     producerDataPeriod.init(
-        state, *theEngines.qEngine, theEngines.obsEngine, masterquery.timeproducers);
+        state, *theEngines.qEngine, theEngines.obsEngine.get(), masterquery.timeproducers);
 #else
     producerDataPeriod.init(state, *theEngines.qEngine, masterquery.timeproducers);
 #endif
@@ -491,7 +491,7 @@ std::size_t QueryProcessingHub::hash_value(const State& state,
 #ifndef WITHOUT_OBSERVATION
     producerDataPeriod.init(state,
                             *thePlugin.itsEngines.qEngine,
-                            thePlugin.itsEngines.obsEngine,
+                            thePlugin.itsEngines.obsEngine.get(),
                             masterquery.timeproducers);
 #else
     producerDataPeriod.init(state, *thePlugin.itsEngines.qEngine, masterquery.timeproducers);

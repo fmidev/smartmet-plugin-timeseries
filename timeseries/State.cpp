@@ -34,7 +34,7 @@ const Engine::Querydata::Engine& State::getQEngine() const
 {
   try
   {
-    return *(itsPlugin.getEngines().qEngine);
+    return *(itsPlugin.getEngines().qEngine.get());
   }
   catch (...)
   {
@@ -46,7 +46,7 @@ const Engine::Grid::Engine* State::getGridEngine() const
 {
   try
   {
-    return itsPlugin.getEngines().gridEngine;
+    return itsPlugin.getEngines().gridEngine.get();
   }
   catch (...)
   {
@@ -64,7 +64,7 @@ const Engine::Geonames::Engine& State::getGeoEngine() const
 {
   try
   {
-    return *(itsPlugin.getEngines().geoEngine);
+    return *(itsPlugin.getEngines().geoEngine.get());
   }
   catch (...)
   {
@@ -83,7 +83,7 @@ Engine::Observation::Engine* State::getObsEngine() const
 {
   try
   {
-    return itsPlugin.getEngines().obsEngine;
+    return itsPlugin.getEngines().obsEngine.get();
   }
   catch (...)
   {

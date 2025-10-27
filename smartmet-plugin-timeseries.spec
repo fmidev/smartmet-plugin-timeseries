@@ -38,7 +38,7 @@ BuildRequires: %{smartmet_fmt_devel}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
 BuildRequires: smartmet-library-timeseries-devel >= 25.8.1
-BuildRequires: smartmet-library-spine-devel >= 25.9.16
+BuildRequires: smartmet-library-spine-devel >= 25.10.27
 BuildRequires: smartmet-library-locus-devel >= 25.9.29
 BuildRequires: smartmet-library-macgyver-devel >= 25.9.30
 BuildRequires: smartmet-library-grid-content-devel >= 25.10.15
@@ -47,27 +47,27 @@ BuildRequires: smartmet-library-newbase-devel >= 25.3.20
 BuildRequires: smartmet-library-gis-devel >= 25.9.15
 BuildRequires: smartmet-engine-geonames-devel >= 25.9.29
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 25.9.4
+BuildRequires: smartmet-engine-observation-devel >= 25.10.27
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 25.9.17
 BuildRequires: smartmet-engine-gis-devel >= 25.9.29
 BuildRequires: smartmet-engine-grid-devel >= 25.10.15
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 25.8.17
+#Requires: smartmet-engine-observation >= 25.10.27
 #%endif
 Requires: %{smartmet_fmt}
 Requires: smartmet-library-gis >= 25.9.15
 Requires: smartmet-library-locus >= 25.9.29
 Requires: smartmet-library-macgyver >= 25.9.30
 Requires: smartmet-library-newbase >= 25.3.20
-Requires: smartmet-library-spine >= 25.9.16
+Requires: smartmet-library-spine >= 25.10.27
 Requires: smartmet-library-timeseries >= 25.8.1
 Requires: smartmet-engine-geonames >= 25.9.29
 Requires: smartmet-engine-querydata >= 25.9.17
 Requires: smartmet-engine-gis >= 25.9.29
 Requires: smartmet-engine-grid >= 25.10.15
-Requires: smartmet-server >= 25.9.9
+Requires: smartmet-server >= 25.10.27
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-system
@@ -76,7 +76,7 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 25.10.10
-#TestRequires: smartmet-library-spine-plugin-test >= 25.9.16
+#TestRequires: smartmet-library-spine-plugin-test >= 25.10.27
 #TestRequires: smartmet-library-newbase-devel >= 25.3.20
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 25.6.18
@@ -87,7 +87,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 25.9.29
 #TestRequires: smartmet-engine-querydata >= 25.9.17
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 25.9.4
+#TestRequires: smartmet-engine-observation >= 25.10.27
 %endif
 #TestRequires: smartmet-engine-grid >= 25.10.15
 #TestRequires: gdal310-libs

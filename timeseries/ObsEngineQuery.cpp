@@ -1448,7 +1448,7 @@ void ObsEngineQuery::resolveStationsForPath(
     if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
         UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
       stationSettings.fmisids =
-          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine.get(), settings, wktString);
   }
   catch (...)
   {
@@ -1502,7 +1502,7 @@ void ObsEngineQuery::resolveStationsForArea(
     if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
         UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
       stationSettings.fmisids =
-          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine.get(), settings, wktString);
   }
   catch (...)
   {
@@ -1551,7 +1551,7 @@ void ObsEngineQuery::resolveStationsForBBox(
     if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
         UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
       stationSettings.fmisids =
-          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine.get(), settings, wktString);
   }
   catch (...)
   {
@@ -1584,7 +1584,7 @@ void ObsEngineQuery::resolveStationsForPlaceWithRadius(
     if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
         UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
       stationSettings.fmisids =
-          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine.get(), settings, wktString);
   }
   catch (...)
   {
@@ -1634,7 +1634,7 @@ void ObsEngineQuery::resolveStationsForCoordinatePointWithRadius(
     if (!UtilityFunctions::is_flash_or_mobile_producer(producer) ||
         UtilityFunctions::is_icebuoy_or_copernicus_producer(producer))
       stationSettings.fmisids =
-          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine, settings, wktString);
+          get_fmisids_for_wkt(itsPlugin.itsEngines.obsEngine.get(), settings, wktString);
   }
   catch (...)
   {
