@@ -153,7 +153,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
       }
       else
       {
-        throw Fmi::Exception(BCP, "Area '" + place + "' not found in PostGIS database!");
+        throw Fmi::Exception(BCP, "Area '" + place + "' not found in PostGIS database or is not readable!");
       }
     }
     else if (loc->type == Spine::Location::Path)
@@ -193,7 +193,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
         }
         else
         {
-          throw Fmi::Exception(BCP, "Path '" + place + "' not found in PostGIS database!");
+          throw Fmi::Exception(BCP, "Path '" + place + "' not found in PostGIS database or is not readable!");
         }
       }
     }
