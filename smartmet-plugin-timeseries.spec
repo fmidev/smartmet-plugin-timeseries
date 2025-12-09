@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 25.11.27
+Version: 25.12.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -37,37 +37,37 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: %{smartmet_fmt_devel}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 25.8.1
-BuildRequires: smartmet-library-spine-devel >= 25.10.27
+BuildRequires: smartmet-library-timeseries-devel >= 25.12.9
+BuildRequires: smartmet-library-spine-devel >= 25.11.19
 BuildRequires: smartmet-library-locus-devel >= 25.9.29
-BuildRequires: smartmet-library-macgyver-devel >= 25.9.30
-BuildRequires: smartmet-library-grid-content-devel >= 25.10.15
+BuildRequires: smartmet-library-macgyver-devel >= 25.12.2
+BuildRequires: smartmet-library-grid-content-devel >= 25.11.27
 BuildRequires: smartmet-library-grid-files-devel >= 25.11.27
 BuildRequires: smartmet-library-newbase-devel >= 25.3.20
-BuildRequires: smartmet-library-gis-devel >= 25.9.15
-BuildRequires: smartmet-engine-geonames-devel >= 25.9.29
+BuildRequires: smartmet-library-gis-devel >= 25.12.2
+BuildRequires: smartmet-engine-geonames-devel >= 25.12.2
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 25.10.27
+BuildRequires: smartmet-engine-observation-devel >= 25.12.2
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 25.9.17
 BuildRequires: smartmet-engine-gis-devel >= 25.9.29
 BuildRequires: smartmet-engine-grid-devel >= 25.11.27
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 25.10.27
+#Requires: smartmet-engine-observation >= 25.12.2
 #%endif
 Requires: %{smartmet_fmt}
-Requires: smartmet-library-gis >= 25.9.15
+Requires: smartmet-library-gis >= 25.12.2
 Requires: smartmet-library-locus >= 25.9.29
-Requires: smartmet-library-macgyver >= 25.9.30
+Requires: smartmet-library-macgyver >= 25.12.2
 Requires: smartmet-library-newbase >= 25.3.20
-Requires: smartmet-library-spine >= 25.10.27
-Requires: smartmet-library-timeseries >= 25.8.1
-Requires: smartmet-engine-geonames >= 25.9.29
+Requires: smartmet-library-spine >= 25.11.19
+Requires: smartmet-library-timeseries >= 25.12.9
+Requires: smartmet-engine-geonames >= 25.12.2
 Requires: smartmet-engine-querydata >= 25.9.17
 Requires: smartmet-engine-gis >= 25.9.29
 Requires: smartmet-engine-grid >= 25.11.27
-Requires: smartmet-server >= 25.10.27
+Requires: smartmet-server >= 25.12.2
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-system
@@ -75,19 +75,19 @@ Requires: %{smartmet_boost}-thread
 Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
-#TestRequires: smartmet-utils-devel >= 25.10.10
-#TestRequires: smartmet-library-spine-plugin-test >= 25.10.27
+#TestRequires: smartmet-utils-devel >= 25.11.27
+#TestRequires: smartmet-library-spine-plugin-test >= 25.11.19
 #TestRequires: smartmet-library-newbase-devel >= 25.3.20
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 25.6.18
 #TestRequires: smartmet-test-data >= 25.8.13
-#TestRequires: smartmet-engine-grid-test >= 25.10.15
-#TestRequires: smartmet-library-gis >= 25.9.15
-#TestRequires: smartmet-engine-geonames >= 25.9.29
+#TestRequires: smartmet-engine-grid-test >= 25.11.27
+#TestRequires: smartmet-library-gis >= 25.12.2
+#TestRequires: smartmet-engine-geonames >= 25.12.2
 #TestRequires: smartmet-engine-gis >= 25.9.29
 #TestRequires: smartmet-engine-querydata >= 25.9.17
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 25.10.27
+#TestRequires: smartmet-engine-observation >= 25.12.2
 %endif
 #TestRequires: smartmet-engine-grid >= 25.11.27
 #TestRequires: gdal310-libs
@@ -116,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Dec  9 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> 25.12.9-1.fmi
+- Repackaged due to TimeSeries library API changes
+
 * Thu Nov 27 2025 Andris Pavēnis <andris.pavenis@fmi.fi> 25.11.27-1.fmi
 - Repackage due to grid-files changes
 
