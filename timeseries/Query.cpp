@@ -21,7 +21,10 @@ namespace Plugin
 {
 namespace TimeSeries
 {
-const char* default_timezone = "localtime";
+namespace
+{
+const char* const default_timezone = "localtime";
+}
 
 namespace
 {

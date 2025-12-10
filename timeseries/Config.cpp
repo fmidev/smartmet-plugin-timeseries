@@ -21,17 +21,22 @@
 
 using namespace std;
 
-const char* default_url = "/timeseries";
-const char* default_timeformat = "iso";
-
-unsigned int default_expires = 60;  // seconds
-
 namespace SmartMet
 {
 namespace Plugin
 {
 namespace TimeSeries
 {
+
+namespace
+{
+const char* const default_url = "/timeseries";
+const char* const default_timeformat = "iso";
+
+const unsigned int default_expires = 60;  // seconds
+
+}  // namespace
+
 // ----------------------------------------------------------------------
 /*!
  * \brief Add default precisions if none were configured
