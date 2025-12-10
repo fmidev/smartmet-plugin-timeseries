@@ -33,7 +33,7 @@ const Engine::Querydata::Engine& State::getQEngine() const
 {
   try
   {
-    return *(itsPlugin.getEngines().qEngine.get());
+    return *(itsPlugin.getEngines().qEngine);
   }
   catch (...)
   {
@@ -63,7 +63,7 @@ const Engine::Geonames::Engine& State::getGeoEngine() const
 {
   try
   {
-    return *(itsPlugin.getEngines().geoEngine.get());
+    return *(itsPlugin.getEngines().geoEngine);
   }
   catch (...)
   {
