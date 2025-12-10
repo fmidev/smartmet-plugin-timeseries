@@ -31,7 +31,7 @@ Fmi::LocalDateTime ProducerDataPeriod::getTime(const std::string& producer,
       Fmi::TimeZonePtr tz = timezones.time_zone_from_string(timezone);
 
       if (itsDataPeriod.find(producer) == itsDataPeriod.end())
-        return Fmi::LocalDateTime(Fmi::LocalDateTime::NOT_A_DATE_TIME, tz);
+        return {Fmi::LocalDateTime::NOT_A_DATE_TIME, tz};
 
       if (time_enum == STARTTIME)
         return {itsDataPeriod.at(producer).begin(), tz};
