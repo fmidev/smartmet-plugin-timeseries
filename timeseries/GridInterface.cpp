@@ -397,8 +397,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
     {
       if (is_utc)
         return Fmi::LocalDateTime(time, tz);
-      else
-        return Fmi::LocalDateTime(time.date(), time.time_of_day(), tz);
+
+      return Fmi::LocalDateTime(time.date(), time.time_of_day(), tz);
     };
 
     Fmi::LocalDateTime startTime = mk_ldt(masterquery.toptions.startTime, tz, startTimeUTC);
