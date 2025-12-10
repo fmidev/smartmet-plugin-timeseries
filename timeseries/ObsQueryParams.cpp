@@ -39,8 +39,7 @@ void parse_ids(const std::optional<std::string>& string_param, std::vector<int>&
   }
 }
 
-void parse_ids(const std::optional<std::string>& string_param,
-               std::vector<std::string>& id_vector)
+void parse_ids(const std::optional<std::string>& string_param, std::vector<std::string>& id_vector)
 {
   try
   {

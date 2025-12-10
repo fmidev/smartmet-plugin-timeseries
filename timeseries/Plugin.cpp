@@ -16,8 +16,8 @@
 #include <spine/HostInfo.h>
 #include <spine/ImageFormatter.h>
 #include <spine/TableFormatterFactory.h>
-#include <timeseries/ParameterKeywords.h>
 #include <timeseries/LocationParameters.h>
+#include <timeseries/ParameterKeywords.h>
 #include <timeseries/TimeParameters.h>
 
 // #define MYDEBUG ON
@@ -408,24 +408,24 @@ void Plugin::query(const State& state,
     std::size_t product_hash = Fmi::bad_hash;
 
     QueryProcessingHub qph(*this);
-/*
-    try
-    {
-      product_hash = qph.hash_value(state, request, q);
-    }
-    catch (...)
-    {
-      if (!gridEnabled)
-        throw Fmi::Exception::Trace(BCP, "Operation failed!");
-    }
-*/
+    /*
+        try
+        {
+          product_hash = qph.hash_value(state, request, q);
+        }
+        catch (...)
+        {
+          if (!gridEnabled)
+            throw Fmi::Exception::Trace(BCP, "Operation failed!");
+        }
+    */
     high_resolution_clock::time_point t3 = high_resolution_clock::now();
 
     std::string timeheader = Fmi::to_string(duration_cast<microseconds>(t2 - t1).count()) + '+' +
                              Fmi::to_string(duration_cast<microseconds>(t3 - t2).count());
 
-    //if (etag_only(request, response, product_hash))
-    //  return;
+    // if (etag_only(request, response, product_hash))
+    //   return;
 
     // If obj is not nullptr it is from cache
     auto obj = qph.processQuery(state, data, q, queryStreamer, product_hash);
@@ -720,7 +720,8 @@ void Plugin::init()
     if (!itsConfig.obsEngineDisabled())
     {
       /* ObsEngine */
-      itsEngines.obsEngine = itsReactor->getEngine<Engine::Observation::Engine>("Observation", nullptr);
+      itsEngines.obsEngine =
+          itsReactor->getEngine<Engine::Observation::Engine>("Observation", nullptr);
 
       // fetch obsebgine station types (producers)
       itsObsEngineStationTypes = itsEngines.obsEngine->getValidStationTypes();
@@ -730,13 +731,13 @@ void Plugin::init()
     // Initialization done, register services. We are aware that throwing
     // from a separate thread will cause a crash, but these should never
     // fail.
-    if (!itsReactor->addContentHandler(this,
-                                       itsConfig.defaultUrl(),
-                                       [this](Spine::Reactor& theReactor,
-                                              const Spine::HTTP::Request& theRequest,
-                                              Spine::HTTP::Response& theResponse) {
-                                         callRequestHandler(theReactor, theRequest, theResponse);
-                                       }))
+    if (!itsReactor->addContentHandler(
+            this,
+            itsConfig.defaultUrl(),
+            [this](Spine::Reactor& theReactor,
+                   const Spine::HTTP::Request& theRequest,
+                   Spine::HTTP::Response& theResponse)
+            { callRequestHandler(theReactor, theRequest, theResponse); }))
       throw Fmi::Exception(BCP, "Failed to register timeseries content handler");
 
     using AdminRequestAccess = Spine::Reactor::AdminRequestAccess;
@@ -745,10 +746,11 @@ void Plugin::init()
         this,
         "locationparameters",
         AdminRequestAccess::Public,
-        [] (Spine::Reactor& theReactor, const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
+        [](Spine::Reactor& theReactor,
+           const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
         {
           const std::vector<std::pair<std::string, std::string>> data =
-            TS::SpecialParameters::LocationParameters::instance.get_descriptions();
+              TS::SpecialParameters::LocationParameters::instance.get_descriptions();
           auto result = std::make_unique<Spine::Table>();
           result->setTitle("Location parameters");
           result->setNames({"Parameter", "Description"});
@@ -765,10 +767,11 @@ void Plugin::init()
         this,
         "timeparameters",
         AdminRequestAccess::Public,
-        [] (Spine::Reactor& theReactor, const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
+        [](Spine::Reactor& theReactor,
+           const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
         {
           const std::vector<std::pair<std::string, std::string>> data =
-            TS::SpecialParameters::TimeParameters::instance.get_descriptions();
+              TS::SpecialParameters::TimeParameters::instance.get_descriptions();
           auto result = std::make_unique<Spine::Table>();
           result->setTitle("Time parameters");
           result->setNames({"Parameter", "Description"});
@@ -783,13 +786,13 @@ void Plugin::init()
 
     // DEPRECATED:
 
-    if (!itsReactor->addContentHandler(this,
-                                       "/pointforecast",
-                                       [this](Spine::Reactor& theReactor,
-                                              const Spine::HTTP::Request& theRequest,
-                                              Spine::HTTP::Response& theResponse) {
-                                         callRequestHandler(theReactor, theRequest, theResponse);
-                                       }))
+    if (!itsReactor->addContentHandler(
+            this,
+            "/pointforecast",
+            [this](Spine::Reactor& theReactor,
+                   const Spine::HTTP::Request& theRequest,
+                   Spine::HTTP::Response& theResponse)
+            { callRequestHandler(theReactor, theRequest, theResponse); }))
       throw Fmi::Exception(BCP, "Failed to register pointforecast content handler");
 
     // DONE

@@ -7,10 +7,10 @@
 #include <engines/observation/Engine.h>
 #endif
 
-#include <macgyver/LocalDateTime.h>
-#include <macgyver/DateTime.h>
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/algorithm/copy.hpp>
+#include <macgyver/DateTime.h>
+#include <macgyver/LocalDateTime.h>
 #include <map>
 #include <string>
 
@@ -41,9 +41,9 @@ class ProducerDataPeriod
   DataPeriod itsDataPeriod;
 
   Fmi::LocalDateTime getTime(const std::string& producer,
-                                             const std::string& timezone,
-                                             const Fmi::TimeZones& timezones,
-                                             eTime time_enum) const;
+                             const std::string& timezone,
+                             const Fmi::TimeZones& timezones,
+                             eTime time_enum) const;
 
   Fmi::DateTime getTime(const std::string& producer, eTime time_enum) const;
 
@@ -58,14 +58,14 @@ class ProducerDataPeriod
 
  public:
   Fmi::LocalDateTime getLocalStartTime(const std::string& producer,
-                                                       const std::string& timezone,
-                                                       const Fmi::TimeZones& timezones) const;
+                                       const std::string& timezone,
+                                       const Fmi::TimeZones& timezones) const;
 
   Fmi::DateTime getUTCStartTime(const std::string& producer) const;
 
   Fmi::LocalDateTime getLocalEndTime(const std::string& producer,
-                                                     const std::string& timezone,
-                                                     const Fmi::TimeZones& timezones) const;
+                                     const std::string& timezone,
+                                     const Fmi::TimeZones& timezones) const;
 
   Fmi::DateTime getUTCEndTime(const std::string& producer) const;
 

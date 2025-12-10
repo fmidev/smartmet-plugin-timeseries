@@ -24,10 +24,10 @@ class QueryProcessingHub
   QueryProcessingHub(const Plugin& thePlugin);
 
   std::shared_ptr<std::string> processQuery(const State& state,
-                                              Spine::Table& table,
-                                              Query& masterquery,
-                                              const QueryServer::QueryStreamer_sptr& queryStreamer,
-                                              size_t& product_hash);
+                                            Spine::Table& table,
+                                            Query& masterquery,
+                                            const QueryServer::QueryStreamer_sptr& queryStreamer,
+                                            size_t& product_hash);
 
   std::size_t hash_value(const State& state,
                          const Spine::HTTP::Request& request,

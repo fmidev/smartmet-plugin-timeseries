@@ -30,9 +30,9 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
   {
     case Spine::Location::Wkt:
     {
-      //NFmiSvgPath svgPath;
+      // NFmiSvgPath svgPath;
       loc = query.wktGeometries.getLocation(tloc.loc->name);
-      //svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+      // svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
       /*
       convertSvgPathToPolygonPath(svgPath, polygonPath);
 
@@ -45,16 +45,18 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
       }
       */
 
-      OGRwkbGeometryType geomType = query.wktGeometries.getGeometry(tloc.loc->name)->getGeometryType();
+      OGRwkbGeometryType geomType =
+          query.wktGeometries.getGeometry(tloc.loc->name)->getGeometryType();
       if (geomType == wkbMultiLineString)
       {
         T::Coordinate_vec polygonPoints;
         std::list<NFmiSvgPath> svgList = query.wktGeometries.getSvgPaths(tloc.loc->name);
         for (const auto& svg : svgList)
         {
-          Spine::LocationList ll = get_location_list(svg, tloc.tag, query.step,*itsPlugin.itsEngines.geoEngine);
-          for (auto it=ll.begin(); it!=ll.end();++it)
-            polygonPoints.emplace_back((*it)->longitude,(*it)->latitude);
+          Spine::LocationList ll =
+              get_location_list(svg, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine);
+          for (auto it = ll.begin(); it != ll.end(); ++it)
+            polygonPoints.emplace_back((*it)->longitude, (*it)->latitude);
         }
         polygonPath.push_back(polygonPoints);
       }
@@ -62,8 +64,8 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
       {
         T::Coordinate_vec polygonPoints;
         Spine::LocationList ll = query.wktGeometries.getLocations(tloc.loc->name);
-        for (auto it=ll.begin(); it!=ll.end();++it)
-          polygonPoints.emplace_back((*it)->longitude,(*it)->latitude);
+        for (auto it = ll.begin(); it != ll.end(); ++it)
+          polygonPoints.emplace_back((*it)->longitude, (*it)->latitude);
         polygonPath.push_back(polygonPoints);
       }
       else if (geomType == wkbLineString)
@@ -71,9 +73,10 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
         NFmiSvgPath svgPath;
         svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
         T::Coordinate_vec polygonPoints;
-        Spine::LocationList ll = get_location_list(svgPath, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine);
-        for (auto it=ll.begin(); it!=ll.end();++it)
-          polygonPoints.emplace_back((*it)->longitude,(*it)->latitude);
+        Spine::LocationList ll =
+            get_location_list(svgPath, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine);
+        for (auto it = ll.begin(); it != ll.end(); ++it)
+          polygonPoints.emplace_back((*it)->longitude, (*it)->latitude);
         polygonPath.push_back(polygonPoints);
       }
       else
@@ -133,8 +136,8 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
       std::vector<std::string> parts;
       boost::algorithm::split(parts, place, boost::algorithm::is_any_of(","));
       if (parts.size() != 4)
-        throw Fmi::Exception(
-            BCP, "Bounding box '" + place + "' is invalid (exactly 4 values required)");
+        throw Fmi::Exception(BCP,
+                             "Bounding box '" + place + "' is invalid (exactly 4 values required)");
 
       double lon1 = Fmi::stod(parts[0]);
       double lat1 = Fmi::stod(parts[1]);

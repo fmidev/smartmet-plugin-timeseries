@@ -153,7 +153,8 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
       }
       else
       {
-        throw Fmi::Exception(BCP, "Area '" + place + "' not found in PostGIS database or is not readable!");
+        throw Fmi::Exception(
+            BCP, "Area '" + place + "' not found in PostGIS database or is not readable!");
       }
     }
     else if (loc->type == Spine::Location::Path)
@@ -165,8 +166,8 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
         boost::algorithm::split(lonLatVector, place, boost::algorithm::is_any_of(","));
 
         if (lonLatVector.size() % 2)
-          throw Fmi::Exception(BCP,
-                               "Path is required to have even number of coordinates. Got '" + place + "'");
+          throw Fmi::Exception(
+              BCP, "Path is required to have even number of coordinates. Got '" + place + "'");
 
         for (unsigned int i = 0; i < lonLatVector.size(); i += 2)
         {
@@ -193,7 +194,8 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
         }
         else
         {
-          throw Fmi::Exception(BCP, "Path '" + place + "' not found in PostGIS database or is not readable!");
+          throw Fmi::Exception(
+              BCP, "Path '" + place + "' not found in PostGIS database or is not readable!");
         }
       }
     }

@@ -4,9 +4,9 @@
 #include <macgyver/Exception.h>
 #include <macgyver/TimeZones.h>
 
-#include <macgyver/LocalDateTime.h>
-#include <macgyver/DateTime.h>
 #include <boost/utility.hpp>
+#include <macgyver/DateTime.h>
+#include <macgyver/LocalDateTime.h>
 
 #include <map>
 #include <string>
@@ -20,9 +20,9 @@ namespace Plugin
 namespace TimeSeries
 {
 Fmi::LocalDateTime ProducerDataPeriod::getTime(const std::string& producer,
-                                                               const std::string& timezone,
-                                                               const Fmi::TimeZones& timezones,
-                                                               eTime time_enum) const
+                                               const std::string& timezone,
+                                               const Fmi::TimeZones& timezones,
+                                               eTime time_enum) const
 {
   try
   {
@@ -31,7 +31,7 @@ Fmi::LocalDateTime ProducerDataPeriod::getTime(const std::string& producer,
       Fmi::TimeZonePtr tz = timezones.time_zone_from_string(timezone);
 
       if (itsDataPeriod.find(producer) == itsDataPeriod.end())
-          return Fmi::LocalDateTime(Fmi::LocalDateTime::NOT_A_DATE_TIME, tz);
+        return Fmi::LocalDateTime(Fmi::LocalDateTime::NOT_A_DATE_TIME, tz);
 
       if (time_enum == STARTTIME)
         return {itsDataPeriod.at(producer).begin(), tz};
@@ -49,8 +49,7 @@ Fmi::LocalDateTime ProducerDataPeriod::getTime(const std::string& producer,
   }
 }
 
-Fmi::DateTime ProducerDataPeriod::getTime(const std::string& producer,
-                                                     eTime time_enum) const
+Fmi::DateTime ProducerDataPeriod::getTime(const std::string& producer, eTime time_enum) const
 {
   try
   {
@@ -107,8 +106,7 @@ void ProducerDataPeriod::getObsEngineDataPeriods(const Engine::Observation::Engi
         if (obsproducers.find(producer) == obsproducers.end())
           continue;
 
-        itsDataPeriod.insert(make_pair(
-            producer, Fmi::TimePeriod(now - Fmi::Hours(24), now)));
+        itsDataPeriod.insert(make_pair(producer, Fmi::TimePeriod(now - Fmi::Hours(24), now)));
       }
     }
   }
@@ -120,8 +118,9 @@ void ProducerDataPeriod::getObsEngineDataPeriods(const Engine::Observation::Engi
 #endif
 
 // localtime
-Fmi::LocalDateTime ProducerDataPeriod::getLocalStartTime(
-    const std::string& producer, const std::string& timezone, const Fmi::TimeZones& timezones) const
+Fmi::LocalDateTime ProducerDataPeriod::getLocalStartTime(const std::string& producer,
+                                                         const std::string& timezone,
+                                                         const Fmi::TimeZones& timezones) const
 {
   try
   {
@@ -147,8 +146,9 @@ Fmi::DateTime ProducerDataPeriod::getUTCStartTime(const std::string& producer) c
 }
 
 // localtime
-Fmi::LocalDateTime ProducerDataPeriod::getLocalEndTime(
-    const std::string& producer, const std::string& timezone, const Fmi::TimeZones& timezones) const
+Fmi::LocalDateTime ProducerDataPeriod::getLocalEndTime(const std::string& producer,
+                                                       const std::string& timezone,
+                                                       const Fmi::TimeZones& timezones) const
 {
   try
   {

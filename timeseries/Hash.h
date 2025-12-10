@@ -6,11 +6,11 @@
 
 #pragma once
 #include "State.h"
-#include <memory>
 #include <macgyver/Hash.h>
 #include <macgyver/StringConversion.h>
 #include <list>
 #include <map>
+#include <memory>
 #include <vector>
 
 namespace SmartMet

@@ -235,12 +235,10 @@ void check_in_keyword_locations(Query& masterquery,
 bool is_static_location_query(const TS::OptionParsers::ParameterList& theParams)
 {
   return std::all_of(
-    theParams.begin(),
-    theParams.end(),
-    [](const Spine::Parameter& param)
-    {
-      return TS::is_location_parameter(param.name()) || param.name() == "place";
-    });
+      theParams.begin(),
+      theParams.end(),
+      [](const Spine::Parameter& param)
+      { return TS::is_location_parameter(param.name()) || param.name() == "place"; });
 }
 
 void fetch_static_location_values(const Query& query,
@@ -275,8 +273,12 @@ void fetch_static_location_values(const Query& query,
         }
         else
         {
-          std::string val = TS::location_parameter(
-              loc, pname, query.valueformatter, query.timezone, query.precisions[column], query.crs);
+          std::string val = TS::location_parameter(loc,
+                                                   pname,
+                                                   query.valueformatter,
+                                                   query.timezone,
+                                                   query.precisions[column],
+                                                   query.crs);
           data.set(column, row++, val);
         }
       }
@@ -570,9 +572,9 @@ std::size_t QueryProcessingHub::hash_value(const State& state,
           // We do not need to iterate over the parameters here like processQEngineQuery does
 
           // every parameter starts from the same row
-          if (!data_period_endtime.is_not_a_date_time()
-               && subquery.toptions.endTime > data_period_endtime.local_time()
-               && !isClimatologyProducer)
+          if (!data_period_endtime.is_not_a_date_time() &&
+              subquery.toptions.endTime > data_period_endtime.local_time() &&
+              !isClimatologyProducer)
           {
             subquery.toptions.endTime = data_period_endtime.local_time();
           }
