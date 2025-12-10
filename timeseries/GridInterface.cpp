@@ -1449,7 +1449,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
 
               T::GridValue val;
 
-              auto rec = gridQuery->mQueryParameterList[pid].getValueListRecord(col, t);
+              auto* rec = gridQuery->mQueryParameterList[pid].getValueListRecord(col, t);
               if (rec &&
                   (ai == 0 || rec->mValue != ParamValueMissing || !rec->mValueString.empty()))
               {
