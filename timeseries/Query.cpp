@@ -24,10 +24,23 @@ namespace TimeSeries
 namespace
 {
 const char* const default_timezone = "localtime";
+
+void remove_duplicates(std::list<std::string>& names)
+{
+  std::set<std::string> unique_names;
+  std::list<std::string> output;
+
+  for (const auto& name : names)
+  {
+    if (unique_names.find(name) == unique_names.end())
+    {
+      output.push_back(name);
+      unique_names.insert(name);
+    }
+  }
+  names = output;
 }
 
-namespace
-{
 void set_max_agg_interval_behind(TS::DataFunction& func, unsigned int& max_interval)
 {
   try
@@ -499,22 +512,6 @@ void Query::parse_aggregation_intervals(const Spine::HTTP::Request& theReq)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
-}
-
-void remove_duplicates(std::list<std::string>& names)
-{
-  std::set<std::string> unique_names;
-  std::list<std::string> output;
-
-  for (const auto& name : names)
-  {
-    if (unique_names.find(name) == unique_names.end())
-    {
-      output.push_back(name);
-      unique_names.insert(name);
-    }
-  }
-  names = output;
 }
 
 void Query::parse_parameters(const Spine::HTTP::Request& theReq)

@@ -12,6 +12,10 @@ namespace TimeSeries
 {
 namespace PostProcessing
 {
+
+namespace
+{
+
 // ----------------------------------------------------------------------
 /*!
  * \brief
@@ -95,84 +99,6 @@ void update_latest_timestep(Query& query, const TS::TimeSeriesGroup& tsg)
   }
 }
 
-// ----------------------------------------------------------------------
-/*!
- * \brief
- */
-// ----------------------------------------------------------------------
-
-void store_data(TS::TimeSeriesVectorPtr aggregatedData, Query& query, TS::OutputData& outputData)
-{
-  try
-  {
-    if (aggregatedData->empty())
-      return;
-
-    // insert data to the end
-    std::vector<TS::TimeSeriesData>& odata = (--outputData.end())->second;
-    odata.emplace_back(TS::TimeSeriesData(aggregatedData));
-    update_latest_timestep(query, aggregatedData);
-  }
-  catch (...)
-  {
-    throw Fmi::Exception::Trace(BCP, "Operation failed!");
-  }
-}
-
-// ----------------------------------------------------------------------
-/*!
- * \brief
- */
-// ----------------------------------------------------------------------
-
-void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
-                Query& query,
-                TS::OutputData& outputData)
-{
-  try
-  {
-    if (aggregatedData.empty())
-      return;
-
-    TS::TimeSeriesData tsdata;
-    if (const auto* ptr = std::get_if<TS::TimeSeriesPtr>(aggregatedData.data()))
-    {
-      TS::TimeSeriesPtr ts_first = *ptr;
-      TS::TimeSeriesPtr ts_result(new TS::TimeSeries);
-      // first merge timeseries of all levels of one parameter
-      for (const auto& data : aggregatedData)
-      {
-        TS::TimeSeriesPtr ts = std::get<TS::TimeSeriesPtr>(data);
-        ts_result->insert(ts_result->end(), ts->begin(), ts->end());
-      }
-      // update the latest timestep, so that next query (if exists) knows from where to continue
-      update_latest_timestep(query, *ts_result);
-      tsdata = ts_result;
-    }
-    else if (std::get_if<TS::TimeSeriesGroupPtr>(aggregatedData.data()))
-    {
-      TS::TimeSeriesGroupPtr tsg_result(new TS::TimeSeriesGroup);
-      // first merge timeseries of all levels of one parameter
-      for (const auto& data : aggregatedData)
-      {
-        TS::TimeSeriesGroupPtr tsg = *(std::get_if<TS::TimeSeriesGroupPtr>(&data));
-        tsg_result->insert(tsg_result->end(), tsg->begin(), tsg->end());
-      }
-      // update the latest timestep, so that next query (if exists) knows from where to continue
-      update_latest_timestep(query, *tsg_result);
-      tsdata = tsg_result;
-    }
-
-    // insert data to the end
-    std::vector<TS::TimeSeriesData>& odata = (--outputData.end())->second;
-    odata.push_back(tsdata);
-  }
-  catch (...)
-  {
-    throw Fmi::Exception::Trace(BCP, "Operation failed!");
-  }
-}
-
 void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
                        TS::TableFeeder& tf,
                        const std::vector<SmartMet::TimeSeries::TimeSeriesData>& outdata,
@@ -229,6 +155,86 @@ void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
 
       j++;
     }
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+}  // namespace
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief
+ */
+// ----------------------------------------------------------------------
+
+void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
+                Query& query,
+                TS::OutputData& outputData)
+{
+  try
+  {
+    if (aggregatedData.empty())
+      return;
+
+    TS::TimeSeriesData tsdata;
+    if (const auto* ptr = std::get_if<TS::TimeSeriesPtr>(aggregatedData.data()))
+    {
+      TS::TimeSeriesPtr ts_first = *ptr;
+      TS::TimeSeriesPtr ts_result(new TS::TimeSeries);
+      // first merge timeseries of all levels of one parameter
+      for (const auto& data : aggregatedData)
+      {
+        TS::TimeSeriesPtr ts = std::get<TS::TimeSeriesPtr>(data);
+        ts_result->insert(ts_result->end(), ts->begin(), ts->end());
+      }
+      // update the latest timestep, so that next query (if exists) knows from where to continue
+      update_latest_timestep(query, *ts_result);
+      tsdata = ts_result;
+    }
+    else if (std::get_if<TS::TimeSeriesGroupPtr>(aggregatedData.data()))
+    {
+      TS::TimeSeriesGroupPtr tsg_result(new TS::TimeSeriesGroup);
+      // first merge timeseries of all levels of one parameter
+      for (const auto& data : aggregatedData)
+      {
+        TS::TimeSeriesGroupPtr tsg = *(std::get_if<TS::TimeSeriesGroupPtr>(&data));
+        tsg_result->insert(tsg_result->end(), tsg->begin(), tsg->end());
+      }
+      // update the latest timestep, so that next query (if exists) knows from where to continue
+      update_latest_timestep(query, *tsg_result);
+      tsdata = tsg_result;
+    }
+
+    // insert data to the end
+    std::vector<TS::TimeSeriesData>& odata = (--outputData.end())->second;
+    odata.push_back(tsdata);
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief
+ */
+// ----------------------------------------------------------------------
+
+void store_data(TS::TimeSeriesVectorPtr aggregatedData, Query& query, TS::OutputData& outputData)
+{
+  try
+  {
+    if (aggregatedData->empty())
+      return;
+
+    // insert data to the end
+    std::vector<TS::TimeSeriesData>& odata = (--outputData.end())->second;
+    odata.emplace_back(TS::TimeSeriesData(aggregatedData));
+    update_latest_timestep(query, aggregatedData);
   }
   catch (...)
   {

@@ -35,28 +35,6 @@ const char* const default_timeformat = "iso";
 
 const unsigned int default_expires = 60;  // seconds
 
-}  // namespace
-
-// ----------------------------------------------------------------------
-/*!
- * \brief Add default precisions if none were configured
- */
-// ----------------------------------------------------------------------
-
-void Config::add_default_precisions()
-{
-  try
-  {
-    Precision prec;
-    itsPrecisions.insert(Precisions::value_type("double", prec));
-    itsDefaultPrecision = "double";
-  }
-  catch (...)
-  {
-    throw Fmi::Exception::Trace(BCP, "Operation failed!");
-  }
-}
-
 // ----------------------------------------------------------------------
 /*!
  * \brief Parse a parameter function setting
@@ -98,6 +76,48 @@ TS::FunctionId get_function_id(const string& configName)
       return TS::FunctionId::Percentage;
 
     return TS::FunctionId::NullFunction;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+string parse_config_key(const char* str1 = nullptr,
+                        const char* str2 = nullptr,
+                        const char* str3 = nullptr)
+{
+  try
+  {
+    string string1(str1 ? str1 : "");
+    string string2(str2 ? str2 : "");
+    string string3(str3 ? str3 : "");
+
+    string retval(string1 + string2 + string3);
+
+    return retval;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+}  // namespace
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Add default precisions if none were configured
+ */
+// ----------------------------------------------------------------------
+
+void Config::add_default_precisions()
+{
+  try
+  {
+    Precision prec;
+    itsPrecisions.insert(Precisions::value_type("double", prec));
+    itsDefaultPrecision = "double";
   }
   catch (...)
   {
@@ -312,26 +332,6 @@ void Config::parse_grid_settings(const std::string& configfile)
   catch (const libconfig::SettingNotFoundException& /* e */)
   {
     // throw Fmi::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
-  }
-}
-
-string parse_config_key(const char* str1 = nullptr,
-                        const char* str2 = nullptr,
-                        const char* str3 = nullptr)
-{
-  try
-  {
-    string string1(str1 ? str1 : "");
-    string string2(str2 ? str2 : "");
-    string string3(str3 ? str3 : "");
-
-    string retval(string1 + string2 + string3);
-
-    return retval;
-  }
-  catch (...)
-  {
-    throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
 

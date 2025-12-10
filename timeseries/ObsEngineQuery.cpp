@@ -354,6 +354,29 @@ void resolve_time_settings(const std::string& producer,
     throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
+
+void fill_missing_location_params(TS::TimeSeries& ts)
+{
+  TS::Value missing_value = TS::None();
+  TS::Value actual_value = missing_value;
+  bool missing_values_exists = false;
+  for (const auto& item : ts)
+  {
+    if (item.value == missing_value)
+      missing_values_exists = true;
+    else
+      actual_value = item.value;
+    if (actual_value != missing_value && missing_values_exists)
+      break;
+  }
+  if (actual_value != missing_value && missing_values_exists)
+  {
+    for (auto& item : ts)
+      if (item.value == missing_value)
+        item.value = actual_value;
+  }
+}
+
 }  // namespace
 
 ObsEngineQuery::ObsEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin) {}
@@ -416,28 +439,6 @@ void ObsEngineQuery::processObsEngineQuery(const State& state,
   catch (...)
   {
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
-  }
-}
-
-void fill_missing_location_params(TS::TimeSeries& ts)
-{
-  TS::Value missing_value = TS::None();
-  TS::Value actual_value = missing_value;
-  bool missing_values_exists = false;
-  for (const auto& item : ts)
-  {
-    if (item.value == missing_value)
-      missing_values_exists = true;
-    else
-      actual_value = item.value;
-    if (actual_value != missing_value && missing_values_exists)
-      break;
-  }
-  if (actual_value != missing_value && missing_values_exists)
-  {
-    for (auto& item : ts)
-      if (item.value == missing_value)
-        item.value = actual_value;
   }
 }
 
