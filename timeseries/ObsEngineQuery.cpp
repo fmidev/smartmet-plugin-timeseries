@@ -65,7 +65,7 @@ TS::TimeSeriesGenerator::LocalTimeList get_timesteps(const TS::TimeSeries ts)
   }
 }
 
-TS::TimeSeries generate_timeseries(const State& state,
+TS::TimeSeries generate_timeseries(const State& /* state */,
                                    const std::vector<Fmi::LocalDateTime>& timestep_vector,
                                    const TS::Value& value)
 {
@@ -532,7 +532,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
 }
 
 TS::TimeSeriesVectorPtr ObsEngineQuery::doAggregationForPlaces(
-    const State& state,
+    const State& /* state */,
     const ObsParameters& obsParameters,
     const TS::TimeSeriesVectorPtr& observation_result,
     const TS::TimeSeriesGenerator::LocalTimeList& agg_times,
@@ -1513,11 +1513,11 @@ void ObsEngineQuery::resolveStationsForArea(
 void ObsEngineQuery::resolveStationsForBBox(
     const std::string& producer,
     const Spine::LocationPtr& loc,
-    const std::string& loc_name_original,
+    const std::string& /* loc_name_original */,
     const std::string& loc_name,
-    const Query& query,
+    const Query& /* query */,
     const Engine::Observation::Settings& settings,
-    bool isWkt,
+    bool /* isWkt */,
     std::string& wktString,
     Engine::Observation::StationSettings& stationSettings) const
 {
@@ -1562,7 +1562,7 @@ void ObsEngineQuery::resolveStationsForBBox(
 void ObsEngineQuery::resolveStationsForPlaceWithRadius(
     const std::string& producer,
     const Spine::LocationPtr& loc,
-    const std::string& loc_name,
+    const std::string& /* loc_name */,
     const Engine::Observation::Settings& settings,
     std::string& wktString,
     Engine::Observation::StationSettings& stationSettings) const
