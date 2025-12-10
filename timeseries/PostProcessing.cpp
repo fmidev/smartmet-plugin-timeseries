@@ -253,7 +253,7 @@ void fill_table(Query& query, TS::OutputData& outputData, Spine::Table& table)
     TS::TableFeeder tf(table, query.valueformatter, query.precisions);
     int startRow = tf.getCurrentRow();
 
-    std::string locationName(outputData[0].first);
+    // std::string locationName = outputData[0].first;
 
     // At first check whether observations exist and put them at begin of result set when found
     TS::OutputData::const_iterator it = outputData.begin();

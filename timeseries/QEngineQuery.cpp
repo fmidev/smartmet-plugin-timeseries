@@ -538,7 +538,7 @@ void QEngineQuery::fetchQEngineValues(const State& state,
       nearestpoint = qi->validPoint(latlon, query.maxdistance_kilometers());
     }
 
-    std::string country = state.getGeoEngine().countryName(loc->iso2, query.language);
+    // std::string country = state.getGeoEngine().countryName(loc->iso2, query.language);
 
     std::vector<TS::TimeSeriesData> aggregatedData;  // store here data of all levels
 
@@ -1044,7 +1044,8 @@ void QEngineQuery::areaQuery(const Query& theQuery,
     bool isWkt = false;
     NFmiSvgPath svgPath;
     loc = resolveLocation(theTLoc, theQuery, svgPath, isWkt);
-    const auto country = itsPlugin.itsEngines.geoEngine->countryName(loc->iso2, theQuery.language);
+    // const auto country = itsPlugin.itsEngines.geoEngine->countryName(loc->iso2,
+    // theQuery.language);
 
     TS::TimeSeriesGroupPtr querydata_result;
 
