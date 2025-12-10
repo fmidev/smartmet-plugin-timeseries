@@ -955,7 +955,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
 
     std::vector<TS::TimeSeriesGroupPtr> tsg_vector;
     for (unsigned int i = 0; i < obsParameters.size(); i++)
-      tsg_vector.emplace_back(TS::TimeSeriesGroupPtr(new TS::TimeSeriesGroup));
+      tsg_vector.emplace_back(std::make_shared<TS::TimeSeriesGroup>());
 
     // iterate locations
 
@@ -1157,7 +1157,7 @@ void ObsEngineQuery::getObsSettings(std::vector<SettingsInfo>& settingsVector,
     for (auto wmo : query.wmos)
       stationSettings.wmos.push_back(wmo);
     // WSIs
-    for (auto wsi : query.wsis)
+    for (const auto& wsi : query.wsis)
       stationSettings.wsis.push_back(wsi);
     // FMISIDs
     for (auto fmisid : query.fmisids)

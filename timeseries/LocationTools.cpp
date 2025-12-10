@@ -669,7 +669,7 @@ Spine::TaggedLocationList get_locations_inside_geometry(const Spine::LocationLis
   {
     Spine::TaggedLocationList ret;
 
-    for (auto loc : locations)
+    for (const auto& loc : locations)
     {
       std::string wkt =
           ("POINT(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")");
