@@ -1670,8 +1670,8 @@ std::vector<ObsParameter> ObsEngineQuery::getObsParameters(const Query& query) c
 
             if (parameter_columns.find(parameter_id) != parameter_columns.end())
             {
-              ret.emplace_back(ObsParameter(
-                  parameter, paramfuncs.functions, parameter_columns.at(parameter_id), true));
+              ret.emplace_back(
+                  parameter, paramfuncs.functions, parameter_columns.at(parameter_id), true);
             }
             else
             {
