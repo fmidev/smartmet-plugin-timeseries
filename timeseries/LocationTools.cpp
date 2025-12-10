@@ -612,7 +612,7 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
 
     if (svgPath != nullptr)
     {
-      if (wktString.length() > 0)
+      if (!wktString.empty())
       {
         convertWktMultipolygonToSvgPath(wktString, *svgPath);
       }

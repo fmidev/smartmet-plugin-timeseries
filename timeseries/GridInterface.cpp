@@ -1451,7 +1451,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
 
               auto rec = gridQuery->mQueryParameterList[pid].getValueListRecord(col, t);
               if (rec &&
-                  (ai == 0 || rec->mValue != ParamValueMissing || rec->mValueString.length() > 0))
+                  (ai == 0 || rec->mValue != ParamValueMissing || !rec->mValueString.empty()))
               {
                 pidList.insert(std::pair<ulonglong, uint>(((ulonglong)pIdx << 32) + t, pp));
               }
@@ -1462,9 +1462,9 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                   pidList.insert(std::pair<ulonglong, uint>(((ulonglong)pIdx << 32) + t, ai));
               }
 
-              if (rec && (rec->mValue != ParamValueMissing || rec->mValueString.length() > 0))
+              if (rec && (rec->mValue != ParamValueMissing || !rec->mValueString.empty()))
               {
-                if (rec->mValueString.length() > 0)
+                if (!rec->mValueString.empty())
                 {
                   // The parameter value is a string
                   TS::TimedValue tsValue(queryTime, TS::Value(rec->mValueString));
