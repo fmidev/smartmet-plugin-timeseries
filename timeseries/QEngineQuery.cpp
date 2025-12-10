@@ -715,10 +715,10 @@ TS::TimeSeriesGenerator::LocalTimeList QEngineQuery::generateQEngineQueryTimes(
       ret.push_back(ldt);
 
 #ifdef MYDEBUG
-    std::cout << "Timesteps for timeseries: " << std::endl;
+    std::cout << "Timesteps for timeseries:\n";
     for (const Fmi::LocalDateTime& ldt : ret)
     {
-      std::cout << ldt << std::endl;
+      std::cout << ldt << '\n';
     }
 #endif
 

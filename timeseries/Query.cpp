@@ -104,7 +104,7 @@ void report_unsupported_option(const std::string& name, const std::optional<std:
   if (value)
     std::cerr << (Spine::log_time_str() + ANSI_FG_RED + " [timeseries] Deprecated option '" + name +
                   ANSI_FG_DEFAULT)
-              << std::endl;
+              << '\n';
 }
 
 Fmi::ValueFormatterParam valueformatter_params(const Spine::HTTP::Request& req)
@@ -185,7 +185,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     toptions = TS::parseTimes(req);
 
 #ifdef MYDEBUG
-    std::cout << "Time options: " << std::endl << toptions << std::endl;
+    std::cout << "Time options: \n" << toptions << '\n';
 #endif
 
     latestTimestep = toptions.startTime;

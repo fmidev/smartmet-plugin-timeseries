@@ -264,8 +264,8 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
       }
 
       std::string country = itsPlugin.itsEngines.geoEngine->countryName(loc->iso2, query.language);
-      // std::cout << formatLocation(*loc) << endl;
-      // std::cout << formatLocation(*(tloc.loc)) << endl;
+      // std::cout << formatLocation(*loc) << '\n';
+      // std::cout << formatLocation(*(tloc.loc)) << '\n';
 
       AreaProducers producers = areaproducers;
       auto defaultProducer = itsPlugin.itsConfig.defaultProducerMappingName();

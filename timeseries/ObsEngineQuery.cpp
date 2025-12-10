@@ -609,7 +609,7 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       observation_result = itsPlugin.itsEngines.obsEngine->values(settings, tmpoptions);
     }
 #ifdef MYDEBYG
-    std::cout << "observation_result for places: " << *observation_result << std::endl;
+    std::cout << "observation_result for places: " << *observation_result << '\n';
 #endif
 
     if (observation_result->empty())
@@ -682,13 +682,13 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       if (aggregated_observation_result->empty())
       {
 #ifdef MYDEBUG
-        std::cout << "aggregated_observation_result (" << producer << ") is empty" << std::endl;
+        std::cout << "aggregated_observation_result (" << producer << ") is empty\n";
 #endif
         continue;
       }
 #ifdef MYDEBUG
-      std::cout << "aggregated_observation_result (" << producer << ")" << std::endl;
-      std::cout << *aggregated_observation_result << std::endl;
+      std::cout << "aggregated_observation_result (" << producer << ")\n";
+      std::cout << *aggregated_observation_result << '\n';
 #endif
 
       aggregated_observation_result =
@@ -868,7 +868,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
         itsPlugin.itsEngines.obsEngine->values(settings, query.toptions);
 
 #ifdef MYDEBYG
-    std::cout << "observation_result for area: " << *observation_result << std::endl;
+    std::cout << "observation_result for area: " << *observation_result << '\n';
 #endif
     if (observation_result->empty())
       return;
@@ -913,7 +913,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
 
       if (!loc)
         std::cout << "TimeSeries::ObsEngineQuery::fetchObsEngineValuesForArea:"
-                  << " GeoNames entry not found for fmisid " << fmisid << std::endl;
+                  << " GeoNames entry not found for fmisid " << fmisid << '\n';
       // Value is checked also in handleObsParametersForArea, so continue to it
 
       auto observation_result_with_added_fields = handleObsParametersForArea(
@@ -924,12 +924,12 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
     }
 
 #ifdef MYDEBUG
-    std::cout << "observation_result after locally added fields: " << std::endl;
+    std::cout << "observation_result after locally added fields: \n";
 
     for (TS::FmisidTSVectorPair& val : tsv_area_with_added_fields)
     {
       TS::TimeSeriesVector* tsv = val.second.get();
-      std::cout << "timeseries for fmisid " << val.first << ": " << std::endl << *tsv << std::endl;
+      std::cout << "timeseries for fmisid " << val.first << ": \n" << *tsv << '\n';
     }
 #endif
 
@@ -975,11 +975,11 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
     }
 
 #ifdef MYDEBUG
-    std::cout << "timeseries groups: " << std::endl;
+    std::cout << "timeseries groups: \n";
     for (unsigned int i = 0; i < tsg_vector.size(); i++)
     {
       TS::TimeSeriesGroupPtr tsg = tsg_vector.at(i);
-      std::cout << "group#" << i << ": " << std::endl << *tsg << std::endl;
+      std::cout << "group#" << i << ": \n" << *tsg << '\n';
     }
 #endif
 
@@ -1030,8 +1030,8 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
 
 #ifdef MYDEBUG
       std::cout << Fmi::SecondClock::universal_time() << " - aggregated group: "
-                << ": " << std::endl
-                << *aggregated_tsg << std::endl;
+                << ": \n"
+                << *aggregated_tsg << '\n';
 #endif
 
       std::vector<TS::TimeSeriesData> aggregatedData;
@@ -1187,21 +1187,21 @@ void ObsEngineQuery::getObsSettings(std::vector<SettingsInfo>& settingsVector,
 
 #ifdef MYDEBUG
     std::cout << "query.toptions.startTimeUTC: " << (query.toptions.startTimeUTC ? "true" : "false")
-              << std::endl;
+              << '\n';
     std::cout << "query.toptions.endTimeUTC: " << (query.toptions.endTimeUTC ? "true" : "false")
-              << std::endl;
-    std::cout << "query.toptions.startTime: " << query.toptions.startTime << std::endl;
-    std::cout << "query.toptions.endTime: " << query.toptions.endTime << std::endl;
-    std::cout << "query.toptions.all(): " << query.toptions.all() << std::endl;
+              << '\n';
+    std::cout << "query.toptions.startTime: " << query.toptions.startTime << '\n';
+    std::cout << "query.toptions.endTime: " << query.toptions.endTime << '\n';
+    std::cout << "query.toptions.all(): " << query.toptions.all() << '\n';
     if (query.toptions.timeSteps)
-      std::cout << "query.toptions.timeSteps: " << *query.toptions.timeSteps << std::endl;
+      std::cout << "query.toptions.timeSteps: " << *query.toptions.timeSteps << '\n';
     if (query.toptions.timeStep)
-      std::cout << "query.toptions.timeStep: " << *query.toptions.timeStep << std::endl;
+      std::cout << "query.toptions.timeStep: " << *query.toptions.timeStep << '\n';
     if (query.toptions.timeList.size() > 0)
     {
-      std::cout << "query.toptions.timeList: " << std::endl;
+      std::cout << "query.toptions.timeList: \n";
       for (const auto& t : query.toptions.timeList)
-        std::cout << t << std::endl;
+        std::cout << t << '\n';
     }
 #endif
   }
@@ -1352,10 +1352,10 @@ bool ObsEngineQuery::resolveAreaStations(const Spine::LocationPtr& location,
       }
 
 #ifdef MYDEBUG
-      std::cout << "WKT of buffered area: " << std::endl << wktString << std::endl;
-      std::cout << "#" << stationSettings.fmisids.size() << " stations found" << std::endl;
+      std::cout << "WKT of buffered area: \n" << wktString << '\n';
+      std::cout << "#" << stationSettings.fmisids.size() << " stations found\n";
       for (auto fmisid : stationSettings.fmisids)
-        std::cout << "fmisid: " << fmisid << std::endl;
+        std::cout << "fmisid: " << fmisid << '\n';
 #endif
 
       if (UtilityFunctions::is_flash_or_mobile_producer(producer) && !wktString.empty())
@@ -1471,7 +1471,7 @@ void ObsEngineQuery::resolveStationsForArea(
   try
   {
 #ifdef MYDEBUG
-    std::cout << loc_name << " is an Area" << std::endl;
+    std::cout << loc_name << " is an Area\n";
 #endif
 
     const OGRGeometry* pGeo = nullptr;
@@ -1525,7 +1525,7 @@ void ObsEngineQuery::resolveStationsForBBox(
   try
   {
 #ifdef MYDEBUG
-    std::cout << loc_name << " is a BoundingBox" << std::endl;
+    std::cout << loc_name << " is a BoundingBox\n";
 #endif
 
     Spine::BoundingBox bbox(loc_name);
@@ -1571,7 +1571,7 @@ void ObsEngineQuery::resolveStationsForPlaceWithRadius(
   try
   {
 #ifdef MYDEBUG
-    std::cout << loc_name << " is an Area (Place + radius)" << std::endl;
+    std::cout << loc_name << " is an Area (Place + radius)\n";
 #endif
 
     std::string wkt = "POINT(";
@@ -1608,7 +1608,7 @@ void ObsEngineQuery::resolveStationsForCoordinatePointWithRadius(
   try
   {
 #ifdef MYDEBUG
-    std::cout << loc_name << " is an Area (coordinate point + radius)" << std::endl;
+    std::cout << loc_name << " is an Area (coordinate point + radius)\n";
 #endif
 
     if (isWkt)

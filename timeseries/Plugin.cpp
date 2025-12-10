@@ -477,12 +477,12 @@ void Plugin::query(const State& state,
     if (result->empty())
     {
       std::cerr << "Warning: Empty output for request " << request.getQueryString() << " from "
-                << request.getClientIP() << std::endl;
+                << request.getClientIP() << '\n';
     }
 #endif
 
 #ifdef MYDEBUG
-    std::cout << "Output:" << std::endl << *result << std::endl;
+    std::cout << "Output:ņ" << *result << '\n';
 #endif
 
     response.setHeader("X-Duration", timeheader);
@@ -669,7 +669,7 @@ Plugin::Plugin(Spine::Reactor* theReactor, const char* theConfig)
   {
     if (theReactor->getRequiredAPIVersion() != SMARTMET_API_VERSION)
     {
-      std::cerr << "*** TimeSeriesPlugin and Server SmartMet API version mismatch ***" << std::endl;
+      std::cerr << "*** TimeSeriesPlugin and Server SmartMet API version mismatch ***\n";
       return;
     }
   }
