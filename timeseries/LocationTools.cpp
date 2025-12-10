@@ -675,7 +675,7 @@ Spine::TaggedLocationList get_locations_inside_geometry(const Spine::LocationLis
           ("POINT(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")");
       std::unique_ptr<OGRGeometry> location_geom = get_ogr_geometry(wkt);
       if (geom.Contains(location_geom.get()))
-        ret.emplace_back(Spine::TaggedLocation(loc->name, loc));
+        ret.emplace_back(loc->name, loc);
     }
 
     return ret;

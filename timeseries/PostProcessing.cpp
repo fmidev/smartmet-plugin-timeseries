@@ -233,7 +233,7 @@ void store_data(TS::TimeSeriesVectorPtr aggregatedData, Query& query, TS::Output
 
     // insert data to the end
     std::vector<TS::TimeSeriesData>& odata = (--outputData.end())->second;
-    odata.emplace_back(TS::TimeSeriesData(aggregatedData));
+    odata.emplace_back(aggregatedData);
     update_latest_timestep(query, aggregatedData);
   }
   catch (...)

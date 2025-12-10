@@ -1330,7 +1330,7 @@ void GridInterface::exteractCoordinatesAndAggrecationTimes(
                 if (gridQuery->mQueryParameterList[p].mValueList[t]->mValueList.getGridValueByIndex(
                         v, val))
                 {
-                  coordinates.emplace_back(T::Coordinate(val.mX, val.mY));
+                  coordinates.emplace_back(val.mX, val.mY);
                 }
               }
             }
