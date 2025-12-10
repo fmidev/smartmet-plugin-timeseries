@@ -218,10 +218,10 @@ void resolve_parameter_settings(const ObsParameters& obsParameters,
 
       if (query.maxAggregationIntervals.find(pname) != query.maxAggregationIntervals.end())
       {
-        if (query.maxAggregationIntervals.at(pname).behind > aggregationIntervalBehind)
-          aggregationIntervalBehind = query.maxAggregationIntervals.at(pname).behind;
-        if (query.maxAggregationIntervals.at(pname).ahead > aggregationIntervalAhead)
-          aggregationIntervalAhead = query.maxAggregationIntervals.at(pname).ahead;
+        aggregationIntervalBehind =
+            std::max(aggregationIntervalBehind, query.maxAggregationIntervals.at(pname).behind);
+        aggregationIntervalAhead =
+            std::max(aggregationIntervalAhead, query.maxAggregationIntervals.at(pname).ahead);
       }
 
       // prevent passing duplicate parameters to observation (for example temperature,

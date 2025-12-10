@@ -221,9 +221,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
   {
     Spine::LocationList locationList;
 
-    double step = stepInKm;
-    if (step < 0.01)
-      step = 0.01;
+    double step = std::max(0.01, stepInKm);
 
     std::pair<double, double> from(thePath.begin()->itsX, thePath.begin()->itsY);
     std::pair<double, double> to(thePath.begin()->itsX, thePath.begin()->itsY);
@@ -546,14 +544,10 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
 
         for (const auto& element : *svgPath)
         {
-          if (element.itsX < left)
-            left = element.itsX;
-          if (element.itsX > right)
-            right = element.itsX;
-          if (element.itsY < bottom)
-            bottom = element.itsY;
-          if (element.itsY > top)
-            top = element.itsY;
+          left = std::min(left, element.itsX);
+          right = std::max(right, element.itsX);
+          bottom = std::min(bottom, element.itsY);
+          top = std::max(top, element.itsY);
         }
       }
     }
