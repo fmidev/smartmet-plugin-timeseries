@@ -262,7 +262,7 @@ void fill_table(Query& query, TS::OutputData& outputData, Spine::Table& table)
     // std::string locationName = outputData[0].first;
 
     // At first check whether observations exist and put them at begin of result set when found
-    TS::OutputData::const_iterator it = outputData.begin();
+    auto it = outputData.begin();
     if (it->first == "_obs_")
     {
       add_data_to_table(query.poptions.parameters(), tf, it->second, startRow);
