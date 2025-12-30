@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 25.12.29
+Version: 25.12.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -57,7 +57,7 @@ BuildRequires: smartmet-engine-grid-devel >= 25.12.29
 #Requires: smartmet-engine-observation >= 25.12.29
 #%endif
 Requires: %{smartmet_fmt}
-Requires: smartmet-library-gis >= 25.12.299
+Requires: smartmet-library-gis >= 25.12.29
 Requires: smartmet-library-locus >= 25.9.29
 Requires: smartmet-library-macgyver >= 25.12.2
 Requires: smartmet-library-newbase >= 25.3.20
@@ -82,7 +82,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-db >= 25.6.18
 #TestRequires: smartmet-test-data >= 25.8.13
 #TestRequires: smartmet-engine-grid-test >= 25.12.29
-#TestRequires: smartmet-library-gis >= 25.12.299
+#TestRequires: smartmet-library-gis >= 25.12.29
 #TestRequires: smartmet-engine-geonames >= 25.12.2
 #TestRequires: smartmet-engine-gis >= 25.9.29
 #TestRequires: smartmet-engine-querydata >= 25.12.29
@@ -116,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Dec 30 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> 25.12.30-1.fmi
+- Fixed GIS-library dependency
+
 * Mon Dec 29 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> 25.12.9-1.fmi
 - Repackaged due to API changes
 
