@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 25.12.30
+Version: 26.1.13
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -47,14 +47,14 @@ BuildRequires: smartmet-library-newbase-devel >= 25.3.20
 BuildRequires: smartmet-library-gis-devel >= 25.12.29
 BuildRequires: smartmet-engine-geonames-devel >= 25.12.2
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 25.12.29
+BuildRequires: smartmet-engine-observation-devel >= 26.1.13
 %endif
 BuildRequires: smartmet-engine-querydata-devel >= 25.12.29
 BuildRequires: smartmet-engine-gis-devel >= 25.9.29
 BuildRequires: smartmet-engine-grid-devel >= 25.12.29
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 25.12.29
+#Requires: smartmet-engine-observation >= 26.1.13
 #%endif
 Requires: %{smartmet_fmt}
 Requires: smartmet-library-gis >= 25.12.29
@@ -87,7 +87,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 25.9.29
 #TestRequires: smartmet-engine-querydata >= 25.12.29
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 25.12.29
+#TestRequires: smartmet-engine-observation >= 26.1.13
 %endif
 #TestRequires: smartmet-engine-grid >= 25.12.29
 #TestRequires: gdal310-libs
@@ -116,6 +116,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Jan 13 2026 Andris Pavēnis <andris.pavenis@fmi.fi> 26.1.13-1.fmi
+- Repackage due to smartmet-engine-observation changes
+
 * Tue Dec 30 2025 Mika Heiskanen <mika.heiskanen@fmi.fi> 25.12.30-1.fmi
 - Fixed GIS-library dependency
 
