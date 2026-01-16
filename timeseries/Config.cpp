@@ -432,6 +432,11 @@ Config::Config(const string& configfile)
   {
     throw Fmi::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
   }
+  catch (const libconfig::ParseException& e)
+  {
+    throw Fmi::Exception::Trace(BCP, "TimeSeries error!")
+        .addDetail(std::string(e.getError()) + "' on line " + std::to_string(e.getLine()));
+  }
   catch (...)
   {
     throw Fmi::Exception(BCP, "Operation failed!", nullptr);
