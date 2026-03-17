@@ -1376,7 +1376,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
 
     // Going through all parameters
 
-    std::map<ulonglong, uint> pidList;
+    std::map<UInt64, uint> pidList;
 
     int pIdx = 0;
     int pLen = C_INT(gridQuery->mQueryParameterList.size());
@@ -1448,13 +1448,13 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
               auto rec = gridQuery->mQueryParameterList[pid].getValueListRecord(col, t);
               if (rec && (ai == 0 ||  rec->mValue != ParamValueMissing || rec->mValueString.length() > 0))
               {
-                pidList.insert(std::pair<ulonglong, uint>(((ulonglong)pIdx << 32) + t, pp));
+                pidList.insert(std::pair<UInt64, uint>(((UInt64)pIdx << 32) + t, pp));
               }
               else if (ai > 0)
               {
                 rec = gridQuery->mQueryParameterList[ai].getValueListRecord(col, t);
                 if (rec)
-                  pidList.insert(std::pair<ulonglong, uint>(((ulonglong)pIdx << 32) + t, ai));
+                  pidList.insert(std::pair<UInt64, uint>(((UInt64)pIdx << 32) + t, ai));
               }
 
               if (rec && (rec->mValue != ParamValueMissing || rec->mValueString.length() > 0))
@@ -1816,7 +1816,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
 
               if (idx >= 0 && idx < pLen)
               {
-                auto cpid = pidList.find(((ulonglong)(idx) << 32) + t);
+                auto cpid = pidList.find(((UInt64)(idx) << 32) + t);
                 if (cpid != pidList.end())
                 {
                   uint i = cpid->second;
@@ -1859,7 +1859,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                   {
                     T::GenerationInfo info;
                     if (itsGridEngine->getGenerationInfoById(
-                            C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mGenerationId),
+                            C_INT64(gridQuery->mQueryParameterList[i].mValueList[t]->mGenerationId),
                             info))
                     {
                       TS::TimedValue tsValue(queryTime, info.mName);
@@ -1869,7 +1869,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                     {
                       TS::TimedValue tsValue(
                           queryTime,
-                          C_INT(gridQuery->mQueryParameterList[i].mValueList[t]->mGenerationId));
+                          C_INT64(gridQuery->mQueryParameterList[i].mValueList[t]->mGenerationId));
                       tsForNonGridParam->emplace_back(tsValue);
                     }
                   }
