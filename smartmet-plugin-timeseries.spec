@@ -39,7 +39,7 @@ BuildRequires: smartmet-library-macgyver-devel >= 26.2.4
 BuildRequires: smartmet-library-grid-content-devel >= 26.3.18
 BuildRequires: smartmet-library-grid-files-devel >= 26.3.18
 BuildRequires: smartmet-library-newbase-devel >= 26.2.4
-BuildRequires: smartmet-library-gis-devel >= 26.2.17
+BuildRequires: smartmet-library-gis-devel >= 26.2.5
 BuildRequires: smartmet-engine-geonames-devel >= 26.3.10
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 26.2.4
@@ -52,7 +52,7 @@ BuildRequires: smartmet-engine-grid-devel >= 26.3.18
 #Requires: smartmet-engine-observation >= 26.2.4
 #%endif
 Requires: %{smartmet_fmt}
-Requires: smartmet-library-gis >= 26.2.17
+Requires: smartmet-library-gis >= 26.2.5
 Requires: smartmet-library-locus >= 26.2.4
 Requires: smartmet-library-macgyver >= 26.2.4
 Requires: smartmet-library-newbase >= 26.2.4
@@ -77,7 +77,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-db >= 26.2.17
 #TestRequires: smartmet-test-data >= 25.8.13
 #TestRequires: smartmet-engine-grid-test >= 26.3.18
-#TestRequires: smartmet-library-gis >= 26.2.17
+#TestRequires: smartmet-library-gis >= 26.2.5
 #TestRequires: smartmet-engine-geonames >= 26.3.10
 #TestRequires: smartmet-engine-gis >= 26.2.4
 #TestRequires: smartmet-engine-querydata >= 26.2.4
