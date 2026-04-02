@@ -1,11 +1,6 @@
-# SmartMet Server
+# smartmet-plugin-timeseries
 
-[SmartMet Server](https://github.com/fmidev/smartmet-server) is a data and product server for MetOcean data. It
-provides a high capacity and high availability data and product server
-for MetOcean data. The server is written in C++, since 2008 it has
-been in operational use by the Finnish Meteorological Institute FMI.
-
-# SmartMet Server Timeseries-plugin
+Part of [SmartMet Server](https://github.com/fmidev/smartmet-server). See the [SmartMet Server documentation](https://github.com/fmidev/smartmet-server) for a full overview of the ecosystem.
 
 The TimeSeries plugin offers a convenient way to fetch the
 meteorological time series information over the Web using the HTTP
