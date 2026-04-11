@@ -65,6 +65,7 @@ struct Query : public ObsQueryParams
   std::string language;
   std::string keyword;
   std::string timezone;
+  bool useStationTimezone = false;  // true when tz=local, timesteps generated per-station
   std::string leveltype;
   std::string format;
   std::string timeformat;

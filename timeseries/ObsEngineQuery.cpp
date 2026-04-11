@@ -626,7 +626,9 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       query.toptions.timeStep = 0;
     }
 
-    if (!query.toptions.all())
+    // When tz=local was requested, defer timestep generation to the per-station loop
+    // so that each station uses its own timezone.  Otherwise generate once for all.
+    if (!query.toptions.all() && !query.useStationTimezone)
       tlist = itsPlugin.itsTimeSeriesCache->generate(query.toptions, tz);
 
     TS::TimeSeriesByLocation observation_result_by_location =
@@ -637,6 +639,12 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
         (query.toptions.all() || UtilityFunctions::is_flash_producer(producer) ||
          UtilityFunctions::is_mobile_producer(producer) || producer == SYKE_PRODUCER);
 
+    // Cache the last resolved timezone to avoid repeated exclusive-lock cache lookups
+    // when consecutive stations share the same timezone (the common case).
+    std::string prev_timezone;
+    Fmi::TimeZonePtr prev_tz;
+    TS::TimeSeriesGeneratorCache::TimeList prev_tlist;
+
     // iterate locations
     for (const auto& observation_result_location : observation_result_by_location)
     {
@@ -645,6 +653,24 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
 
       // Get location
       Spine::LocationPtr loc = get_loc(query, state, producer, fmisid);
+
+      // When tz=local, resolve the station's actual timezone for timestep generation.
+      auto station_tz = tz;
+      TS::TimeSeriesGeneratorCache::TimeList station_tlist = tlist;
+      if (query.useStationTimezone && loc)
+      {
+        if (loc->timezone != prev_timezone)
+        {
+          prev_timezone = loc->timezone;
+          prev_tz = itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(
+              loc->timezone);
+          if (!query.toptions.all())
+            prev_tlist = itsPlugin.itsTimeSeriesCache->generate(query.toptions, prev_tz);
+        }
+        station_tz = prev_tz;
+        station_tlist = prev_tlist;
+      }
+
       // Actual timesteps
       std::vector<Fmi::LocalDateTime> timestep_vector =
           get_actual_timesteps(observation_result->at(0));
@@ -667,12 +693,12 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       TS::TimeSeriesGenerator::LocalTimeList* agg_times = nullptr;
       if (acceptAllTimesteps)
       {
-        agg_times_full = get_all_timesteps(query, observation_result->at(0), tz);
+        agg_times_full = get_all_timesteps(query, observation_result->at(0), station_tz);
         agg_times = &agg_times_full;
       }
       else
       {
-        agg_times = tlist.get();
+        agg_times = station_tlist.get();
       }
 
       auto aggregated_observation_result = doAggregationForPlaces(
@@ -1226,11 +1252,15 @@ void ObsEngineQuery::getCommonObsSettings(Engine::Observation::Settings& setting
     // Below are listed optional settings, defaults are set while constructing an ObsEngine::Oracle
     // instance.
 
-    // TODO Because timezone="localtime" functions differently in observation,
-    // force default timezone to be Europe/Helsinki. This must be fixed when obsplugin is obsoleted
-    if (query.timezone == "localtime")
-      query.timezone = "Europe/Helsinki";
-    settings.timezone = (query.timezone == LOCALTIME_PARAM ? UTC_PARAM : query.timezone);
+    // When tz=local, timestep generation must be done per-station using each station's
+    // actual timezone. We set the flag before mutating query.timezone so that
+    // fetchObsEngineValuesForPlaces can detect the original intent.
+    if (query.timezone == LOCALTIME_PARAM)
+    {
+      query.useStationTimezone = true;
+      query.timezone = "UTC";
+    }
+    settings.timezone = (query.useStationTimezone ? UTC_PARAM : query.timezone);
 
     settings.format = query.format;
     settings.stationtype = producer;
