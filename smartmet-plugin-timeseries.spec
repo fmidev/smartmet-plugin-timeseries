@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.3.18
-Release: 2%{?dist}.fmi
+Version: 26.5.6
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -111,6 +111,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed May  6 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.5.6-1.fmi
+- Fix tz=localtime regression for observation queries: starttime/endtime
+  parsing, time-parameter formatting, and missing-timestep filling now
+  preserve the legacy Europe/Helsinki default while still applying each
+  station's timezone to displayed times for foreign stations.
+
 * Wed Mar 18 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.3.18-2.fmi
 - Added support for multiple content sources
 

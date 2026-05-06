@@ -457,6 +457,18 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
     unsigned int obs_result_field_index = 0;
     TS::Value missing_value = TS::None();
 
+    // When tz=local, format time/location parameters in the station's actual timezone
+    // instead of the UTC fallback used for the observation engine fetch.  In other
+    // cases the observation engine has already produced LocalDateTimes in the requested
+    // timezone, so leave them alone.
+    const bool rezone_to_station = query.useStationTimezone && loc;
+    const auto& timezones = itsPlugin.itsEngines.geoEngine->getTimeZones();
+    const std::string& effective_timezone =
+        rezone_to_station ? loc->timezone : query.timezone;
+    Fmi::TimeZonePtr effective_tz;
+    if (rezone_to_station)
+      effective_tz = timezones.time_zone_from_string(effective_timezone);
+
     // Iterate parameters and store values for all parameters
     // into ret data structure
     for (unsigned int i = 0; i < obsParameters.size(); i++)
@@ -474,7 +486,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
           value = TS::location_parameter(loc,
                                          obsParam.param.name(),
                                          query.valueformatter,
-                                         query.timezone,
+                                         effective_timezone,
                                          query.precisions[i],
                                          query.crs);
         auto timeseries = generate_timeseries(state, timestep_vector, value);
@@ -484,16 +496,18 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
       else if (TS::is_time_parameter(paramname))
       {
         // add data for time fields
-        Spine::Location location(0, 0, "", query.timezone);
         TS::TimeSeries timeseries;
         for (const auto& timestep : timestep_vector)
         {
+          // Re-zone the timestep to the station's timezone so that time formatters
+          // (which use the LocalDateTime's own zone) print in the station's timezone.
+          const auto ldt = rezone_to_station ? timestep.local_time_in(effective_tz) : timestep;
           TS::Value value = TS::time_parameter(paramname,
-                                               timestep,
+                                               ldt,
                                                state.getTime(),
                                                *loc,
-                                               query.timezone,
-                                               itsPlugin.itsEngines.geoEngine->getTimeZones(),
+                                               effective_timezone,
+                                               timezones,
                                                query.outlocale,
                                                *query.timeformatter,
                                                query.timestring);
@@ -626,9 +640,13 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
       query.toptions.timeStep = 0;
     }
 
-    // When tz=local was requested, defer timestep generation to the per-station loop
-    // so that each station uses its own timezone.  Otherwise generate once for all.
-    if (!query.toptions.all() && !query.useStationTimezone)
+    // Generate the global timestep list using query.timezone (Europe/Helsinki for
+    // tz=localtime).  This is needed by timeseries_by_fmisid -> add_missing_timesteps,
+    // which fills in NaN entries at the requested grid times so that downstream
+    // erase_redundant_timesteps preserves rows for non-aggregated columns even when
+    // the actual observation timestamps fall between grid times.  When useStationTimezone
+    // is set, a per-station tlist is also generated below for the agg_times pass.
+    if (!query.toptions.all())
       tlist = itsPlugin.itsTimeSeriesCache->generate(query.toptions, tz);
 
     TS::TimeSeriesByLocation observation_result_by_location =
@@ -806,6 +824,18 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
   {
     TS::TimeSeriesVectorPtr observation_result_with_added_fields(new TS::TimeSeriesVector());
 
+    // When tz=local, format time/location parameters in the station's actual timezone
+    // instead of the UTC fallback used for the observation engine fetch.  In other
+    // cases the observation engine has already produced LocalDateTimes in the requested
+    // timezone, so leave them alone.
+    const bool rezone_to_station = query.useStationTimezone && loc;
+    const auto& timezones = itsPlugin.itsEngines.geoEngine->getTimeZones();
+    const std::string& effective_timezone =
+        rezone_to_station ? loc->timezone : query.timezone;
+    Fmi::TimeZonePtr effective_tz;
+    if (rezone_to_station)
+      effective_tz = timezones.time_zone_from_string(effective_timezone);
+
     unsigned int obs_result_field_index = 0;
     for (unsigned int i = 0; i < obsParameters.size(); i++)
     {
@@ -824,7 +854,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
             value = TS::location_parameter(loc,
                                            obsParameters[i].param.name(),
                                            query.valueformatter,
-                                           query.timezone,
+                                           effective_timezone,
                                            query.precisions[i],
                                            query.crs);
 
@@ -835,19 +865,21 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
       else if (TS::is_time_parameter(paramname))
       {
         // add data for time fields
-        Spine::Location dummyloc(0, 0, "", query.timezone);
+        Spine::Location dummyloc(0, 0, "", effective_timezone);
 
         TS::TimeSeriesGroupPtr grp(new TS::TimeSeriesGroup);
         TS::TimeSeries time_ts;
 
         for (const auto& ts : ts_vector)
         {
+          // Re-zone the timestep so time formatters print in the station's timezone.
+          const auto ldt = rezone_to_station ? ts.local_time_in(effective_tz) : ts;
           TS::Value value = TS::time_parameter(paramname,
-                                               ts,
+                                               ldt,
                                                state.getTime(),
                                                (loc ? *loc : dummyloc),
-                                               query.timezone,
-                                               itsPlugin.itsEngines.geoEngine->getTimeZones(),
+                                               effective_timezone,
+                                               timezones,
                                                query.outlocale,
                                                *query.timeformatter,
                                                query.timestring);
@@ -1252,15 +1284,20 @@ void ObsEngineQuery::getCommonObsSettings(Engine::Observation::Settings& setting
     // Below are listed optional settings, defaults are set while constructing an ObsEngine::Oracle
     // instance.
 
-    // When tz=local, timestep generation must be done per-station using each station's
-    // actual timezone. We set the flag before mutating query.timezone so that
-    // fetchObsEngineValuesForPlaces can detect the original intent.
+    // When tz=local, timestep generation and time-parameter formatting must be done
+    // per-station using each station's actual timezone (via useStationTimezone).
+    // For request-level operations that need a single timezone (starttime/endtime
+    // parsing in resolve_time_settings, the obs engine's internal timestep generation,
+    // or fallback for stations whose timezone could not be resolved), keep the legacy
+    // Europe/Helsinki default — this is what tz=localtime meant before per-station
+    // resolution was introduced.  For non-Finnish stations the per-station re-zoning
+    // performed in handleObsParametersForPlaces/Area corrects the displayed time.
     if (query.timezone == LOCALTIME_PARAM)
     {
       query.useStationTimezone = true;
-      query.timezone = "UTC";
+      query.timezone = "Europe/Helsinki";
     }
-    settings.timezone = (query.useStationTimezone ? UTC_PARAM : query.timezone);
+    settings.timezone = query.timezone;
 
     settings.format = query.format;
     settings.stationtype = producer;
