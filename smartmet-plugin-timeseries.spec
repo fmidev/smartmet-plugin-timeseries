@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.5.6
+Version: 26.6.9
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -111,6 +111,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Jun  9 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.6.9-1.fmi
+- Fix inkeyword location search to honour an explicit maxdistance: the nearest
+  keyword location is no longer returned when it is farther than maxdistance
+
 * Wed May  6 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.5.6-1.fmi
 - Fix tz=localtime regression for observation queries: starttime/endtime
   parsing, time-parameter formatting, and missing-timestep filling now
