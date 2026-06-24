@@ -11,3 +11,5 @@ fmi_iot_observations_selected_stations.get
 fmi_iot_observations_uusimaa.get
 place_fmisid_lpnn_wmo_wsi_t2m.get
 daily-tmin18-sqlite.get
+fmi-bbox.get
+open-bbox.get
