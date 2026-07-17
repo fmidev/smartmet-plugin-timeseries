@@ -1,0 +1,1 @@
+GET /timeseries?latlon=60.17,24.94&starttime=20081129T0000&timesteps=3&param=wmo,distance,stationname,stationlongitude,stationlatitude,Temperature&format=json&producer=synop&precision=double&lang=en HTTP/1.0

@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.6.24
+Version: 26.7.17
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -44,7 +44,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 26.6.24
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 26.6.24
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 26.6.24
+BuildRequires: smartmet-engine-querydata-devel >= 26.7.17
 BuildRequires: smartmet-engine-gis-devel >= 26.6.24
 BuildRequires: smartmet-engine-grid-devel >= 26.6.24
 # obsengine can be disabled in configuration: not included intentionally
@@ -59,7 +59,7 @@ Requires: smartmet-library-newbase >= 26.6.24
 Requires: smartmet-library-spine >= 26.6.24
 Requires: smartmet-library-timeseries >= 26.5.5
 Requires: smartmet-engine-geonames >= 26.6.24
-Requires: smartmet-engine-querydata >= 26.6.24
+Requires: smartmet-engine-querydata >= 26.7.17
 Requires: smartmet-engine-gis >= 26.6.24
 Requires: smartmet-engine-grid >= 26.6.24
 Requires: smartmet-server >= 26.6.24
@@ -111,6 +111,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri Jul 17 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.7.17-1.fmi
+- Pointwise observation querydata: 'numberofstations' now returns the N nearest stations (each with
+  its own distance, station number and name), and station metadata is reported for the correct
+  nearest station instead of an arbitrary one
+
 * Wed Jun 24 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.6.24-1.fmi
 - Mass rebuild
 

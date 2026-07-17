@@ -1,0 +1,1 @@
+GET /timeseries?latlon=60.17,24.94&numberofstations=3&maxdistance=200km&starttime=20081129T0000&timesteps=2&param=wmo,distance,stationname,stationlongitude,stationlatitude,Temperature&format=json&producer=synop&lang=en&precision=double HTTP/1.0

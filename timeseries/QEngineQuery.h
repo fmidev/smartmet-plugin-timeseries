@@ -108,6 +108,31 @@ class QEngineQuery
                  QueryLevelDataCache& theQueryLevelDataCache,
                  std::vector<TS::TimeSeriesData>& theAggregatedData) const;
 
+  // Point query against pointwise (station) querydata with numberofstations>1: returns the
+  // requested number of nearest stations as separate members of the result group.
+  void stationsQuery(const Query& theQuery,
+                     const std::string& theProducer,
+                     const TS::ParameterAndFunctions& theParamFunc,
+                     const Spine::TaggedLocation& theTLoc,
+                     const TS::TimeSeriesGenerator::LocalTimeList& theQueryDataTlist,
+                     const TS::TimeSeriesGenerator::LocalTimeList& theRequestedTList,
+                     const std::pair<float, std::string>& theCacheKey,
+                     const State& theState,
+                     const Engine::Querydata::Q& theQ,
+                     double theMaxDist,
+                     int thePrecision,
+                     bool theLoadDataLevels,
+                     std::optional<float> thePressure,
+                     std::optional<float> theHeight,
+                     QueryLevelDataCache& theQueryLevelDataCache,
+                     std::vector<TS::TimeSeriesData>& theAggregatedData) const;
+
+  // Build a location list of the N nearest stations to loc in pointwise querydata theQ
+  Spine::LocationList getNearestStationLocations(const Engine::Querydata::Q& theQ,
+                                                 const Spine::LocationPtr& loc,
+                                                 int numberofstations,
+                                                 double theMaxDist) const;
+
   Spine::LocationPtr resolveLocation(const Spine::TaggedLocation& tloc,
                                      const Query& query,
                                      NFmiSvgPath& svgPath,
@@ -137,7 +162,8 @@ class QEngineQuery
       std::optional<float> thePressure,
       std::optional<float> theHeight,
       const std::string& paramname,
-      const Spine::LocationList& llist) const;
+      const Spine::LocationList& llist,
+      const std::optional<NFmiPoint>& theDistanceReferencePoint = std::nullopt) const;
   Spine::LocationList getLocationListForArea(const Spine::TaggedLocation& theTLoc,
                                              const Spine::LocationPtr& loc,
                                              const Engine::Querydata::Q& theQ,

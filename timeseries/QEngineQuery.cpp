@@ -5,6 +5,7 @@
 #include "UtilityFunctions.h"
 #include <macgyver/Exception.h>
 #include <newbase/NFmiIndexMaskTools.h>
+#include <newbase/NFmiLocation.h>
 #include <newbase/NFmiSvgTools.h>
 #include <timeseries/ParameterKeywords.h>
 #include <timeseries/ParameterTools.h>
@@ -445,7 +446,27 @@ void QEngineQuery::fetchQEngineValues(const State& state,
     std::pair<float, std::string> cacheKey(loadDataLevels ? qi->levelValue() : levelValue,
                                            levelType + paramname);
 
-    if (isPointQuery)
+    if (isPointQuery && !qi->isGrid() && query.numberofstations > 1)
+    {
+      // Pointwise (station) querydata with numberofstations>1: return the N nearest stations
+      stationsQuery(query,
+                    producer,
+                    paramfunc,
+                    tloc,
+                    querydata_tlist,
+                    tlist,
+                    cacheKey,
+                    state,
+                    qi,
+                    query.maxdistance_kilometers(),
+                    precision,
+                    loadDataLevels,
+                    pressure,
+                    height,
+                    queryLevelDataCache,
+                    aggregatedData);
+    }
+    else if (isPointQuery)
     {
       pointQuery(query,
                  producer,
@@ -891,7 +912,8 @@ TS::TimeSeriesGroupPtr QEngineQuery::getQEngineValuesForArea(
     std::optional<float> thePressure,
     std::optional<float> theHeight,
     const std::string& paramname,
-    const Spine::LocationList& llist) const
+    const Spine::LocationList& llist,
+    const std::optional<NFmiPoint>& theDistanceReferencePoint) const
 {
   try
   {
@@ -928,6 +950,10 @@ TS::TimeSeriesGroupPtr QEngineQuery::getQEngineValuesForArea(
                                                           theQuery.findnearestvalidpoint,
                                                           theMaxDist,
                                                           theQuery.lastpoint);
+
+      // When the point query has been expanded into several nearby stations, distance/direction
+      // must be measured from the original query point rather than from each station's own location
+      querydata_param.distanceReferencePoint = theDistanceReferencePoint;
 
       // list of locations, list of local times
       querydata_result =
@@ -1112,6 +1138,140 @@ void QEngineQuery::areaQuery(const Query& theQuery,
 
         theQueryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(theCacheKey, querydata_result));
       }  // area handling
+    }
+
+    auto aggregated_query_data_result =
+        TS::aggregate(querydata_result, theParamFunc.functions, theRequestedTList);
+
+    if (!querydata_result->empty())
+    {
+      aggregated_query_data_result =
+          TS::erase_redundant_timesteps(aggregated_query_data_result, theRequestedTList);
+      theAggregatedData.emplace_back(aggregated_query_data_result);
+    }
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+Spine::LocationList QEngineQuery::getNearestStationLocations(const Engine::Querydata::Q& theQ,
+                                                             const Spine::LocationPtr& loc,
+                                                             int numberofstations,
+                                                             double theMaxDist) const
+{
+  try
+  {
+    Spine::LocationList llist;
+
+    auto qinfo = theQ->info();
+
+    // theMaxDist is in kilometers, NearestLocations expects meters
+    NFmiLocation searchpoint(loc->longitude, loc->latitude);
+    auto nearest = qinfo->NearestLocations(searchpoint, numberofstations, theMaxDist * 1000.0);
+
+    for (const auto& index_distance : nearest)
+    {
+      const int index = index_distance.first;
+      if (!qinfo->LocationIndex(index))
+        continue;
+
+      const NFmiPoint stationlatlon = qinfo->LatLon();
+
+      // Copy the requested location and override coordinates and name with the station's own
+      // values, so that the location dependent parameters (name, longitude, latitude, ...) refer to
+      // the station. The 'distance' and 'direction' parameters are handled separately using the
+      // original query point as the reference (see getQEngineValuesForArea).
+      Spine::Location station(*loc);
+      station.longitude = stationlatlon.X();
+      station.latitude = stationlatlon.Y();
+      station.name = qinfo->Location()->GetName().CharPtr();
+      station.type = Spine::Location::CoordinatePoint;
+      station.radius = 0;
+
+      llist.emplace_back(std::make_shared<Spine::Location>(station));
+    }
+
+    return llist;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+void QEngineQuery::stationsQuery(const Query& theQuery,
+                                 const std::string& theProducer,
+                                 const TS::ParameterAndFunctions& theParamFunc,
+                                 const Spine::TaggedLocation& theTLoc,
+                                 const TS::TimeSeriesGenerator::LocalTimeList& theQueryDataTlist,
+                                 const TS::TimeSeriesGenerator::LocalTimeList& theRequestedTList,
+                                 const std::pair<float, std::string>& theCacheKey,
+                                 const State& theState,
+                                 const Engine::Querydata::Q& theQ,
+                                 double theMaxDist,
+                                 int thePrecision,
+                                 bool theLoadDataLevels,
+                                 std::optional<float> thePressure,
+                                 std::optional<float> theHeight,
+                                 QueryLevelDataCache& theQueryLevelDataCache,
+                                 std::vector<TS::TimeSeriesData>& theAggregatedData) const
+{
+  try
+  {
+    const auto& paramname = theParamFunc.parameter.name();
+
+    NFmiSvgPath svgPath;
+    bool isWkt = false;
+    Spine::LocationPtr loc = resolveLocation(theTLoc, theQuery, svgPath, isWkt);
+
+    TS::TimeSeriesGroupPtr querydata_result;
+
+    if (theQueryLevelDataCache.itsTimeSeriesGroups.find(theCacheKey) !=
+        theQueryLevelDataCache.itsTimeSeriesGroups.end())
+    {
+      querydata_result = theQueryLevelDataCache.itsTimeSeriesGroups[theCacheKey];
+    }
+    else
+    {
+      Spine::LocationList llist =
+          getNearestStationLocations(theQ, loc, theQuery.numberofstations, theMaxDist);
+
+      if (llist.empty())
+        return;
+
+      check_request_limit(
+          itsPlugin.itsConfig.requestLimits(), llist.size(), TS::RequestLimitMember::LOCATIONS);
+
+      // Distance and direction are measured from the original query point, not from each station
+      std::optional<NFmiPoint> referencePoint(NFmiPoint(loc->longitude, loc->latitude));
+
+      querydata_result = getQEngineValuesForArea(theQuery,
+                                                 theProducer,
+                                                 theParamFunc,
+                                                 theTLoc,
+                                                 loc,
+                                                 theQueryDataTlist,
+                                                 theState,
+                                                 theQ,
+                                                 theMaxDist,
+                                                 thePrecision,
+                                                 theLoadDataLevels,
+                                                 thePressure,
+                                                 theHeight,
+                                                 paramname,
+                                                 llist,
+                                                 referencePoint);
+
+      if (!querydata_result->empty())
+      {
+        if (theParamFunc.parameter.name() == "x" || theParamFunc.parameter.name() == "y")
+          TS::transform_wgs84_coordinates(
+              theParamFunc.parameter.name(), theQuery.crs, *querydata_result);
+
+        theQueryLevelDataCache.itsTimeSeriesGroups.insert(make_pair(theCacheKey, querydata_result));
+      }
     }
 
     auto aggregated_query_data_result =
