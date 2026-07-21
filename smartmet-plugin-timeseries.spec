@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.7.17
+Version: 26.7.21
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -111,6 +111,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Jul 21 2026 Andris Pavēnis <andris.pavenis@fmi.fi> 26.7.21-1.fmi
+- Repackage due to ABI changes
+
 * Fri Jul 17 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.7.17-1.fmi
 - Pointwise observation querydata: 'numberofstations' now returns the N nearest stations (each with
   its own distance, station number and name), and station metadata is reported for the correct
