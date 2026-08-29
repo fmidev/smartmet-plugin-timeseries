@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.8.26
+Version: 26.8.30
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -111,6 +111,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Sat Aug 30 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.8.30-1.fmi
+- Security: ship a non-zero default request_limits.maxtimes (50000) and reject an
+  absurd timesteps count, or a distant endtime with a small timestep, at request
+  parse time before any time series is generated (C-6 plugin side).
 * Wed Aug 26 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.8.26-1.fmi
 - QEngine ABI changed
 

@@ -178,6 +178,11 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     std::string endtime = Spine::optional_string(req.getParameter("endtime"), "");
     endtimeOptionGiven = (endtime != "now");
 
+    // Security (C-6): reject absurd time-step requests before any time series is
+    // generated, so a single request cannot materialize an unbounded list and
+    // exhaust server memory.
+    validate_time_options(config);
+
     debug = Spine::optional_bool(req.getParameter("debug"), false);
 
     timezone = Spine::optional_string(req.getParameter("tz"), default_timezone);
@@ -261,6 +266,54 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     // Stack traces in journals are useless when the user has made a typo
     throw Fmi::Exception::Trace(BCP, "TimeSeries plugin failed to parse query string options!")
         .disableLogging();
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Validate the requested time options against the configured limits
+ *
+ * The full timestamp set used to be materialized before any limit check, so a
+ * single unauthenticated request could trigger an out-of-memory condition via an
+ * enormous timesteps= count, or a distant endtime combined with a tiny timestep
+ * (C-6). Here we reject such requests up front, before generation is attempted.
+ * The effective ceiling is request_limits.maxtimes, which defaults to a non-zero
+ * value in Config.cpp (an administrator may set it to 0 to disable the limit).
+ */
+// ----------------------------------------------------------------------
+
+void Query::validate_time_options(const Config& config)
+{
+  try
+  {
+    const std::size_t maxtimes = config.requestLimits().maxtimes;
+    if (maxtimes == 0)
+      return;  // limit explicitly disabled by the administrator
+
+    // An explicit, unbounded timesteps= count.
+    if (toptions.timeSteps && *toptions.timeSteps > maxtimes)
+      throw Fmi::Exception(BCP, "Too many timesteps requested")
+          .addParameter("timesteps", Fmi::to_string(*toptions.timeSteps))
+          .addParameter("maxtimes", Fmi::to_string(maxtimes));
+
+    // A distant endtime combined with a small timestep produces just as many
+    // steps. Estimate the count from the concrete request times without generating
+    // the list, and reject if it would exceed the limit.
+    if (!toptions.timeSteps && toptions.timeStep && *toptions.timeStep > 0 &&
+        !toptions.startTimeData && !toptions.endTimeData && !toptions.startTime.is_special() &&
+        !toptions.endTime.is_special() && toptions.endTime > toptions.startTime)
+    {
+      const auto span_minutes = (toptions.endTime - toptions.startTime).total_minutes();
+      const auto estimate = static_cast<std::size_t>(span_minutes / *toptions.timeStep) + 1;
+      if (estimate > maxtimes)
+        throw Fmi::Exception(BCP, "Too many timesteps requested")
+            .addParameter("timesteps", Fmi::to_string(estimate))
+            .addParameter("maxtimes", Fmi::to_string(maxtimes));
+    }
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Time option validation failed!");
   }
 }
 
