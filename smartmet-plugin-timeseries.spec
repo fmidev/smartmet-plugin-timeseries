@@ -4,7 +4,7 @@
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
 Version: 26.9.16
-Release: 1%{?dist}.fmi
+Release: 2%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -44,7 +44,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 26.7.31
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 26.8.24
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 26.8.24
+BuildRequires: smartmet-engine-querydata-devel >= 26.9.16-2
 BuildRequires: smartmet-engine-gis-devel >= 26.8.10
 BuildRequires: smartmet-engine-grid-devel >= 26.7.10
 # obsengine can be disabled in configuration: not included intentionally
@@ -59,7 +59,7 @@ Requires: smartmet-library-newbase >= 26.7.18
 Requires: smartmet-library-spine >= 26.8.24
 Requires: smartmet-library-timeseries >= 26.5.5
 Requires: smartmet-engine-geonames >= 26.7.31
-Requires: smartmet-engine-querydata >= 26.8.24
+Requires: smartmet-engine-querydata >= 26.9.16-2
 Requires: smartmet-engine-gis >= 26.8.10
 Requires: smartmet-engine-grid >= 26.7.10
 Requires: smartmet-server >= 26.8.21
@@ -80,7 +80,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis >= 26.8.10
 #TestRequires: smartmet-engine-geonames >= 26.7.31
 #TestRequires: smartmet-engine-gis >= 26.8.10
-#TestRequires: smartmet-engine-querydata >= 26.8.24
+#TestRequires: smartmet-engine-querydata >= 26.9.16-2
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 26.8.24
 %endif
@@ -111,6 +111,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Wed Sep 16 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.16-2.fmi
+- Repackaged due to QEngine ABI changes (smartmet-engine-querydata >= 26.9.16-2)
+
 * Wed Sep 16 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.16-1.fmi
 - Repackaged due to Fmi::Cache::Cache locking changes
 
