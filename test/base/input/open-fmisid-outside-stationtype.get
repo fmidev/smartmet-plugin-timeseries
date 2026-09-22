@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&param=fmisid,stationname,time,t2m&starttime=2013-08-05T06:00:00Z&endtime=2013-08-05T13:00:00Z&timestep=60&fmisid=100963&format=json HTTP/1.0
+
