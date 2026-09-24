@@ -24,6 +24,7 @@
 #include <macgyver/TimeZoneFactory.h>
 #include <timeseries/ParameterKeywords.h>
 #include <timeseries/ParameterTools.h>
+#include <timeseries/TimeSeriesGenerator.h>
 #include <timeseries/TimeSeriesUtility.h>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
@@ -51,6 +52,20 @@ const uint TimeseriesFunctionFlag = 1 << 31;
 
 namespace
 {
+// True if none of the parameters needs data values. Location and time parameters such as
+// lat and lon are classified as data derived since for point data they come from the data,
+// but for grids they are calculated from the query coordinates and times.
+bool is_data_independent_query(const TS::OptionParsers::ParameterList& theParams)
+{
+  return std::all_of(theParams.begin(),
+                     theParams.end(),
+                     [](const Spine::Parameter& param)
+                     {
+                       return TS::is_data_independent(param) ||
+                              UtilityFunctions::is_special_parameter(param.name());
+                     });
+}
+
 void erase_redundant_timesteps(TS::TimeSeries& ts, std::set<Fmi::LocalDateTime>& aggregationTimes)
 {
   FUNCTION_TRACE
@@ -239,6 +254,157 @@ void GridInterface::getDataTimes(const AreaProducers& areaproducers,
   }
 }
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Valid times of the generations the query would use
+ *
+ * The generations are selected like the QueryServer does it: the requested analysis time,
+ * the newest or the oldest ready generation if so requested, otherwise all ready generations
+ * combined. The first producer with such generations is used.
+ */
+// ----------------------------------------------------------------------
+
+TS::TimeSeriesGeneratorOptions::TimeList GridInterface::getGenerationDataTimes(
+    const QueryServer::Query& gridQuery, const AreaProducers& areaproducers)
+{
+  FUNCTION_TRACE
+  try
+  {
+    // Producer names resolved from the producer aliases, or the requested producers as such
+
+    std::vector<std::string> producerNames(gridQuery.mProducerNameList.begin(),
+                                           gridQuery.mProducerNameList.end());
+    if (producerNames.empty())
+    {
+      for (const auto& producer : areaproducers)
+        itsGridEngine->getProducerNameList(producer, producerNames);
+    }
+
+    auto contentServer = itsGridEngine->getContentServer_sptr();
+
+    for (const auto& producerName : producerNames)
+    {
+      T::ProducerInfo producerInfo;
+      if (!itsGridEngine->getProducerInfoByName(producerName, producerInfo))
+        continue;
+
+      T::GenerationInfoList generationInfoList;
+      if (contentServer->getGenerationInfoListByProducerId(
+              0, producerInfo.mProducerId, generationInfoList) != 0)
+        continue;
+
+      // Selecting the generations. By default the QueryServer combines all generations
+
+      std::vector<T::GenerationInfo*> generations;
+      if (!gridQuery.mAnalysisTime.empty())
+        generations.push_back(
+            generationInfoList.getGenerationInfoByAnalysisTime(gridQuery.mAnalysisTime));
+      else if ((gridQuery.mFlags & QueryServer::Query::Flags::LatestGeneration) != 0)
+        generations.push_back(generationInfoList.getLastGenerationInfoByAnalysisTime(
+            T::GenerationInfo::Status::Ready));
+      else if ((gridQuery.mFlags & QueryServer::Query::Flags::OldestGeneration) != 0)
+        generations.push_back(generationInfoList.getFirstGenerationInfoByAnalysisTime(
+            T::GenerationInfo::Status::Ready));
+      else
+      {
+        for (uint i = 0; i < generationInfoList.getLength(); i++)
+        {
+          auto* generationInfo = generationInfoList.getGenerationInfoByIndex(i);
+          if (generationInfo != nullptr &&
+              generationInfo->mStatus == T::GenerationInfo::Status::Ready)
+            generations.push_back(generationInfo);
+        }
+      }
+
+      std::set<std::string> contentTimeList;
+      for (const auto* generationInfo : generations)
+      {
+        std::set<std::string> generationTimes;
+        if (generationInfo != nullptr &&
+            contentServer->getContentTimeListByGenerationId(
+                0, generationInfo->mGenerationId, generationTimes) == 0)
+          contentTimeList.insert(generationTimes.begin(), generationTimes.end());
+      }
+
+      if (contentTimeList.empty())
+        continue;
+
+      auto times = std::make_shared<std::list<Fmi::DateTime>>();
+      for (const auto& contentTime : contentTimeList)
+        times->push_back(Fmi::date_time::from_time_t(utcTimeToTimeT(contentTime)));
+      return times;
+    }
+
+    return {};
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Set the query times of a data independent query from the producer's data
+ *
+ * With starttime=data, endtime=data or timestep=data the QueryServer derives the times from
+ * the values of the data parameters. If only data independent parameters (lat, lon, sunrise,
+ * elevation etc) are requested there are no such values, and the result would be empty. We
+ * therefore generate the times from the valid times of the producer's generation just like
+ * the querydata path does, and request the parameters at those explicit time steps.
+ *
+ * \return True if the query times were set
+ */
+// ----------------------------------------------------------------------
+
+bool GridInterface::prepareDataIndependentQueryTimes(QueryServer::Query& gridQuery,
+                                                     const Query& masterquery,
+                                                     const AreaProducers& areaproducers,
+                                                     const Fmi::TimeZonePtr& tz,
+                                                     const Fmi::DateTime& latestTimeUTC)
+{
+  FUNCTION_TRACE
+  try
+  {
+    const auto& toptions = masterquery.toptions;
+
+    if (!toptions.startTimeData && !toptions.endTimeData &&
+        toptions.mode != TS::TimeSeriesGeneratorOptions::DataTimes)
+      return false;
+
+    if (!is_data_independent_query(masterquery.poptions.parameters()))
+      return false;
+
+    auto dataTimes = getGenerationDataTimes(gridQuery, areaproducers);
+    if (!dataTimes)
+      return false;
+
+    auto options = toptions;
+    options.setDataTimes(dataTimes);
+
+    // Skip the times already fetched by the previous producer in a request sequence
+    for (const auto& t : TS::TimeSeriesGenerator::generate(options, tz))
+    {
+      const auto utctime = t.utc_time();
+      if (latestTimeUTC.is_not_a_date_time() || utctime > latestTimeUTC)
+        gridQuery.mForecastTimeList.insert(toTimeT(utctime));
+    }
+
+    gridQuery.mSearchType = QueryServer::Query::SearchType::TimeSteps;
+    if (!gridQuery.mForecastTimeList.empty())
+    {
+      gridQuery.mStartTime = *gridQuery.mForecastTimeList.begin();
+      gridQuery.mEndTime = *gridQuery.mForecastTimeList.rbegin();
+    }
+
+    return true;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
+}
+
 void GridInterface::insertFileQueries(QueryServer::Query& query,
                                       const QueryServer::QueryStreamer_sptr& queryStreamer)
 {
@@ -368,6 +534,7 @@ bool GridInterface::isValidDefaultRequest(
 
 void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
                                       const Query& masterquery,
+                                      const AreaProducers& areaproducers,
                                       const Spine::LocationPtr& loc)
 {
   FUNCTION_TRACE
@@ -467,6 +634,14 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
 
     Fmi::LocalDateTime latestTime = mk_ldt(masterquery.latestTimestep, tz, startTimeUTC);
     Fmi::DateTime latestTimeUTC = latestTime.utc_time();
+
+    if (prepareDataIndependentQueryTimes(
+            gridQuery,
+            masterquery,
+            areaproducers,
+            tz,
+            (latestTime != startTime ? latestTimeUTC : Fmi::DateTime::NOT_A_DATE_TIME)))
+      return;
 
     if (latestTime != startTime)
       grid_startTime = latestTime;
@@ -1068,7 +1243,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
     prepareProducer(gridQuery, masterquery, origLevelId, areaproducers, levelId, geometryId);
     prepareGeneration(gridQuery, masterquery, sameParamAnalysisTime);
     prepareLocation(gridQuery, masterquery, loc, geometryIdList, polygonPath, locationType);
-    prepareQueryTimes(gridQuery, masterquery, loc);
+    prepareQueryTimes(gridQuery, masterquery, areaproducers, loc);
     prepareQueryParameters(gridQuery,
                            masterquery,
                            mode,

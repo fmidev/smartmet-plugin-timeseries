@@ -1,0 +1,1 @@
+GET /timeseries?model=pal_skandinavia&starttime=data&endtime=data&timestep=1h&tz=utc&precision=double&area=Kokkola&param=mean(lat)%20as%20lat,mean(lon)%20as%20lon,utctime,mean(sunrise)%20as%20sunrise,mean(sunset)%20as%20sunset,mean(sunelevation)%20as%20sunelevation,mean(elevation)%20as%20elevation HTTP/1.0

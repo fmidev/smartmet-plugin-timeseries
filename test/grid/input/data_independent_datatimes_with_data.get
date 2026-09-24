@@ -1,0 +1,1 @@
+GET /timeseries?model=pal_skandinavia&starttime=data&endtime=data&timestep=1h&tz=utc&precision=double&place=Helsinki&param=utctime,lat,lon,sunelevation,elevation,Temperature HTTP/1.0
