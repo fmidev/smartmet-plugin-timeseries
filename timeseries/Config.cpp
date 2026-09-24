@@ -26,6 +26,16 @@ const char* default_timeformat = "iso";
 
 unsigned int default_expires = 60;  // seconds
 
+// Security (C-6): default upper bound for the number of generated timesteps in a
+// single request. A single unauthenticated request could otherwise materialize an
+// unbounded time series (huge timesteps=, or a distant endtime with a small
+// timestep) and exhaust server memory. The historical default of 0 disabled the
+// limit entirely; we now ship a non-zero default. 50000 is a generous ceiling that
+// covers legitimate large queries (e.g. a month of one-minute data is ~43200
+// steps, a year of hourly data is 8760) while rejecting abusive requests. Admins
+// can override request_limits.maxtimes in the config (0 still disables the limit).
+const unsigned int default_maxtimes = 50000;
+
 namespace SmartMet
 {
 namespace Plugin
@@ -388,7 +398,7 @@ Config::Config(const string& configfile)
     // Request limits
     int maxlocations = 0;
     int maxparameters = 0;
-    int maxtimes = 0;
+    int maxtimes = default_maxtimes;  // C-6: non-zero default, see above
     int maxlevels = 0;
     int maxelements = 0;
     itsConfig.lookupValue("request_limits.maxlocations", maxlocations);

@@ -127,6 +127,7 @@ struct Query : public ObsQueryParams
   bool parse_grib_loptions(const State& state);
   void parse_inkeyword_locations(const Spine::HTTP::Request& theReq, const State& state);
   void parse_origintime(const Spine::HTTP::Request& theReq);
+  void validate_time_options(const Config& config);
 
   QueryServer::AliasFileCollection* itsAliasFileCollectionPtr;
 
