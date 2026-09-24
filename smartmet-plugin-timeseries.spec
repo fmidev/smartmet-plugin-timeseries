@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.9.13
-Release: 2%{?dist}.fmi
+Version: 26.9.24
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -44,7 +44,7 @@ BuildRequires: smartmet-engine-geonames-devel >= 26.9.23
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 26.9.23
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 26.9.16
+BuildRequires: smartmet-engine-querydata-devel >= 26.9.23
 BuildRequires: smartmet-engine-gis-devel >= 26.9.23
 BuildRequires: smartmet-engine-grid-devel >= 26.9.23
 # obsengine can be disabled in configuration: not included intentionally
@@ -59,7 +59,7 @@ Requires: smartmet-library-newbase >= 26.9.23
 Requires: smartmet-library-spine >= 26.9.23
 Requires: smartmet-library-timeseries >= 26.9.16
 Requires: smartmet-engine-geonames >= 26.9.23
-Requires: smartmet-engine-querydata >= 26.9.16
+Requires: smartmet-engine-querydata >= 26.9.23
 Requires: smartmet-engine-gis >= 26.9.23
 Requires: smartmet-engine-grid >= 26.9.23
 Requires: smartmet-server >= 26.9.2
@@ -80,7 +80,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-gis >= 26.9.23
 #TestRequires: smartmet-engine-geonames >= 26.9.23
 #TestRequires: smartmet-engine-gis >= 26.9.23
-#TestRequires: smartmet-engine-querydata >= 26.9.16
+#TestRequires: smartmet-engine-querydata >= 26.9.23
 %if %{with observation}
 #TestRequires: smartmet-engine-observation >= 26.9.23
 %endif
@@ -111,10 +111,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
-* Wed Sep 23 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.13-2.fmi
+* Thu Sep 24 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.24-1.fmi
 - Repackaged due to base library ABI changes
 * Wed Sep 16 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.16-2.fmi
-- Repackaged due to QEngine ABI changes (smartmet-engine-querydata >= 26.9.16)
+- Repackaged due to QEngine ABI changes (smartmet-engine-querydata >= 26.9.23)
 
 * Wed Sep 16 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.16-1.fmi
 - Repackaged due to Fmi::Cache::Cache locking changes
