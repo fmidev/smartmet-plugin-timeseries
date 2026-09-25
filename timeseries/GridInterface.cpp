@@ -2016,14 +2016,12 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
               std::string n;
               int idx = -1;
 
-              char ptmp[100];
-              strcpy(ptmp,gridQuery->mQueryParameterList[pid].mParam.c_str());
-              char *pp = strchr(ptmp,'-');
-              if (pp)
+              const std::string& pstr = gridQuery->mQueryParameterList[pid].mParam;
+              const auto dash = pstr.find('-');
+              if (dash != std::string::npos)
               {
-                *pp = '\0';
-                n = ptmp+1;
-                idx = atoi(pp+1);
+                n = pstr.substr(1, dash - 1);
+                idx = atoi(pstr.c_str() + dash + 1);
               }
 
               if (idx >= 0 && idx < pLen)
