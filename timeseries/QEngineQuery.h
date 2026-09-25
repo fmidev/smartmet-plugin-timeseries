@@ -144,7 +144,7 @@ class QEngineQuery
   Spine::LocationList getLocationListForPath(const Query& theQuery,
                                              const Spine::TaggedLocation& theTLoc,
                                              const std::string& place,
-                                             const NFmiSvgPath svgPath,
+                                             const NFmiSvgPath& svgPath,
                                              const State& theState,
                                              bool isWkt) const;
   TS::TimeSeriesGroupPtr getQEngineValuesForArea(

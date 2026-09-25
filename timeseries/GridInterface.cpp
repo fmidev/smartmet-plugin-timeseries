@@ -1492,7 +1492,7 @@ void GridInterface::findLevels(Query& masterquery,
 
 void GridInterface::exteractCoordinatesAndAggrecationTimes(
     std::shared_ptr<QueryServer::Query>& gridQuery,
-    Fmi::TimeZonePtr tz,
+    const Fmi::TimeZonePtr& tz,
     T::Coordinate_vec& coordinates,
     std::set<Fmi::LocalDateTime>& aggregationTimes)
 {
@@ -1560,7 +1560,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                                         TS::OutputData& outputData,
                                         const QueryServer::QueryStreamer_sptr& queryStreamer,
                                         const AreaProducers& areaproducers,
-                                        Fmi::TimeZonePtr tz,
+                                        const Fmi::TimeZonePtr& tz,
                                         const Spine::TaggedLocation& tloc,
                                         const Spine::LocationPtr& loc,
                                         const std::string& country,
