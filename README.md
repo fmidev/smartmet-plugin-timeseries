@@ -13,3 +13,4 @@ configure the plugin if you have the SmartMet Server installed.
 - [Using the Timeseries API](docs/Using-the-Timeseries-API.md)
 - [Example Requests for Observations and Forecasts](docs/Examples.md)
 - [Configuring the Plugin for the SmartMet Server](docs/docker.md)
+- [Grid support (developer notes)](docs/grid-support.md)
