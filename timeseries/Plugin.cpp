@@ -366,7 +366,7 @@ void Plugin::query(const State& state,
     tagged_ll.insert(tagged_ll.end(), locations.begin(), locations.end());
     q.loptions->setLocations(tagged_ll);
 
-    check_limits(locations, itsConfig.requestLimits());
+    check_limits(q.loptions->locations(), itsConfig.requestLimits());
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
 

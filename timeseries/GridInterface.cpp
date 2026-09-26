@@ -128,10 +128,47 @@ TS::TimeSeriesGroupPtr erase_redundant_timesteps(TS::TimeSeriesGroupPtr tsg,
     throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Check the size of a grid query result against the request limits
+ *
+ * A grid area or radius query returns every grid point inside the area,
+ * so the number of locations is known only after the query has been
+ * executed. Checking here prevents the result from being expanded into
+ * the output tables.
+ */
+// ----------------------------------------------------------------------
+
+void check_result_limits(const QueryServer::Query& gridQuery,
+                         const TS::OutputData& outputData,
+                         const TS::RequestLimits& limits)
+{
+  if (limits.maxlocations == 0 && limits.maxelements == 0)
+    return;
+
+  std::size_t locations = 0;
+  std::size_t elements = 0;
+  for (const auto& param : gridQuery.mQueryParameterList)
+  {
+    for (const auto& values : param.mValueList)
+    {
+      const std::size_t len = values->mValueList.getLength();
+      locations = std::max(locations, len);
+      elements += len;
+    }
+  }
+
+  TS::check_request_limit(limits, locations, TS::RequestLimitMember::LOCATIONS);
+  TS::check_request_limit(
+      limits, elements + TS::number_of_elements(outputData), TS::RequestLimitMember::ELEMENTS);
+}
 }  // namespace
 
-GridInterface::GridInterface(Engine::Grid::Engine* engine, const Fmi::TimeZones& timezones)
-    : itsGridEngine(engine), itsTimezones(timezones)
+GridInterface::GridInterface(Engine::Grid::Engine* engine,
+                             const Fmi::TimeZones& timezones,
+                             const TS::RequestLimits& requestLimits)
+    : itsGridEngine(engine), itsTimezones(timezones), itsRequestLimits(requestLimits)
 {
   FUNCTION_TRACE
   try
@@ -2565,6 +2602,8 @@ void GridInterface::processGridQuery(const State& state,
 
         std::shared_ptr<QueryServer::Query> gridQuery =
             itsGridEngine->executeQuery(originalGridQuery);
+
+        check_result_limits(*gridQuery, outputData, itsRequestLimits);
 
         if (queryStreamer != nullptr)
         {

@@ -17,7 +17,8 @@ GridEngineQuery::GridEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin)
   if (!itsPlugin.itsConfig.gridEngineDisabled())
   {
     itsGridInterface.reset(new GridInterface(itsPlugin.itsEngines.gridEngine.get(),
-                                             itsPlugin.itsEngines.geoEngine->getTimeZones()));
+                                             itsPlugin.itsEngines.geoEngine->getTimeZones(),
+                                             itsPlugin.itsConfig.requestLimits()));
   }
 }
 
@@ -203,7 +204,7 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
           const char* p = wkt.c_str();
           newGeom->importFromWkt(&p);
 
-          auto* expandedGeom = Fmi::OGR::expandGeometry(newGeom, tloc.loc->radius);
+          auto* expandedGeom = Fmi::OGR::expandGeometry(newGeom, tloc.loc->radius * 1000);
           expandedGeomUptr.reset(expandedGeom);
 
           std::string wktString = Fmi::OGR::exportToWkt(*expandedGeom);
