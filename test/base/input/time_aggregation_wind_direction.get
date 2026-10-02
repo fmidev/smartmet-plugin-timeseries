@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&timesteps=6&timestep=180&place=Helsinki&param=time,WindDirection,meandir_t(WindDirection:3h:0),sdevdir_t(WindDirection:3h:0),circlemean_t(WindDirection:3h:0),interpolatedir_t(WindDirection:3h:0)&precision=double HTTP/1.0
+

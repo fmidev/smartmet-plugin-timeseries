@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&timesteps=3&place=Helsinki&param=time,timestring,Temperature&timestring=%25A%20%25d.%25m.%20klo%20%25H&lang=fi HTTP/1.0
+

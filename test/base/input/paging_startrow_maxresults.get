@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&places=Helsinki,Tampere,Turku&timesteps=4&param=name,time,Temperature&startrow=2&maxresults=5 HTTP/1.0
+

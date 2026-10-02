@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&fmisid=101004,100971&starttime=201308051200&endtime=201308051500&timestep=60&param=fmisid,stationname,time,Temperature&startrow=2&maxresults=4 HTTP/1.0
+

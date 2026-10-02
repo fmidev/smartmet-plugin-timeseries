@@ -1,0 +1,4 @@
+<table><tr><th>name</th><th>time</th><th>Temperature</th><th>WindSpeedMS</th></tr><tr>
+<td>Helsinki</td><td>20080805T120000</td><td>15</td><td>17</td></tr><tr>
+<td>Helsinki</td><td>20080805T130000</td><td>15</td><td>16</td></tr><tr>
+<td>Helsinki</td><td>20080805T140000</td><td>15</td><td>16</td></tr></table>

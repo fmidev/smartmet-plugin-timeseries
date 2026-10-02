@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&timesteps=2&places=Helsinki,Tokyo,Sydney&param=name,model,time,Temperature HTTP/1.0
+

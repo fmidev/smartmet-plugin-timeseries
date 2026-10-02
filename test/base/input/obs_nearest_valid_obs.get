@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&place=Kumpula&starttime=201308051200&endtime=201308051300&timestep=60&param=name,stationname,fmisid,distance,Temperature HTTP/1.0
+

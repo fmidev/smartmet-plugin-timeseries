@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&fmisid=101004&starttime=2013-08-05T12:00:00Z&endtime=2013-08-05T14:00:00Z&timestep=30&param=utctime,localtime,time,Temperature,Pressure&timeformat=iso&tz=UTC&format=csv HTTP/1.0
+

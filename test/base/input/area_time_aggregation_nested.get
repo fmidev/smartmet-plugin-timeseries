@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&timesteps=3&timestep=180&area=Uusimaa&param=name,time,min_a(max_t(Temperature:3h:0)),mean_a(max_t(Temperature:3h:0)),max_a(sum_t(Precipitation1h:3h:0)),max_t(Temperature:3h:0)&precision=double HTTP/1.0
+
