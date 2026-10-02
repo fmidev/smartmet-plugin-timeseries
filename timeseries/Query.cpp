@@ -355,18 +355,25 @@ void Query::parse_producers(const Spine::HTTP::Request& theReq, const State& the
     // Verify the producer names are valid
     const auto obsProducers = getObsProducers(theState);
 
-    for (const auto& p : resultProducers)
+    // Each time period may list alternative producers for different locations
+    for (const auto& tproducers : resultProducers)
     {
-      const auto& qEngine = theState.getQEngine();
-      bool ok = qEngine.hasProducer(p);
-      if (!obsProducers.empty() && !ok)
-        ok = (obsProducers.find(p) != obsProducers.end());
-      const auto* gridEngine = theState.getGridEngine();
-      if (!ok && gridEngine)
-        ok = gridEngine->isGridProducer(p);
+      std::vector<std::string> names;
+      boost::algorithm::split(names, tproducers, boost::algorithm::is_any_of(","));
 
-      if (!ok)
-        throw Fmi::Exception(BCP, "Unknown producer name '" + p + "'");
+      for (const auto& p : names)
+      {
+        const auto& qEngine = theState.getQEngine();
+        bool ok = qEngine.hasProducer(p);
+        if (!obsProducers.empty() && !ok)
+          ok = (obsProducers.find(p) != obsProducers.end());
+        const auto* gridEngine = theState.getGridEngine();
+        if (!ok && gridEngine)
+          ok = gridEngine->isGridProducer(p);
+
+        if (!ok)
+          throw Fmi::Exception(BCP, "Unknown producer name '" + p + "'");
+      }
     }
 
     // Now split into location parts
