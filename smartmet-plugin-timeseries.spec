@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.9.26
-Release: 2%{?dist}.fmi
+Version: 26.10.2
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -32,10 +32,10 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: %{smartmet_fmt_devel}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 26.9.16
+BuildRequires: smartmet-library-timeseries-devel >= 26.10.2
 BuildRequires: smartmet-library-spine-devel >= 26.9.26
 BuildRequires: smartmet-library-locus-devel >= 26.4.13
-BuildRequires: smartmet-library-macgyver-devel >= 26.9.26-2
+BuildRequires: smartmet-library-macgyver-devel >= 26.10.2
 BuildRequires: smartmet-library-grid-content-devel >= 26.9.26
 BuildRequires: smartmet-library-grid-files-devel >= 26.9.26
 BuildRequires: smartmet-library-newbase-devel >= 26.9.23
@@ -54,10 +54,10 @@ BuildRequires: smartmet-engine-grid-devel >= 26.9.26
 Requires: %{smartmet_fmt}
 Requires: smartmet-library-gis >= 26.9.26
 Requires: smartmet-library-locus >= 26.4.13
-Requires: smartmet-library-macgyver >= 26.9.26-2
+Requires: smartmet-library-macgyver >= 26.10.2
 Requires: smartmet-library-newbase >= 26.9.23
 Requires: smartmet-library-spine >= 26.9.26
-Requires: smartmet-library-timeseries >= 26.9.16
+Requires: smartmet-library-timeseries >= 26.10.2
 Requires: smartmet-engine-geonames >= 26.9.26
 Requires: smartmet-engine-querydata >= 26.9.23
 Requires: smartmet-engine-gis >= 26.9.23
@@ -111,6 +111,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri Oct 02 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.2-1.fmi
+- Rebuilt against macgyver 26.10.2 where Fmi::Cache::Cache uses CLOCK eviction instead of LRU.
+  CLOCK is faster than LRU since a cache hit only takes a shared lock (ABI change)
+
 * Sat Sep 26 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.9.26-2.fmi
 - Enforce maxradius and maxlocations for all requested locations, not only fmisid/lpnn/wmo
 - Enforce maxlocations when expanding areas into grid points (groupareas=0)
