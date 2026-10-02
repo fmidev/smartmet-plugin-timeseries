@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&fmisid=101004&starttime=201308040000&endtime=201308062359&hour=6,12,18&param=time,Temperature,Humidity&tz=UTC HTTP/1.0
+

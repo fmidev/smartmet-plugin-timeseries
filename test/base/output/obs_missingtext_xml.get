@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<areaforecast>
+<row time="20130805T120000" Temperature="22" SnowDepth="-"/>
+<row time="20130805T123000" Temperature="22" SnowDepth="-"/>
+<row time="20130805T130000" Temperature="22" SnowDepth="-"/>
+</areaforecast>

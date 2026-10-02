@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&wkt=POLYGON((24.85%2060.15,25.05%2060.15,25.05%2060.25,24.85%2060.25,24.85%2060.15))&starttime=201308051200&endtime=201308051400&timestep=60&param=name,time,Temperature,min_a(Temperature),max_a(Temperature),count_a(Temperature) HTTP/1.0
+

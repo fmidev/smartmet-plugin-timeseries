@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&timesteps=6&timestep=180&place=Helsinki&param=time,Temperature,median_t(Temperature:3h:0),sdev_t(Temperature:3h:0),count_t(Temperature:3h:0),change_t(Temperature:3h:0),trend_t(Temperature:3h:0)&precision=double HTTP/1.0
+

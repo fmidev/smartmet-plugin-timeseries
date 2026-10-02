@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&area=Helsinki&starttime=201308051200&endtime=201308051400&timestep=60&param=name,time,Temperature,median_a(Temperature),sdev_a(Temperature),count_a(Temperature)&precision=double HTTP/1.0
+

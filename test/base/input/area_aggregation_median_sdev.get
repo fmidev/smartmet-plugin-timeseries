@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&timesteps=3&area=Uusimaa&param=name,time,median_a(Temperature),sdev_a(Temperature),count_a(Temperature),sum_a(Precipitation1h),percentage_a[15:20](Temperature)&precision=double HTTP/1.0
+

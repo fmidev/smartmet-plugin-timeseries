@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&timesteps=3&place=Helsinki:25&param=name,time,min_a(Temperature),max_a(Temperature),mean_a(Temperature)&precision=double HTTP/1.0
+

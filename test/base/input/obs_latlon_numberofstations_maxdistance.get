@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&latlon=60.2,24.96&numberofstations=3&maxdistance=20km&starttime=201308051200&endtime=201308051300&timestep=60&param=fmisid,stationname,distance,direction,time,Temperature HTTP/1.0
+

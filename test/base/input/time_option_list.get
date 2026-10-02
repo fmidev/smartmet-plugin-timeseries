@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808050000&endtime=200808080000&time=0600,1800&place=Helsinki&param=time,Temperature HTTP/1.0
+

@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051200&timesteps=2&bbox=24,60,25,61&param=name,time,min_a(Temperature),max_a(Temperature)&precision=double HTTP/1.0
+

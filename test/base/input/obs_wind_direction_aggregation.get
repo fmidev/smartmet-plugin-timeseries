@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&fmisid=101004&starttime=201308051200&endtime=201308051800&timestep=60&param=time,WindDirection,meandir_t(WindDirection:1h:0),sdevdir_t(WindDirection:1h:0),WindSpeedMS,max_t(WindSpeedMS:1h:0),mean_t(WindSpeedMS:1h:0)&precision=double HTTP/1.0
+

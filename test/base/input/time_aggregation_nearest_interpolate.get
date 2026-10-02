@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808051230&timesteps=4&timestep=60&place=Helsinki&param=time,Temperature,nearest_t(Temperature:1h:1h),interpolate_t(Temperature:1h:1h)&precision=double HTTP/1.0
+

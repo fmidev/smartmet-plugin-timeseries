@@ -1,0 +1,2 @@
+GET /timeseries?producer=opendata&fmisid=101004&starttime=201308051200&endtime=201308051800&timestep=60&param=time,Temperature,median_t(Temperature:1h:0),sdev_t(Temperature:1h:0),count_t(Temperature:1h:0),change_t(Temperature:1h:0),trend_t(Temperature:1h:0)&precision=double HTTP/1.0
+
