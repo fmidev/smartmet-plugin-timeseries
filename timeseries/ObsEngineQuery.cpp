@@ -48,7 +48,7 @@ TS::TimeSeriesByLocation timeseries_by_fmisid(const std::string& producer,
   }
 }
 
-TS::TimeSeriesGenerator::LocalTimeList get_timesteps(const TS::TimeSeries ts)
+TS::TimeSeriesGenerator::LocalTimeList get_timesteps(const TS::TimeSeries& ts)
 {
   try
   {
@@ -490,7 +490,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
                                          query.precisions[i],
                                          query.crs);
         auto timeseries = generate_timeseries(state, timestep_vector, value);
-        ret->emplace_back(timeseries);
+        ret->emplace_back(std::move(timeseries));
         parameterResultIndexes.insert(std::make_pair(paramname, ret->size() - 1));
       }
       else if (TS::is_time_parameter(paramname))
@@ -513,13 +513,13 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
                                                query.timestring);
           timeseries.emplace_back(TS::TimedValue(timestep, value));
         }
-        ret->emplace_back(timeseries);
+        ret->emplace_back(std::move(timeseries));
         parameterResultIndexes.insert(std::make_pair(paramname, ret->size() - 1));
       }
       else if (!obsParameters[i].duplicate)
       {
         // add data fields fetched from observation
-        auto result = *observation_result;
+        const auto& result = *observation_result;
         if (result[obs_result_field_index].empty())
           continue;
 
@@ -531,7 +531,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
         if (is_location_p)
           fill_missing_location_params(result_at_index);
 
-        ret->push_back(result_at_index);
+        ret->push_back(std::move(result_at_index));
         std::string pname_plus_snumber = TS::get_parameter_id(obsParameters[i].param);
         parameterResultIndexes.insert(std::make_pair(pname_plus_snumber, ret->size() - 1));
         obs_result_field_index++;
@@ -566,22 +566,20 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::doAggregationForPlaces(
         continue;
 
       unsigned int resultIndex = parameterResultIndexes.at(paramname);
-      TS::TimeSeries ts = (*observation_result)[resultIndex];
-      TS::DataFunctions pfunc = obsParam.functions;
-      TS::TimeSeriesPtr tsptr;
+      const TS::TimeSeries& ts = (*observation_result)[resultIndex];
+      const TS::DataFunctions& pfunc = obsParam.functions;
       // If inner function exists aggregation happens
       if (pfunc.innerFunction.exists())
       {
-        tsptr = TS::Aggregator::aggregate(ts, pfunc, agg_times);
+        TS::TimeSeriesPtr tsptr = TS::Aggregator::aggregate(ts, pfunc, agg_times);
         if (tsptr->empty())
           continue;
+        aggregated_observation_result->push_back(*tsptr);
       }
       else
       {
-        tsptr = std::make_shared<TS::TimeSeries>();
-        *tsptr = ts;
+        aggregated_observation_result->push_back(ts);
       }
-      aggregated_observation_result->push_back(*tsptr);
     }
     return aggregated_observation_result;
   }
@@ -601,7 +599,7 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
   try
   {
     TS::TimeSeriesVectorPtr observation_result;
-    ObsParameters obsParameters = obsParameterss;
+    const ObsParameters& obsParameters = obsParameterss;
 
     // Quick query if there is no aggregation
     if (!query.timeAggregationRequested)
@@ -1012,6 +1010,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
     //
 
     std::vector<TS::TimeSeriesGroupPtr> tsg_vector;
+    tsg_vector.reserve(obsParameters.size());
     for (unsigned int i = 0; i < obsParameters.size(); i++)
       tsg_vector.emplace_back(TS::TimeSeriesGroupPtr(new TS::TimeSeriesGroup));
 
@@ -1215,7 +1214,7 @@ void ObsEngineQuery::getObsSettings(std::vector<SettingsInfo>& settingsVector,
     for (auto wmo : query.wmos)
       stationSettings.wmos.push_back(wmo);
     // WSIs
-    for (auto wsi : query.wsis)
+    for (const auto& wsi : query.wsis)
       stationSettings.wsis.push_back(wsi);
     // FMISIDs
     for (auto fmisid : query.fmisids)

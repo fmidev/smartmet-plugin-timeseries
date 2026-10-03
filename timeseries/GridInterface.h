@@ -54,13 +54,21 @@ class GridInterface
   private:
 
       void            exteractCoordinatesAndAggrecationTimes(std::shared_ptr<QueryServer::Query>& gridQuery,
-                        Fmi::TimeZonePtr tz,T::Coordinate_vec& coordinates,
+                        const Fmi::TimeZonePtr& tz,T::Coordinate_vec& coordinates,
                         std::set<Fmi::LocalDateTime>& aggregationTimes);
 
-      void            exteractQueryResult(std::shared_ptr<QueryServer::Query>& gridQuery,const State& state,
-                        Query& masterquery,TS::OutputData& outputData,const QueryServer::QueryStreamer_sptr& queryStreamer,
-                        const AreaProducers& areaproducers,Fmi::TimeZonePtr tz,const Spine::TaggedLocation& tloc,
-                        const Spine::LocationPtr& loc,const std::string& country,int levelId,double level);
+      void exteractQueryResult(std::shared_ptr<QueryServer::Query>& gridQuery,
+                               const State& state,
+                               Query& masterquery,
+                               TS::OutputData& outputData,
+                               const QueryServer::QueryStreamer_sptr& queryStreamer,
+                               const AreaProducers& areaproducers,
+                               const Fmi::TimeZonePtr& tz,
+                               const Spine::TaggedLocation& tloc,
+                               const Spine::LocationPtr& loc,
+                               const std::string& country,
+                               int levelId,
+                               double level);
 
       void            getDataTimes(const AreaProducers& areaproducers,std::string& startTime,std::string& endTime);
       static int      getParameterIndex(QueryServer::Query& gridQuery, const std::string& param);

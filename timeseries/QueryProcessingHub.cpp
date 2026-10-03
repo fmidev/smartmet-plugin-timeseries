@@ -62,7 +62,7 @@ bool obs_producers_exists(const Query& masterquery, ObsEngineQuery obsEngineQuer
 #endif
 
 Spine::LocationPtr get_loc(const Query& masterquery,
-                           const Query q,
+                           const Query& q,
                            const Spine::TaggedLocation& tloc,
                            const Engine::Geonames::Engine& geoEngine,
                            const Engine::Gis::GeometryStorage& geometryStorage)

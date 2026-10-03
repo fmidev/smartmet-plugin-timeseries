@@ -855,7 +855,7 @@ void QEngineQuery::pointQuery(const Query& theQuery,
 Spine::LocationList QEngineQuery::getLocationListForPath(const Query& theQuery,
                                                          const Spine::TaggedLocation& theTLoc,
                                                          const std::string& place,
-                                                         const NFmiSvgPath svgPath,
+                                                         const NFmiSvgPath& svgPath,
                                                          const State& theState,
                                                          bool isWkt) const
 {
