@@ -299,7 +299,7 @@ void resolve_time_settings(const std::string& producer,
       else
         query.toptions.startTime =
             producerDataPeriod.getLocalStartTime(producer, query.timezone, timezones).local_time();
-      if (query.toptions.startTimeUTC)
+      if (query.toptions.endTimeUTC)
         query.toptions.endTime =
             producerDataPeriod.getLocalEndTime(producer, query.timezone, timezones).utc_time();
       else

@@ -575,12 +575,15 @@ std::size_t QueryProcessingHub::hash_value(const State& state,
 
           // We do not need to iterate over the parameters here like processQEngineQuery does
 
-          // every parameter starts from the same row
-          if (!data_period_endtime.is_not_a_date_time()
-               && subquery.toptions.endTime > data_period_endtime.local_time()
-               && !isClimatologyProducer)
+          // every parameter starts from the same row. The end time is in UTC or in local
+          // time depending on the request, compare it in the same time
+          if (!data_period_endtime.is_not_a_date_time() && !isClimatologyProducer)
           {
-            subquery.toptions.endTime = data_period_endtime.local_time();
+            const auto data_endtime = (subquery.toptions.endTimeUTC
+                                           ? data_period_endtime.utc_time()
+                                           : data_period_endtime.local_time());
+            if (subquery.toptions.endTime > data_endtime)
+              subquery.toptions.endTime = data_endtime;
           }
 
           {
