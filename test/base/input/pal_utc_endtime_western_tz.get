@@ -1,0 +1,2 @@
+GET /timeseries?producer=pal_skandinavia&place=Helsinki&starttime=2008-08-09T00:00:00Z&endtime=2008-08-10T00:00:00Z&tz=America/New_York&param=utctime,localtime,Temperature&format=ascii HTTP/1.0
+
