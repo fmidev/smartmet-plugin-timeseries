@@ -823,7 +823,7 @@ are aggregated over the given time interval and after that the result values are
 aggregated over the area.
 
 ```text
-http://data.fmi.fi/timeseries?format=debug&area=Turku&param=name,time,temperature,mean(mean_t(temperature/1h/1h) as meantemperature
+http://data.fmi.fi/timeseries?format=debug&area=Turku&param=name,time,temperature,mean(mean_t(temperature/1h/1h)) as meantemperature
 ```
 
 | name  | time            | temperature   | meantemperature |
@@ -831,6 +831,20 @@ http://data.fmi.fi/timeseries?format=debug&area=Turku&param=name,time,temperatur
 | Turku | 20160913T160000 | [19 20 20 20] | 19              |
 | Turku | 20160913T170000 | [19 19 19 19] | 19              |
 | Turku | 20160913T180000 | [18 19 18 18] | 18              |
+
+The time function can also be the outer one, in which case the values are
+first aggregated over the area and the results are then aggregated over time.
+The aggregation interval is then given inside the parentheses of the time
+function, after the area function:
+
+```text
+http://data.fmi.fi/timeseries?format=debug&area=Turku&param=name,time,mean_t(mean(temperature)/1h/1h) as meantemperature
+```
+
+For compatibility the interval may also be given directly after the parameter
+name, as in `mean_t(mean(temperature/1h/1h))`. Either way it applies to the time
+function. The interval cannot be given in both places, and it cannot follow the
+inner function if the outer function is an area function.
 
 ### Filtering Data Before Aggregate
 
