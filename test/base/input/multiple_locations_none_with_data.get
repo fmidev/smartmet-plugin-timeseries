@@ -1,0 +1,1 @@
+GET /timeseries?now=200808050900&producer=pal_skandinavia&lonlats=-74,40.7,-80,35&param=time,Temperature,longitude,latitude HTTP/1.0

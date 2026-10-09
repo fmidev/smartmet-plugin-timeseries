@@ -30,11 +30,13 @@ class QEngineQuery
  public:
   QEngineQuery(const Plugin& thePlugin);
 
-  void processQEngineQuery(const State& state,
-                           Query& masterquery,
-                           TS::OutputData& outputData,
-                           const AreaProducers& areaproducers,
-                           const ProducerDataPeriod& producerDataPeriod) const;
+  // Returns the names of the locations for which no producer has data. They are left out of
+  // the output, the caller decides whether the request as a whole failed.
+  std::vector<std::string> processQEngineQuery(const State& state,
+                                               Query& masterquery,
+                                               TS::OutputData& outputData,
+                                               const AreaProducers& areaproducers,
+                                               const ProducerDataPeriod& producerDataPeriod) const;
   Engine::Querydata::Producer selectProducer(const Spine::Location& location,
                                              const Query& query,
                                              const AreaProducers& areaproducers) const;

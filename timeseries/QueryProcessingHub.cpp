@@ -9,6 +9,7 @@
 #include <macgyver/Hash.h>
 #include <timeseries/ParameterKeywords.h>
 #include <timeseries/ParameterTools.h>
+#include <set>
 
 namespace SmartMet
 {
@@ -295,6 +296,26 @@ void fetch_static_location_values(const Query& query,
   }
 }
 
+// A location without data is left out of a multi-location result. Only if no location got
+// any data does the request fail, with the same error a single location used to get
+// (BRAINSTORM-3500).
+void require_some_data(const std::vector<std::string>& theNoDataLocations)
+{
+  std::string names;
+  std::set<std::string> listed;
+  for (const auto& name : theNoDataLocations)
+  {
+    if (!listed.insert(name).second)
+      continue;
+    if (!names.empty())
+      names += "; ";  // coordinate names may contain commas
+    names += name;
+  }
+  Fmi::Exception ex(BCP, "No data available for " + names);
+  ex.disableLogging();
+  throw ex;
+}
+
 }  // namespace
 
 QueryProcessingHub::QueryProcessingHub(const Plugin& thePlugin)
@@ -352,6 +373,8 @@ std::shared_ptr<std::string> QueryProcessingHub::processQuery(
     // data in order as is possible. The later producers patch the data
     // *after* the first ones if possible.
 
+    std::vector<std::string> no_data_locations;
+
     std::size_t producer_group = 0;
     for (const AreaProducers& areaproducers : masterquery.timeproducers)
     {
@@ -387,14 +410,16 @@ std::shared_ptr<std::string> QueryProcessingHub::processQuery(
         // If the query was not processed then we should call the QEngine instead.
         else
         {
-          itsQEngineQuery.processQEngineQuery(
+          auto skipped = itsQEngineQuery.processQEngineQuery(
               state, q, outputData, areaproducers, producerDataPeriod);
+          no_data_locations.insert(no_data_locations.end(), skipped.begin(), skipped.end());
         }
       }
       else
       {
-        itsQEngineQuery.processQEngineQuery(
+        auto skipped = itsQEngineQuery.processQEngineQuery(
             state, q, outputData, areaproducers, producerDataPeriod);
+        no_data_locations.insert(no_data_locations.end(), skipped.begin(), skipped.end());
       }
 
       // get the latestTimestep from previous query
@@ -402,6 +427,9 @@ std::shared_ptr<std::string> QueryProcessingHub::processQuery(
       startTimeUTC = q.toptions.startTimeUTC;
       ++producer_group;
     }
+
+    if (outputData.empty() && !no_data_locations.empty())
+      require_some_data(no_data_locations);
 
 #ifndef WITHOUT_OBSERVATION
     PostProcessing::fix_precisions(masterquery, obsParameters);
@@ -521,6 +549,10 @@ std::size_t QueryProcessingHub::hash_value(const State& state,
     std::size_t producer_group = 0;
     bool firstProducer = true;
 
+    // Locations without data are left out, see require_some_data
+    std::vector<std::string> no_data_locations;
+    std::size_t locations_with_data = 0;
+
     for (const AreaProducers& areaproducers : masterquery.timeproducers)
     {
       Query q = masterquery;
@@ -602,10 +634,10 @@ std::size_t QueryProcessingHub::hash_value(const State& state,
 
             if (producer.empty())
             {
-              Fmi::Exception ex(BCP, "No data available for '" + tloc.tag + "'!");
-              ex.disableLogging();
-              throw ex;
+              no_data_locations.push_back(get_name_base(tloc.loc->name));
+              continue;
             }
+            ++locations_with_data;
 
             auto qi = (subquery.origintime ? state.get(producer, *subquery.origintime)
                                            : state.get(producer));
@@ -663,6 +695,9 @@ std::size_t QueryProcessingHub::hash_value(const State& state,
       startTimeUTC = q.toptions.startTimeUTC;
       ++producer_group;
     }
+
+    if (locations_with_data == 0 && !no_data_locations.empty())
+      require_some_data(no_data_locations);
 
     return hash;
   }

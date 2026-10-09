@@ -322,11 +322,12 @@ void QEngineQuery::resolveAreaLocations(Query& query,
   query.loptions->setLocations(tloclist);
 }
 
-void QEngineQuery::processQEngineQuery(const State& state,
-                                       Query& masterquery,
-                                       TS::OutputData& outputData,
-                                       const AreaProducers& areaproducers,
-                                       const ProducerDataPeriod& producerDataPeriod) const
+std::vector<std::string> QEngineQuery::processQEngineQuery(
+    const State& state,
+    Query& masterquery,
+    TS::OutputData& outputData,
+    const AreaProducers& areaproducers,
+    const ProducerDataPeriod& producerDataPeriod) const
 {
   try
   {
@@ -343,6 +344,7 @@ void QEngineQuery::processQEngineQuery(const State& state,
 
     bool firstProducer = outputData.empty();
 
+    std::vector<std::string> no_data_locations;
     std::set<std::string> processed_locations;
     for (const auto& tloc : masterquery.loptions->locations())
     {
@@ -351,6 +353,20 @@ void QEngineQuery::processQEngineQuery(const State& state,
       if (processed_locations.find(location_id) != processed_locations.end())
         continue;
       processed_locations.insert(location_id);
+
+      // A location for which no producer has data is left out of the output instead of
+      // failing the whole request. The request fails only if no location gets any data
+      // (BRAINSTORM-3500). The producer is selected as in fetchQEngineValues.
+      {
+        NFmiSvgPath svgPath;
+        bool isWkt = false;
+        auto resolved_loc = resolveLocation(tloc, masterquery, svgPath, isWkt);
+        if (selectProducer(*resolved_loc, masterquery, areaproducers).empty())
+        {
+          no_data_locations.push_back(get_name_base(tloc.loc->name));
+          continue;
+        }
+      }
 
       Query q = masterquery;
       QueryLevelDataCache queryLevelDataCache;
@@ -412,6 +428,7 @@ void QEngineQuery::processQEngineQuery(const State& state,
       masterquery.latestTimestep = q.latestTimestep;
       masterquery.lastpoint = q.lastpoint;
     }
+    return no_data_locations;
   }
   catch (...)
   {
