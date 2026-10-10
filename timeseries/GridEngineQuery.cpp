@@ -54,8 +54,8 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
         for (const auto& svg : svgList)
         {
           Spine::LocationList ll = get_location_list(svg, tloc.tag, query.step,*itsPlugin.itsEngines.geoEngine);
-          for (auto it=ll.begin(); it!=ll.end();++it)
-            polygonPoints.emplace_back((*it)->longitude,(*it)->latitude);
+          for (auto& it : ll)
+            polygonPoints.emplace_back(it->longitude, it->latitude);
         }
         polygonPath.push_back(polygonPoints);
       }
@@ -63,8 +63,8 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
       {
         T::Coordinate_vec polygonPoints;
         Spine::LocationList ll = query.wktGeometries.getLocations(tloc.loc->name);
-        for (auto it=ll.begin(); it!=ll.end();++it)
-          polygonPoints.emplace_back((*it)->longitude,(*it)->latitude);
+        for (auto& it : ll)
+          polygonPoints.emplace_back(it->longitude, it->latitude);
         polygonPath.push_back(polygonPoints);
       }
       else if (geomType == wkbLineString)
@@ -73,8 +73,8 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
         svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
         T::Coordinate_vec polygonPoints;
         Spine::LocationList ll = get_location_list(svgPath, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine);
-        for (auto it=ll.begin(); it!=ll.end();++it)
-          polygonPoints.emplace_back((*it)->longitude,(*it)->latitude);
+        for (auto& it : ll)
+          polygonPoints.emplace_back(it->longitude, it->latitude);
         polygonPath.push_back(polygonPoints);
       }
       else
