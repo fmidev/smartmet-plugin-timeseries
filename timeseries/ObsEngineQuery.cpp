@@ -10,6 +10,8 @@
 #include <timeseries/ParameterTools.h>
 #include <timeseries/TimeSeriesInclude.h>
 
+#include <memory>
+
 namespace SmartMet
 {
 namespace Plugin
@@ -166,7 +168,7 @@ Spine::LocationPtr get_loc(const Query& query,
         // sure at least the requested fmisid is correct:
         Spine::Location l(0, 0, "", query.timezone);
         l.fmisid = fmisid;
-        loc.reset(new Spine::Location(l));
+        loc = std::make_shared<Spine::Location>(l);
       }
     }
     else
@@ -1011,7 +1013,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
     std::vector<TS::TimeSeriesGroupPtr> tsg_vector;
     tsg_vector.reserve(obsParameters.size());
     for (unsigned int i = 0; i < obsParameters.size(); i++)
-      tsg_vector.emplace_back(TS::TimeSeriesGroupPtr(new TS::TimeSeriesGroup));
+      tsg_vector.emplace_back(std::make_shared<TS::TimeSeriesGroup>());
 
     // iterate locations
 
