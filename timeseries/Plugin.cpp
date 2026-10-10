@@ -75,7 +75,7 @@ Spine::TableFormatter::Names get_headers(const std::vector<Spine::Parameter>& pa
       {
         const char* param_header =
             header_name.c_str() + partList[0].size() + partList[1].size() + 2;
-        headers.push_back(param_header);
+        headers.emplace_back(param_header);
       }
       else
       {

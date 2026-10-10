@@ -96,8 +96,7 @@ void get_special_parameter_values(const std::string& paramname,
       }
     }
     if (!timeseries.empty())
-      result->push_back(
-          TS::LonLatTimeSeries(Spine::LonLat(loc->longitude, loc->latitude), timeseries));
+      result->emplace_back(Spine::LonLat(loc->longitude, loc->latitude), timeseries);
   }
 }
 

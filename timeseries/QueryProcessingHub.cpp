@@ -190,7 +190,7 @@ Spine::TaggedLocationList get_tloc_list(const Query& masterquery,
         if (nearest_loc)
         {
           Spine::TaggedLocationList ret;
-          ret.emplace_back(Spine::TaggedLocation(nearest_loc->name, nearest_loc));
+          ret.emplace_back(nearest_loc->name, nearest_loc);
           return ret;
         }
       }
@@ -360,7 +360,7 @@ std::shared_ptr<std::string> QueryProcessingHub::processQuery(
 
     const bool producerMissing = masterquery.timeproducers.empty();
     if (producerMissing)
-      masterquery.timeproducers.emplace_back(AreaProducers());
+      masterquery.timeproducers.emplace_back();
 
 #ifndef WITHOUT_OBSERVATION
     const ObsParameters obsParameters = itsObsEngineQuery.getObsParameters(masterquery);
@@ -537,7 +537,7 @@ std::size_t QueryProcessingHub::hash_value(const State& state,
 
     if (producerMissing)
     {
-      masterquery.timeproducers.emplace_back(AreaProducers());
+      masterquery.timeproducers.emplace_back();
     }
 
     Fmi::DateTime latestTimestep = masterquery.latestTimestep;
