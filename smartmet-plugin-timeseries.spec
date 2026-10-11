@@ -32,37 +32,37 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: %{smartmet_fmt_devel}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 26.10.3
-BuildRequires: smartmet-library-spine-devel >= 26.10.3
+BuildRequires: smartmet-library-timeseries-devel >= 26.10.11
+BuildRequires: smartmet-library-spine-devel >= 26.10.11
 BuildRequires: smartmet-library-locus-devel >= 26.10.3
-BuildRequires: smartmet-library-macgyver-devel >= 26.10.3
-BuildRequires: smartmet-library-grid-content-devel >= 26.9.26
-BuildRequires: smartmet-library-grid-files-devel >= 26.9.26
-BuildRequires: smartmet-library-newbase-devel >= 26.10.3
-BuildRequires: smartmet-library-gis-devel >= 26.10.3
-BuildRequires: smartmet-engine-geonames-devel >= 26.10.3
+BuildRequires: smartmet-library-macgyver-devel >= 26.10.11
+BuildRequires: smartmet-library-grid-content-devel >= 26.10.11
+BuildRequires: smartmet-library-grid-files-devel >= 26.10.11
+BuildRequires: smartmet-library-newbase-devel >= 26.10.11
+BuildRequires: smartmet-library-gis-devel >= 26.10.11
+BuildRequires: smartmet-engine-geonames-devel >= 26.10.11
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 26.10.3
+BuildRequires: smartmet-engine-observation-devel >= 26.10.11
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 26.10.3
+BuildRequires: smartmet-engine-querydata-devel >= 26.10.11
 BuildRequires: smartmet-engine-gis-devel >= 26.9.23
-BuildRequires: smartmet-engine-grid-devel >= 26.9.26
+BuildRequires: smartmet-engine-grid-devel >= 26.10.11
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
-#Requires: smartmet-engine-observation >= 26.9.23
+#Requires: smartmet-engine-observation >= 26.10.11
 #%endif
 Requires: %{smartmet_fmt}
-Requires: smartmet-library-gis >= 26.10.3
+Requires: smartmet-library-gis >= 26.10.11
 Requires: smartmet-library-locus >= 26.10.3
-Requires: smartmet-library-macgyver >= 26.10.3
-Requires: smartmet-library-newbase >= 26.10.3
-Requires: smartmet-library-spine >= 26.10.3
-Requires: smartmet-library-timeseries >= 26.10.3
-Requires: smartmet-engine-geonames >= 26.10.3
-Requires: smartmet-engine-querydata >= 26.10.3
+Requires: smartmet-library-macgyver >= 26.10.11
+Requires: smartmet-library-newbase >= 26.10.11
+Requires: smartmet-library-spine >= 26.10.11
+Requires: smartmet-library-timeseries >= 26.10.11
+Requires: smartmet-engine-geonames >= 26.10.11
+Requires: smartmet-engine-querydata >= 26.10.11
 Requires: smartmet-engine-gis >= 26.9.23
-Requires: smartmet-engine-grid >= 26.9.26
-Requires: smartmet-server >= 26.9.2
+Requires: smartmet-engine-grid >= 26.10.11
+Requires: smartmet-server >= 26.10.11
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-system
@@ -71,20 +71,20 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 26.9.3
-#TestRequires: smartmet-library-spine-plugin-test >= 26.9.26
-#TestRequires: smartmet-library-newbase-devel >= 26.10.3
+#TestRequires: smartmet-library-spine-plugin-test >= 26.10.11
+#TestRequires: smartmet-library-newbase-devel >= 26.10.11
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 26.5.8
 #TestRequires: smartmet-test-data >= 26.8.26
-#TestRequires: smartmet-library-grid-files-test >= 26.10.6
-#TestRequires: smartmet-library-gis >= 26.10.3
-#TestRequires: smartmet-engine-geonames >= 26.10.3
+#TestRequires: smartmet-library-grid-files-test >= 26.10.11
+#TestRequires: smartmet-library-gis >= 26.10.11
+#TestRequires: smartmet-engine-geonames >= 26.10.11
 #TestRequires: smartmet-engine-gis >= 26.9.23
-#TestRequires: smartmet-engine-querydata >= 26.10.3
+#TestRequires: smartmet-engine-querydata >= 26.10.11
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 26.10.3
+#TestRequires: smartmet-engine-observation >= 26.10.11
 %endif
-#TestRequires: smartmet-engine-grid >= 26.10.3
+#TestRequires: smartmet-engine-grid >= 26.10.11
 #TestRequires: gdal312-libs
 #TestRequires: libwebp13
 
@@ -113,8 +113,6 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Sun Oct 11 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.11-1.fmi
 - Invalid numbers are now detected instead of silently becoming 0 or a numeric prefix
-
-* Sat Oct 10 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.10-1.fmi
 - Use auto and return {} where clang-tidy suggests it, no functional changes
 - Use emplace and C++ standard library headers where clang-tidy suggests it, no functional changes
 - Use raw string literals and std::make_shared where clang-tidy suggests it, no functional changes
