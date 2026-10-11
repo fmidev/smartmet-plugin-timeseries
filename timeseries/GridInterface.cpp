@@ -2021,7 +2021,7 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
               if (dash != std::string::npos)
               {
                 n = pstr.substr(1, dash - 1);
-                idx = atoi(pstr.c_str() + dash + 1);
+                idx = Fmi::stoi_opt(pstr.substr(dash + 1)).value_or(-1);
               }
 
               if (idx >= 0 && idx < pLen)
