@@ -666,6 +666,7 @@ The table with the computed parameters is given below.
 | Weather             | Text description of the weather like "heavy rain", "sunny", "partly cloudy", etc. These descriptions are available in the following languages: Finnish (fi), English(en), Swedish (sv), Estonian (et). You can define the language in the request with the "lang" parameter (e.g. "lang=en") |
 | SmartSymbol         | The new weather symbol code used at FMI.                                                                                                                                                                                                                                                     |
 | SmartSymbolText     | Plain text for the SmartSymbol.                                                                                                                                                                                                                                                              |
+| RoadWW              | Road weather station precipitation (SADE and RST) as a WMO 4677 ww code, producer road only.                                                                                                                                                                                                 |
 
 Example 1
 
