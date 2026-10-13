@@ -28,7 +28,7 @@ void get_special_parameter_values(const std::string& paramname,
                                   const Query& query,
                                   const State& state,
                                   const Fmi::TimeZones& timezones,
-                                  TS::TimeSeriesPtr& result)
+                                  const TS::TimeSeriesPtr& result)
 {
   bool is_time_parameter = TS::is_time_parameter(paramname);
   bool is_location_parameter = TS::is_location_parameter(paramname);
@@ -65,7 +65,7 @@ void get_special_parameter_values(const std::string& paramname,
                                   const Query& query,
                                   const State& state,
                                   const Fmi::TimeZones& timezones,
-                                  TS::TimeSeriesGroupPtr& result)
+                                  const TS::TimeSeriesGroupPtr& result)
 {
   bool is_time_parameter = TS::is_time_parameter(paramname);
   bool is_location_parameter = TS::is_location_parameter(paramname);

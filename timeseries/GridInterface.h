@@ -45,19 +45,26 @@ class GridInterface
       static bool     isValidDefaultRequest(const std::vector<uint>& defaultGeometries,
                         const std::vector<std::vector<T::Coordinate>>& polygonPath,T::GeometryId_set& geometryIdList);
 
-      void            processGridQuery(const State& state,Query& query,TS::OutputData& outputData,
-                        const QueryServer::QueryStreamer_sptr& queryStreamer,const AreaProducers& areaproducers,
-                        const ProducerDataPeriod& producerDataPeriod,const Spine::TaggedLocation& tloc,
-                        const Spine::LocationPtr& loc,const std::string& country,T::GeometryId_set& geometryIdList,
-                        std::vector<std::vector<T::Coordinate>>& polygonPath);
+      void processGridQuery(const State& state,
+                            Query& query,
+                            TS::OutputData& outputData,
+                            const QueryServer::QueryStreamer_sptr& queryStreamer,
+                            const AreaProducers& areaproducers,
+                            const ProducerDataPeriod& producerDataPeriod,
+                            const Spine::TaggedLocation& tloc,
+                            const Spine::LocationPtr& loc,
+                            const std::string& country,
+                            const T::GeometryId_set& geometryIdList,
+                            const std::vector<std::vector<T::Coordinate>>& polygonPath);
 
-  private:
+     private:
+      void exteractCoordinatesAndAggrecationTimes(
+          const std::shared_ptr<QueryServer::Query>& gridQuery,
+          const Fmi::TimeZonePtr& tz,
+          T::Coordinate_vec& coordinates,
+          std::set<Fmi::LocalDateTime>& aggregationTimes);
 
-      void            exteractCoordinatesAndAggrecationTimes(std::shared_ptr<QueryServer::Query>& gridQuery,
-                        const Fmi::TimeZonePtr& tz,T::Coordinate_vec& coordinates,
-                        std::set<Fmi::LocalDateTime>& aggregationTimes);
-
-      void exteractQueryResult(std::shared_ptr<QueryServer::Query>& gridQuery,
+      void exteractQueryResult(const std::shared_ptr<QueryServer::Query>& gridQuery,
                                const State& state,
                                Query& masterquery,
                                TS::OutputData& outputData,
@@ -73,8 +80,15 @@ class GridInterface
       void            getDataTimes(const AreaProducers& areaproducers,std::string& startTime,std::string& endTime);
       static int      getParameterIndex(QueryServer::Query& gridQuery, const std::string& param);
 
-      void            findLevelId(Query& masterquery,const AreaProducers& areaproducers,int& levelId,std::string& geometryIdStr);
-      void            findLevels(Query& masterquery,const AreaProducers& areaproducers,uint mode,int& levelId,std::vector<double>& levels);
+      void findLevelId(const Query& masterquery,
+                       const AreaProducers& areaproducers,
+                       int& levelId,
+                       std::string& geometryIdStr);
+      void findLevels(const Query& masterquery,
+                      const AreaProducers& areaproducers,
+                      uint mode,
+                      int& levelId,
+                      std::vector<double>& levels);
 
       static void     insertFileQueries(QueryServer::Query& query,const QueryServer::QueryStreamer_sptr& queryStreamer);
       bool            isBuildInParameter(const char *parameter);
@@ -85,9 +99,12 @@ class GridInterface
       void            prepareGeneration(QueryServer::Query& gridQuery,const Query& masterquery,
                         bool& sameParamAnalysisTime);
 
-      void            prepareLocation(QueryServer::Query& gridQuery,const Query& masterquery,
-                        const Spine::LocationPtr& loc,const T::GeometryId_set& geometryIdList,
-                        std::vector<std::vector<T::Coordinate>>& polygonPath,uchar& locationType);
+      void prepareLocation(QueryServer::Query& gridQuery,
+                           const Query& masterquery,
+                           const Spine::LocationPtr& loc,
+                           const T::GeometryId_set& geometryIdList,
+                           const std::vector<std::vector<T::Coordinate>>& polygonPath,
+                           uchar& locationType);
 
       void            prepareQueryTimes(QueryServer::Query& gridQuery,const Query& masterquery,
                         const AreaProducers& areaproducers,const Spine::LocationPtr& loc);
@@ -103,10 +120,16 @@ class GridInterface
                         uint mode,int levelId,int geometryId,uchar locationType,bool sameParamAnalysisTime,
                         double origLevel,const AreaProducers& areaproducers);
 
-      void            prepareGridQuery(QueryServer::Query& gridQuery,const Query& masterquery,
-                        uint mode,int origLevelId,double origLevel,const AreaProducers& areaproducers,
-                        const Spine::TaggedLocation& tloc,const Spine::LocationPtr& loc,
-                        const T::GeometryId_set& geometryIdList,std::vector<std::vector<T::Coordinate>>& polygonPath);
+      void prepareGridQuery(QueryServer::Query& gridQuery,
+                            const Query& masterquery,
+                            uint mode,
+                            int origLevelId,
+                            double origLevel,
+                            const AreaProducers& areaproducers,
+                            const Spine::TaggedLocation& tloc,
+                            const Spine::LocationPtr& loc,
+                            const T::GeometryId_set& geometryIdList,
+                            const std::vector<std::vector<T::Coordinate>>& polygonPath);
 
 
   private:

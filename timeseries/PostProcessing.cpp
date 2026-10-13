@@ -243,7 +243,7 @@ void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
 // ----------------------------------------------------------------------
 
 // fills the table with data
-void fill_table(Query& query, TS::OutputData& outputData, Spine::Table& table)
+void fill_table(const Query& query, TS::OutputData& outputData, Spine::Table& table)
 {
   try
   {

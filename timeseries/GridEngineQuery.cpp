@@ -25,7 +25,7 @@ GridEngineQuery::GridEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin)
 void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
                                             std::vector<std::vector<T::Coordinate>>& polygonPath,
                                             const Spine::TaggedLocation& tloc,
-                                            Query& query) const
+                                            const Query& query) const
 {
   switch (loc->type)
   {

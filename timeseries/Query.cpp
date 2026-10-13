@@ -27,7 +27,7 @@ const char* default_timezone = "localtime";
 
 namespace
 {
-void set_max_agg_interval_behind(TS::DataFunction& func, unsigned int& max_interval)
+void set_max_agg_interval_behind(const TS::DataFunction& func, unsigned int& max_interval)
 {
   try
   {
@@ -43,7 +43,7 @@ void set_max_agg_interval_behind(TS::DataFunction& func, unsigned int& max_inter
   }
 }
 
-void set_max_agg_interval_ahead(TS::DataFunction& func, unsigned int& max_interval)
+void set_max_agg_interval_ahead(const TS::DataFunction& func, unsigned int& max_interval)
 {
   try
   {

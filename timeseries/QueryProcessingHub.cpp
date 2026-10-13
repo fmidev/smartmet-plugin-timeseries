@@ -216,7 +216,7 @@ Spine::TaggedLocationList get_tloc_list(const Query& masterquery,
   }
 }
 
-void check_in_keyword_locations(Query& masterquery,
+void check_in_keyword_locations(const Query& masterquery,
                                 const Engine::Gis::GeometryStorage& geometryStorage)
 {
   try

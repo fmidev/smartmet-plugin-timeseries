@@ -1012,7 +1012,7 @@ void GridInterface::prepareLocation(QueryServer::Query& gridQuery,
                                     const Query& masterquery,
                                     const Spine::LocationPtr& loc,
                                     const T::GeometryId_set& geometryIdList,
-                                    std::vector<std::vector<T::Coordinate>>& polygonPath,
+                                    const std::vector<std::vector<T::Coordinate>>& polygonPath,
                                     uchar& locationType)
 {
   FUNCTION_TRACE
@@ -1313,7 +1313,7 @@ void GridInterface::prepareGridQuery(QueryServer::Query& gridQuery,
                                      const Spine::TaggedLocation& /* tloc */,
                                      const Spine::LocationPtr& loc,
                                      const T::GeometryId_set& geometryIdList,
-                                     std::vector<std::vector<T::Coordinate>>& polygonPath)
+                                     const std::vector<std::vector<T::Coordinate>>& polygonPath)
 {
   FUNCTION_TRACE
   try
@@ -1363,7 +1363,7 @@ int GridInterface::getParameterIndex(QueryServer::Query& gridQuery, const std::s
   }
 }
 
-void GridInterface::findLevelId(Query& masterquery,
+void GridInterface::findLevelId(const Query& masterquery,
                                 const AreaProducers& areaproducers,
                                 int& levelId,
                                 std::string& geometryIdStr)
@@ -1427,7 +1427,7 @@ void GridInterface::findLevelId(Query& masterquery,
   }
 }
 
-void GridInterface::findLevels(Query& masterquery,
+void GridInterface::findLevels(const Query& masterquery,
                                const AreaProducers& areaproducers,
                                uint mode,
                                int& levelId,
@@ -1537,7 +1537,7 @@ void GridInterface::findLevels(Query& masterquery,
 }
 
 void GridInterface::exteractCoordinatesAndAggrecationTimes(
-    std::shared_ptr<QueryServer::Query>& gridQuery,
+    const std::shared_ptr<QueryServer::Query>& gridQuery,
     const Fmi::TimeZonePtr& tz,
     T::Coordinate_vec& coordinates,
     std::set<Fmi::LocalDateTime>& aggregationTimes)
@@ -1600,7 +1600,7 @@ void GridInterface::exteractCoordinatesAndAggrecationTimes(
   }
 }
 
-void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gridQuery,
+void GridInterface::exteractQueryResult(const std::shared_ptr<QueryServer::Query>& gridQuery,
                                         const State& state,
                                         Query& masterquery,
                                         TS::OutputData& outputData,
@@ -2471,8 +2471,8 @@ void GridInterface::processGridQuery(const State& state,
                                      const Spine::TaggedLocation& tloc,
                                      const Spine::LocationPtr& loc,
                                      const std::string& country,
-                                     T::GeometryId_set& geometryIdList,
-                                     std::vector<std::vector<T::Coordinate>>& polygonPath)
+                                     const T::GeometryId_set& geometryIdList,
+                                     const std::vector<std::vector<T::Coordinate>>& polygonPath)
 {
   FUNCTION_TRACE
   try

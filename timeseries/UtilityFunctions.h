@@ -26,7 +26,7 @@ void get_special_parameter_values(const std::string& paramname,
                                   const Query& query,
                                   const State& state,
                                   const Fmi::TimeZones& timezones,
-                                  TS::TimeSeriesPtr& result);
+                                  const TS::TimeSeriesPtr& result);
 void get_special_parameter_values(const std::string& paramname,
                                   int precision,
                                   const TS::TimeSeriesGenerator::LocalTimeList& tlist,
@@ -34,7 +34,7 @@ void get_special_parameter_values(const std::string& paramname,
                                   const Query& query,
                                   const State& state,
                                   const Fmi::TimeZones& timezones,
-                                  TS::TimeSeriesGroupPtr& result);
+                                  const TS::TimeSeriesGroupPtr& result);
 bool is_mobile_producer(const std::string& producer);
 bool is_flash_producer(const std::string& producer);
 bool is_icebuoy_or_copernicus_producer(const std::string& producer);
