@@ -847,10 +847,13 @@ void QEngineQuery::pointQuery(const Query& theQuery,
                                                           theQuery.lastpoint);
 
       // one location, list of local times (no radius -> pointforecast)
-      querydata_result =
-          theLoadDataLevels ? theQ->values(querydata_param, theQueryDataTlist)
-          : thePressure ? theQ->valuesAtPressure(querydata_param, theQueryDataTlist, *thePressure)
-                        : theQ->valuesAtHeight(querydata_param, theQueryDataTlist, *theHeight);
+      if (theLoadDataLevels)
+        querydata_result = theQ->values(querydata_param, theQueryDataTlist);
+      else if (thePressure)
+        querydata_result =
+            theQ->valuesAtPressure(querydata_param, theQueryDataTlist, *thePressure);
+      else
+        querydata_result = theQ->valuesAtHeight(querydata_param, theQueryDataTlist, *theHeight);
     }
     if (!querydata_result->empty())
     {
@@ -981,20 +984,21 @@ TS::TimeSeriesGroupPtr QEngineQuery::getQEngineValuesForArea(
       querydata_param.distanceReferencePoint = theDistanceReferencePoint;
 
       // list of locations, list of local times
-      querydata_result =
-          theLoadDataLevels
-              ? theQ->values(
-                    querydata_param, llist, theQueryDataTlist, theQuery.maxdistance_kilometers())
-          : thePressure ? theQ->valuesAtPressure(querydata_param,
-                                                 llist,
-                                                 theQueryDataTlist,
-                                                 theQuery.maxdistance_kilometers(),
-                                                 *thePressure)
-                        : theQ->valuesAtHeight(querydata_param,
-                                               llist,
-                                               theQueryDataTlist,
-                                               theQuery.maxdistance_kilometers(),
-                                               *theHeight);
+      if (theLoadDataLevels)
+        querydata_result = theQ->values(
+            querydata_param, llist, theQueryDataTlist, theQuery.maxdistance_kilometers());
+      else if (thePressure)
+        querydata_result = theQ->valuesAtPressure(querydata_param,
+                                                  llist,
+                                                  theQueryDataTlist,
+                                                  theQuery.maxdistance_kilometers(),
+                                                  *thePressure);
+      else
+        querydata_result = theQ->valuesAtHeight(querydata_param,
+                                                llist,
+                                                theQueryDataTlist,
+                                                theQuery.maxdistance_kilometers(),
+                                                *theHeight);
     }
 
     return querydata_result;

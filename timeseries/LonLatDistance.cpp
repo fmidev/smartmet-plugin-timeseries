@@ -65,66 +65,6 @@ double initial_bearing(const std::pair<double, double>& from, const std::pair<do
   }
 }
 
-/**
- * Returns final bearing arriving at supplied destination point from this point; the final bearing
- * will differ from the initial bearing by varying degrees according to distance and latitude
- *
- * @param   {LatLon} point: Latitude/longitude of destination point
- * @returns {Number} Final bearing in degrees from North
- */
-double final_bearing(const std::pair<double, double>& from, const std::pair<double, double>& to)
-{
-  try
-  {
-    // get initial bearing from supplied point back to this point...
-    double lat1 = deg_to_rad(to.second);
-    double lat2 = deg_to_rad(from.second);
-    double dLon = deg_to_rad(from.first - to.first);
-
-    double y = sin(dLon) * cos(lat2);
-    double x = (cos(lat1) * sin(lat2)) - (sin(lat1) * cos(lat2) * cos(dLon));
-    double brng = atan2(y, x);
-    // ... & reverse it by adding 180°
-    return fmod((rad_to_deg(brng) + 180.0), 360.0);
-  }
-  catch (...)
-  {
-    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
-  }
-}
-
-/**
- * Returns the midpoint between this point and the supplied point.
- *   see http://mathforum.org/library/drmath/view/51822.html for derivation
- *
- * @param   {LatLon} point: Latitude/longitude of destination point
- * @returns {LatLon} Midpoint between this point and the supplied point
- */
-std::pair<double, double> midpoint(const std::pair<double, double>& from,
-                                   const std::pair<double, double>& to)
-{
-  try
-  {
-    double lat1 = deg_to_rad(from.second);
-    double lon1 = deg_to_rad(from.first);
-    double lat2 = deg_to_rad(to.second);
-    double dLon = deg_to_rad(to.first - from.first);
-
-    double Bx = cos(lat2) * cos(dLon);
-    double By = cos(lat2) * sin(dLon);
-
-    double lat3 = atan2(sin(lat1) + sin(lat2), sqrt((cos(lat1) + Bx) * (cos(lat1) + Bx) + By * By));
-    double lon3 = lon1 + atan2(By, cos(lat1) + Bx);
-    double pi(boost::math::constants::pi<double>());
-    lon3 = fmod(lon3 + (3 * pi), 2 * pi) - pi;  // normalise to -180..+180º
-
-    return {rad_to_deg(lon3), rad_to_deg(lat3)};
-  }
-  catch (...)
-  {
-    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
-  }
-}
 }  // namespace
 
 /**

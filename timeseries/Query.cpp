@@ -739,7 +739,7 @@ bool Query::parse_grib_loptions(const State& state)
           state.getGeoEngine().parseLocations(tmpReq));
       return true;
     }
-    else if (v2 != nullptr && lat != nullptr && lon != nullptr)
+    if (v2 != nullptr && lat != nullptr && lon != nullptr)
     {
       // Using coordinate that is inside the GRIB2 grid
 

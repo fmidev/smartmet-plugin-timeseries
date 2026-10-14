@@ -649,8 +649,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
       {
         if (is_utc)
           return Fmi::LocalDateTime(time, tz);
-        else
-          return Fmi::LocalDateTime(time.date(), time.time_of_day(), tz);
+        return Fmi::LocalDateTime(time.date(), time.time_of_day(), tz);
       };
 
     Fmi::LocalDateTime startTime = mk_ldt(masterquery.toptions.startTime, tz, startTimeUTC);
@@ -1654,7 +1653,8 @@ void GridInterface::exteractQueryResult(const std::shared_ptr<QueryServer::Query
         TS::TimeSeriesPtr tsForNonGridParam(new TS::TimeSeries);
         TS::TimeSeriesGroupPtr tsForGroup(new TS::TimeSeriesGroup());
 
-        int columns = 0, rows = 0;
+        int columns = 0;
+        int rows = 0;
 
         if (C_INT(gridQuery->mQueryParameterList.size()) > pp &&
             !gridQuery->mQueryParameterList[pp].mValueList.empty())
