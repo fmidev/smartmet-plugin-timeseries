@@ -5,6 +5,8 @@
 #include <newbase/NFmiSvgTools.h>
 #include <timeseries/ParameterKeywords.h>
 
+#include <algorithm>
+
 namespace SmartMet
 {
 namespace Plugin
@@ -220,8 +222,7 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
     Spine::LocationList locationList;
 
     double step = stepInKm;
-    if (step < 0.01)
-      step = 0.01;
+    step = std::max(step, 0.01);
 
     std::pair<double, double> from(thePath.begin()->itsX, thePath.begin()->itsY);
     std::pair<double, double> to(thePath.begin()->itsX, thePath.begin()->itsY);
@@ -544,14 +545,10 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
 
         for (const auto& element : *svgPath)
         {
-          if (element.itsX < left)
-            left = element.itsX;
-          if (element.itsX > right)
-            right = element.itsX;
-          if (element.itsY < bottom)
-            bottom = element.itsY;
-          if (element.itsY > top)
-            top = element.itsY;
+          left = std::min(element.itsX, left);
+          right = std::max(element.itsX, right);
+          bottom = std::min(element.itsY, bottom);
+          top = std::max(element.itsY, top);
         }
       }
     }
@@ -610,7 +607,7 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
 
     if (svgPath != nullptr)
     {
-      if (wktString.length() > 0)
+      if (!wktString.empty())
       {
         convertWktMultipolygonToSvgPath(wktString, *svgPath);
       }

@@ -131,9 +131,6 @@ class GridInterface
                             const T::GeometryId_set& geometryIdList,
                             const std::vector<std::vector<T::Coordinate>>& polygonPath);
 
-
-  private:
-
       Engine::Grid::Engine* itsGridEngine;
       const Fmi::TimeZones& itsTimezones;
       const TS::RequestLimits& itsRequestLimits;

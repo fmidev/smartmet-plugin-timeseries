@@ -21,10 +21,13 @@
 
 using namespace std;
 
+namespace
+{
 const char* default_url = "/timeseries";
 const char* default_timeformat = "iso";
 
 unsigned int default_expires = 60;  // seconds
+}  // namespace
 
 // Security (C-6): default upper bound for the number of generated timesteps in a
 // single request. A single unauthenticated request could otherwise materialize an
@@ -68,6 +71,8 @@ void Config::add_default_precisions()
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 TS::FunctionId get_function_id(const string& configName)
 {
   try
@@ -109,6 +114,7 @@ TS::FunctionId get_function_id(const string& configName)
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
@@ -320,6 +326,8 @@ void Config::parse_grid_settings(const std::string& configfile)
   }
 }
 
+namespace
+{
 string parse_config_key(const char* str1 = nullptr,
                         const char* str2 = nullptr,
                         const char* str3 = nullptr)
@@ -339,6 +347,7 @@ string parse_config_key(const char* str1 = nullptr,
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!

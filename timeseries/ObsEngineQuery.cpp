@@ -10,6 +10,7 @@
 #include <timeseries/ParameterTools.h>
 #include <timeseries/TimeSeriesInclude.h>
 
+#include <algorithm>
 #include <memory>
 
 namespace SmartMet
@@ -67,8 +68,7 @@ TS::TimeSeriesGenerator::LocalTimeList get_timesteps(const TS::TimeSeries& ts)
   }
 }
 
-TS::TimeSeries generate_timeseries(const State& state,
-                                   const std::vector<Fmi::LocalDateTime>& timestep_vector,
+TS::TimeSeries generate_timeseries(const std::vector<Fmi::LocalDateTime>& timestep_vector,
                                    const TS::Value& value)
 {
   try
@@ -220,10 +220,10 @@ void resolve_parameter_settings(const ObsParameters& obsParameters,
 
       if (query.maxAggregationIntervals.find(pname) != query.maxAggregationIntervals.end())
       {
-        if (query.maxAggregationIntervals.at(pname).behind > aggregationIntervalBehind)
-          aggregationIntervalBehind = query.maxAggregationIntervals.at(pname).behind;
-        if (query.maxAggregationIntervals.at(pname).ahead > aggregationIntervalAhead)
-          aggregationIntervalAhead = query.maxAggregationIntervals.at(pname).ahead;
+        aggregationIntervalBehind =
+            std::max(query.maxAggregationIntervals.at(pname).behind, aggregationIntervalBehind);
+        aggregationIntervalAhead =
+            std::max(query.maxAggregationIntervals.at(pname).ahead, aggregationIntervalAhead);
       }
 
       // prevent passing duplicate parameters to observation (for example temperature,
@@ -421,6 +421,8 @@ void ObsEngineQuery::processObsEngineQuery(const State& state,
   }
 }
 
+namespace
+{
 void fill_missing_location_params(TS::TimeSeries& ts)
 {
   TS::Value missing_value = TS::None();
@@ -442,6 +444,7 @@ void fill_missing_location_params(TS::TimeSeries& ts)
         item.value = actual_value;
   }
 }
+}  // namespace
 
 TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
     const State& state,
@@ -491,7 +494,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
                                          effective_timezone,
                                          query.precisions[i],
                                          query.crs);
-        auto timeseries = generate_timeseries(state, timestep_vector, value);
+        auto timeseries = generate_timeseries(timestep_vector, value);
         ret->emplace_back(std::move(timeseries));
         parameterResultIndexes.insert(std::make_pair(paramname, ret->size() - 1));
       }
@@ -548,7 +551,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
 }
 
 TS::TimeSeriesVectorPtr ObsEngineQuery::doAggregationForPlaces(
-    const State& state,
+    const State& /*state*/,
     const ObsParameters& obsParameters,
     const TS::TimeSeriesVectorPtr& observation_result,
     const TS::TimeSeriesGenerator::LocalTimeList& agg_times,
@@ -965,7 +968,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
       // fmisid may be missing for rows for which there is no data. Hence we extract
       // it from the full time timeseries once.
       int fmisid = get_fmisid_value(fmisid_ts);
-      auto& geoengine = state.getGeoEngine();
+      const auto& geoengine = state.getGeoEngine();
       Spine::LocationPtr loc = get_location(geoengine, fmisid, FMISID_PARAM, query.language);
 
       if (!loc)
@@ -1580,11 +1583,11 @@ void ObsEngineQuery::resolveStationsForArea(
 void ObsEngineQuery::resolveStationsForBBox(
     const std::string& producer,
     const Spine::LocationPtr& loc,
-    const std::string& loc_name_original,
+    const std::string& /*loc_name_original*/,
     const std::string& loc_name,
-    const Query& query,
+    const Query& /*query*/,
     const Engine::Observation::Settings& settings,
-    bool isWkt,
+    bool /*isWkt*/,
     std::string& wktString,
     Engine::Observation::StationSettings& stationSettings) const
 {
@@ -1629,7 +1632,7 @@ void ObsEngineQuery::resolveStationsForBBox(
 void ObsEngineQuery::resolveStationsForPlaceWithRadius(
     const std::string& producer,
     const Spine::LocationPtr& loc,
-    const std::string& loc_name,
+    const std::string& /*loc_name*/,
     const Engine::Observation::Settings& settings,
     std::string& wktString,
     Engine::Observation::StationSettings& stationSettings) const

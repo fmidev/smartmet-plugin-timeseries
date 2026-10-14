@@ -745,7 +745,8 @@ void Plugin::init()
         this,
         "locationparameters",
         AdminRequestAccess::Public,
-        [] (Spine::Reactor& theReactor, const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
+        [](Spine::Reactor& /*theReactor*/,
+           const Spine::HTTP::Request& /*theRequest*/) -> std::unique_ptr<Spine::Table>
         {
           const std::vector<std::pair<std::string, std::string>> data =
             TS::SpecialParameters::LocationParameters::instance.get_descriptions();
@@ -765,7 +766,8 @@ void Plugin::init()
         this,
         "timeparameters",
         AdminRequestAccess::Public,
-        [] (Spine::Reactor& theReactor, const Spine::HTTP::Request& theRequest) -> std::unique_ptr<Spine::Table>
+        [](Spine::Reactor& /*theReactor*/,
+           const Spine::HTTP::Request& /*theRequest*/) -> std::unique_ptr<Spine::Table>
         {
           const std::vector<std::pair<std::string, std::string>> data =
             TS::SpecialParameters::TimeParameters::instance.get_descriptions();

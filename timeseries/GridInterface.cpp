@@ -27,6 +27,8 @@
 #include <timeseries/TimeSeriesGenerator.h>
 #include <timeseries/TimeSeriesUtility.h>
 
+#include <algorithm>
+
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 
 using namespace std;
@@ -1604,8 +1606,8 @@ void GridInterface::exteractQueryResult(const std::shared_ptr<QueryServer::Query
                                         const State& state,
                                         Query& masterquery,
                                         TS::OutputData& outputData,
-                                        const QueryServer::QueryStreamer_sptr& queryStreamer,
-                                        const AreaProducers& areaproducers,
+                                        const QueryServer::QueryStreamer_sptr& /*queryStreamer*/,
+                                        const AreaProducers& /*areaproducers*/,
                                         const Fmi::TimeZonePtr& tz,
                                         const Spine::TaggedLocation& tloc,
                                         const Spine::LocationPtr& loc,
@@ -1703,8 +1705,9 @@ void GridInterface::exteractQueryResult(const std::shared_ptr<QueryServer::Query
 
               T::GridValue val;
 
-              auto rec = gridQuery->mQueryParameterList[pid].getValueListRecord(col, t);
-              if (rec && (ai == 0 ||  rec->mValue != ParamValueMissing || rec->mValueString.length() > 0))
+              auto* rec = gridQuery->mQueryParameterList[pid].getValueListRecord(col, t);
+              if (rec &&
+                  (ai == 0 || rec->mValue != ParamValueMissing || !rec->mValueString.empty()))
               {
                 pidList.insert(std::pair<UInt64, uint>(((UInt64)pIdx << 32) + t, pp));
               }
@@ -1715,9 +1718,9 @@ void GridInterface::exteractQueryResult(const std::shared_ptr<QueryServer::Query
                   pidList.insert(std::pair<UInt64, uint>(((UInt64)pIdx << 32) + t, ai));
               }
 
-              if (rec && (rec->mValue != ParamValueMissing || rec->mValueString.length() > 0))
+              if (rec && (rec->mValue != ParamValueMissing || !rec->mValueString.empty()))
               {
-                if (rec->mValueString.length() > 0)
+                if (!rec->mValueString.empty())
                 {
                   // The parameter value is a string
                   TS::TimedValue tsValue(queryTime, TS::Value(rec->mValueString));
@@ -2221,8 +2224,7 @@ void GridInterface::exteractQueryResult(const std::shared_ptr<QueryServer::Query
                 }
                 idx++;
               }
-              if (levelValue < 0)
-                levelValue = 0;
+              levelValue = std::max(levelValue, 0);
 
               TS::TimedValue tsValue(queryTime, levelValue);
               tsForNonGridParam->emplace_back(tsValue);

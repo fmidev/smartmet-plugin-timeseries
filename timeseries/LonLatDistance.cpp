@@ -12,6 +12,8 @@ namespace TimeSeries
 /// @brief Earth's quatratic mean radius for WGS-84
 static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
 
+namespace
+{
 double deg_to_rad(const double& degrees)
 {
   try
@@ -123,6 +125,7 @@ std::pair<double, double> midpoint(const std::pair<double, double>& from,
     throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
+}  // namespace
 
 /**
  * Returns the destination point from this point having travelled the given distance (in km) on the
@@ -162,6 +165,8 @@ std::pair<double, double> destination_point(const std::pair<double, double>& fro
   }
 }
 
+namespace
+{
 /** @brief Computes the arc, in radian, between two WGS-84 positions.
  *
  * The result is equal to <code>Distance(from,to)/EARTH_RADIUS_IN_METERS</code>
@@ -195,6 +200,7 @@ double arc_in_radians(const std::pair<double, double>& from, const std::pair<dou
     throw Fmi::Exception(BCP, "Operation failed!", nullptr);
   }
 }
+}  // namespace
 
 /** @brief Computes the distance, in meters, between two WGS-84 positions.
  *

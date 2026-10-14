@@ -13,6 +13,7 @@
 #include <macgyver/DistanceParser.h>
 #include <spine/Convenience.h>
 
+#include <algorithm>
 #include <memory>
 
 using namespace std;
@@ -23,7 +24,10 @@ namespace Plugin
 {
 namespace TimeSeries
 {
+namespace
+{
 const char* default_timezone = "localtime";
+}  // namespace
 
 namespace
 {
@@ -33,8 +37,7 @@ void set_max_agg_interval_behind(const TS::DataFunction& func, unsigned int& max
   {
     if (func.type() == TS::FunctionType::TimeFunction)
     {
-      if (max_interval < func.getAggregationIntervalBehind())
-        max_interval = func.getAggregationIntervalBehind();
+      max_interval = std::max(max_interval, func.getAggregationIntervalBehind());
     }
   }
   catch (...)
@@ -49,8 +52,7 @@ void set_max_agg_interval_ahead(const TS::DataFunction& func, unsigned int& max_
   {
     if (func.type() == TS::FunctionType::TimeFunction)
     {
-      if (max_interval < func.getAggregationIntervalAhead())
-        max_interval = func.getAggregationIntervalAhead();
+      max_interval = std::max(max_interval, func.getAggregationIntervalAhead());
     }
   }
   catch (...)
@@ -560,6 +562,8 @@ void Query::parse_aggregation_intervals(const Spine::HTTP::Request& theReq)
   }
 }
 
+namespace
+{
 void remove_duplicates(std::list<std::string>& names)
 {
   std::set<std::string> unique_names;
@@ -575,6 +579,7 @@ void remove_duplicates(std::list<std::string>& names)
   }
   names = output;
 }
+}  // namespace
 
 void Query::parse_parameters(const Spine::HTTP::Request& theReq)
 {

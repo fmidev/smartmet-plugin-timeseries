@@ -18,6 +18,8 @@ namespace PostProcessing
  */
 // ----------------------------------------------------------------------
 
+namespace
+{
 void update_latest_timestep(Query& query, const TS::TimeSeriesVectorPtr& tsv)
 {
   try
@@ -94,6 +96,7 @@ void update_latest_timestep(Query& query, const TS::TimeSeriesGroup& tsg)
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
@@ -173,6 +176,8 @@ void store_data(std::vector<TS::TimeSeriesData>& aggregatedData,
   }
 }
 
+namespace
+{
 void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
                        TS::TableFeeder& tf,
                        const std::vector<SmartMet::TimeSeries::TimeSeriesData>& outdata,
@@ -235,6 +240,7 @@ void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
     throw Fmi::Exception::Trace(BCP, "Operation failed!");
   }
 }
+}  // namespace
 
 // ----------------------------------------------------------------------
 /*!
