@@ -163,6 +163,52 @@ void check_result_limits(const QueryServer::Query& gridQuery,
   TS::check_request_limit(
       limits, elements + TS::number_of_elements(outputData), TS::RequestLimitMember::ELEMENTS);
 }
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Format the grid value coordinates for the @LON, @LAT, @LATLON and @LONLAT details
+ *
+ * Multiple coordinates are output as a bracketed list. A missing value is returned when
+ * there are no grid values so that the time series stays aligned with the times.
+ */
+// ----------------------------------------------------------------------
+
+TS::Value format_coordinates(const T::GridValueList& values,
+                             const Fmi::ValueFormatter& formatter,
+                             const std::string& detail)
+{
+  const uint vlen = values.getLength();
+  if (vlen == 0)
+    return TS::None();
+
+  std::string output;
+  if (vlen > 1)
+    output += '[';
+
+  for (uint v = 0; v < vlen; v++)
+  {
+    T::GridValue val;
+    if (values.getGridValueByIndex(v, val))
+    {
+      // mX is the longitude and mY the latitude
+      if (detail == "LON")
+        output += formatter.format(val.mX, 7);
+      else if (detail == "LAT")
+        output += formatter.format(val.mY, 7);
+      else if (detail == "LATLON")
+        output += formatter.format(val.mY, 7) + ',' + formatter.format(val.mX, 7);
+      else
+        output += formatter.format(val.mX, 7) + ',' + formatter.format(val.mY, 7);
+      if ((v + 1) < vlen)
+        output += ' ';
+    }
+  }
+
+  if (vlen > 1)
+    output += ']';
+
+  return output;
+}
 }  // namespace
 
 GridInterface::GridInterface(Engine::Grid::Engine* engine,
@@ -2059,7 +2105,8 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                   {
                     std::string fileName;
                     T::FileInfo fInfo;
-                    if (contentServer->getFileInfoById(0,gridQuery->mQueryParameterList[i].mValueList[t]->mFileId[0], fInfo) == 0)
+                    const auto fileId = gridQuery->mQueryParameterList[i].mValueList[t]->mFileId[0];
+                    if (contentServer->getFileInfoById(0, fileId, fInfo) == 0)
                       fileName = fInfo.mName;
 
                     TS::TimedValue tsValue(queryTime, fileName);
@@ -2124,121 +2171,15 @@ void GridInterface::exteractQueryResult(std::shared_ptr<QueryServer::Query>& gri
                         queryTime, gridQuery->mQueryParameterList[i].mValueList[t]->mAnalysisTime);
                     tsForNonGridParam->emplace_back(tsValue);
                   }
-                  else if (n == "LON")  // Longitude
+                  else if (n == "LON" || n == "LAT" || n == "LATLON" || n == "LONLAT")
                   {
-                    uint vlen = gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getLength();
-                    if (vlen > 0)
-                    {
-
-                      std::ostringstream output;
-                      if (vlen > 1)
-                        output << "[";
-
-                      for (uint v = 0; v < vlen; v++)
-                      {
-                        T::GridValue val;
-                        if (gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getGridValueByIndex(v, val))
-                        {
-                          output << masterquery.valueformatter.format(val.mY, 7);
-                          if ((v + 1) < vlen)
-                            output << " ";
-                        }
-                      }
-
-                      if (vlen > 1)
-                        output << "]";
-
-                      TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-                      tsForNonGridParam->emplace_back(tsValue);
-                    }
-                  }
-                  else if (n == "LAT")  // Latitude
-                  {
-                    uint vlen = gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getLength();
-                    if (vlen > 0)
-                    {
-
-                      std::ostringstream output;
-                      if (vlen > 1)
-                        output << "[";
-
-                      for (uint v = 0; v < vlen; v++)
-                      {
-                        T::GridValue val;
-                        if (gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getGridValueByIndex(v, val))
-                        {
-                          output << masterquery.valueformatter.format(val.mX, 7);
-                          if ((v + 1) < vlen)
-                            output << " ";
-                        }
-                      }
-
-                      if (vlen > 1)
-                        output << "]";
-
-                      TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-                      tsForNonGridParam->emplace_back(tsValue);
-                    }
-                  }
-                  else if (n == "LATLON")  // Latlon
-                  {
-                    uint vlen = gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getLength();
-                    if (vlen > 0)
-                    {
-
-                      std::ostringstream output;
-                      if (vlen > 1)
-                        output << "[";
-
-                      for (uint v = 0; v < vlen; v++)
-                      {
-                        T::GridValue val;
-                        if (gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getGridValueByIndex(v, val))
-                        {
-                          output << masterquery.valueformatter.format(val.mY, 7);
-                          output << ",";
-                          output << masterquery.valueformatter.format(val.mX, 7);
-                          if ((v + 1) < vlen)
-                            output << " ";
-                        }
-                      }
-
-                      if (vlen > 1)
-                        output << "]";
-
-                      TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-                      tsForNonGridParam->emplace_back(tsValue);
-                    }
-                  }
-                  else if (n == "LONLAT")  // Latlon
-                  {
-                    uint vlen = gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getLength();
-                    if (vlen > 0)
-                    {
-
-                      std::ostringstream output;
-                      if (vlen > 1)
-                        output << "[";
-
-                      for (uint v = 0; v < vlen; v++)
-                      {
-                        T::GridValue val;
-                        if (gridQuery->mQueryParameterList[i].mValueList[t]->mValueList.getGridValueByIndex(v, val))
-                        {
-                          output << masterquery.valueformatter.format(val.mX, 7);
-                          output << ",";
-                          output << masterquery.valueformatter.format(val.mY, 7);
-                          if ((v + 1) < vlen)
-                            output << " ";
-                        }
-                      }
-
-                      if (vlen > 1)
-                        output << "]";
-
-                      TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-                      tsForNonGridParam->emplace_back(tsValue);
-                    }
+                    TS::TimedValue tsValue(
+                        queryTime,
+                        format_coordinates(
+                            gridQuery->mQueryParameterList[i].mValueList[t]->mValueList,
+                            masterquery.valueformatter,
+                            n));
+                    tsForNonGridParam->emplace_back(tsValue);
                   }
                   else
                   {

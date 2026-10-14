@@ -632,6 +632,14 @@ If we want to get more information about the requested parameters, we can use th
 | @FT-N               | The forecast type of the parameter in the field/column N.                                                                                                                                                                                                                                    |
 | @FN-N               | The forecast number of the parameter in the field/column N.                                                                                                                                                                                                                                  |
 | @AT-N               | The analysis time of the parameter in the field/column N.                                                                                                                                                                                                                                    |
+| @F-N                | The grid file name of the parameter in the field/column N.                                                                                                                                                                                                                                   |
+| @LAT-N              | The latitude of the grid value(s) of the parameter in the field/column N.                                                                                                                                                                                                                    |
+| @LON-N              | The longitude of the grid value(s) of the parameter in the field/column N.                                                                                                                                                                                                                   |
+| @LATLON-N           | The latitude,longitude pair(s) of the grid value(s) of the parameter in the field/column N.                                                                                                                                                                                                  |
+| @LONLAT-N           | The longitude,latitude pair(s) of the grid value(s) of the parameter in the field/column N.                                                                                                                                                                                                  |
+
+Multiple grid values (for example in area queries) are listed in brackets. The details are
+available also when the parameter value itself is missing.
 
 The 'N' is the index of the field/column that contains the parameter that we are investigating. The leftmost / first index is 0 (zero), which means that the index of the 2nd field/column is 1.
 

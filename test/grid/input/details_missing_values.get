@@ -1,0 +1,2 @@
+GET /timeseries?starttime=200808070800&timesteps=4&place=Helsinki&precision=double&param=time,MediumCloudCover,@P-1,@G-1,@GM-1,@LT-1,@L-1,@LAT-1,@LON-1,@LATLON-1,@LONLAT-1,@I-1,@F-1 HTTP/1.0
+
