@@ -299,7 +299,7 @@ void fetch_static_location_values(const Query& query,
 // A location without data is left out of a multi-location result. Only if no location got
 // any data does the request fail, with the same error a single location used to get
 // (BRAINSTORM-3500).
-void require_some_data(const std::vector<std::string>& theNoDataLocations)
+[[noreturn]] void require_some_data(const std::vector<std::string>& theNoDataLocations)
 {
   std::string names;
   std::set<std::string> listed;
