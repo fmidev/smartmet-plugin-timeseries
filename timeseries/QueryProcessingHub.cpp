@@ -388,16 +388,21 @@ std::shared_ptr<std::string> QueryProcessingHub::processQuery(
         q.toptions.startTimeUTC = startTimeUTC;
       q.toptions.endTimeUTC = masterquery.toptions.endTimeUTC;
 
+      bool obsengine_query = false;
 #ifndef WITHOUT_OBSERVATION
       if (!areaproducers.empty() && !thePlugin.itsConfig.obsEngineDisabled() &&
           itsObsEngineQuery.isObsProducer(areaproducers.front()))
       {
         itsObsEngineQuery.processObsEngineQuery(
             state, q, outputData, areaproducers, producerDataPeriod, obsParameters);
+        obsengine_query = true;
       }
-      else
 #endif
-          if (itsGridEngineQuery.isGridEngineQuery(areaproducers, masterquery))
+      if (obsengine_query)
+      {
+        // already processed above
+      }
+      else if (itsGridEngineQuery.isGridEngineQuery(areaproducers, masterquery))
       {
         bool processed = itsGridEngineQuery.processGridEngineQuery(
             state, q, outputData, queryStreamer, areaproducers, producerDataPeriod);

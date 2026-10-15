@@ -269,7 +269,7 @@ void Config::parse_grid_settings(const std::string& configfile)
 
     itsAliasFileCollection.init(itsParameterAliasFiles);
   }
-  catch (const libconfig::SettingNotFoundException& e)
+  catch (const libconfig::SettingNotFoundException&)
   {
     // throw Fmi::Exception(BCP, "Setting not found").addParameter("Setting path", e.getPath());
   }

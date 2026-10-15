@@ -1244,6 +1244,8 @@ void GridInterface::prepareQueryParameters(QueryServer::Query& gridQuery,
           //qParam.mParameterLevelId = 0;
           qParam.mFlags |= QueryServer::QueryParameter::Flags::MetricLevels;
           break;
+        default:
+          break;
       }
 
 
@@ -1488,6 +1490,8 @@ void GridInterface::findLevels(const Query& masterquery,
                     for (const auto& lev : tmpLevels)
                       levels.emplace_back(lev);
                     break;
+                  default:
+                    break;
                 }
               }
             }
@@ -1528,6 +1532,8 @@ void GridInterface::findLevels(const Query& masterquery,
 
         for (auto level : masterquery.heights)
           levels.push_back(static_cast<double>(level));
+        break;
+      default:
         break;
     }
   }
@@ -1849,6 +1855,8 @@ void GridInterface::exteractQueryResult(const std::shared_ptr<QueryServer::Query
                     ts.emplace_back(tsValue);
                   }
                   break;
+                  default:
+                    break;
                 }
               }
               TS::LonLatTimeSeries llSeries(TS::LonLat(0, 0), ts);
