@@ -1,0 +1,1 @@
+GET /timeseries?producer=opendata&starttime=201308051200&endtime=201308060600&places=kumpula&param=fmisid,time,wawa,totalcloudcover,temperature,smartsymbol,smartsymboltext&timestep=60&lang=en HTTP/1.0
