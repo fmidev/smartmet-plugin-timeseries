@@ -49,7 +49,7 @@ namespace Plugin
 namespace TimeSeries
 {
 
-const uint TimeseriesFunctionFlag = 1 << 31;
+const uint TimeseriesFunctionFlag = 1U << 31;
 
 
 namespace
