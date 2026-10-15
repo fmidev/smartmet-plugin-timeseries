@@ -68,7 +68,7 @@ class Config
   unsigned long long maxTimeSeriesCacheSize() const;
 
   unsigned int expirationTime() const { return itsExpirationTime; }
-  const TS::RequestLimits& requestLimits() const { return itsRequestLimits; };
+  const TS::RequestLimits& requestLimits() const { return itsRequestLimits; }
 
   QueryServer::AliasFileCollection itsAliasFileCollection;
   time_t itsLastAliasCheck;
