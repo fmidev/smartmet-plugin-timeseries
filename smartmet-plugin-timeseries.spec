@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.10.14
+Version: 26.10.15
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -32,37 +32,37 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: %{smartmet_fmt_devel}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 26.10.11
-BuildRequires: smartmet-library-spine-devel >= 26.10.11
-BuildRequires: smartmet-library-locus-devel >= 26.10.3
-BuildRequires: smartmet-library-macgyver-devel >= 26.10.11
-BuildRequires: smartmet-library-grid-content-devel >= 26.10.11
-BuildRequires: smartmet-library-grid-files-devel >= 26.10.11
-BuildRequires: smartmet-library-newbase-devel >= 26.10.11
-BuildRequires: smartmet-library-gis-devel >= 26.10.11
-BuildRequires: smartmet-engine-geonames-devel >= 26.10.11
+BuildRequires: smartmet-library-timeseries-devel >= 26.10.15
+BuildRequires: smartmet-library-spine-devel >= 26.10.15
+BuildRequires: smartmet-library-locus-devel >= 26.10.15
+BuildRequires: smartmet-library-macgyver-devel >= 26.10.15
+BuildRequires: smartmet-library-grid-content-devel >= 26.10.15
+BuildRequires: smartmet-library-grid-files-devel >= 26.10.15
+BuildRequires: smartmet-library-newbase-devel >= 26.10.15
+BuildRequires: smartmet-library-gis-devel >= 26.10.15
+BuildRequires: smartmet-engine-geonames-devel >= 26.10.15
 %if %{with observation}
-BuildRequires: smartmet-engine-observation-devel >= 26.10.11
+BuildRequires: smartmet-engine-observation-devel >= 26.10.15
 %endif
-BuildRequires: smartmet-engine-querydata-devel >= 26.10.11
-BuildRequires: smartmet-engine-gis-devel >= 26.9.23
-BuildRequires: smartmet-engine-grid-devel >= 26.10.11
+BuildRequires: smartmet-engine-querydata-devel >= 26.10.15
+BuildRequires: smartmet-engine-gis-devel >= 26.10.15
+BuildRequires: smartmet-engine-grid-devel >= 26.10.15
 # obsengine can be disabled in configuration: not included intentionally
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 26.10.11
 #%endif
 Requires: %{smartmet_fmt}
-Requires: smartmet-library-gis >= 26.10.11
-Requires: smartmet-library-locus >= 26.10.3
-Requires: smartmet-library-macgyver >= 26.10.11
-Requires: smartmet-library-newbase >= 26.10.11
-Requires: smartmet-library-spine >= 26.10.11
-Requires: smartmet-library-timeseries >= 26.10.11
-Requires: smartmet-engine-geonames >= 26.10.11
-Requires: smartmet-engine-querydata >= 26.10.11
-Requires: smartmet-engine-gis >= 26.9.23
-Requires: smartmet-engine-grid >= 26.10.11
-Requires: smartmet-server >= 26.10.11
+Requires: smartmet-library-gis >= 26.10.15
+Requires: smartmet-library-locus >= 26.10.15
+Requires: smartmet-library-macgyver >= 26.10.15
+Requires: smartmet-library-newbase >= 26.10.15
+Requires: smartmet-library-spine >= 26.10.15
+Requires: smartmet-library-timeseries >= 26.10.15
+Requires: smartmet-engine-geonames >= 26.10.15
+Requires: smartmet-engine-querydata >= 26.10.15
+Requires: smartmet-engine-gis >= 26.10.15
+Requires: smartmet-engine-grid >= 26.10.15
+Requires: smartmet-server >= 26.10.15
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-system
@@ -71,20 +71,20 @@ Provides: %{SPECNAME}
 Obsoletes: smartmet-brainstorm-timeseries < 16.11.1
 Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-utils-devel >= 26.9.3
-#TestRequires: smartmet-library-spine-plugin-test >= 26.10.11
-#TestRequires: smartmet-library-newbase-devel >= 26.10.11
+#TestRequires: smartmet-library-spine-plugin-test >= 26.10.15
+#TestRequires: smartmet-library-newbase-devel >= 26.10.15
 #TestRequires: redis
 #TestRequires: smartmet-test-db >= 26.5.8
 #TestRequires: smartmet-test-data >= 26.8.26
-#TestRequires: smartmet-library-grid-files-test >= 26.10.11
-#TestRequires: smartmet-library-gis >= 26.10.11
-#TestRequires: smartmet-engine-geonames >= 26.10.11
-#TestRequires: smartmet-engine-gis >= 26.9.23
-#TestRequires: smartmet-engine-querydata >= 26.10.11
+#TestRequires: smartmet-library-grid-files-test >= 26.10.15
+#TestRequires: smartmet-library-gis >= 26.10.15
+#TestRequires: smartmet-engine-geonames >= 26.10.15
+#TestRequires: smartmet-engine-gis >= 26.10.15
+#TestRequires: smartmet-engine-querydata >= 26.10.15
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 26.10.11
+#TestRequires: smartmet-engine-observation >= 26.10.15
 %endif
-#TestRequires: smartmet-engine-grid >= 26.10.11
+#TestRequires: smartmet-engine-grid >= 26.10.15
 #TestRequires: gdal312-libs
 #TestRequires: libwebp13
 
@@ -111,6 +111,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Thu Oct 15 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.15-1.fmi
+- Declare member functions and parameters const where nothing is modified (const correctness), no functional changes
+- Requires 26.10.15 versions of newbase, spine, grid-files, grid-content, engine-observation, engine-grid due to their ABI changes
+- Fixed mechanical clang-tidy findings (internal linkage, unused parameters, initialization, redundant code), no functional changes
+- Fixed clang-tidy style findings (loops, nested conditionals, dead code)
+- Fixed clang-tidy correctness findings (member initialization, rule of five, printf formats, dead stores)
+
 * Wed Oct 14 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.14-1.fmi
 - Fixed swapped @LAT and @LON grid details
 - @LAT, @LON, @LATLON and @LONLAT return a missing value instead of no value when there are no
