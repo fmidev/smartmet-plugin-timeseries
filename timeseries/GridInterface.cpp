@@ -339,6 +339,36 @@ void GridInterface::getDataTimes(const AreaProducers& areaproducers,
   }
 }
 
+namespace
+{
+// The generations selected by the query: the given analysis time, the latest or the
+// oldest ready generation, or all ready generations. Missing generations are null.
+std::vector<T::GenerationInfo*> select_query_generations(const QueryServer::Query& gridQuery,
+                                                         T::GenerationInfoList& generationInfoList)
+{
+  std::vector<T::GenerationInfo*> generations;
+  if (!gridQuery.mAnalysisTime.empty())
+    generations.push_back(
+        generationInfoList.getGenerationInfoByAnalysisTime(gridQuery.mAnalysisTime));
+  else if ((gridQuery.mFlags & QueryServer::Query::Flags::LatestGeneration) != 0)
+    generations.push_back(
+        generationInfoList.getLastGenerationInfoByAnalysisTime(T::GenerationInfo::Status::Ready));
+  else if ((gridQuery.mFlags & QueryServer::Query::Flags::OldestGeneration) != 0)
+    generations.push_back(
+        generationInfoList.getFirstGenerationInfoByAnalysisTime(T::GenerationInfo::Status::Ready));
+  else
+  {
+    for (uint i = 0; i < generationInfoList.getLength(); i++)
+    {
+      auto* generationInfo = generationInfoList.getGenerationInfoByIndex(i);
+      if (generationInfo != nullptr && generationInfo->mStatus == T::GenerationInfo::Status::Ready)
+        generations.push_back(generationInfo);
+    }
+  }
+  return generations;
+}
+}  // namespace
+
 // ----------------------------------------------------------------------
 /*!
  * \brief Valid times of the generations the query would use
@@ -380,26 +410,8 @@ TS::TimeSeriesGeneratorOptions::TimeList GridInterface::getGenerationDataTimes(
 
       // Selecting the generations. By default the QueryServer combines all generations
 
-      std::vector<T::GenerationInfo*> generations;
-      if (!gridQuery.mAnalysisTime.empty())
-        generations.push_back(
-            generationInfoList.getGenerationInfoByAnalysisTime(gridQuery.mAnalysisTime));
-      else if ((gridQuery.mFlags & QueryServer::Query::Flags::LatestGeneration) != 0)
-        generations.push_back(generationInfoList.getLastGenerationInfoByAnalysisTime(
-            T::GenerationInfo::Status::Ready));
-      else if ((gridQuery.mFlags & QueryServer::Query::Flags::OldestGeneration) != 0)
-        generations.push_back(generationInfoList.getFirstGenerationInfoByAnalysisTime(
-            T::GenerationInfo::Status::Ready));
-      else
-      {
-        for (uint i = 0; i < generationInfoList.getLength(); i++)
-        {
-          auto* generationInfo = generationInfoList.getGenerationInfoByIndex(i);
-          if (generationInfo != nullptr &&
-              generationInfo->mStatus == T::GenerationInfo::Status::Ready)
-            generations.push_back(generationInfo);
-        }
-      }
+      std::vector<T::GenerationInfo*> generations =
+          select_query_generations(gridQuery, generationInfoList);
 
       std::set<std::string> contentTimeList;
       for (const auto* generationInfo : generations)
