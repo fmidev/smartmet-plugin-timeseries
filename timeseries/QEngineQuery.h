@@ -139,6 +139,9 @@ class QEngineQuery
                                      const Query& query,
                                      NFmiSvgPath& svgPath,
                                      bool& isWkt) const;
+  bool locationHasProducer(const Spine::TaggedLocation& tloc,
+                           const Query& query,
+                           const AreaProducers& areaproducers) const;
   TS::TimeSeriesGenerator::LocalTimeList generateTList(
       const Query& query,
       const std::string& producer,

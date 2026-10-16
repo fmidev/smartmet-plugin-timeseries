@@ -322,6 +322,34 @@ void QEngineQuery::resolveAreaLocations(Query& query,
   query.loptions->setLocations(tloclist);
 }
 
+namespace
+{
+// Limit the query end time to the end of the producer data period. The end time is in
+// UTC or in local time depending on the request, compare it in the same time
+void limit_end_time_to_data_period(Query& q, const Fmi::LocalDateTime& data_period_endtime)
+{
+  if (data_period_endtime.is_not_a_date_time())
+    return;
+
+  const auto data_endtime = (q.toptions.endTimeUTC ? data_period_endtime.utc_time()
+                                                   : data_period_endtime.local_time());
+  if (q.toptions.endTime > data_endtime)
+    q.toptions.endTime = data_endtime;
+}
+}  // namespace
+
+// Test whether some producer has data for the location. The producer is selected as in
+// fetchQEngineValues.
+bool QEngineQuery::locationHasProducer(const Spine::TaggedLocation& tloc,
+                                       const Query& query,
+                                       const AreaProducers& areaproducers) const
+{
+  NFmiSvgPath svgPath;
+  bool isWkt = false;
+  auto resolved_loc = resolveLocation(tloc, query, svgPath, isWkt);
+  return !selectProducer(*resolved_loc, query, areaproducers).empty();
+}
+
 std::vector<std::string> QEngineQuery::processQEngineQuery(
     const State& state,
     Query& masterquery,
@@ -357,15 +385,10 @@ std::vector<std::string> QEngineQuery::processQEngineQuery(
       // A location for which no producer has data is left out of the output instead of
       // failing the whole request. The request fails only if no location gets any data
       // (BRAINSTORM-3500). The producer is selected as in fetchQEngineValues.
+      if (!locationHasProducer(tloc, masterquery, areaproducers))
       {
-        NFmiSvgPath svgPath;
-        bool isWkt = false;
-        auto resolved_loc = resolveLocation(tloc, masterquery, svgPath, isWkt);
-        if (selectProducer(*resolved_loc, masterquery, areaproducers).empty())
-        {
-          no_data_locations.push_back(get_name_base(tloc.loc->name));
-          continue;
-        }
+        no_data_locations.push_back(get_name_base(tloc.loc->name));
+        continue;
       }
 
       Query q = masterquery;
@@ -400,16 +423,9 @@ std::vector<std::string> QEngineQuery::processQEngineQuery(
         // reset to original start time for each new location
         q.toptions.startTime = old_start_time;
 
-        // every parameter starts from the same row. The end time is in UTC or in local
-        // time depending on the request, compare it in the same time
-        if (!data_period_endtime.is_not_a_date_time() && !isClimatologyProducer)
-        {
-          const auto data_endtime =
-              (q.toptions.endTimeUTC ? data_period_endtime.utc_time()
-                                     : data_period_endtime.local_time());
-          if (q.toptions.endTime > data_endtime)
-            q.toptions.endTime = data_endtime;
-        }
+        // every parameter starts from the same row
+        if (!isClimatologyProducer)
+          limit_end_time_to_data_period(q, data_period_endtime);
         fetchQEngineValues(state,
                            paramfunc,
                            q.precisions[column],
