@@ -1555,6 +1555,27 @@ void GridInterface::findLevels(const Query& masterquery,
   }
 }
 
+namespace
+{
+// Append the coordinates of the grid values
+void append_grid_coordinates(T::GridValueList& valueList, T::Coordinate_vec& coordinates)
+{
+  uint len = valueList.getLength();
+  for (uint v = 0; v < len; v++)
+  {
+    T::GridValue val;
+    if (valueList.getGridValueByIndex(v, val))
+      coordinates.emplace_back(val.mX, val.mY);
+  }
+}
+
+// Test whether the values were added only for aggregation
+bool is_aggregation_value(const QueryServer::ParameterValues& values)
+{
+  return (values.mFlags & QueryServer::ParameterValues::Flags::AggregationValue) != 0;
+}
+}  // namespace
+
 void GridInterface::exteractCoordinatesAndAggrecationTimes(
     const std::shared_ptr<QueryServer::Query>& gridQuery,
     const Fmi::TimeZonePtr& tz,
@@ -1582,8 +1603,7 @@ void GridInterface::exteractCoordinatesAndAggrecationTimes(
           Fmi::LocalDateTime queryTime(dt, tz);
           std::string lt = Fmi::to_iso_string(queryTime.local_time());
 
-          if ((gridQuery->mQueryParameterList[p].mValueList[t]->mFlags &
-               QueryServer::ParameterValues::Flags::AggregationValue) != 0 ||
+          if (is_aggregation_value(*gridQuery->mQueryParameterList[p].mValueList[t]) ||
               (!timezoneIsUTC && prevLocalTime == lt))
           {
             // This value is added for aggregation or it has same localtime
@@ -1593,21 +1613,8 @@ void GridInterface::exteractCoordinatesAndAggrecationTimes(
           }
 
           if (coordinates.empty())
-          {
-            uint len = gridQuery->mQueryParameterList[p].mValueList[t]->mValueList.getLength();
-            if (len > 0)
-            {
-              for (uint v = 0; v < len; v++)
-              {
-                T::GridValue val;
-                if (gridQuery->mQueryParameterList[p].mValueList[t]->mValueList.getGridValueByIndex(
-                        v, val))
-                {
-                  coordinates.emplace_back(val.mX, val.mY);
-                }
-              }
-            }
-          }
+            append_grid_coordinates(gridQuery->mQueryParameterList[p].mValueList[t]->mValueList,
+                                    coordinates);
           prevLocalTime = lt;
         }
       }
