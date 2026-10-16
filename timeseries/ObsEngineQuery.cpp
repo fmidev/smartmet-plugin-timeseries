@@ -444,6 +444,74 @@ void fill_missing_location_params(TS::TimeSeries& ts)
         item.value = actual_value;
   }
 }
+
+// Generate the values of a time parameter for the given timesteps. The timesteps are
+// re-zoned to the station timezone if requested so that time formatters print in it.
+TS::TimeSeries time_parameter_series(const std::string& paramname,
+                                     const std::vector<Fmi::LocalDateTime>& timesteps,
+                                     bool rezone_to_station,
+                                     const Fmi::TimeZonePtr& effective_tz,
+                                     const Fmi::DateTime& now,
+                                     const Spine::Location* location,
+                                     const std::string& effective_timezone,
+                                     const Fmi::TimeZones& timezones,
+                                     const Query& query)
+{
+  TS::TimeSeries timeseries;
+  for (const auto& timestep : timesteps)
+  {
+    const auto ldt = rezone_to_station ? timestep.local_time_in(effective_tz) : timestep;
+    TS::Value value = TS::time_parameter(paramname,
+                                         ldt,
+                                         now,
+                                         *location,
+                                         effective_timezone,
+                                         timezones,
+                                         query.outlocale,
+                                         *query.timeformatter,
+                                         query.timestring);
+    timeseries.emplace_back(TS::TimedValue(timestep, value));
+  }
+  return timeseries;
+}
+
+// Fetch the observations for places. Without aggregation the query timesteps are
+// used directly, otherwise all observations are requested in order to aggregate them.
+TS::TimeSeriesVectorPtr fetch_observations_for_places(Engine::Observation::Engine& obsEngine,
+                                                      Engine::Observation::Settings& settings,
+                                                      const Query& query)
+{
+  // Quick query if there is no aggregation
+  if (!query.timeAggregationRequested)
+    return obsEngine.values(settings, query.toptions);
+
+  // Request all observations in order to do aggregation
+  TS::TimeSeriesGeneratorOptions tmpoptions;
+  tmpoptions.startTime = settings.starttime;
+  tmpoptions.endTime = settings.endtime;
+  tmpoptions.startTimeUTC = query.toptions.startTimeUTC;
+  tmpoptions.endTimeUTC = query.toptions.endTimeUTC;
+  settings.timestep = 1;
+
+  // fetches results for all location and all parameters
+  return obsEngine.values(settings, tmpoptions);
+}
+
+// Select the aggregation times: all observed timesteps or the generated station timesteps
+const TS::TimeSeriesGenerator::LocalTimeList* select_aggregation_times(
+    bool acceptAllTimesteps,
+    const Query& query,
+    const TS::TimeSeries& first_result,
+    const Fmi::TimeZonePtr& station_tz,
+    const TS::TimeSeriesGeneratorCache::TimeList& station_tlist,
+    TS::TimeSeriesGenerator::LocalTimeList& agg_times_full)
+{
+  if (!acceptAllTimesteps)
+    return station_tlist.get();
+  agg_times_full = get_all_timesteps(query, first_result, station_tz);
+  return &agg_times_full;
+}
+
 }  // namespace
 
 TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
@@ -500,25 +568,18 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
       }
       else if (TS::is_time_parameter(paramname))
       {
-        // add data for time fields
-        TS::TimeSeries timeseries;
-        for (const auto& timestep : timestep_vector)
-        {
-          // Re-zone the timestep to the station's timezone so that time formatters
-          // (which use the LocalDateTime's own zone) print in the station's timezone.
-          const auto ldt = rezone_to_station ? timestep.local_time_in(effective_tz) : timestep;
-          TS::Value value = TS::time_parameter(paramname,
-                                               ldt,
-                                               state.getTime(),
-                                               *loc,
-                                               effective_timezone,
-                                               timezones,
-                                               query.outlocale,
-                                               *query.timeformatter,
-                                               query.timestring);
-          timeseries.emplace_back(TS::TimedValue(timestep, value));
-        }
-        ret->emplace_back(std::move(timeseries));
+        // add data for time fields. Timesteps are re-zoned to the station's timezone so that
+        // time formatters (which use the LocalDateTime's own zone) print in the station's
+        // timezone.
+        ret->emplace_back(time_parameter_series(paramname,
+                                                timestep_vector,
+                                                rezone_to_station,
+                                                effective_tz,
+                                                state.getTime(),
+                                                loc.get(),
+                                                effective_timezone,
+                                                timezones,
+                                                query));
         parameterResultIndexes.insert(std::make_pair(paramname, ret->size() - 1));
       }
       else if (!obsParameters[i].duplicate)
@@ -603,27 +664,10 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
 {
   try
   {
-    TS::TimeSeriesVectorPtr observation_result;
     const ObsParameters& obsParameters = obsParameterss;
 
-    // Quick query if there is no aggregation
-    if (!query.timeAggregationRequested)
-    {
-      observation_result = itsPlugin.itsEngines.obsEngine->values(settings, query.toptions);
-    }
-    else
-    {
-      // Request all observations in order to do aggregation
-      TS::TimeSeriesGeneratorOptions tmpoptions;
-      tmpoptions.startTime = settings.starttime;
-      tmpoptions.endTime = settings.endtime;
-      tmpoptions.startTimeUTC = query.toptions.startTimeUTC;
-      tmpoptions.endTimeUTC = query.toptions.endTimeUTC;
-      settings.timestep = 1;
-
-      // fetches results for all location and all parameters
-      observation_result = itsPlugin.itsEngines.obsEngine->values(settings, tmpoptions);
-    }
+    TS::TimeSeriesVectorPtr observation_result =
+        fetch_observations_for_places(*itsPlugin.itsEngines.obsEngine, settings, query);
 #ifdef MYDEBYG
     std::cout << "observation_result for places: " << *observation_result << std::endl;
 #endif
@@ -711,16 +755,9 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
         continue;
 
       TS::TimeSeriesGenerator::LocalTimeList agg_times_full;
-      TS::TimeSeriesGenerator::LocalTimeList* agg_times = nullptr;
-      if (acceptAllTimesteps)
-      {
-        agg_times_full = get_all_timesteps(query, observation_result->at(0), station_tz);
-        agg_times = &agg_times_full;
-      }
-      else
-      {
-        agg_times = station_tlist.get();
-      }
+      const TS::TimeSeriesGenerator::LocalTimeList* agg_times = select_aggregation_times(
+          acceptAllTimesteps, query, observation_result->at(0), station_tz, station_tlist,
+          agg_times_full);
 
       auto aggregated_observation_result = doAggregationForPlaces(
           state, obsParameters, observation_result, *agg_times, parameterResultIndexes);
@@ -871,24 +908,17 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
         Spine::Location dummyloc(0, 0, "", effective_timezone);
 
         TS::TimeSeriesGroupPtr grp(new TS::TimeSeriesGroup);
-        TS::TimeSeries time_ts;
 
-        for (const auto& ts : ts_vector)
-        {
-          // Re-zone the timestep so time formatters print in the station's timezone.
-          const auto ldt = rezone_to_station ? ts.local_time_in(effective_tz) : ts;
-          TS::Value value = TS::time_parameter(paramname,
-                                               ldt,
-                                               state.getTime(),
-                                               (loc ? *loc : dummyloc),
-                                               effective_timezone,
-                                               timezones,
-                                               query.outlocale,
-                                               *query.timeformatter,
-                                               query.timestring);
-
-          time_ts.emplace_back(TS::TimedValue(ts, value));
-        }
+        // Re-zone the timestep so time formatters print in the station's timezone.
+        TS::TimeSeries time_ts = time_parameter_series(paramname,
+                                                       ts_vector,
+                                                       rezone_to_station,
+                                                       effective_tz,
+                                                       state.getTime(),
+                                                       (loc ? loc.get() : &dummyloc),
+                                                       effective_timezone,
+                                                       timezones,
+                                                       query);
         observation_result_with_added_fields->push_back(time_ts);
       }
       else if (!obsParameters[i].duplicate)
