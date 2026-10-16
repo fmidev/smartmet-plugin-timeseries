@@ -41,6 +41,14 @@ class GridEngineQuery
                              std::vector<std::vector<T::Coordinate>>& polygonPath,
                              const Spine::TaggedLocation& tloc,
                              const Query& query) const;
+  void getWktLocationDefinition(Spine::LocationPtr& loc,
+                                std::vector<std::vector<T::Coordinate>>& polygonPath,
+                                const Spine::TaggedLocation& tloc,
+                                const Query& query) const;
+  void getBBoxLocationDefinition(Spine::LocationPtr& loc,
+                                 std::vector<std::vector<T::Coordinate>>& polygonPath,
+                                 const Spine::TaggedLocation& tloc,
+                                 const Query& query) const;
 
   const Plugin& itsPlugin;
 

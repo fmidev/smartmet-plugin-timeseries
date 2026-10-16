@@ -22,6 +22,183 @@ GridEngineQuery::GridEngineQuery(const Plugin& thePlugin) : itsPlugin(thePlugin)
   }
 }
 
+namespace
+{
+// Append the coordinates of the locations to the points
+void append_location_points(T::Coordinate_vec& polygonPoints, const Spine::LocationList& ll)
+{
+  for (const auto& it : ll)
+    polygonPoints.emplace_back(it->longitude, it->latitude);
+}
+
+// Merge a polygon path consisting of single points only into one polygon of points
+void merge_single_point_polygons(std::vector<std::vector<T::Coordinate>>& polygonPath)
+{
+  if (polygonPath.size() > 1 && getPolygonPathLength(polygonPath) == polygonPath.size())
+  {
+    T::Coordinate_vec polygonPoints;
+    convertToPointVector(polygonPath, polygonPoints);
+    polygonPath.clear();
+    polygonPath.push_back(polygonPoints);
+  }
+}
+}  // namespace
+
+// The polygon path of a WKT location
+void GridEngineQuery::getWktLocationDefinition(Spine::LocationPtr& loc,
+                                               std::vector<std::vector<T::Coordinate>>& polygonPath,
+                                               const Spine::TaggedLocation& tloc,
+                                               const Query& query) const
+{
+  //NFmiSvgPath svgPath;
+  loc = query.wktGeometries.getLocation(tloc.loc->name);
+  //svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+  /*
+  convertSvgPathToPolygonPath(svgPath, polygonPath);
+
+  if (polygonPath.size() > 1 && getPolygonPathLength(polygonPath) == polygonPath.size())
+  {
+    T::Coordinate_vec polygonPoints;
+    convertToPointVector(polygonPath, polygonPoints);
+    polygonPath.clear();
+    polygonPath.push_back(polygonPoints);
+  }
+  */
+
+  OGRwkbGeometryType geomType = query.wktGeometries.getGeometry(tloc.loc->name)->getGeometryType();
+  if (geomType == wkbMultiLineString)
+  {
+    T::Coordinate_vec polygonPoints;
+    std::list<NFmiSvgPath> svgList = query.wktGeometries.getSvgPaths(tloc.loc->name);
+    for (const auto& svg : svgList)
+    {
+      append_location_points(
+          polygonPoints,
+          get_location_list(svg, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine));
+    }
+    polygonPath.push_back(polygonPoints);
+  }
+  else if (geomType == wkbMultiPoint)
+  {
+    T::Coordinate_vec polygonPoints;
+    append_location_points(polygonPoints, query.wktGeometries.getLocations(tloc.loc->name));
+    polygonPath.push_back(polygonPoints);
+  }
+  else if (geomType == wkbLineString)
+  {
+    NFmiSvgPath svgPath;
+    svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+    T::Coordinate_vec polygonPoints;
+    append_location_points(
+        polygonPoints,
+        get_location_list(svgPath, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine));
+    polygonPath.push_back(polygonPoints);
+  }
+  else
+  {
+    NFmiSvgPath svgPath;
+    loc = query.wktGeometries.getLocation(tloc.loc->name);
+    svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
+    convertSvgPathToPolygonPath(svgPath, polygonPath);
+    merge_single_point_polygons(polygonPath);
+  }
+}
+
+// The location and the polygon path of a bounding box, optionally expanded by the radius
+void GridEngineQuery::getBBoxLocationDefinition(
+    Spine::LocationPtr& loc,
+    std::vector<std::vector<T::Coordinate>>& polygonPath,
+    const Spine::TaggedLocation& tloc,
+    const Query& query) const
+{
+  std::string place = get_name_base(loc->name);
+  // Split bounding box coordinates from the query string
+  std::vector<std::string> parts;
+  boost::algorithm::split(parts, place, boost::algorithm::is_any_of(","));
+  if (parts.size() != 4)
+    throw Fmi::Exception(
+        BCP, "Bounding box '" + place + "' is invalid (exactly 4 values required)");
+
+  double lon1 = Fmi::stod(parts[0]);
+  double lat1 = Fmi::stod(parts[1]);
+  double lon2 = Fmi::stod(parts[2]);
+  double lat2 = Fmi::stod(parts[3]);
+
+  // Get location info by the center coordinates
+  Spine::LocationPtr locCenter =
+      get_bbox_location(place, query.language, *itsPlugin.itsEngines.geoEngine);
+
+  std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
+                                                           tloc.tag,
+                                                           locCenter->iso2,
+                                                           locCenter->municipality,
+                                                           locCenter->area,
+                                                           locCenter->feature,
+                                                           locCenter->country,
+                                                           locCenter->longitude,
+                                                           locCenter->latitude,
+                                                           locCenter->timezone,
+                                                           locCenter->population,
+                                                           locCenter->elevation));
+
+  tmp->type = tloc.loc->type;
+  tmp->radius = tloc.loc->radius;
+
+  loc.reset(tmp.release());
+
+  if (tloc.loc->radius == 0)
+  {
+    // Create bounding box polygon
+
+    std::vector<T::Coordinate> coordinates;
+    coordinates.emplace_back(lon1, lat1);
+    coordinates.emplace_back(lon1, lat2);
+    coordinates.emplace_back(lon2, lat2);
+    coordinates.emplace_back(lon2, lat1);
+    coordinates.emplace_back(lon1, lat1);
+    polygonPath.emplace_back(coordinates);
+  }
+  else
+  {
+    // Create expanded bounding box polygon
+
+    const OGRGeometry* geom =
+        itsPlugin.itsGeometryStorage.getOGRGeometry(locCenter->area, wkbMultiPolygon);
+    std::unique_ptr<const OGRGeometry> newGeomUptr;
+    std::unique_ptr<OGRGeometry> expandedGeomUptr;
+    if (geom)
+    {
+      OGRGeometry* newGeom = geom->clone();
+      newGeomUptr.reset(newGeom);
+
+      auto wkt = fmt::format("MULTIPOLYGON ((({} {},{} {},{} {},{} {},{} {})))",
+                             lon1,
+                             lat1,
+                             lon1,
+                             lat2,
+                             lon2,
+                             lat2,
+                             lon2,
+                             lat1,
+                             lon1,
+                             lat1);
+
+      const char* p = wkt.c_str();
+      newGeom->importFromWkt(&p);
+
+      auto* expandedGeom = Fmi::OGR::expandGeometry(newGeom, tloc.loc->radius * 1000);
+      expandedGeomUptr.reset(expandedGeom);
+
+      std::string wktString = Fmi::OGR::exportToWkt(*expandedGeom);
+      convertWktMultipolygonToPolygonPath(wktString, polygonPath);
+    }
+    else
+    {
+      std::cout << "### GEOMETRY NOT FOUND\n";
+    }
+  }
+}
+
 void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
                                             std::vector<std::vector<T::Coordinate>>& polygonPath,
                                             const Spine::TaggedLocation& tloc,
@@ -31,66 +208,7 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
   {
     case Spine::Location::Wkt:
     {
-      //NFmiSvgPath svgPath;
-      loc = query.wktGeometries.getLocation(tloc.loc->name);
-      //svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
-      /*
-      convertSvgPathToPolygonPath(svgPath, polygonPath);
-
-      if (polygonPath.size() > 1 && getPolygonPathLength(polygonPath) == polygonPath.size())
-      {
-        T::Coordinate_vec polygonPoints;
-        convertToPointVector(polygonPath, polygonPoints);
-        polygonPath.clear();
-        polygonPath.push_back(polygonPoints);
-      }
-      */
-
-      OGRwkbGeometryType geomType = query.wktGeometries.getGeometry(tloc.loc->name)->getGeometryType();
-      if (geomType == wkbMultiLineString)
-      {
-        T::Coordinate_vec polygonPoints;
-        std::list<NFmiSvgPath> svgList = query.wktGeometries.getSvgPaths(tloc.loc->name);
-        for (const auto& svg : svgList)
-        {
-          Spine::LocationList ll = get_location_list(svg, tloc.tag, query.step,*itsPlugin.itsEngines.geoEngine);
-          for (auto& it : ll)
-            polygonPoints.emplace_back(it->longitude, it->latitude);
-        }
-        polygonPath.push_back(polygonPoints);
-      }
-      else if (geomType == wkbMultiPoint)
-      {
-        T::Coordinate_vec polygonPoints;
-        Spine::LocationList ll = query.wktGeometries.getLocations(tloc.loc->name);
-        for (auto& it : ll)
-          polygonPoints.emplace_back(it->longitude, it->latitude);
-        polygonPath.push_back(polygonPoints);
-      }
-      else if (geomType == wkbLineString)
-      {
-        NFmiSvgPath svgPath;
-        svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
-        T::Coordinate_vec polygonPoints;
-        Spine::LocationList ll = get_location_list(svgPath, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine);
-        for (auto& it : ll)
-          polygonPoints.emplace_back(it->longitude, it->latitude);
-        polygonPath.push_back(polygonPoints);
-      }
-      else
-      {
-        NFmiSvgPath svgPath;
-        loc = query.wktGeometries.getLocation(tloc.loc->name);
-        svgPath = query.wktGeometries.getSvgPath(tloc.loc->name);
-        convertSvgPathToPolygonPath(svgPath, polygonPath);
-        if (polygonPath.size() > 1 && getPolygonPathLength(polygonPath) == polygonPath.size())
-        {
-          T::Coordinate_vec polygonPoints;
-          convertToPointVector(polygonPath, polygonPoints);
-          polygonPath.clear();
-          polygonPath.push_back(polygonPoints);
-        }
-      }
+      getWktLocationDefinition(loc, polygonPath, tloc, query);
       break;
     }
     case Spine::Location::Area:
@@ -129,92 +247,7 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
 
     case Spine::Location::BoundingBox:
     {
-      std::string place = get_name_base(loc->name);
-      // Split bounding box coordinates from the query string
-      std::vector<std::string> parts;
-      boost::algorithm::split(parts, place, boost::algorithm::is_any_of(","));
-      if (parts.size() != 4)
-        throw Fmi::Exception(
-            BCP, "Bounding box '" + place + "' is invalid (exactly 4 values required)");
-
-      double lon1 = Fmi::stod(parts[0]);
-      double lat1 = Fmi::stod(parts[1]);
-      double lon2 = Fmi::stod(parts[2]);
-      double lat2 = Fmi::stod(parts[3]);
-
-      // Get location info by the center coordinates
-      Spine::LocationPtr locCenter =
-          get_bbox_location(place, query.language, *itsPlugin.itsEngines.geoEngine);
-
-      std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
-                                                               tloc.tag,
-                                                               locCenter->iso2,
-                                                               locCenter->municipality,
-                                                               locCenter->area,
-                                                               locCenter->feature,
-                                                               locCenter->country,
-                                                               locCenter->longitude,
-                                                               locCenter->latitude,
-                                                               locCenter->timezone,
-                                                               locCenter->population,
-                                                               locCenter->elevation));
-
-      tmp->type = tloc.loc->type;
-      tmp->radius = tloc.loc->radius;
-
-      loc.reset(tmp.release());
-
-      if (tloc.loc->radius == 0)
-      {
-        // Create bounding box polygon
-
-        std::vector<T::Coordinate> coordinates;
-        coordinates.emplace_back(lon1, lat1);
-        coordinates.emplace_back(lon1, lat2);
-        coordinates.emplace_back(lon2, lat2);
-        coordinates.emplace_back(lon2, lat1);
-        coordinates.emplace_back(lon1, lat1);
-        polygonPath.emplace_back(coordinates);
-      }
-      else
-      {
-        // Create expanded bounding box polygon
-
-        const OGRGeometry* geom =
-            itsPlugin.itsGeometryStorage.getOGRGeometry(locCenter->area, wkbMultiPolygon);
-        std::unique_ptr<const OGRGeometry> newGeomUptr;
-        std::unique_ptr<OGRGeometry> expandedGeomUptr;
-        if (geom)
-        {
-          OGRGeometry* newGeom = geom->clone();
-          newGeomUptr.reset(newGeom);
-
-          auto wkt = fmt::format("MULTIPOLYGON ((({} {},{} {},{} {},{} {},{} {})))",
-                                 lon1,
-                                 lat1,
-                                 lon1,
-                                 lat2,
-                                 lon2,
-                                 lat2,
-                                 lon2,
-                                 lat1,
-                                 lon1,
-                                 lat1);
-
-          const char* p = wkt.c_str();
-          newGeom->importFromWkt(&p);
-
-          auto* expandedGeom = Fmi::OGR::expandGeometry(newGeom, tloc.loc->radius * 1000);
-          expandedGeomUptr.reset(expandedGeom);
-
-          std::string wktString = Fmi::OGR::exportToWkt(*expandedGeom);
-          convertWktMultipolygonToPolygonPath(wktString, polygonPath);
-        }
-        else
-        {
-          std::cout << "### GEOMETRY NOT FOUND\n";
-        }
-      }
+      getBBoxLocationDefinition(loc, polygonPath, tloc, query);
       break;
     }
 
