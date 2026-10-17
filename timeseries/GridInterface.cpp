@@ -1988,6 +1988,508 @@ bool coordinateParameterSeries(const ResultContext& ctx,
 }
 
 // The value of a parameter which is not a data parameter at timestep t
+// The arguments of the helpers of nonGridParameterValue
+struct NonGridArgs
+{
+  int pid;
+  int t;
+  time_t ft;
+  int rLen;
+  int tLen;
+  const Fmi::LocalDateTime& queryTime;
+  TS::TimeSeries& tsForParameter;
+  TS::TimeSeries& tsForNonGridParam;
+};
+
+// The requested parameter is Y-coordinate in the given CRS
+void yCoordinateValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // ################################################################################
+  // # The requested parameter is Y-coordinate in the given CRS.
+  // ################################################################################
+
+  int len = ctx.coordinates.size();
+  std::ostringstream output;
+  if (ctx.coordinates.size() > 1)
+    output << "[";
+
+  if (ctx.masterquery.crs.empty() || ctx.masterquery.crs == "EPSG:4326")
+  {
+    for (int i = 0; i < len; i++)
+    {
+      output << ctx.masterquery.valueformatter.format(
+          ctx.coordinates[i].y(), ctx.gridQuery.mQueryParameterList[a.pid].mPrecision);
+      if ((i + 1) < len)
+        output << " ";
+    }
+  }
+  else
+  {
+    Fmi::CoordinateTransformation transformation("WGS84", ctx.masterquery.crs);
+
+    for (int i = 0; i < len; i++)
+    {
+      double lon = ctx.coordinates[i].x();
+      double lat = ctx.coordinates[i].y();
+      transformation.transform(lon, lat);
+
+      output << ctx.masterquery.valueformatter.format(
+          lat, ctx.gridQuery.mQueryParameterList[a.pid].mPrecision);
+      if ((i + 1) < len)
+        output << " ";
+    }
+  }
+
+  if (ctx.coordinates.size() > 1)
+    output << "]";
+
+  TS::TimedValue tsValue(a.queryTime, TS::Value(output.str()));
+  a.tsForNonGridParam.emplace_back(tsValue);
+}
+
+// The requested parameter is X-coordinate in the given CRS
+void xCoordinateValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // ################################################################################
+  // # The requested parameter is X-coordinate in the given CRS.
+  // ################################################################################
+
+  int len = ctx.coordinates.size();
+  std::ostringstream output;
+  if (ctx.coordinates.size() > 1)
+    output << "[";
+
+  if (ctx.masterquery.crs.empty() || ctx.masterquery.crs == "EPSG:4326")
+  {
+    for (int i = 0; i < len; i++)
+    {
+      output << ctx.masterquery.valueformatter.format(
+          ctx.coordinates[i].x(), ctx.gridQuery.mQueryParameterList[a.pid].mPrecision);
+      if ((i + 1) < len)
+        output << " ";
+    }
+  }
+  else
+  {
+    Fmi::CoordinateTransformation transformation("WGS84", ctx.masterquery.crs);
+
+    for (int i = 0; i < len; i++)
+    {
+      double lon = ctx.coordinates[i].x();
+      double lat = ctx.coordinates[i].y();
+      transformation.transform(lon, lat);
+
+      output << ctx.masterquery.valueformatter.format(
+          lon, ctx.gridQuery.mQueryParameterList[a.pid].mPrecision);
+      if ((i + 1) < len)
+        output << " ";
+    }
+  }
+
+  if (ctx.coordinates.size() > 1)
+    output << "]";
+
+  TS::TimedValue tsValue(a.queryTime, TS::Value(output.str()));
+  a.tsForNonGridParam.emplace_back(tsValue);
+}
+
+// The value of a special (time or location) parameter
+void specialParameterValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // ################################################################################
+  // # The requested parameter is a special parameter.
+  // ################################################################################
+
+  // These parameters might be partly same that is checked in the next two conditions.
+
+  auto paramname = ctx.gridQuery.mQueryParameterList[a.pid].mParam;
+  auto timezone = ctx.masterquery.timezone;
+  if (timezone == LOCALTIME_PARAM)
+    timezone = ctx.loc->timezone;
+
+  if (TS::is_time_parameter(paramname))
+  {
+    TS::Value pValue = TS::time_parameter(paramname,
+                                          a.queryTime,
+                                          ctx.state.getTime(),
+                                          *ctx.loc,
+                                          timezone,
+                                          ctx.timezones,
+                                          ctx.masterquery.outlocale,
+                                          *ctx.masterquery.timeformatter,
+                                          ctx.masterquery.timestring);
+
+    TS::TimedValue tsValue(a.queryTime, pValue);
+    a.tsForNonGridParam.emplace_back(tsValue);
+  }
+  else if (TS::is_location_parameter(ctx.gridQuery.mQueryParameterList[a.pid].mParam))
+  {
+    TS::Value pValue =
+        TS::location_parameter(ctx.loc,
+                               paramname,
+                               ctx.masterquery.valueformatter,
+                               timezone,
+                               ctx.gridQuery.mQueryParameterList[a.pid].mPrecision,
+                               ctx.masterquery.crs);
+    TS::TimedValue tsValue(a.queryTime, pValue);
+    a.tsForNonGridParam.emplace_back(tsValue);
+  }
+}
+
+// A detail of a result parameter, requested as @<detailId>-<paramIndex>
+// The detail n of result parameter i at timestep t (see parameterDetailValue)
+TS::Value parameterDetail(
+    const ResultContext& ctx, int t, const std::string& n, uint i, const std::string& producerName)
+{
+  if (n == "I")
+  {
+    auto tmp = fmt::format(
+        "{}:{}:{}:{}:{}:{}:{}",
+        ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterKey,
+        producerName,
+        ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mGeometryId,
+        C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterLevelId),
+        C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterLevel),
+        C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mForecastType),
+        C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mForecastNumber));
+    return tmp;
+  }
+  else if (n == "P")  // Produceer
+  {
+    return producerName;
+  }
+  else if (n == "F")  // File
+  {
+    std::string fileName;
+    T::FileInfo fInfo;
+    const auto fileId = ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mFileId[0];
+    if (ctx.contentServer.getFileInfoById(0, fileId, fInfo) == 0)
+      fileName = fInfo.mName;
+
+    return fileName;
+  }
+  else if (n == "G")  // Generation
+  {
+    T::GenerationInfo info;
+    if (ctx.gridEngine.getGenerationInfoById(
+            C_INT64(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mGenerationId),
+            info))
+    {
+      return info.mName;
+    }
+    else
+    {
+      return C_INT64(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mGenerationId);
+    }
+  }
+  else if (n == "GM")  // Geometry
+  {
+    return C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mGeometryId);
+  }
+  else if (n == "LT")  // Level type
+  {
+    return C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterLevelId);
+  }
+  else if (n == "L")  // Level
+  {
+    return C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterLevel);
+  }
+  else if (n == "FT")  // Forcast type
+  {
+    return C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mForecastType);
+  }
+  else if (n == "FN")  // Forecast number
+  {
+    return C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mForecastNumber);
+  }
+  else if (n == "AT")  // Analysis time / origintime
+  {
+    return ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mAnalysisTime;
+  }
+  else if (n == "LON" || n == "LAT" || n == "LATLON" || n == "LONLAT")
+  {
+    return format_coordinates(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mValueList,
+                              ctx.masterquery.valueformatter,
+                              n);
+  }
+  else
+  {
+    return ctx.missing_value;
+  }
+}
+
+void parameterDetailValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // ################################################################################
+  // # Details releated to a requested parameter (identified by index number)
+  // ################################################################################
+
+  // When the caller want to get more details about a result parameter, he/she can
+  // request that by using syntax: '@' <detailId>-<paramIndex>. For example:
+  //
+  //    @P-0    => The producer name of the first parameter in the result (index starts
+  //    from zero).
+  //    @P-1    => The producer name of the second parameter in the result.
+  //    @I-3    => The complete parameter identifier (for example: T-K:ECG:1093:6:2:3:7)
+
+  std::string n;
+  int idx = -1;
+
+  const std::string& pstr = ctx.gridQuery.mQueryParameterList[a.pid].mParam;
+  const auto dash = pstr.find('-');
+  if (dash != std::string::npos)
+  {
+    n = pstr.substr(1, dash - 1);
+    idx = Fmi::stoi_opt(pstr.substr(dash + 1)).value_or(-1);
+  }
+
+  if (idx >= 0 && idx < ctx.pLen)
+  {
+    auto cpid = ctx.pidList.find(((UInt64)(idx) << 32) + a.t);
+    if (cpid != ctx.pidList.end())
+    {
+      uint i = cpid->second;
+      std::string producerName;
+      T::ProducerInfo producer;
+      if (ctx.gridEngine.getProducerInfoById(
+              ctx.gridQuery.mQueryParameterList[i].mValueList[a.t]->mProducerId, producer))
+        producerName = producer.mName;
+
+      TS::TimedValue tsValue(a.queryTime, parameterDetail(ctx, a.t, n, i, producerName));
+      a.tsForNonGridParam.emplace_back(tsValue);
+    }
+    else
+    {
+      TS::TimedValue tsValue(a.queryTime, ctx.missing_value);
+      a.tsForNonGridParam.emplace_back(tsValue);
+    }
+  }
+}
+
+// The level of the parameters
+void parameterLevelValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // ################################################################################
+  // # The requested parameter is the parameter level.
+  // ################################################################################
+
+  // This parameter was used earier, but it is not very informative anymore, because
+  // each parameter can have different level.
+
+  int idx = 0;
+  int levelValue = ctx.level;
+  if (levelValue > 0  &&  ctx.levelId == 2)
+    levelValue = ctx.level / 100;
+
+  while (idx < ctx.pLen && levelValue <= 0)
+  {
+    if (ctx.gridQuery.mQueryParameterList[idx].mValueList[a.t]->mParameterLevel > 0)
+    {
+      levelValue = ctx.gridQuery.mQueryParameterList[idx].mValueList[a.t]->mParameterLevel;
+      if (levelValue < 0)
+        ctx.level = 0;
+
+      if (ctx.gridQuery.mQueryParameterList[idx].mValueList[a.t]->mParameterLevelId == 2)
+        levelValue = levelValue / 100;
+    }
+    idx++;
+  }
+  levelValue = std::max(levelValue, 0);
+
+  TS::TimedValue tsValue(a.queryTime, levelValue);
+  a.tsForNonGridParam.emplace_back(tsValue);
+}
+
+// The producer of the parameters
+void producerValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // ################################################################################
+  // # The requested parameter is the parameter model/producer
+  // ################################################################################
+
+  // This parameter was used earier, but it is not very informative anymore, because
+  // each parameter can have different model/producer.
+
+  int idx = 0;
+  while (idx < ctx.pLen)
+  {
+    if (ctx.gridQuery.mQueryParameterList[idx].mValueList[a.t]->mProducerId > 0)
+    {
+      T::ProducerInfo producer;
+      if (ctx.gridEngine.getProducerInfoById(
+              ctx.gridQuery.mQueryParameterList[idx].mValueList[a.t]->mProducerId, producer))
+      {
+        TS::TimedValue tsValue(a.queryTime, producer.mName);
+        a.tsForNonGridParam.emplace_back(tsValue);
+        idx = ctx.pLen + 10;
+      }
+    }
+    idx++;
+  }
+
+  if (idx == ctx.pLen)
+  {
+    std::string producer = "Unknown";
+    if (ctx.gridQuery.mProducerNameList.size() == 1)
+    {
+      std::vector<std::string> pnameList;
+      ctx.gridEngine.getProducerNameList(ctx.gridQuery.mProducerNameList[0], pnameList);
+      if (!pnameList.empty())
+        producer = pnameList[0];
+    }
+
+    TS::TimedValue tsValue(a.queryTime, producer);
+    a.tsForNonGridParam.emplace_back(tsValue);
+  }
+}
+
+// The analysis time of the parameters
+void originTimeValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // ################################################################################
+  // # The requested parameter is the parameter origintime / analysis time.
+  // ################################################################################
+
+  // This parameter was used earier, but it is not very informative anymore, because
+  // each parameter can have different origintime/analysis time.
+
+  int idx = 0;
+  while (idx < ctx.pLen)
+  {
+    if (ctx.gridQuery.mQueryParameterList[idx].mValueList[a.t]->mGenerationId > 0)
+    {
+      T::GenerationInfo info;
+      bool res = ctx.gridEngine.getGenerationInfoById(
+          ctx.gridQuery.mQueryParameterList[idx].mValueList[a.t]->mGenerationId, info);
+      if (res)
+      {
+        Fmi::LocalDateTime origTime(toTimeStamp(info.mAnalysisTime), ctx.tz);
+        TS::TimedValue tsValue(a.queryTime, ctx.masterquery.timeformatter->format(origTime));
+        a.tsForNonGridParam.emplace_back(tsValue);
+        idx = ctx.pLen + 10;
+      }
+    }
+    idx++;
+  }
+  if (idx == ctx.pLen)
+  {
+    TS::TimedValue tsValue(a.queryTime, std::string("Unknown"));
+    a.tsForNonGridParam.emplace_back(tsValue);
+  }
+}
+
+// The modification time of the parameters
+void modificationTimeValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // ################################################################################
+  // # The requested parameter is the parameter modification time.
+  // ################################################################################
+
+  // This parameter was used earier, but it is not very informative anymore, because
+  // each parameter can have different modification time.
+
+  int idx = 0;
+  while (idx < ctx.pLen)
+  {
+    if (ctx.gridQuery.mQueryParameterList[idx].mValueList[a.t]->mModificationTime > 0)
+    {
+      auto utcT = Fmi::date_time::from_time_t(
+          ctx.gridQuery.mQueryParameterList[idx].mValueList[a.t]->mModificationTime);
+      Fmi::LocalDateTime modTime(utcT, ctx.tz);
+      TS::TimedValue tsValue(a.queryTime, ctx.masterquery.timeformatter->format(modTime));
+      a.tsForNonGridParam.emplace_back(tsValue);
+      idx = ctx.pLen + 10;
+    }
+    idx++;
+  }
+
+  if (idx == ctx.pLen)
+  {
+    TS::TimedValue tsValue(a.queryTime, std::string("Unknown"));
+    a.tsForNonGridParam.emplace_back(tsValue);
+  }
+}
+
+// The identification of a parameter of an INFO request
+void parameterInfoValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // ################################################################################
+  // # The requested parameter is not expected to return any values.
+  // ################################################################################
+
+  // When the request format is "INFO", no data is fetched. However, it shows the exact
+  // identification of the parameters that would be fetched in a normal request. This
+  // feature can be used in order to check that data comes from expected producers,
+  // generations, geometeries, level types and levels.
+
+  std::string producerName;
+  T::ProducerInfo producer;
+  if (ctx.gridEngine.getProducerInfoById(
+          ctx.gridQuery.mQueryParameterList[a.pid].mValueList[a.t]->mProducerId, producer))
+    producerName = producer.mName;
+
+  auto tmp = fmt::format(
+      "{}:{}:{}:{}:{}:{}:{} {} flags:{}",
+      ctx.gridQuery.mQueryParameterList[a.pid].mValueList[a.t]->mParameterKey,
+      producerName,
+      ctx.gridQuery.mQueryParameterList[a.pid].mValueList[a.t]->mGeometryId,
+      C_INT(ctx.gridQuery.mQueryParameterList[a.pid].mValueList[a.t]->mParameterLevelId),
+      C_INT(ctx.gridQuery.mQueryParameterList[a.pid].mValueList[a.t]->mParameterLevel),
+      C_INT(ctx.gridQuery.mQueryParameterList[a.pid].mValueList[a.t]->mForecastType),
+      C_INT(ctx.gridQuery.mQueryParameterList[a.pid].mValueList[a.t]->mForecastNumber),
+      ctx.gridQuery.mQueryParameterList[a.pid].mValueList[a.t]->mAnalysisTime,
+      C_INT(ctx.gridQuery.mQueryParameterList[a.pid].mValueList[a.t]->mFlags));
+
+  TS::TimedValue tsValue(a.queryTime, std::string(tmp));
+  a.tsForParameter.emplace_back(tsValue);
+}
+
+// The identifications of the parameters matching an ambiguous definition
+void multiMatchValue(const ResultContext& ctx, const NonGridArgs& a)
+{
+  // It seems that there are more values available for each time step than
+  // expected. This usually happens if the requested parameter definition does not
+  // contain enough information in order to identify an unique parameter. For
+  // example, if the parameter definition does not contain level information then
+  // the result is that we get values from several levels.
+
+  std::set<std::string> pList;
+
+  for (int r = 0; r < a.rLen; r++)
+  {
+    if (ctx.gridQuery.mQueryParameterList[a.pid].mValueList[r]->mForecastTimeUTC == a.ft)
+    {
+      std::string producerName;
+      T::ProducerInfo producer;
+      if (ctx.gridEngine.getProducerInfoById(
+              ctx.gridQuery.mQueryParameterList[a.pid].mValueList[r]->mProducerId, producer))
+        producerName = producer.mName;
+
+      std::string tmp = fmt::format(
+          "{}:{}:{}:{}:{}:{}",
+          ctx.gridQuery.mQueryParameterList[a.pid].mValueList[r]->mParameterKey,
+          C_INT(ctx.gridQuery.mQueryParameterList[a.pid].mValueList[r]->mParameterLevelId),
+          C_INT(ctx.gridQuery.mQueryParameterList[a.pid].mValueList[r]->mParameterLevel),
+          C_INT(ctx.gridQuery.mQueryParameterList[a.pid].mValueList[r]->mForecastType),
+          C_INT(ctx.gridQuery.mQueryParameterList[a.pid].mValueList[r]->mForecastNumber),
+          producerName);
+
+      if (pList.find(tmp) == pList.end())
+        pList.insert(tmp);
+    }
+  }
+
+  std::string tmp = "### MULTI-MATCH ### ";
+  for (const auto& p : pList)
+  {
+    tmp += p;
+    tmp += ' ';
+  }
+
+  TS::TimedValue tsValue(a.queryTime, tmp);
+  a.tsForNonGridParam.emplace_back(tsValue);
+}
+
 void nonGridParameterValue(const ResultContext& ctx,
                            int pid,
                            int t,
@@ -1999,6 +2501,7 @@ void nonGridParameterValue(const ResultContext& ctx,
                            TS::TimeSeries& tsForParameter,
                            TS::TimeSeries& tsForNonGridParam)
 {
+  const NonGridArgs a{pid, t, ft, rLen, tLen, queryTime, tsForParameter, tsForNonGridParam};
   if ((ctx.gridQuery.mQueryParameterList[pid].mFlags &
        QueryServer::QueryParameter::Flags::InvisibleParameter) != 0)
   {
@@ -2008,133 +2511,16 @@ void nonGridParameterValue(const ResultContext& ctx,
   }
   else if (strcasecmp(ctx.gridQuery.mQueryParameterList[pid].mParam.c_str(), "y") == 0)
   {
-    // ################################################################################
-    // # The requested parameter is Y-coordinate in the given CRS.
-    // ################################################################################
-
-    int len = ctx.coordinates.size();
-    std::ostringstream output;
-    if (ctx.coordinates.size() > 1)
-      output << "[";
-
-    if (ctx.masterquery.crs.empty() || ctx.masterquery.crs == "EPSG:4326")
-    {
-      for (int i = 0; i < len; i++)
-      {
-        output << ctx.masterquery.valueformatter.format(
-            ctx.coordinates[i].y(), ctx.gridQuery.mQueryParameterList[pid].mPrecision);
-        if ((i + 1) < len)
-          output << " ";
-      }
-    }
-    else
-    {
-      Fmi::CoordinateTransformation transformation("WGS84", ctx.masterquery.crs);
-
-      for (int i = 0; i < len; i++)
-      {
-        double lon = ctx.coordinates[i].x();
-        double lat = ctx.coordinates[i].y();
-        transformation.transform(lon, lat);
-
-        output << ctx.masterquery.valueformatter.format(
-            lat, ctx.gridQuery.mQueryParameterList[pid].mPrecision);
-        if ((i + 1) < len)
-          output << " ";
-      }
-    }
-
-    if (ctx.coordinates.size() > 1)
-      output << "]";
-
-    TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-    tsForNonGridParam.emplace_back(tsValue);
+    yCoordinateValue(ctx, a);
   }
   else if (strcasecmp(ctx.gridQuery.mQueryParameterList[pid].mParam.c_str(), "x") == 0)
   {
-    // ################################################################################
-    // # The requested parameter is X-coordinate in the given CRS.
-    // ################################################################################
-
-    int len = ctx.coordinates.size();
-    std::ostringstream output;
-    if (ctx.coordinates.size() > 1)
-      output << "[";
-
-    if (ctx.masterquery.crs.empty() || ctx.masterquery.crs == "EPSG:4326")
-    {
-      for (int i = 0; i < len; i++)
-      {
-        output << ctx.masterquery.valueformatter.format(
-            ctx.coordinates[i].x(), ctx.gridQuery.mQueryParameterList[pid].mPrecision);
-        if ((i + 1) < len)
-          output << " ";
-      }
-    }
-    else
-    {
-      Fmi::CoordinateTransformation transformation("WGS84", ctx.masterquery.crs);
-
-      for (int i = 0; i < len; i++)
-      {
-        double lon = ctx.coordinates[i].x();
-        double lat = ctx.coordinates[i].y();
-        transformation.transform(lon, lat);
-
-        output << ctx.masterquery.valueformatter.format(
-            lon, ctx.gridQuery.mQueryParameterList[pid].mPrecision);
-        if ((i + 1) < len)
-          output << " ";
-      }
-    }
-
-    if (ctx.coordinates.size() > 1)
-      output << "]";
-
-    TS::TimedValue tsValue(queryTime, TS::Value(output.str()));
-    tsForNonGridParam.emplace_back(tsValue);
+    xCoordinateValue(ctx, a);
   }
   else if (UtilityFunctions::is_special_parameter(
                ctx.gridQuery.mQueryParameterList[pid].mParam))
   {
-    // ################################################################################
-    // # The requested parameter is a special parameter.
-    // ################################################################################
-
-    // These parameters might be partly same that is checked in the next two conditions.
-
-    auto paramname = ctx.gridQuery.mQueryParameterList[pid].mParam;
-    auto timezone = ctx.masterquery.timezone;
-    if (timezone == LOCALTIME_PARAM)
-      timezone = ctx.loc->timezone;
-
-    if (TS::is_time_parameter(paramname))
-    {
-      TS::Value pValue = TS::time_parameter(paramname,
-                                            queryTime,
-                                            ctx.state.getTime(),
-                                            *ctx.loc,
-                                            timezone,
-                                            ctx.timezones,
-                                            ctx.masterquery.outlocale,
-                                            *ctx.masterquery.timeformatter,
-                                            ctx.masterquery.timestring);
-
-      TS::TimedValue tsValue(queryTime, pValue);
-      tsForNonGridParam.emplace_back(tsValue);
-    }
-    else if (TS::is_location_parameter(ctx.gridQuery.mQueryParameterList[pid].mParam))
-    {
-      TS::Value pValue =
-          TS::location_parameter(ctx.loc,
-                                 paramname,
-                                 ctx.masterquery.valueformatter,
-                                 timezone,
-                                 ctx.gridQuery.mQueryParameterList[pid].mPrecision,
-                                 ctx.masterquery.crs);
-      TS::TimedValue tsValue(queryTime, pValue);
-      tsForNonGridParam.emplace_back(tsValue);
-    }
+    specialParameterValue(ctx, a);
   }
   else if (ctx.additionalParameters.getParameterValueByLocation(
                ctx.gridQuery.mQueryParameterList[pid].mParam,
@@ -2169,369 +2555,36 @@ void nonGridParameterValue(const ResultContext& ctx,
   }
   else if (ctx.gridQuery.mQueryParameterList[pid].mParam.substr(0, 1) == "@")
   {
-    // ################################################################################
-    // # Details releated to a requested parameter (identified by index number)
-    // ################################################################################
-
-    // When the caller want to get more details about a result parameter, he/she can
-    // request that by using syntax: '@' <detailId>-<paramIndex>. For example:
-    //
-    //    @P-0    => The producer name of the first parameter in the result (index starts
-    //    from zero).
-    //    @P-1    => The producer name of the second parameter in the result.
-    //    @I-3    => The complete parameter identifier (for example: T-K:ECG:1093:6:2:3:7)
-
-    std::string n;
-    int idx = -1;
-
-    const std::string& pstr = ctx.gridQuery.mQueryParameterList[pid].mParam;
-    const auto dash = pstr.find('-');
-    if (dash != std::string::npos)
-    {
-      n = pstr.substr(1, dash - 1);
-      idx = Fmi::stoi_opt(pstr.substr(dash + 1)).value_or(-1);
-    }
-
-    if (idx >= 0 && idx < ctx.pLen)
-    {
-      auto cpid = ctx.pidList.find(((UInt64)(idx) << 32) + t);
-      if (cpid != ctx.pidList.end())
-      {
-        uint i = cpid->second;
-        std::string producerName;
-        T::ProducerInfo producer;
-        if (ctx.gridEngine.getProducerInfoById(
-                ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mProducerId, producer))
-          producerName = producer.mName;
-
-        if (n == "I")
-        {
-          auto tmp = fmt::format(
-              "{}:{}:{}:{}:{}:{}:{}",
-              ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterKey,
-              producerName,
-              ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mGeometryId,
-              C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterLevelId),
-              C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterLevel),
-              C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mForecastType),
-              C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mForecastNumber));
-          TS::TimedValue tsValue(queryTime, tmp);
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else if (n == "P")  // Produceer
-        {
-          TS::TimedValue tsValue(queryTime, producerName);
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else if (n == "F")  // File
-        {
-          std::string fileName;
-          T::FileInfo fInfo;
-          const auto fileId = ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mFileId[0];
-          if (ctx.contentServer.getFileInfoById(0, fileId, fInfo) == 0)
-            fileName = fInfo.mName;
-
-          TS::TimedValue tsValue(queryTime, fileName);
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else if (n == "G")  // Generation
-        {
-          T::GenerationInfo info;
-          if (ctx.gridEngine.getGenerationInfoById(
-                  C_INT64(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mGenerationId),
-                  info))
-          {
-            TS::TimedValue tsValue(queryTime, info.mName);
-            tsForNonGridParam.emplace_back(tsValue);
-          }
-          else
-          {
-            TS::TimedValue tsValue(
-                queryTime,
-                C_INT64(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mGenerationId));
-            tsForNonGridParam.emplace_back(tsValue);
-          }
-        }
-        else if (n == "GM")  // Geometry
-        {
-          TS::TimedValue tsValue(
-              queryTime,
-              C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mGeometryId));
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else if (n == "LT")  // Level type
-        {
-          TS::TimedValue tsValue(
-              queryTime,
-              C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterLevelId));
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else if (n == "L")  // Level
-        {
-          TS::TimedValue tsValue(
-              queryTime,
-              C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterLevel));
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else if (n == "FT")  // Forcast type
-        {
-          TS::TimedValue tsValue(
-              queryTime,
-              C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mForecastType));
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else if (n == "FN")  // Forecast number
-        {
-          TS::TimedValue tsValue(
-              queryTime,
-              C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mForecastNumber));
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else if (n == "AT")  // Analysis time / origintime
-        {
-          TS::TimedValue tsValue(
-              queryTime, ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mAnalysisTime);
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else if (n == "LON" || n == "LAT" || n == "LATLON" || n == "LONLAT")
-        {
-          TS::TimedValue tsValue(
-              queryTime,
-              format_coordinates(
-                  ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mValueList,
-                  ctx.masterquery.valueformatter,
-                  n));
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-        else
-        {
-          TS::TimedValue tsValue(queryTime, ctx.missing_value);
-          tsForNonGridParam.emplace_back(tsValue);
-        }
-      }
-      else
-      {
-        TS::TimedValue tsValue(queryTime, ctx.missing_value);
-        tsForNonGridParam.emplace_back(tsValue);
-      }
-    }
+    parameterDetailValue(ctx, a);
   }
   else if (ctx.gridQuery.mQueryParameterList[pid].mParam == "level")
   {
-    // ################################################################################
-    // # The requested parameter is the parameter level.
-    // ################################################################################
-
-    // This parameter was used earier, but it is not very informative anymore, because
-    // each parameter can have different level.
-
-    int idx = 0;
-    int levelValue = ctx.level;
-    if (levelValue > 0  &&  ctx.levelId == 2)
-      levelValue = ctx.level / 100;
-
-    while (idx < ctx.pLen && levelValue <= 0)
-    {
-      if (ctx.gridQuery.mQueryParameterList[idx].mValueList[t]->mParameterLevel > 0)
-      {
-        levelValue = ctx.gridQuery.mQueryParameterList[idx].mValueList[t]->mParameterLevel;
-        if (levelValue < 0)
-          ctx.level = 0;
-
-        if (ctx.gridQuery.mQueryParameterList[idx].mValueList[t]->mParameterLevelId == 2)
-          levelValue = levelValue / 100;
-      }
-      idx++;
-    }
-    levelValue = std::max(levelValue, 0);
-
-    TS::TimedValue tsValue(queryTime, levelValue);
-    tsForNonGridParam.emplace_back(tsValue);
+    parameterLevelValue(ctx, a);
   }
   else if (ctx.gridQuery.mQueryParameterList[pid].mParam == "model" ||
            ctx.gridQuery.mQueryParameterList[pid].mParam == "producer")
   {
-    // ################################################################################
-    // # The requested parameter is the parameter model/producer
-    // ################################################################################
-
-    // This parameter was used earier, but it is not very informative anymore, because
-    // each parameter can have different model/producer.
-
-    int idx = 0;
-    while (idx < ctx.pLen)
-    {
-      if (ctx.gridQuery.mQueryParameterList[idx].mValueList[t]->mProducerId > 0)
-      {
-        T::ProducerInfo producer;
-        if (ctx.gridEngine.getProducerInfoById(
-                ctx.gridQuery.mQueryParameterList[idx].mValueList[t]->mProducerId, producer))
-        {
-          TS::TimedValue tsValue(queryTime, producer.mName);
-          tsForNonGridParam.emplace_back(tsValue);
-          idx = ctx.pLen + 10;
-        }
-      }
-      idx++;
-    }
-
-    if (idx == ctx.pLen)
-    {
-      std::string producer = "Unknown";
-      if (ctx.gridQuery.mProducerNameList.size() == 1)
-      {
-        std::vector<std::string> pnameList;
-        ctx.gridEngine.getProducerNameList(ctx.gridQuery.mProducerNameList[0], pnameList);
-        if (!pnameList.empty())
-          producer = pnameList[0];
-      }
-
-      TS::TimedValue tsValue(queryTime, producer);
-      tsForNonGridParam.emplace_back(tsValue);
-    }
+    producerValue(ctx, a);
   }
   else if (ctx.gridQuery.mQueryParameterList[pid].mParam == "origintime")
   {
-    // ################################################################################
-    // # The requested parameter is the parameter origintime / analysis time.
-    // ################################################################################
-
-    // This parameter was used earier, but it is not very informative anymore, because
-    // each parameter can have different origintime/analysis time.
-
-    int idx = 0;
-    while (idx < ctx.pLen)
-    {
-      if (ctx.gridQuery.mQueryParameterList[idx].mValueList[t]->mGenerationId > 0)
-      {
-        T::GenerationInfo info;
-        bool res = ctx.gridEngine.getGenerationInfoById(
-            ctx.gridQuery.mQueryParameterList[idx].mValueList[t]->mGenerationId, info);
-        if (res)
-        {
-          Fmi::LocalDateTime origTime(toTimeStamp(info.mAnalysisTime), ctx.tz);
-          TS::TimedValue tsValue(queryTime, ctx.masterquery.timeformatter->format(origTime));
-          tsForNonGridParam.emplace_back(tsValue);
-          idx = ctx.pLen + 10;
-        }
-      }
-      idx++;
-    }
-    if (idx == ctx.pLen)
-    {
-      TS::TimedValue tsValue(queryTime, std::string("Unknown"));
-      tsForNonGridParam.emplace_back(tsValue);
-    }
+    originTimeValue(ctx, a);
   }
   else if (ctx.gridQuery.mQueryParameterList[pid].mParam == "modtime" ||
            ctx.gridQuery.mQueryParameterList[pid].mParam == "mtime")
   {
-    // ################################################################################
-    // # The requested parameter is the parameter modification time.
-    // ################################################################################
-
-    // This parameter was used earier, but it is not very informative anymore, because
-    // each parameter can have different modification time.
-
-    int idx = 0;
-    while (idx < ctx.pLen)
-    {
-      if (ctx.gridQuery.mQueryParameterList[idx].mValueList[t]->mModificationTime > 0)
-      {
-        auto utcT = Fmi::date_time::from_time_t(
-            ctx.gridQuery.mQueryParameterList[idx].mValueList[t]->mModificationTime);
-        Fmi::LocalDateTime modTime(utcT, ctx.tz);
-        TS::TimedValue tsValue(queryTime, ctx.masterquery.timeformatter->format(modTime));
-        tsForNonGridParam.emplace_back(tsValue);
-        idx = ctx.pLen + 10;
-      }
-      idx++;
-    }
-
-    if (idx == ctx.pLen)
-    {
-      TS::TimedValue tsValue(queryTime, std::string("Unknown"));
-      tsForNonGridParam.emplace_back(tsValue);
-    }
+    modificationTimeValue(ctx, a);
   }
   else if ((ctx.gridQuery.mQueryParameterList[pid].mFlags &
             QueryServer::QueryParameter::Flags::NoReturnValues) != 0 &&
            (ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mFlags &
             QueryServer::ParameterValues::Flags::DataAvailable) != 0)
   {
-    // ################################################################################
-    // # The requested parameter is not expected to return any values.
-    // ################################################################################
-
-    // When the request format is "INFO", no data is fetched. However, it shows the exact
-    // identification of the parameters that would be fetched in a normal request. This
-    // feature can be used in order to check that data comes from expected producers,
-    // generations, geometeries, level types and levels.
-
-    std::string producerName;
-    T::ProducerInfo producer;
-    if (ctx.gridEngine.getProducerInfoById(
-            ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mProducerId, producer))
-      producerName = producer.mName;
-
-    auto tmp = fmt::format(
-        "{}:{}:{}:{}:{}:{}:{} {} flags:{}",
-        ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mParameterKey,
-        producerName,
-        ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mGeometryId,
-        C_INT(ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mParameterLevelId),
-        C_INT(ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mParameterLevel),
-        C_INT(ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mForecastType),
-        C_INT(ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mForecastNumber),
-        ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mAnalysisTime,
-        C_INT(ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mFlags));
-
-    TS::TimedValue tsValue(queryTime, std::string(tmp));
-    tsForParameter.emplace_back(tsValue);
+    parameterInfoValue(ctx, a);
   }
   else if (rLen > tLen)
   {
-    // It seems that there are more values available for each time step than
-    // expected. This usually happens if the requested parameter definition does not
-    // contain enough information in order to identify an unique parameter. For
-    // example, if the parameter definition does not contain level information then
-    // the result is that we get values from several levels.
-
-    std::set<std::string> pList;
-
-    for (int r = 0; r < rLen; r++)
-    {
-      if (ctx.gridQuery.mQueryParameterList[pid].mValueList[r]->mForecastTimeUTC == ft)
-      {
-        std::string producerName;
-        T::ProducerInfo producer;
-        if (ctx.gridEngine.getProducerInfoById(
-                ctx.gridQuery.mQueryParameterList[pid].mValueList[r]->mProducerId, producer))
-          producerName = producer.mName;
-
-        std::string tmp = fmt::format(
-            "{}:{}:{}:{}:{}:{}",
-            ctx.gridQuery.mQueryParameterList[pid].mValueList[r]->mParameterKey,
-            C_INT(ctx.gridQuery.mQueryParameterList[pid].mValueList[r]->mParameterLevelId),
-            C_INT(ctx.gridQuery.mQueryParameterList[pid].mValueList[r]->mParameterLevel),
-            C_INT(ctx.gridQuery.mQueryParameterList[pid].mValueList[r]->mForecastType),
-            C_INT(ctx.gridQuery.mQueryParameterList[pid].mValueList[r]->mForecastNumber),
-            producerName);
-
-        if (pList.find(tmp) == pList.end())
-          pList.insert(tmp);
-      }
-    }
-
-    std::string tmp = "### MULTI-MATCH ### ";
-    for (const auto& p : pList)
-    {
-      tmp += p;
-      tmp += ' ';
-    }
-
-    TS::TimedValue tsValue(queryTime, tmp);
-    tsForNonGridParam.emplace_back(tsValue);
+    multiMatchValue(ctx, a);
   }
   else
   {
@@ -2539,6 +2592,7 @@ void nonGridParameterValue(const ResultContext& ctx,
     tsForParameter.emplace_back(tsValue);
   }
 }
+
 // The values of a parameter which is not a data parameter at every timestep
 void nonGridParameterSeries(const ResultContext& ctx,
                             int pid,
