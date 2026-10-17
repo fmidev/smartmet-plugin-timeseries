@@ -1151,6 +1151,217 @@ void GridInterface::prepareLocation(QueryServer::Query& gridQuery,
   }
 }
 
+namespace
+{
+// Copy the level, level type, forecast type and number, and the geometry
+// from the producer's parameter definition when they are given
+void applyParameterDetails(QueryServer::QueryParameter& qp, const Engine::Grid::ParameterDetails& d)
+{
+  if (d.mLevel > "")
+    qp.mParameterLevel = toInt32(d.mLevel);
+
+  if (d.mLevelId > "")
+    qp.mParameterLevelId = toInt32(d.mLevelId);
+
+  if (d.mForecastType > "")
+    qp.mForecastType = toInt32(d.mForecastType);
+
+  if (d.mForecastNumber > "")
+    qp.mForecastNumber = toInt32(d.mForecastNumber);
+
+  if (d.mGeometryId > "")
+  {
+    qp.mProducerName = d.mProducerName;
+    qp.mGeometryId = toInt32(d.mGeometryId);
+  }
+}
+
+// Agregation intervals of a parameter with a time series function
+void setAggregationIntervals(QueryServer::QueryParameter& qParam,
+                             const Query& masterquery,
+                             const std::string& name)
+{
+  qParam.mFlags = qParam.mFlags | TimeseriesFunctionFlag;
+  if (masterquery.maxAggregationIntervals.find(name) == masterquery.maxAggregationIntervals.end())
+    return;
+
+  uint aggregationIntervalBehind = masterquery.maxAggregationIntervals.at(name).behind;
+  uint aggregationIntervalAhead = masterquery.maxAggregationIntervals.at(name).ahead;
+
+  if (aggregationIntervalBehind > 0 || aggregationIntervalAhead > 0)
+  {
+    qParam.mTimestepsBefore = aggregationIntervalBehind / 60;
+    qParam.mTimestepsAfter = aggregationIntervalAhead / 60;
+    qParam.mTimestepSizeInMinutes = 60;
+    qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::AggregationParameter;
+  }
+}
+
+// Level type from the leveltype option: pressure, model or a numeric id
+void applyLevelType(QueryServer::QueryParameter& qParam, const std::string& leveltype)
+{
+  if (strcasecmp(leveltype.c_str(), "pressure") == 0)
+    qParam.mParameterLevelId = 2;
+  else if (strcasecmp(leveltype.c_str(), "model") == 0)
+    qParam.mParameterLevelId = 3;
+  else if (isdigit(*(leveltype.c_str())))
+    qParam.mParameterLevelId = toInt32(leveltype);
+}
+
+// If the geometry and the level type is unknown, then we need to searching these details
+// from the producer's parameter definition file.
+void applyProducerParameterDetails(Engine::Grid::Engine& gridEngine,
+                                   const std::string& areaproducer,
+                                   int levelId,
+                                   QueryServer::QueryParameter& qParam,
+                                   Engine::Grid::ParameterDetails_vec& parameters)
+{
+  std::string producerName = areaproducer;
+  producerName = gridEngine.getProducerName(producerName);
+  producerName = gridEngine.getProducerAlias(producerName, levelId);
+
+  std::string key = producerName + ";" + qParam.mParam;
+
+  gridEngine.getParameterDetails(producerName, qParam.mParam, parameters);
+
+  size_t len = parameters.size();
+  if (len > 0 && strcasecmp(parameters[0].mProducerName.c_str(), key.c_str()) != 0)
+    applyParameterDetails(qParam, parameters[0]);
+}
+
+// Level conversions of the query mode (0 = levels, 1 = pressures, 2 = heights)
+void applyLevelMode(QueryServer::QueryParameter& qParam, uint mode)
+{
+  switch (mode)
+  {
+    case 0:
+      if (qParam.mParameterLevelId == 2)
+      {
+        // Grib uses Pa and querydata hPa, so we have to convert the value.
+        qParam.mParameterLevel = C_INT(qParam.mParameterLevel * 100);
+        //qParam.mFlags |= QueryServer::QueryParameter::Flags::PressureLevels;
+      }
+      break;
+
+    case 1:
+      qParam.mParameterLevelId = 2;
+      // Grib uses Pa and querydata hPa, so we have to convert the value.
+      qParam.mParameterLevel = C_INT(qParam.mParameterLevel * 100);
+      qParam.mFlags |= QueryServer::QueryParameter::Flags::PressureLevels;
+      break;
+
+    case 2:
+      //qParam.mParameterLevelId = 0;
+      qParam.mFlags |= QueryServer::QueryParameter::Flags::MetricLevels;
+      break;
+    default:
+      break;
+  }
+}
+
+// The producer parameter definition file might contain some alternative mappings for some
+// parameters. The idea is that when the primary mappings does not return any data then
+// there might be a secondary mapping that returns data.
+void addAlternativeParameters(QueryServer::Query& gridQuery,
+                              const QueryServer::QueryParameter& qParam,
+                              const Engine::Grid::ParameterDetails_vec& parameters,
+                              uint& idx)
+{
+  const size_t len = parameters.size();
+  for (uint t = 1; t < len; t++)
+  {
+    QueryServer::QueryParameter qp(qParam);
+    qp.mId = idx;
+    qp.mPrecision = qParam.mPrecision;
+    qp.mFlags |= QueryServer::QueryParameter::Flags::AlternativeParameter;
+    if ((t + 1) < len)
+      qp.mAlternativeParamId = idx + 1;
+    else
+      qp.mAlternativeParamId = 0;
+
+    applyParameterDetails(qp, parameters[t]);
+
+    gridQuery.mQueryParameterList.emplace_back(qp);
+    idx++;
+  }
+}
+}  // namespace
+
+namespace
+{
+// Identity, flags, precision, level type and geometry of a new query parameter
+void initQueryParameter(QueryServer::QueryParameter& qParam,
+                        const Query& masterquery,
+                        uint gIdx,
+                        uchar locationType,
+                        bool sameParamAnalysisTime,
+                        int levelId,
+                        int geometryId)
+{
+  qParam.mId = gIdx;
+  qParam.mLocationType = locationType;
+
+  if (strcasecmp(masterquery.format.c_str(), "INFO") == 0)
+    qParam.mFlags = QueryServer::QueryParameter::Flags::NoReturnValues;
+
+  if (sameParamAnalysisTime)
+    qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::SameAnalysisTime;
+
+  if (gIdx < masterquery.precisions.size())
+    qParam.mPrecision = masterquery.precisions[gIdx];
+
+  if (levelId > 0)
+    qParam.mParameterLevelId = levelId;
+
+  if (geometryId > 0)
+    qParam.mGeometryId = geometryId;
+}
+}  // namespace
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Set the name, the alias resolved name and the key type of a query parameter
+ */
+// ----------------------------------------------------------------------
+
+void GridInterface::setParameterName(QueryServer::QueryParameter& qParam, const Spine::Parameter& param)
+{
+  try
+  {
+    std::string pname = param.originalName();
+    qParam.mOrigParam = pname;
+
+    itsGridEngine->getParameterAlias(pname, pname);
+    qParam.mParam = pname;
+
+    // The parameter has ".raw" ending then there should be no area interpolation.
+
+    auto pos = qParam.mParam.find(".raw");
+    if (pos != std::string::npos)
+    {
+      qParam.mAreaInterpolationMethod = T::AreaInterpolationMethod::Nearest;
+      qParam.mParam.erase(pos, 4);
+    }
+
+    qParam.mSymbolicName = qParam.mParam;
+    qParam.mParameterKey = qParam.mParam;
+
+    // Testing if the parameter is a build-in parameter (not actual data parameter).
+
+    if (isBuildInParameter(qParam.mSymbolicName.c_str()))
+      qParam.mParameterKeyType = T::ParamKeyTypeValue::BUILD_IN;
+
+    // Numberic parameter is a newbase id:
+
+    if (Fmi::stoi_opt(qParam.mParam))
+      qParam.mParameterKeyType = T::ParamKeyTypeValue::NEWBASE_ID;
+  }
+  catch (...)
+  {
+    throw Fmi::Exception(BCP, "Operation failed!", nullptr);
+  }
+}
+
 void GridInterface::prepareQueryParameters(QueryServer::Query& gridQuery,
                                            const Query& masterquery,
                                            uint mode,
@@ -1179,83 +1390,20 @@ void GridInterface::prepareQueryParameters(QueryServer::Query& gridQuery,
       // Defining a query parameter object that is used by the grid-engine/QueryServer
       QueryServer::QueryParameter qParam;
 
-      qParam.mId = gIdx;
-      qParam.mLocationType = locationType;
+      initQueryParameter(
+          qParam, masterquery, gIdx, locationType, sameParamAnalysisTime, levelId, geometryId);
 
-      if (strcasecmp(masterquery.format.c_str(), "INFO") == 0)
-        qParam.mFlags = QueryServer::QueryParameter::Flags::NoReturnValues;
-
-      if (sameParamAnalysisTime)
-        qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::SameAnalysisTime;
-
-      if (gIdx < masterquery.precisions.size())
-        qParam.mPrecision = masterquery.precisions[gIdx];
-
-      if (levelId > 0)
-        qParam.mParameterLevelId = levelId;
-
-      if (geometryId > 0)
-        qParam.mGeometryId = geometryId;
-
-      std::string pname = param.originalName();
-      qParam.mOrigParam = pname;
-
-      itsGridEngine->getParameterAlias(pname, pname);
-      qParam.mParam = pname;
-
-      // The parameter has ".raw" ending then there should be no area interpolation.
-
-      auto pos = qParam.mParam.find(".raw");
-      if (pos != std::string::npos)
-      {
-        qParam.mAreaInterpolationMethod = T::AreaInterpolationMethod::Nearest;
-        qParam.mParam.erase(pos, 4);
-      }
-
-      qParam.mSymbolicName = qParam.mParam;
-      qParam.mParameterKey = qParam.mParam;
-
-      // Testing if the parameter is a build-in parameter (not actual data parameter).
-
-      if (isBuildInParameter(qParam.mSymbolicName.c_str()))
-        qParam.mParameterKeyType = T::ParamKeyTypeValue::BUILD_IN;
-
-      // Numberic parameter is a newbase id:
-
-      if (Fmi::stoi_opt(qParam.mParam))
-        qParam.mParameterKeyType = T::ParamKeyTypeValue::NEWBASE_ID;
+      setParameterName(qParam, param);
 
       // Agregation intervals:
 
       if ((paramfunc->functions.innerFunction.exists() || paramfunc->functions.outerFunction.exists()))
-      {
-        qParam.mFlags = qParam.mFlags | TimeseriesFunctionFlag;
-        if (masterquery.maxAggregationIntervals.find(param.name()) != masterquery.maxAggregationIntervals.end())
-        {
-          uint aggregationIntervalBehind = masterquery.maxAggregationIntervals.at(param.name()).behind;
-          uint aggregationIntervalAhead = masterquery.maxAggregationIntervals.at(param.name()).ahead;
-
-          if (aggregationIntervalBehind > 0 || aggregationIntervalAhead > 0)
-          {
-            qParam.mTimestepsBefore = aggregationIntervalBehind / 60;
-            qParam.mTimestepsAfter = aggregationIntervalAhead / 60;
-            qParam.mTimestepSizeInMinutes = 60;
-            qParam.mFlags = qParam.mFlags | QueryServer::QueryParameter::Flags::AggregationParameter;
-          }
-        }
-      }
+        setAggregationIntervals(qParam, masterquery, param.name());
 
       // Level type.
 
       if (qParam.mParameterLevelId <= 0 && !masterquery.leveltype.empty())
-      {
-        if (strcasecmp(masterquery.leveltype.c_str(), "pressure") == 0)
-          qParam.mParameterLevelId = 2;
-        else if (strcasecmp(masterquery.leveltype.c_str(), "model") == 0)
-          qParam.mParameterLevelId = 3;
-        else if (isdigit(*(masterquery.leveltype.c_str())))
-          qParam.mParameterLevelId = toInt32(masterquery.leveltype);
-      }
+        applyLevelType(qParam, masterquery.leveltype);
 
       // It's good to realize that the request does not always contain the parameter level type.
       // That's because earlier the producer name defines details related to the parameter geometry
@@ -1269,64 +1417,9 @@ void GridInterface::prepareQueryParameters(QueryServer::Query& gridQuery,
       Engine::Grid::ParameterDetails_vec parameters;
 
       for (const auto& areaproducer : areaproducers)
-      {
-        std::string producerName = areaproducer;
-        producerName = itsGridEngine->getProducerName(producerName);
-        producerName = itsGridEngine->getProducerAlias(producerName, levelId);
+        applyProducerParameterDetails(*itsGridEngine, areaproducer, levelId, qParam, parameters);
 
-        std::string key = producerName + ";" + qParam.mParam;
-
-        itsGridEngine->getParameterDetails(producerName, qParam.mParam, parameters);
-
-        size_t len = parameters.size();
-        if (len > 0 && strcasecmp(parameters[0].mProducerName.c_str(), key.c_str()) != 0)
-        {
-          if (parameters[0].mLevel > "")
-            qParam.mParameterLevel = toInt32(parameters[0].mLevel);
-
-          if (parameters[0].mLevelId > "")
-            qParam.mParameterLevelId = toInt32(parameters[0].mLevelId);
-
-          if (parameters[0].mForecastType > "")
-            qParam.mForecastType = toInt32(parameters[0].mForecastType);
-
-          if (parameters[0].mForecastNumber > "")
-            qParam.mForecastNumber = toInt32(parameters[0].mForecastNumber);
-
-          if (parameters[0].mGeometryId > "")
-          {
-            qParam.mProducerName = parameters[0].mProducerName;
-            qParam.mGeometryId = toInt32(parameters[0].mGeometryId);
-          }
-        }
-      }
-
-      switch (mode)
-      {
-        case 0:
-          if (qParam.mParameterLevelId == 2)
-          {
-            // Grib uses Pa and querydata hPa, so we have to convert the value.
-            qParam.mParameterLevel = C_INT(qParam.mParameterLevel * 100);
-            //qParam.mFlags |= QueryServer::QueryParameter::Flags::PressureLevels;
-          }
-          break;
-
-        case 1:
-          qParam.mParameterLevelId = 2;
-          // Grib uses Pa and querydata hPa, so we have to convert the value.
-          qParam.mParameterLevel = C_INT(qParam.mParameterLevel * 100);
-          qParam.mFlags |= QueryServer::QueryParameter::Flags::PressureLevels;
-          break;
-
-        case 2:
-          //qParam.mParameterLevelId = 0;
-          qParam.mFlags |= QueryServer::QueryParameter::Flags::MetricLevels;
-          break;
-        default:
-          break;
-      }
-
+      applyLevelMode(qParam, mode);
 
       if (qParam.mParameterLevel < 0)
         qParam.mParameterLevel = origLevel;
@@ -1340,44 +1433,7 @@ void GridInterface::prepareQueryParameters(QueryServer::Query& gridQuery,
       gIdx++;
 
       if (len > 1)
-      {
-        // The producer parameter definition file might contain some alternative mappings for some
-        // parameters. The idea is that when the primary mappings does not return any data then
-        // there might be a secondary mapping that returns data.
-
-        for (uint t = 1; t < len; t++)
-        {
-          QueryServer::QueryParameter qp(qParam);
-          qp.mId = idx;
-          qp.mPrecision = qParam.mPrecision;
-          qp.mFlags |= QueryServer::QueryParameter::Flags::AlternativeParameter;
-          if ((t + 1) < len)
-            qp.mAlternativeParamId = idx + 1;
-          else
-            qp.mAlternativeParamId = 0;
-
-          if (parameters[t].mLevel > "")
-            qp.mParameterLevel = toInt32(parameters[t].mLevel);
-
-          if (parameters[t].mLevelId > "")
-            qp.mParameterLevelId = toInt32(parameters[t].mLevelId);
-
-          if (parameters[t].mForecastType > "")
-            qp.mForecastType = toInt32(parameters[t].mForecastType);
-
-          if (parameters[t].mForecastNumber > "")
-            qp.mForecastNumber = toInt32(parameters[t].mForecastNumber);
-
-          if (parameters[t].mGeometryId > "")
-          {
-            qp.mProducerName = parameters[t].mProducerName;
-            qp.mGeometryId = toInt32(parameters[t].mGeometryId);
-          }
-
-          gridQuery.mQueryParameterList.emplace_back(qp);
-          idx++;
-        }
-      }
+        addAlternativeParameters(gridQuery, qParam, parameters, idx);
     }
   }
   catch (...)
