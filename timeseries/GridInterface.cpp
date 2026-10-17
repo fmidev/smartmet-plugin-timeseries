@@ -1809,6 +1809,52 @@ struct ResultContext
 // The values the query returned for parameter pid (or its alternative ai):
 // single-column values into tsForParameter, multi-column or aggregated ones
 // into tsForGroup
+// Report a value list shorter than the list of timesteps
+[[noreturn]] void throwNotEnoughTimesteps(const std::string& param, int t, int rLen, int tLen)
+{
+  Fmi::Exception exception(BCP, "Not enough timesteps!");
+  exception.addParameter("Parameter", param);
+  exception.addParameter("t", std::to_string(t));
+  exception.addParameter("rLen", std::to_string(rLen));
+  exception.addParameter("tLen", std::to_string(tLen));
+  exception.addDetail(
+      "A possible reason: grid-engine and timeseries aggregation used at the same "
+      "time.");
+  throw exception;
+}
+
+// The value record of column col at timestep t: the primary parameter's, or
+// the alternative parameter's when the primary one has no value. Records the
+// parameter used for the timestep in ctx.pidList.
+const T::GridValue* selectRecord(
+    const ResultContext& ctx, int pp, int pid, int ai, int pIdx, int col, int t)
+{
+  auto* rec = ctx.gridQuery.mQueryParameterList[pid].getValueListRecord(col, t);
+  if (rec && (ai == 0 || rec->mValue != ParamValueMissing || !rec->mValueString.empty()))
+  {
+    ctx.pidList.insert(std::pair<UInt64, uint>(((UInt64)pIdx << 32) + t, pp));
+  }
+  else if (ai > 0)
+  {
+    rec = ctx.gridQuery.mQueryParameterList[ai].getValueListRecord(col, t);
+    if (rec)
+      ctx.pidList.insert(std::pair<UInt64, uint>(((UInt64)pIdx << 32) + t, ai));
+  }
+  return rec;
+}
+
+// The string or numeric value of a record, or the missing value
+TS::Value recordValue(const T::GridValue* rec, const TS::Value& missing_value)
+{
+  if (rec && (rec->mValue != ParamValueMissing || !rec->mValueString.empty()))
+  {
+    if (!rec->mValueString.empty())
+      return TS::Value(rec->mValueString);  // The parameter value is a string
+    return TS::Value(rec->mValue);          // The parameter value is numeric
+  }
+  return missing_value;  // The parameter value is missing
+}
+
 void collectParameterValues(const ResultContext& ctx,
                             int pp,
                             int pid,
@@ -1828,85 +1874,23 @@ void collectParameterValues(const ResultContext& ctx,
     for (int t = 0; t < tLen; t++)
     {
       if (t > rLen)
-      {
-        Fmi::Exception exception(BCP, "Not enough timesteps!");
-        exception.addParameter("Parameter", ctx.gridQuery.mQueryParameterList[pid].mParam);
-        exception.addParameter("t", std::to_string(t));
-        exception.addParameter("rLen", std::to_string(rLen));
-        exception.addParameter("tLen", std::to_string(tLen));
-        exception.addDetail(
-            "A possible reason: grid-engine and timeseries aggregation used at the same "
-            "time.");
-        throw exception;
-      }
+        throwNotEnoughTimesteps(ctx.gridQuery.mQueryParameterList[pid].mParam, t, rLen, tLen);
 
       auto dt = Fmi::date_time::from_time_t(
           ctx.gridQuery.mQueryParameterList[pid].mValueList[t]->mForecastTimeUTC);
       Fmi::LocalDateTime queryTime(dt, ctx.tz);
 
-      T::GridValue val;
-
-      auto* rec = ctx.gridQuery.mQueryParameterList[pid].getValueListRecord(col, t);
-      if (rec &&
-          (ai == 0 || rec->mValue != ParamValueMissing || !rec->mValueString.empty()))
+      const T::GridValue* rec = selectRecord(ctx, pp, pid, ai, pIdx, col, t);
+      TS::TimedValue tsValue(queryTime, recordValue(rec, ctx.missing_value));
+      if (columns == 1 && !funct)
       {
-        ctx.pidList.insert(std::pair<UInt64, uint>(((UInt64)pIdx << 32) + t, pp));
-      }
-      else if (ai > 0)
-      {
-        rec = ctx.gridQuery.mQueryParameterList[ai].getValueListRecord(col, t);
-        if (rec)
-          ctx.pidList.insert(std::pair<UInt64, uint>(((UInt64)pIdx << 32) + t, ai));
-      }
-
-      if (rec && (rec->mValue != ParamValueMissing || !rec->mValueString.empty()))
-      {
-        if (!rec->mValueString.empty())
-        {
-          // The parameter value is a string
-          TS::TimedValue tsValue(queryTime, TS::Value(rec->mValueString));
-          if (columns == 1  &&  !funct)
-          {
-            // The parameter has only single value in the timestep
-            tsForParameter.emplace_back(tsValue);
-          }
-          else
-          {
-            // The parameter has multiple values in the same timestep
-            ts.emplace_back(tsValue);
-          }
-        }
-        else
-        {
-          // The parameter value is numeric
-          TS::TimedValue tsValue(queryTime, TS::Value(rec->mValue));
-          if (columns == 1  &&  !funct)
-          {
-            // The parameter has only single value in the timestep
-            tsForParameter.emplace_back(tsValue);
-          }
-          else
-          {
-            // The parameter has multiple values in the same timestep
-            ts.emplace_back(tsValue);
-          }
-        }
+        // The parameter has only single value in the timestep
+        tsForParameter.emplace_back(tsValue);
       }
       else
       {
-        // The parameter value is missing
-
-        TS::TimedValue tsValue(queryTime, ctx.missing_value);
-        if (columns == 1  &&  !funct)
-        {
-          // The parameter has only single value in the timestep
-          tsForParameter.emplace_back(tsValue);
-        }
-        else
-        {
-          // The parameter has multiple values in the same timestep
-          ts.emplace_back(tsValue);
-        }
+        // The parameter has multiple values in the same timestep
+        ts.emplace_back(tsValue);
       }
     }
 
