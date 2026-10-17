@@ -576,7 +576,7 @@ or by using other parameters. So we name the parameter of the first table as
 | localtz               | Time zone of the geographical location.                                                                                                                       | X        | X           |
 | gridnorth             | Direction of north in the grid location.                                                                                                                      | X        | -           |
 
-If option "findnearestvalidpoint=1" is used, and the data has been
+If option "findnearestvalid=1" is used, and the data has been
 marked in the querydata engine not to be full with "fullgrid=false",
 the nearest valid point in the data will be searched if necessary
 using the given "maxdistance" condition. The default "maxdistance" is
@@ -1011,7 +1011,7 @@ definitions are applied according to the field type.
 
 | Parameter   | Description                                                                                                                                                                                                                                                                                                       |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| missingtext | This parameter defines an alternative value for the data fields for which the values are missing or cannot be calculated. If the parameter is not given, then the “NaN" (not a number) is used as the default value.                                                                                              |
+| missingtext | This parameter defines an alternative value for the data fields for which the values are missing or cannot be calculated. If the parameter is not given, then "nan" (not a number) is used as the default value.                                                                                              |
 | lang        | This parameter defines the language that is used when fetching geographical names like cities, countries, etc. (e.g. “FI”)                                                                                                                                                                                        |
 | timeformat  | This parameter defines the format of the time fields used in the response. It can have the following values: "iso" (YYYYMMDDTHHMISS), "timestamp" (YYYYMMDDHHMI), "sql" (YYYY-MM-DD HH:MI:SS), "xml" (YYYY-MM-DDTHH:MI:SS)                                                                                        |
 | width       | <s>This parameter can be used to define the size of the numeric fields (e.g. “width=12”)</s>                                                                                                                                                                                                                      |
@@ -1037,6 +1037,17 @@ weather station and not the area. Grouping the results is the default and it is
 not necessary to use `groupareas=1` in the querystring.
 
 ![Result of groupareas example](img/groupareas.png)
+
+### Statistics of Several Locations
+
+`grouplocations=1` treats the given locations as one area, so that the area
+functions summarize them: the locations of `lonlat(s)`, `latlon(s)`, `places`,
+`fmisid`, `lpnn` or `wmo` are combined into one `wkt` multipoint. For example the
+median and the 10 % and 90 % percentiles of the temperatures at three stations:
+
+```text
+/timeseries?producer=pal_skandinavia&fmisid=100971,101004,100968&grouplocations=1&param=time,nanpercentile_a[10](temperature),nanmedian_a(temperature),nanpercentile_a[90](temperature)
+```
 
 
 ## Observations
@@ -1123,26 +1134,31 @@ configuration file.
 <tr><td colspan="2"> language </td> <td>The default language used in the response (e.g. "fi", "sv", "en"). Obligatory. </td></tr>
 <tr><td colspan="2"> locale </td> <td> The default locale value (e.g. "fi_FI"). Obligatory. </td></tr>
 <tr><td colspan="2"> observation_disabled </td> <td> This attribute can be used to enable/disable the usage of the Observation-engine. It can have the values "true" or "false" </td></tr>
-<tr><td colspan="2"> maxdistance</td> <td> The default maximum distance value for point forecasts </td></tr>
-<tr><td rowspan="3">cache </td> <td>  memory_bytes </td> <td> The maximum size of the memory cache (in bytes)</td></tr>
-<tr><td> filesystem_bytes </td><td>The maximum size of the file cache (in bytes)</td></tr>
-<tr><td> timeseries_size </td><td>The number of timeseries requests that are cached internally</td></tr>
+<tr><td colspan="2"> gridengine_disabled </td> <td> This attribute can be used to enable/disable the usage of the Grid-engine. It can have the values "true" or "false" </td></tr>
+<tr><td colspan="2"> prevent_observation_database_query </td> <td> If "true", observations are fetched only from the caches of the Observation-engine, never from the observation database. </td></tr>
+<tr><td colspan="2"> primaryForecastSource </td> <td> The engine used for forecast data when the producer does not determine it ("grid" or "querydata"). A "source" parameter in the request overrides this.</td></tr>
+<tr><td colspan="2"> maxdistance</td> <td> The default maximum distance value for point forecasts (km)</td></tr>
+<tr><td colspan="2"> maxradius</td> <td> The maximum radius (km) allowed for the requested locations. 0 (the default) means unlimited.</td></tr>
+<tr><td colspan="2"> expires</td> <td> The value used for the Expires and Cache-Control headers (seconds, default 60)</td></tr>
+<tr><td rowspan="5">request_limits </td> <td> maxlocations </td> <td> The maximum number of locations allowed in a request. 0 (the default) means unlimited, as for the other limits.</td></tr>
+<tr><td> maxparameters </td><td>The maximum number of parameters allowed in a request</td></tr>
+<tr><td> maxtimes </td><td>The maximum number of time steps allowed in a request (default 50000)</td></tr>
+<tr><td> maxlevels </td><td>The maximum number of levels allowed in a request</td></tr>
+<tr><td> maxelements </td><td>The maximum number of result elements allowed in a request</td></tr>
+<tr><td> cache </td> <td> timeseries_size </td><td>The number of timeseries requests that are cached internally. The old settings memory_bytes, filesystem_bytes and directory are deprecated and only produce a warning.</td></tr>
 <tr><td rowspan="3">wxml </td> <td>  timestring</td> <td> The default time format used with the WXMLformat (e.g. "%Y-%b-%dT%H:%M:%S")</td></tr>
 <tr><td> version</td><td>The default WXML version (e.g. "2.00")</td></tr>
 <tr><td> schema</td><td>The default XSD-schema used with the WXML response </td></tr>
 <tr><td> xml </td> <td> tag </td> <td>The default tag name used in the XML response</td></tr>
 <tr><td> precision </td> <td> enabled </td> <td>A list of precision names that can be used with the "precision" parameter when requesting the data. Typically the following precision names are defined:  "normal", "double", and "full".
 In addition to this, the meaning of these attributes are also defined on the parameter level later in this configuration file. In other words, the "normal" precision for the parameter X might be 2 decimals while the "normal" precision for the parameter Z might be 5 decimals. All the precision attributes are  defined in the configuration file</td></tr>
-<tr><td rowspan="9">postgis </td> <td>host</td> <td>The hostname of the PostGIS database. </td></tr>
-<tr><td> port </td><td>The TCP port number used by the PostGIS database.</td></tr>
-<tr><td>database</td><td>The name of the PostGIS database.</td></tr>
-<tr><td> username</td><td>The username for the PostGIS database.</td></tr>
-<tr><td>database</td><td>The name of the PostGIS database.</td></tr>
-<tr><td> password </td><td>The password for the PostGIS database.</td></tr>
-<tr><td>client encoding </td><td>The character encoding used by the PostGIS  client ("UTF8", etc.)</td></tr>
-<tr><td> config_items</td><td>A list of config item names and the configuration information points to the actual table fields.</td></tr>
-<tr><td> disable</td><td>Set to true to disable PostGIS shapes. Alternatively one can leave out the entire postgis section.</td></tr>
-<tr><td rowspan="3">&lt;config_item_name&gt;</td> <td>schema</td> <td>The PostGIS schema name. </td></tr>
-<tr><td> table </td><td>he PostGIS table name.</td></tr>
-<tr><td>field</td><td>The PostGIS column name.</td></tr>
+<tr><td rowspan="6">geometry_tables </td> <td>server</td> <td>The name of the PostGIS server as configured in the gis-engine. An empty value means the default server of the gis-engine.</td></tr>
+<tr><td> schema </td><td>The default PostGIS schema name.</td></tr>
+<tr><td> table </td><td>The default PostGIS table name.</td></tr>
+<tr><td> field </td><td>The default PostGIS column name.</td></tr>
+<tr><td> name </td><td>The default source name.</td></tr>
+<tr><td> additional_tables </td><td>A list of additional geometry sources. Each entry may define name, server, schema, table and field; the default values above are used for the ones that are omitted.</td></tr>
+<tr><td colspan="2"> defaultGridGeometries </td> <td> The grid geometries searched by default in grid-engine queries (an array of geometry ids). Obligatory.</td></tr>
+<tr><td colspan="2"> defaultProducerMappingName </td> <td> The default producer mapping name of grid-engine queries.</td></tr>
+<tr><td colspan="2"> parameterAliasFiles </td> <td> The parameter alias files of grid-engine queries (an array of file names, relative to the configuration file). Obligatory.</td></tr>
 </table>

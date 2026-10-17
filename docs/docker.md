@@ -42,10 +42,16 @@ This attribute can be used to enable/disable the usage of the Observation-engine
 observation_disabled = true;
 ```
 
-### postgis.disabled
-This attribute can be used to enable/disable PostGIS shapes. It can have values "true" or "false". Alternatively one can leave out the entire postgis section.
+### geometry_tables
+This optional section defines the PostGIS tables from which area names are resolved. Leave the section out to use no PostGIS shapes.
 ```
-postgis.disabled     = true;
+geometry_tables:
+{
+    server = "";            // default server of the gis-engine
+    schema = "fminames";
+    table  = "kunnat";
+    field  = "kuntanimi";
+};
 ```
 
 ### precision
@@ -114,7 +120,7 @@ etc...
     };
 
 ```
-**Note:** You can review [Attributes table](https://github.com/fmidev/smartmet-plugin-timeseries/wiki/SmartMet-plugin-TimeSeries#plugin-configuration-file) for more details about the attributes.
+**Note:** You can review [Attributes table](Using-the-Timeseries-API.md#plugin-configuration-file) for more details about the attributes.
 
 3. Test the plugin. The URL of the HTTP request contains parameters that have to be delivered to the TimeSeries plugin. For example, the following request fetches the temperature forecasted for the city of Helsinki:
 ```

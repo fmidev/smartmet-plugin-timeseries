@@ -57,8 +57,13 @@ several alternative syntaxes:
   `25km`); falls back to plugin-configured default.
 - **Area source override** — `areasource=...` to pick which geometry
   table the area name resolves against.
-- **Nearest-valid-station** — `findnearestvalid=1` falls back from the
-  exact requested location to the nearest station with data.
+- **Nearest valid point** — `findnearestvalid=1` falls back from the
+  exact requested location to the nearest grid point with valid data
+  (querydata marked `fullgrid=false`), within `maxdistance`.
+- **Locations as one area** — `grouplocations=1` combines the
+  locations of `lonlat(s)`, `latlon(s)`, `places`, `fmisid`, `lpnn`
+  and `wmo` into one WKT multipoint, so that area functions summarize
+  them.
 
 ## 3. Time selection
 
@@ -82,8 +87,9 @@ several alternative syntaxes:
   function, or a special column.
 - **Level selection** — `leveltype=...`, plus per-parameter level
   qualifiers (`levels`, `pressures`, `heights`).
-- **Grouping** — `grouplocations=1` collapses per-location rows;
-  `groupareas=1` collapses per-area rows.
+- **Grouping** — `groupareas=0` returns the locations of an area
+  separately instead of as one group (the default); `grouplocations=1`
+  treats the given locations as one area (see §2).
 
 ## 5. Aggregation & post-processing
 
@@ -95,10 +101,10 @@ transforms after the engine fetch:
 - **Precision control** — global and per-parameter `precision=...`
   presets selected from the config file.
 - **Missing-value rendering** — `missingtext=NaN` (or any string).
-- **Value padding / fill** — `fill=...` to interpolate gaps.
 - **Pagination** — `startrow=...`, `maxresults=...`.
-- **Display formatting** — `uppercase=1`, `adjustfield=...`,
-  `floatfield=...`, `showpos=1`, `width=...` (for fixed-width output).
+- **Display formatting** — `floatfield=none|fixed|scientific`. The
+  old `adjustfield`, `width`, `fill`, `showpos` and `uppercase`
+  options are no longer supported and are ignored with a warning.
 
 ## 6. Output formats
 
@@ -110,6 +116,8 @@ Selected via `format=...`; resolved through the spine
 - **CSV** — `format=csv`.
 - **ASCII (debug)** — `format=ascii` / `format=debug`.
 - **HTML** — `format=html`.
+- **WXML** — `format=wxml`.
+- **PHP** — `format=php`.
 - **Serial** — `format=serial`.
 - **Image** — `format=image` (special handling for image streams).
 - **File** — `format=file` for binary file responses.
@@ -151,8 +159,11 @@ routes work to the appropriate engine wrapper:
 
 Loaded once at startup from the plugin config (`Config.cpp`):
 
-- **Default values** — `defaultMaxDistance`, default formatter
-  options, default precision presets.
+- **Default values** — `maxdistance` (km, default 60 km), `expires`,
+  default formatter options, default precision presets.
+- **Request limits** — `request_limits.maxlocations`, `maxparameters`,
+  `maxtimes` (default 50000), `maxlevels`, `maxelements`, and the
+  top-level `maxradius` (km); 0 means unlimited.
 - **Engine wiring** — which engines are mandatory vs optional.
 - **Formatter options** — per-format width, precision, missing-text,
   adjustment, separators.
