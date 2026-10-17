@@ -629,6 +629,202 @@ bool GridInterface::isValidDefaultRequest(
   }
 }
 
+namespace
+{
+// Local time of a time given in UTC or in local time
+Fmi::LocalDateTime makeLocalDateTime(const Fmi::DateTime& time, const Fmi::TimeZonePtr& tz, bool is_utc)
+{
+  if (is_utc)
+    return Fmi::LocalDateTime(time, tz);
+  return Fmi::LocalDateTime(time.date(), time.time_of_day(), tz);
+}
+
+// The start time rounded to the next valid timestep. I.e. the time-step query
+// must start from the valid timestep, which are counted from the beginning of
+// the day (by using localtime).
+Fmi::LocalDateTime roundUpToTimestep(const Fmi::LocalDateTime& startTime,
+                                     TS::TimeSeriesGeneratorOptions::Mode mode,
+                                     uint step)
+{
+  Fmi::DateTime startT = startTime.local_time();
+  unsigned seconds = startT.time_of_day().total_seconds();
+
+  uint tstep = step;
+  if (mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
+    tstep = 3600;
+
+  seconds = tstep * ((seconds + tstep - 1) / tstep);
+  return Fmi::LocalDateTime(startT.date(), Fmi::Seconds(seconds), startTime.zone());
+}
+
+// Flags and limits of a time-range request: the start or the end time
+// depends on the data, or the data timesteps are wanted
+void prepareTimeRangeQuery(QueryServer::Query& gridQuery,
+                           const Query& masterquery,
+                           uint steps,
+                           uint step,
+                           bool daylightSavingEnds,
+                           bool continuesPrevious,
+                           Fmi::LocalDateTime& grid_startTime,
+                           Fmi::LocalDateTime& grid_endTime)
+{
+  // This is a time-range request, which means that
+  //
+  //   1) we do not know the actual start time or the end time of the request
+  //      because they depend on the actual data (startTime == data ||  endtime == data).
+  //      This means that we cannot count timesteps in advance. I.e. the Grid-engine/QueryServer
+  //      should count these steps if needed.
+  //
+  //      or
+  //
+  //   2) we should fetch all data between the given interval and using their original
+  //      timestamps (timestep == data) instead on predefined timesteps.
+
+  if (masterquery.toptions.startTimeData)
+  {
+    // startTime is "data", which means that we should read all the data from the beginning
+    gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeFromData;
+    grid_startTime = y1900; // "19000101T000000";
+
+    if (!masterquery.toptions.endTimeData  &&  masterquery.toptions.mode != TS::TimeSeriesGeneratorOptions::DataTimes)
+      gridQuery.mTimesteps = steps;
+  }
+
+  if (masterquery.toptions.endTimeData)
+  {
+    // endTime is "data", which means that we should read all the data to the end
+    gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::EndTimeFromData;
+    grid_endTime = y2100;
+  }
+
+  if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes)
+  {
+    gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::TimeStepIsData;
+
+    if (masterquery.toptions.startTimeData  && masterquery.toptions.endTimeData)
+      gridQuery.mTimesteps = 0;
+  }
+
+  if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
+  {
+    gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::TimeStepIsData |
+                       QueryServer::Query::Flags::ForceStartTime;
+  }
+
+  if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::TimeSteps)
+  {
+    gridQuery.mTimesteps = 0;
+    gridQuery.mTimestepSizeInMinutes = step / 60;
+  }
+
+  if (continuesPrevious)
+  {
+    // This is a request which start time is that same as the end time of the previous
+    // requests. That's why we should inform the QueryServer that it should ignore
+    // the first time step (because the previous query has already fetched that time).
+    // We are using flags, because we do not know what will be the next time in
+    // the sequence. I.e. we do not the correct start time.
+
+    gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeNotIncluded;
+  }
+
+  gridQuery.mSearchType = QueryServer::Query::SearchType::TimeRange;
+
+  if (masterquery.toptions.timeSteps && *masterquery.toptions.timeSteps > 0)
+  {
+    gridQuery.mMaxParameterValues = *masterquery.toptions.timeSteps;
+    if (daylightSavingEnds)
+      gridQuery.mMaxParameterValues++;
+
+    gridQuery.mTimesteps = gridQuery.mMaxParameterValues;
+    if (grid_startTime == grid_endTime)
+      grid_endTime = y2100; // "21000101T000000"
+  }
+}
+
+// Should timestep s be in the time-step request?
+bool acceptTimestep(const Query& masterquery,
+                    const Fmi::DateTime& s,
+                    const Fmi::TimeZonePtr& tz,
+                    const Fmi::LocalDateTime& latestTime,
+                    const Fmi::LocalDateTime& startTime)
+{
+  bool additionOk = true;
+  const Fmi::LocalDateTime sLoc(s, tz);
+
+  if (latestTime != startTime.utc_time() && s <= latestTime.utc_time())
+    additionOk = false;
+
+  if (additionOk && !masterquery.toptions.timeList.empty())
+  {
+    // If we have a list of predefined hours (for example, hour=4,8,12) the we should
+    // ignore timesteps that does not match these hours. These hours are defined in
+    // localtime and that's why need to convert UTC timesteps back to localtimes.
+
+    const Fmi::TimeDuration part = sLoc.local_time().time_of_day();
+    const int hours = part.hours();
+    const int minutes = part.minutes();
+    uint idx = hours * 100 + minutes;
+    if (masterquery.toptions.timeList.find(idx) == masterquery.toptions.timeList.end())
+      additionOk = false;
+  }
+
+  if (additionOk && !masterquery.toptions.days.empty())
+  {
+    auto d = sLoc.local_time().date().day();
+    if (masterquery.toptions.days.find(d) == masterquery.toptions.days.end())
+      additionOk = false;
+  }
+  return additionOk;
+}
+
+// Generate the valid timesteps of a time-step request
+void generateTimesteps(QueryServer::Query& gridQuery,
+                       const Query& masterquery,
+                       const Fmi::LocalDateTime& grid_startTime,
+                       const Fmi::LocalDateTime& grid_endTime,
+                       const Fmi::TimeZonePtr& tz,
+                       uint steps,
+                       uint step,
+                       bool daylightSavingEnds,
+                       const Fmi::LocalDateTime& latestTime,
+                       const Fmi::LocalDateTime& startTime)
+{
+  Fmi::DateTime s = grid_startTime.utc_time();
+  Fmi::DateTime e = grid_endTime.utc_time();
+
+  if (masterquery.toptions.timeSteps)
+  {
+    if (daylightSavingEnds)
+      steps = steps + 3600 / step;
+    e = s + Fmi::Seconds(steps * step);
+  }
+
+  if (!masterquery.toptions.timeList.empty())
+  {
+    step = 60;
+    if (masterquery.toptions.timeSteps && *masterquery.toptions.timeSteps > 0)
+      e = s + Fmi::Hours(10 * 365 * 24);
+  }
+
+  uint stepCount = 0;
+  while (s <= e)
+  {
+    const bool additionOk = acceptTimestep(masterquery, s, tz, latestTime, startTime);
+
+    if (additionOk)
+    {
+      stepCount++;
+      gridQuery.mForecastTimeList.insert(toTimeT(s));
+
+      if (masterquery.toptions.timeSteps && stepCount == steps)
+        s = e;
+    }
+    s = s + Fmi::Seconds(step);
+  }
+}
+}  // namespace
+
 void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
                                       const Query& masterquery,
                                       const AreaProducers& areaproducers,
@@ -657,15 +853,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
     bool endTimeUTC = masterquery.toptions.endTimeUTC;
 
     // The orginal start time and the end time of the query
-    const auto mk_ldt = [](const Fmi::DateTime& time, const Fmi::TimeZonePtr& tz, bool is_utc) -> Fmi::LocalDateTime
-      {
-        if (is_utc)
-          return Fmi::LocalDateTime(time, tz);
-        return Fmi::LocalDateTime(time.date(), time.time_of_day(), tz);
-      };
-
-    Fmi::LocalDateTime startTime = mk_ldt(masterquery.toptions.startTime, tz, startTimeUTC);
-    Fmi::LocalDateTime endTime = mk_ldt(masterquery.toptions.endTime, tz, endTimeUTC);
+    Fmi::LocalDateTime startTime = makeLocalDateTime(masterquery.toptions.startTime, tz, startTimeUTC);
+    Fmi::LocalDateTime endTime = makeLocalDateTime(masterquery.toptions.endTime, tz, endTimeUTC);
 
     // These variables will contain the actual start time and end time used in grid-query after
     // we have fixed and checked some things.
@@ -692,18 +881,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
     if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::TimeSteps ||
         masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::FixedTimes ||
         masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
-    {
-      Fmi::DateTime startT = startTime.local_time();
-      unsigned seconds = startT.time_of_day().total_seconds();
-
-      uint tstep = step;
-      if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
-        tstep = 3600;
-
-      seconds = tstep * ((seconds + tstep - 1) / tstep);
-      grid_startTime = Fmi::LocalDateTime(startT.date(), Fmi::Seconds(seconds), startTime.zone());
-    }
-
+      grid_startTime = roundUpToTimestep(startTime, masterquery.toptions.mode, step);
 
     // If the daylight saving time is in the request time interval then we need
     // to add an extra hour to the end time of the query.
@@ -728,7 +906,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
     //        That causes problem when lastTimestep happens to be exactly at change from DST to
     //        normal time (requires changes in Query.cpp and probaly somwhere else).
 
-    Fmi::LocalDateTime latestTime = mk_ldt(masterquery.latestTimestep, tz, startTimeUTC);
+    Fmi::LocalDateTime latestTime = makeLocalDateTime(masterquery.latestTimestep, tz, startTimeUTC);
     Fmi::DateTime latestTimeUTC = latestTime.utc_time();
 
     if (prepareDataIndependentQueryTimes(
@@ -749,140 +927,29 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
          masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes ||
          masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes))
     {
-      // This is a time-range request, which means that
-      //
-      //   1) we do not know the actual start time or the end time of the request
-      //      because they depend on the actual data (startTime == data ||  endtime == data).
-      //      This means that we cannot count timesteps in advance. I.e. the Grid-engine/QueryServer
-      //      should count these steps if needed.
-      //
-      //      or
-      //
-      //   2) we should fetch all data between the given interval and using their original
-      //      timestamps (timestep == data) instead on predefined timesteps.
-
-      if (masterquery.toptions.startTimeData)
-      {
-        // startTime is "data", which means that we should read all the data from the beginning
-        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeFromData;
-        grid_startTime = y1900; // "19000101T000000";
-
-        if (!masterquery.toptions.endTimeData  &&  masterquery.toptions.mode != TS::TimeSeriesGeneratorOptions::DataTimes)
-          gridQuery.mTimesteps = steps;
-      }
-
-      if (masterquery.toptions.endTimeData)
-      {
-        // endTime is "data", which means that we should read all the data to the end
-        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::EndTimeFromData;
-        grid_endTime = y2100;
-      }
-
-      if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::DataTimes)
-      {
-        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::TimeStepIsData;
-
-        if (masterquery.toptions.startTimeData  && masterquery.toptions.endTimeData)
-          gridQuery.mTimesteps = 0;
-      }
-
-      if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::GraphTimes)
-      {
-        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::TimeStepIsData |
-                           QueryServer::Query::Flags::ForceStartTime;
-      }
-
-      if (masterquery.toptions.mode == TS::TimeSeriesGeneratorOptions::TimeSteps)
-      {
-        gridQuery.mTimesteps = 0;
-        gridQuery.mTimestepSizeInMinutes = step / 60;
-      }
-
-      if (latestTime != startTime)
-      {
-        // This is a request which start time is that same as the end time of the previous
-        // requests. That's why we should inform the QueryServer that it should ignore
-        // the first time step (because the previous query has already fetched that time).
-        // We are using flags, because we do not know what will be the next time in
-        // the sequence. I.e. we do not the correct start time.
-
-        gridQuery.mFlags = gridQuery.mFlags | QueryServer::Query::Flags::StartTimeNotIncluded;
-      }
-
-      gridQuery.mSearchType = QueryServer::Query::SearchType::TimeRange;
-
-      if (masterquery.toptions.timeSteps && *masterquery.toptions.timeSteps > 0)
-      {
-        gridQuery.mMaxParameterValues = *masterquery.toptions.timeSteps;
-        if (daylightSavingEnds)
-          gridQuery.mMaxParameterValues++;
-
-        gridQuery.mTimesteps = gridQuery.mMaxParameterValues;
-        if (grid_startTime == grid_endTime)
-          grid_endTime = y2100; // "21000101T000000"
-      }
+      prepareTimeRangeQuery(gridQuery,
+                            masterquery,
+                            steps,
+                            step,
+                            daylightSavingEnds,
+                            latestTime != startTime,
+                            grid_startTime,
+                            grid_endTime);
     }
     else
     {
       // This is a time-step request, which means that we shoud generate valid timesteps
 
-      Fmi::DateTime s = grid_startTime.utc_time();
-      Fmi::DateTime e = grid_endTime.utc_time();
-
-      if (masterquery.toptions.timeSteps)
-      {
-        if (daylightSavingEnds)
-          steps = steps + 3600 / step;
-        e = s + Fmi::Seconds(steps * step);
-      }
-
-      if (!masterquery.toptions.timeList.empty())
-      {
-        step = 60;
-        if (masterquery.toptions.timeSteps && *masterquery.toptions.timeSteps > 0)
-          e = s + Fmi::Hours(10 * 365 * 24);
-      }
-
-      uint stepCount = 0;
-      while (s <= e)
-      {
-        bool additionOk = true;
-        const Fmi::LocalDateTime sLoc(s, tz);
-
-        if (latestTime != startTime.utc_time() && s <= latestTimeUTC)
-          additionOk = false;
-
-        if (additionOk && !masterquery.toptions.timeList.empty())
-        {
-          // If we have a list of predefined hours (for example, hour=4,8,12) the we should
-          // ignore timesteps that does not match these hours. These hours are defined in
-          // localtime and that's why need to convert UTC timesteps back to localtimes.
-
-          const Fmi::TimeDuration part = sLoc.local_time().time_of_day();
-          const int hours = part.hours();
-          const int minutes = part.minutes();
-          uint idx = hours * 100 + minutes;
-          if (masterquery.toptions.timeList.find(idx) == masterquery.toptions.timeList.end())
-            additionOk = false;
-        }
-
-        if (additionOk && !masterquery.toptions.days.empty())
-        {
-          auto d = sLoc.local_time().date().day();
-          if (masterquery.toptions.days.find(d) == masterquery.toptions.days.end())
-            additionOk = false;
-        }
-
-        if (additionOk)
-        {
-          stepCount++;
-          gridQuery.mForecastTimeList.insert(toTimeT(s));
-
-          if (masterquery.toptions.timeSteps && stepCount == steps)
-            s = e;
-        }
-        s = s + Fmi::Seconds(step);
-      }
+      generateTimesteps(gridQuery,
+                        masterquery,
+                        grid_startTime,
+                        grid_endTime,
+                        tz,
+                        steps,
+                        step,
+                        daylightSavingEnds,
+                        latestTime,
+                        startTime);
     }
 
     gridQuery.mStartTime = (grid_startTime.utc_time() - y1970).total_seconds();
