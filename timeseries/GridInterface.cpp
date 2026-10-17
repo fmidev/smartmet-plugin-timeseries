@@ -1442,6 +1442,91 @@ void GridInterface::findLevelId(const Query& masterquery,
   }
 }
 
+namespace
+{
+// Pressure levels (Pa, in reverse order) of the producer
+void producerPressureLevels(Engine::Grid::Engine& gridEngine,
+                            const std::string& producerName,
+                            std::set<double>& tmpLevels,
+                            std::vector<double>& levels)
+{
+  gridEngine.getProducerParameterLevelList(producerName, 2, 0.01, tmpLevels);
+  for (auto lev = tmpLevels.rbegin(); lev != tmpLevels.rend(); ++lev)
+    levels.emplace_back(*lev*100);
+}
+
+// Model levels of the producer
+void producerModelLevels(Engine::Grid::Engine& gridEngine,
+                         const std::string& producerName,
+                         std::set<double>& tmpLevels,
+                         std::vector<double>& levels)
+{
+  gridEngine.getProducerParameterLevelList(producerName, 3, 1, tmpLevels);
+  for (const auto& lev : tmpLevels)
+    levels.emplace_back(lev);
+}
+
+// All levels of the level type from the producer. Without a level type the
+// levels of the producer's only level type are used.
+void producerLevels(Engine::Grid::Engine& gridEngine,
+                    const std::string& producerName,
+                    int levelId,
+                    bool noLevelType,
+                    std::set<double>& tmpLevels,
+                    std::vector<double>& levels)
+{
+  if (levelId == 2)
+  {
+    // Fetching pressure levels.
+    producerPressureLevels(gridEngine, producerName, tmpLevels, levels);
+  }
+  else if (levelId == 3)
+  {
+    // Fetching model levels
+    producerModelLevels(gridEngine, producerName, tmpLevels, levels);
+  }
+  else if (noLevelType)
+  {
+    std::set<T::ParamLevelId> levelIdList;
+    gridEngine.getProducerParameterLevelIdList(producerName, levelIdList);
+    if (levelIdList.size() != 1)
+      return;
+
+    // The producer supports only one level type
+    auto levId = *levelIdList.begin();
+    switch (levId)
+    {
+      case 2:  // Pressure level
+        producerPressureLevels(gridEngine, producerName, tmpLevels, levels);
+        break;
+
+      case 3:  // model
+        producerModelLevels(gridEngine, producerName, tmpLevels, levels);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+// The levels listed in the request
+void requestLevels(const Query& masterquery, int levelId, std::vector<double>& levels)
+{
+  if (levelId == 2)
+  {
+    // If the level type is "pressure" then we should use these levels in reverse order.
+    for (auto level = masterquery.levels.rbegin(); level != masterquery.levels.rend(); ++level)
+      levels.emplace_back((double)(*level*100));
+  }
+  else
+  {
+    // Copying levels from the request.
+    for (const auto& level : masterquery.levels)
+      levels.emplace_back((double)level);
+  }
+}
+}  // namespace
+
 void GridInterface::findLevels(const Query& masterquery,
                                const AreaProducers& areaproducers,
                                uint mode,
@@ -1466,47 +1551,8 @@ void GridInterface::findLevels(const Query& masterquery,
           {
             std::string producerName = *areaproducers.begin();
 
-            if (levelId == 2)
-            {
-              // Fetching pressure levels.
-              itsGridEngine->getProducerParameterLevelList(producerName, 2, 0.01, tmpLevels);
-              for (auto lev = tmpLevels.rbegin(); lev != tmpLevels.rend(); ++lev)
-                levels.emplace_back(*lev*100);
-            }
-            else if (levelId == 3)
-            {
-              // Fetching model levels
-              itsGridEngine->getProducerParameterLevelList(producerName, 3, 1, tmpLevels);
-              for (const auto& lev : tmpLevels)
-                levels.emplace_back(lev);
-            }
-            else if (masterquery.leveltype.empty())
-            {
-              std::set<T::ParamLevelId> levelIdList;
-              itsGridEngine->getProducerParameterLevelIdList(producerName, levelIdList);
-              if (levelIdList.size() == 1)
-              {
-                // The producer supports only one level type
-
-                auto levId = *levelIdList.begin();
-                switch (levId)
-                {
-                  case 2:  // Pressure level
-                    itsGridEngine->getProducerParameterLevelList(producerName, 2, 0.01, tmpLevels);
-                    for (auto lev = tmpLevels.rbegin(); lev != tmpLevels.rend(); ++lev)
-                      levels.emplace_back(*lev*100);
-                    break;
-
-                  case 3:  // model
-                    itsGridEngine->getProducerParameterLevelList(producerName, 3, 1, tmpLevels);
-                    for (const auto& lev : tmpLevels)
-                      levels.emplace_back(lev);
-                    break;
-                  default:
-                    break;
-                }
-              }
-            }
+            producerLevels(
+                *itsGridEngine, producerName, levelId, masterquery.leveltype.empty(), tmpLevels, levels);
           }
 
           if (tmpLevels.empty() && masterquery.pressures.empty() && masterquery.heights.empty())
@@ -1515,20 +1561,7 @@ void GridInterface::findLevels(const Query& masterquery,
         else
         {
           // There are levels listed in the request.
-
-          if (levelId == 2)
-          {
-            // If the level type is "pressure" then we should use these levels in reverse order.
-            for (auto level = masterquery.levels.rbegin(); level != masterquery.levels.rend();
-                 ++level)
-              levels.emplace_back((double)(*level*100));
-          }
-          else
-          {
-            // Copying levels from the request.
-            for (const auto& level : masterquery.levels)
-              levels.emplace_back((double)level);
-          }
+          requestLevels(masterquery, levelId, levels);
         }
         break;
 
