@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.10.16
+Version: 26.10.17
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -52,17 +52,17 @@ BuildRequires: smartmet-engine-grid-devel >= 26.10.16
 #Requires: smartmet-engine-observation >= 26.10.11
 #%endif
 Requires: %{smartmet_fmt}
-Requires: smartmet-library-gis >= 26.10.16
+Requires: smartmet-library-gis >= 26.10.17
 Requires: smartmet-library-locus >= 26.10.16
-Requires: smartmet-library-macgyver >= 26.10.16
-Requires: smartmet-library-newbase >= 26.10.16
-Requires: smartmet-library-spine >= 26.10.16
+Requires: smartmet-library-macgyver >= 26.10.17
+Requires: smartmet-library-newbase >= 26.10.17
+Requires: smartmet-library-spine >= 26.10.17
 Requires: smartmet-library-timeseries >= 26.10.16
-Requires: smartmet-engine-geonames >= 26.10.16
-Requires: smartmet-engine-querydata >= 26.10.16
-Requires: smartmet-engine-gis >= 26.10.16
-Requires: smartmet-engine-grid >= 26.10.16
-Requires: smartmet-server >= 26.10.16
+Requires: smartmet-engine-geonames >= 26.10.17
+Requires: smartmet-engine-querydata >= 26.10.17
+Requires: smartmet-engine-gis >= 26.10.17
+Requires: smartmet-engine-grid >= 26.10.17
+Requires: smartmet-server >= 26.10.17
 Requires: %{smartmet_boost}-filesystem
 Requires: %{smartmet_boost}-iostreams
 Requires: %{smartmet_boost}-system
@@ -77,14 +77,14 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-test-db >= 26.5.8
 #TestRequires: smartmet-test-data >= 26.8.26
 #TestRequires: smartmet-library-grid-files-test >= 26.10.16
-#TestRequires: smartmet-library-gis >= 26.10.16
-#TestRequires: smartmet-engine-geonames >= 26.10.16
-#TestRequires: smartmet-engine-gis >= 26.10.16
-#TestRequires: smartmet-engine-querydata >= 26.10.16
+#TestRequires: smartmet-library-gis >= 26.10.17
+#TestRequires: smartmet-engine-geonames >= 26.10.17
+#TestRequires: smartmet-engine-gis >= 26.10.17
+#TestRequires: smartmet-engine-querydata >= 26.10.17
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 26.10.16
+#TestRequires: smartmet-engine-observation >= 26.10.17
 %endif
-#TestRequires: smartmet-engine-grid >= 26.10.16
+#TestRequires: smartmet-engine-grid >= 26.10.17
 #TestRequires: gdal312-libs
 #TestRequires: libwebp13
 
@@ -111,6 +111,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Sat Oct 17 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.17-1.fmi
+- Split functions with a cognitive complexity above 25 into smaller helpers, no functional changes
+
 * Fri Oct 16 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.16-1.fmi
 - Fixed compiler warnings and clang-tidy findings (unused code, unreachable code, empty statements, member initialization, parameter passing, noexcept), no functional changes
 
