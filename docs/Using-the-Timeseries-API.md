@@ -1041,12 +1041,19 @@ not necessary to use `groupareas=1` in the querystring.
 ### Statistics of Several Locations
 
 `grouplocations=1` treats the given locations as one area, so that the area
-functions summarize them: the locations of `lonlat(s)`, `latlon(s)`, `places`,
-`fmisid`, `lpnn` or `wmo` are combined into one `wkt` multipoint. For example the
+functions summarize them: the locations of `lonlat(s)`, `latlon(s)`, `place(s)`,
+`keyword`, `fmisid`, `lpnn` or `wmo` are combined into one `wkt` multipoint. The
+request fails if none of these parameters gives a location. For example the
 median and the 10 % and 90 % percentiles of the temperatures at three stations:
 
 ```text
 /timeseries?producer=pal_skandinavia&fmisid=100971,101004,100968&grouplocations=1&param=time,nanpercentile_a[10](temperature),nanmedian_a(temperature),nanpercentile_a[90](temperature)
+```
+
+or at the stations of a keyword:
+
+```text
+/timeseries?producer=pal_skandinavia&keyword=finavia&grouplocations=1&param=time,nanpercentile_a[10](temperature),nanmedian_a(temperature),nanpercentile_a[90](temperature)
 ```
 
 

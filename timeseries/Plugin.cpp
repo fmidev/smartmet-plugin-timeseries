@@ -521,6 +521,9 @@ void Plugin::grouplocations(Spine::HTTP::Request& theRequest)
     if (!latlons)
       latlons = theRequest.getParameter("latlon");
     auto places = theRequest.getParameter("places");
+    if (!places)
+      places = theRequest.getParameter("place");
+    auto keyword = theRequest.getParameter("keyword");
     auto fmisid = theRequest.getParameter("fmisid");
     auto lpnn = theRequest.getParameter("lpnn");
     auto wmo = theRequest.getParameter("wmo");
@@ -528,7 +531,25 @@ void Plugin::grouplocations(Spine::HTTP::Request& theRequest)
     std::string wkt_multipoint = "MULTIPOINT(";
     parse_lonlats(lonlats, theRequest, wkt_multipoint);
     parse_latlons(latlons, theRequest, wkt_multipoint);
+    if (places)
+      theRequest.removeParameter("place");
     parse_places(places, theRequest, wkt_multipoint, itsEngines.geoEngine.get());
+
+    // The locations of a keyword
+    if (keyword)
+    {
+      theRequest.removeParameter("keyword");
+      Locus::QueryOptions opts;
+      opts.SetLanguage(
+          Spine::optional_string(theRequest.getParameter("lang"), itsConfig.defaultLanguage()));
+      for (const auto& loc : itsEngines.geoEngine->keywordSearch(opts, *keyword))
+      {
+        if (wkt_multipoint != "MULTIPOINT(")
+          wkt_multipoint += ",";
+        wkt_multipoint +=
+            "(" + Fmi::to_string(loc->longitude) + " " + Fmi::to_string(loc->latitude) + ")";
+      }
+    }
 
     std::vector<int> fmisids;
     std::vector<int> lpnns;
@@ -550,6 +571,11 @@ void Plugin::grouplocations(Spine::HTTP::Request& theRequest)
                           Fmi::to_string(lopt.loc->latitude) + ")";
       }
     }
+
+    if (wkt_multipoint == "MULTIPOINT(")
+      throw Fmi::Exception(BCP,
+                           "grouplocations needs locations: lonlat(s), latlon(s), place(s), "
+                           "keyword, fmisid, lpnn or wmo");
 
     wkt_multipoint += ")";
     theRequest.addParameter("wkt", wkt_multipoint);

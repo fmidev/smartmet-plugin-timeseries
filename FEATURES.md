@@ -61,9 +61,9 @@ several alternative syntaxes:
   exact requested location to the nearest grid point with valid data
   (querydata marked `fullgrid=false`), within `maxdistance`.
 - **Locations as one area** — `grouplocations=1` combines the
-  locations of `lonlat(s)`, `latlon(s)`, `places`, `fmisid`, `lpnn`
-  and `wmo` into one WKT multipoint, so that area functions summarize
-  them.
+  locations of `lonlat(s)`, `latlon(s)`, `place(s)`, `keyword`,
+  `fmisid`, `lpnn` and `wmo` into one WKT multipoint, so that area
+  functions summarize them.
 
 ## 3. Time selection
 

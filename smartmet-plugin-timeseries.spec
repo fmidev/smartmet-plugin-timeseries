@@ -113,6 +113,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Sat Oct 17 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.17-1.fmi
 - Split functions with a cognitive complexity above 25 into smaller helpers, no functional changes
+- grouplocations=1 takes the locations of place and keyword too, and fails with a clear message instead of an invalid WKT when no locations are given
 
 * Fri Oct 16 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.16-1.fmi
 - Fixed compiler warnings and clang-tidy findings (unused code, unreachable code, empty statements, member initialization, parameter passing, noexcept), no functional changes
