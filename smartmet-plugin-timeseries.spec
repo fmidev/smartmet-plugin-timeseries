@@ -112,6 +112,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Sat Oct 17 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.17-1.fmi
+- Conditional requests: answer If-None-Match with 304 Not Modified and a failed If-Match with
+  412 Precondition Failed, without the body, as the EDR plugin does
 - Split functions with a cognitive complexity above 25 into smaller helpers, no functional changes
 - grouplocations=1 takes the locations of place and keyword too, and fails with a clear message instead of an invalid WKT when no locations are given
 

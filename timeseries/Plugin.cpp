@@ -133,13 +133,23 @@ bool etag_only(const Spine::HTTP::Request& request,
   {
     if (product_hash != Fmi::bad_hash)
     {
-      response.setHeader("ETag", fmt::format("\"{:x}-timeseries\"", product_hash));
+      auto etag = fmt::format("\"{:x}-timeseries\"", product_hash);
+      response.setHeader("ETag", etag);
 
       // If the product is cacheable and etag was requested, respond with etag only
 
       if (request.getHeader("X-Request-ETag"))
       {
         response.setStatus(Spine::HTTP::Status::no_content);
+        return true;
+      }
+
+      // Standalone conditional handling (RFC 7232): return 304 Not Modified when
+      // the client already has this version (If-None-Match), or 412 Precondition
+      // Failed when an If-Match precondition fails, with no body.
+      if (auto status = Spine::HTTP::conditionalResponseStatus(request, etag))
+      {
+        response.setStatus(*status);
         return true;
       }
     }
