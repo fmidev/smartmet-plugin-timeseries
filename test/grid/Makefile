@@ -2,6 +2,9 @@ include $(shell echo $${PREFIX-/usr})/share/smartmet/devel/makefile.inc
 
 TEST_TIMEOUT ?= 300
 
+# Starts the Redis test database listening only on a Unix socket below /tmp
+GRID_TEST_REDIS ?= smartmet-grid-test-redis
+
 all:
 
 test test-grid:	start-valkey-db
@@ -9,6 +12,7 @@ test test-grid:	start-valkey-db
 
 clean:
 	rm -rf failures
+	-$(GRID_TEST_REDIS) stop
 	rm -rf cnf/grid
 
 test-impl:
@@ -18,17 +22,7 @@ test-impl:
 		--timeout $(TEST_TIMEOUT)
 
 start-valkey-db:
-	rm -rf cnf/grid
-	cp -pr $(datadir)/smartmet/test/grid cnf/
-	@echo "*** Creating the Redis configuration file."
-	smartmet-grid-test-config-creator cnf/environment.conf cnf/grid/redis/redis-template.conf cnf/grid/redis/redis.conf
-	@echo "*** Starting the Redis database."
-	@valkey-server cnf/grid/redis/redis.conf & echo $$! > cnf/grid/redis/valkey-server.pid
+	$(GRID_TEST_REDIS) start
 
 stop-valkey-db:
-	@if [ -f cnf/grid/redis/valkey-server.pid ] ; then \
-		echo "*** Stopping the Valkey database." ; \
-		cat cnf/grid/redis/valkey-server.pid | xargs kill -9 2>/dev/null; \
-		rm -f cnf/grid/redis/valkey-server.pid; \
-		true; \
-	fi
+	$(GRID_TEST_REDIS) stop
