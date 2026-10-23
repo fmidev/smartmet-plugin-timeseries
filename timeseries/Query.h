@@ -109,6 +109,9 @@ struct Query : public ObsQueryParams
   T::AttributeList attributeList;
 
   Spine::LocationList inKeywordLocations;
+  // Keyword locations which are stations are not replaced by nearby stations unless
+  // maxdistance or numberofstations is given explicitly
+  std::set<Spine::GeoId> keywordStationGeoids;
   bool groupareas{true};
 
   double maxdistance_kilometers() const;
@@ -126,6 +129,7 @@ struct Query : public ObsQueryParams
   void parse_attr(const Spine::HTTP::Request& theReq);
   bool parse_grib_loptions(const State& state);
   void parse_inkeyword_locations(const Spine::HTTP::Request& theReq, const State& state);
+  void parse_keyword_stations(const Spine::HTTP::Request& theReq, const State& state);
   void parse_origintime(const Spine::HTTP::Request& theReq);
   void validate_time_options(const Config& config);
 

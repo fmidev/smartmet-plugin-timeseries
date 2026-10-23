@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.10.20
+Version: 26.10.23
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -111,6 +111,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Fri Oct 23 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.23-1.fmi
+- Observations: the stations of a keyword are no longer replaced by nearby stations unless
+  maxdistance or numberofstations is given explicitly; other keyword locations still use the
+  nearest station
+- The default maxdistance of observation requests comes from the configuration instead of a
+  fixed 60 km
+- Coordinates are always searched by distance, not short-circuited to the fmisid of the
+  nearest geoname
+
 * Tue Oct 20 2026 Andris Pavēnis <andris.pavenis@fmi.fi> 26.10.20-1.fmi
 - Use UNIX socket with Valkey/Redis db for tests
 

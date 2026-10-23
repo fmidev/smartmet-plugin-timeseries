@@ -1,0 +1,2 @@
+GET /timeseries?starttime=201308051200&endtime=201308051200&format=ascii&keyword=synop_fi&param=name,fmisid,stationname,distance,Temperature&producer=opendata&tz=utc&maxdistance=60km HTTP/1.0
+

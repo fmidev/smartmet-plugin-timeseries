@@ -6,6 +6,7 @@
 
 #include "Query.h"
 #include "Config.h"
+#include <boost/algorithm/string.hpp>
 #include <engines/observation/ExternalAndMobileProducerId.h>
 #include <engines/querydata/Engine.h>
 #include <gis/CoordinateTransformation.h>
@@ -216,6 +217,7 @@ Query::Query(const State& state, const Spine::HTTP::Request& req, Config& config
     keyword = Spine::optional_string(req.getParameter("keyword"), "");
 
     parse_inkeyword_locations(req, state);
+    parse_keyword_stations(req, state);
 
     findnearestvalidpoint = Spine::optional_bool(req.getParameter("findnearestvalid"), false);
 
@@ -779,6 +781,45 @@ void Query::parse_inkeyword_locations(const Spine::HTTP::Request& theReq, const 
         inKeywordLocations.insert(inKeywordLocations.end(), places.begin(), places.end());
       }
     }
+  }
+  catch (...)
+  {
+    throw Fmi::Exception::Trace(BCP, "Operation failed!");
+  }
+}
+
+// ----------------------------------------------------------------------
+/*!
+ * \brief Collect the keyword locations which are stations
+ *
+ * A keyword is a curated list of locations. If a location is a station, the
+ * station itself is wanted and a nearby station must not be substituted for it,
+ * unless maxdistance or numberofstations is given explicitly.
+ */
+// ----------------------------------------------------------------------
+
+void Query::parse_keyword_stations(const Spine::HTTP::Request& theReq, const State& state)
+{
+  try
+  {
+#ifndef WITHOUT_OBSERVATION
+    if (maxdistanceOptionGiven || numberofstationsOptionGiven)
+      return;
+
+    for (const std::string& keywords : theReq.getParameterList("keyword"))
+    {
+      std::vector<std::string> parts;
+      boost::algorithm::split(parts, keywords, boost::algorithm::is_any_of(","));
+      for (const auto& key : parts)
+      {
+        Locus::QueryOptions opts;
+        opts.SetLanguage(language);
+        for (const auto& loc : state.getGeoEngine().keywordSearch(opts, key))
+          if (loc->fmisid)
+            keywordStationGeoids.insert(loc->geoid);
+      }
+    }
+#endif
   }
   catch (...)
   {

@@ -1165,15 +1165,33 @@ void ObsEngineQuery::handleLocationSettings(
 
     if (point_location && !UtilityFunctions::is_flash_or_mobile_producer(producer))
     {
-      // Note: We do not detect if there is an fmisid for the location since converting
-      // the search to be for a fmisid would lose the geoid tag for the location.
+      // Note: We do not convert the search to be for a fmisid since that would lose the
+      // geoid tag for the location.
+
+      // The observation engine short-circuits the nearest station search when the location
+      // carries an fmisid of a station usable for the request: it returns that single station
+      // and ignores both numberofstations and maxdistance. That is intended for place and
+      // geoid requests, where the user effectively named the station. For a coordinate
+      // request geoengine attaches the fmisid of whatever geoname happened to be nearest,
+      // which would then be reported at distance zero. Hence coordinates are always searched
+      // by distance.
+
+      std::optional<int> station_id;
+      if (loc->type == Spine::Location::Place)
+        station_id = loc->fmisid;
+
+      // A station of a keyword must not be replaced by a nearby station. With a zero
+      // search radius the engine returns the station itself if it is usable for the request.
+      double maxdistance = settings.maxdistance;
+      if (station_id && query.keywordStationGeoids.count(loc->geoid) > 0)
+        maxdistance = 0;
 
       stationSettings.nearest_station_settings.emplace_back(loc->longitude,
                                                             loc->latitude,
-                                                            settings.maxdistance,
+                                                            maxdistance,
                                                             settings.numberofstations,
                                                             tloc.tag,
-                                                            loc->fmisid);
+                                                            station_id);
     }
 
     if (!point_location)
@@ -1338,8 +1356,6 @@ void ObsEngineQuery::getCommonObsSettings(Engine::Observation::Settings& setting
     if (producer == Engine::Observation::FMI_IOT_PRODUCER)
       settings.stationtype_specifier = query.iot_producer_specifier;
     settings.maxdistance = query.maxdistance_meters();
-    if (!query.maxdistanceOptionGiven)
-      settings.maxdistance = 60000;
 
     settings.allplaces = query.allplaces;
 

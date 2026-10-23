@@ -402,6 +402,10 @@ Maxdistance is either plain number or number+units, e.g 10km. Valid units are:
 
 If maxdistance is plain number it is interpreted as kilometers in querydata requests (e.g. maxdistance=10) and as meters in observation requests (e.g maxdistance=10000)
 
+The default maxdistance comes from the `maxdistance` setting of the plugin configuration (60 km if not set).
+
+In observation requests the locations of a keyword which are stations (the location has an fmisid) are treated as the stations themselves: if the station is not a station of the producer during the requested period, no other station is substituted for it. The other locations of the keyword are handled like places, and the nearest station within maxdistance is used. If maxdistance or numberofstations is given explicitly, nearby stations are searched for the keyword stations too.
+
 ## Time Period
 
 Meteorological data whether it is observations or forecasts made over a certain
@@ -1144,7 +1148,7 @@ configuration file.
 <tr><td colspan="2"> gridengine_disabled </td> <td> This attribute can be used to enable/disable the usage of the Grid-engine. It can have the values "true" or "false" </td></tr>
 <tr><td colspan="2"> prevent_observation_database_query </td> <td> If "true", observations are fetched only from the caches of the Observation-engine, never from the observation database. </td></tr>
 <tr><td colspan="2"> primaryForecastSource </td> <td> The engine used for forecast data when the producer does not determine it ("grid" or "querydata"). A "source" parameter in the request overrides this.</td></tr>
-<tr><td colspan="2"> maxdistance</td> <td> The default maximum distance value for point forecasts (km)</td></tr>
+<tr><td colspan="2"> maxdistance</td> <td> The default maximum distance (km) for point forecasts and for the nearest observation station search</td></tr>
 <tr><td colspan="2"> maxradius</td> <td> The maximum radius (km) allowed for the requested locations. 0 (the default) means unlimited.</td></tr>
 <tr><td colspan="2"> expires</td> <td> The value used for the Expires and Cache-Control headers (seconds, default 60)</td></tr>
 <tr><td rowspan="5">request_limits </td> <td> maxlocations </td> <td> The maximum number of locations allowed in a request. 0 (the default) means unlimited, as for the other limits.</td></tr>

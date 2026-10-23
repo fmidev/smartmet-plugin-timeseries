@@ -81,6 +81,7 @@ ObsQueryParams::ObsQueryParams(const Spine::HTTP::Request& req)
     latestObservation = (endtime == "now");
     allplaces = (Spine::optional_string(req.getParameter("places"), "") == "all");
     // observation params
+    numberofstationsOptionGiven = !!req.getParameter("numberofstations");
     numberofstations = Spine::optional_int(req.getParameter("numberofstations"), 1);
     std::string opt_stationgroups = Spine::optional_string(req.getParameter("stationgroups"), "");
     if (!opt_stationgroups.empty())
