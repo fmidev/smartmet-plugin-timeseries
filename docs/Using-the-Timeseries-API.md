@@ -679,6 +679,7 @@ The table with the computed parameters is given below.
 | SmartSymbol         | The new weather symbol code used at FMI.                                                                                                                                                                                                                                                     |
 | SmartSymbolText     | Plain text for the SmartSymbol.                                                                                                                                                                                                                                                              |
 | RoadWW              | Road weather station precipitation (SADE and RST) as a WMO 4677 ww code, producer road only.                                                                                                                                                                                                 |
+| RoadWaWa            | Road weather station precipitation (SADE and RST) as a WMO 4680 wawa code, producer road only. wawa is the code table of automatic stations, which most FMI stations report, so road and FMI stations can share one symbol table.                                                            |
 
 Example 1
 

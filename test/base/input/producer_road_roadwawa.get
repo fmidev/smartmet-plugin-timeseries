@@ -1,0 +1,1 @@
+GET /timeseries?format=ascii&keyword=ely_L1&param=fmisid,time,prclst,prst2,roadww,roadwawa&producer=road&starttime=201301090400&endtime=201301090500 HTTP/1.0
