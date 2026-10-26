@@ -1,0 +1,1 @@
+GET /timeseries?producer=pal_ensemble&tz=utc&place=Helsinki&starttime=200808050500&endtime=200808050700&timestep=60&param=utctime,Temperature:pal_ensemble:5900:1:0:4:0,Temperature:pal_ensemble:5900:1:0:3:1,Temperature:pal_ensemble:5900:1:0:3:2 HTTP/1.0
