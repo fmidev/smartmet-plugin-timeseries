@@ -119,6 +119,7 @@ rm -rf $RPM_BUILD_ROOT
 - DEM height and land cover type of area grid points are looked up only when requested
 - Static location values of areas are resolved once instead of once per parameter
 - x/y/crs locations are parsed once, and crs=EPSG:4326 coordinates are no longer transformed
+- A coordinate without data is reported as given in the request, not by the nearest place name
 
 * Fri Oct 23 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.23-1.fmi
 - Observations: the stations of a keyword are no longer replaced by nearby stations unless
