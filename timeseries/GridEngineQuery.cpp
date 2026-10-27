@@ -74,7 +74,8 @@ void GridEngineQuery::getWktLocationDefinition(Spine::LocationPtr& loc,
     {
       append_location_points(
           polygonPoints,
-          get_location_list(svg, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine));
+          get_location_list(
+              svg, tloc.tag, query.step, query.geonamesNeeded, *itsPlugin.itsEngines.geoEngine));
     }
     polygonPath.push_back(polygonPoints);
   }
@@ -91,7 +92,8 @@ void GridEngineQuery::getWktLocationDefinition(Spine::LocationPtr& loc,
     T::Coordinate_vec polygonPoints;
     append_location_points(
         polygonPoints,
-        get_location_list(svgPath, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine));
+        get_location_list(
+            svgPath, tloc.tag, query.step, query.geonamesNeeded, *itsPlugin.itsEngines.geoEngine));
     polygonPath.push_back(polygonPoints);
   }
   else
@@ -125,8 +127,8 @@ void GridEngineQuery::getBBoxLocationDefinition(
   double lat2 = Fmi::stod(parts[3]);
 
   // Get location info by the center coordinates
-  Spine::LocationPtr locCenter =
-      get_bbox_location(place, query.language, *itsPlugin.itsEngines.geoEngine);
+  Spine::LocationPtr locCenter = get_bbox_location(
+      place, query.language, query.geonamesNeeded, *itsPlugin.itsEngines.geoEngine);
 
   std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,
                                                            tloc.tag,
@@ -218,6 +220,7 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
                                   tloc.loc->radius * 1000,
                                   itsPlugin.itsGeometryStorage,
                                   query.language,
+                                  query.geonamesNeeded,
                                   *itsPlugin.itsEngines.geoEngine,
                                   &svgPath);
       convertSvgPathToPolygonPath(svgPath, polygonPath);
@@ -231,11 +234,12 @@ void GridEngineQuery::getLocationDefinition(Spine::LocationPtr& loc,
                                   tloc.loc->radius * 1000,
                                   itsPlugin.itsGeometryStorage,
                                   query.language,
+                                  query.geonamesNeeded,
                                   *itsPlugin.itsEngines.geoEngine,
                                   &svgPath);
       // convertSvgPathToPolygonPath(svgPath,polygonPath);
-      Spine::LocationList locationList =
-          get_location_list(svgPath, tloc.tag, query.step, *itsPlugin.itsEngines.geoEngine);
+      Spine::LocationList locationList = get_location_list(
+          svgPath, tloc.tag, query.step, query.geonamesNeeded, *itsPlugin.itsEngines.geoEngine);
       std::vector<T::Coordinate> coordinates;
       for (const auto& ll : locationList)
       {

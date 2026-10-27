@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.10.23
+Version: 26.10.27
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -40,7 +40,7 @@ BuildRequires: smartmet-library-grid-content-devel >= 26.10.20
 BuildRequires: smartmet-library-grid-files-devel >= 26.10.20
 BuildRequires: smartmet-library-newbase-devel >= 26.10.16
 BuildRequires: smartmet-library-gis-devel >= 26.10.16
-BuildRequires: smartmet-engine-geonames-devel >= 26.10.16
+BuildRequires: smartmet-engine-geonames-devel >= 26.10.27
 %if %{with observation}
 BuildRequires: smartmet-engine-observation-devel >= 26.10.16
 %endif
@@ -58,7 +58,7 @@ Requires: smartmet-library-macgyver >= 26.10.17
 Requires: smartmet-library-newbase >= 26.10.17
 Requires: smartmet-library-spine >= 26.10.17
 Requires: smartmet-library-timeseries >= 26.10.16
-Requires: smartmet-engine-geonames >= 26.10.17
+Requires: smartmet-engine-geonames >= 26.10.27
 Requires: smartmet-engine-querydata >= 26.10.17
 Requires: smartmet-engine-gis >= 26.10.17
 Requires: smartmet-engine-grid >= 26.10.17
@@ -79,7 +79,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-library-grid-files-test >= 26.10.26
 #TestRequires: smartmet-library-grid-content >= 26.10.26
 #TestRequires: smartmet-library-gis >= 26.10.17
-#TestRequires: smartmet-engine-geonames >= 26.10.17
+#TestRequires: smartmet-engine-geonames >= 26.10.27
 #TestRequires: smartmet-engine-gis >= 26.10.17
 #TestRequires: smartmet-engine-querydata >= 26.10.17
 %if %{with observation}
@@ -112,6 +112,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Oct 27 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.27-1.fmi
+- GeoEngine database searches are done only if the requested parameters need them (name, geoid,
+  country etc). Coordinates, areas and observation stations otherwise resolve without a search,
+  station locations come from the observation engine station information
+- DEM height and land cover type of area grid points are looked up only when requested
+- Static location values of areas are resolved once instead of once per parameter
+- x/y/crs locations are parsed once, and crs=EPSG:4326 coordinates are no longer transformed
+
 * Fri Oct 23 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> - 26.10.23-1.fmi
 - Observations: the stations of a keyword are no longer replaced by nearby stations unless
   maxdistance or numberofstations is given explicitly; other keyword locations still use the

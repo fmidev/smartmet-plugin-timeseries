@@ -15,6 +15,13 @@ namespace TimeSeries
 {
 namespace
 {
+// Without a search radius GeoEngine builds the location from the coordinate alone,
+// without searching the database for the nearest named location
+double search_radius(bool geonamesNeeded)
+{
+  return (geonamesNeeded ? Locus::Query::default_radius : 0);
+}
+
 // Construct the locale for case conversions only once
 const std::locale stdlocale = std::locale();
 }  // namespace
@@ -234,6 +241,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
 Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
                                       const std::string& thePathName,
                                       const double& stepInKm,
+                                      bool geonamesNeeded,
                                       const Engine::Geonames::Engine& geonames)
 {
   try
@@ -259,7 +267,8 @@ Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
       {
         // fetch geoinfo only for the first coordinate, because geosearch is so slow
         // reuse name and timezone for rest of the locations
-        Spine::LocationPtr locFirst = geonames.lonlatSearch(element.itsX, element.itsY, "");
+        Spine::LocationPtr locFirst =
+            geonames.lonlatSearch(element.itsX, element.itsY, "", search_radius(geonamesNeeded));
 
         Spine::LocationPtr loc = Spine::LocationPtr(new Spine::Location(locFirst->geoid,
                                                                         thePathName,
@@ -478,12 +487,14 @@ int get_fmisid_index(const Engine::Observation::Settings& settings)
 std::unique_ptr<Spine::Location> get_coordinate_location(double lon,
                                                          double lat,
                                                          const std::string& language,
+                                                         bool geonamesNeeded,
                                                          const Engine::Geonames::Engine& geoEngine)
 
 {
   try
   {
-    Spine::LocationPtr loc = geoEngine.lonlatSearch(lon, lat, language);
+    Spine::LocationPtr loc =
+        geoEngine.lonlatSearch(lon, lat, language, search_radius(geonamesNeeded));
 
     std::unique_ptr<Spine::Location> ret(new Spine::Location(loc->geoid,
                                                              "",  // tloc.tag,
@@ -508,6 +519,7 @@ std::unique_ptr<Spine::Location> get_coordinate_location(double lon,
 
 std::unique_ptr<Spine::Location> get_bbox_location(const std::string& bbox_string,
                                                    const std::string& language,
+                                                   bool geonamesNeeded,
                                                    const Engine::Geonames::Engine& geoengine)
 {
   std::vector<std::string> parts;
@@ -522,12 +534,13 @@ std::unique_ptr<Spine::Location> get_bbox_location(const std::string& bbox_strin
   double lon = (lon1 + lon2) / 2.0;
   double lat = (lat1 + lat2) / 2.0;
 
-  return get_coordinate_location(lon, lat, language, geoengine);
+  return get_coordinate_location(lon, lat, language, geonamesNeeded, geoengine);
 }
 
 Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
                                          const Engine::Gis::GeometryStorage& geometryStorage,
                                          const std::string& language,
+                                         bool geonamesNeeded,
                                          const Engine::Geonames::Engine& geoengine,
                                          NFmiSvgPath* svgPath /*= nullptr*/)
 {
@@ -574,7 +587,8 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
 
     double lon = (right + left) / 2.0;
     double lat = (top + bottom) / 2.0;
-    std::unique_ptr<Spine::Location> tmp = get_coordinate_location(lon, lat, language, geoengine);
+    std::unique_ptr<Spine::Location> tmp =
+        get_coordinate_location(lon, lat, language, geonamesNeeded, geoengine);
 
     tmp->name = tloc.tag;
     tmp->type = tloc.loc->type;
@@ -592,6 +606,7 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
                                          int radius,
                                          const Engine::Gis::GeometryStorage& geometryStorage,
                                          const std::string& language,
+                                         bool geonamesNeeded,
                                          const Engine::Geonames::Engine& geoengine,
                                          NFmiSvgPath* svgPath /*= nullptr*/)
 {
@@ -655,8 +670,8 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
 
     std::pair<double, double> lonlatCenter((right + left) / 2.0, (top + bottom) / 2.0);
 
-    Spine::LocationPtr locCenter =
-        geoengine.lonlatSearch(lonlatCenter.first, lonlatCenter.second, language);
+    Spine::LocationPtr locCenter = geoengine.lonlatSearch(
+        lonlatCenter.first, lonlatCenter.second, language, search_radius(geonamesNeeded));
 
     // Spine::LocationPtr contains a const Location, so some trickery is used here
     std::unique_ptr<Spine::Location> tmp(new Spine::Location(locCenter->geoid,

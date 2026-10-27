@@ -80,12 +80,14 @@ Spine::LocationPtr get_loc(const Query& masterquery,
     else if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
     {
       NFmiSvgPath svgPath;
-      loc = get_location_for_area(tloc, geometryStorage, q.language, geoEngine, &svgPath);
+      loc = get_location_for_area(
+          tloc, geometryStorage, q.language, q.geonamesNeeded, geoEngine, &svgPath);
     }
     else if (loc->type == Spine::Location::BoundingBox)
     {
       // get location info for center coordinates
-      std::unique_ptr<Spine::Location> tmp = get_bbox_location(place, q.language, geoEngine);
+      std::unique_ptr<Spine::Location> tmp =
+          get_bbox_location(place, q.language, q.geonamesNeeded, geoEngine);
 
       tmp->name = tloc.tag;
       tmp->type = tloc.loc->type;
@@ -257,28 +259,32 @@ void fetch_static_location_values(const Query& query,
 {
   try
   {
+    // Resolve the locations once, not separately for each parameter
+    std::vector<Spine::LocationPtr> locations;
+    for (const auto& tloc : query.loptions->locations())
+    {
+      Spine::LocationPtr loc = tloc.loc;
+      if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
+        loc = get_location_for_area(
+            tloc, geometryStorage, query.language, query.geonamesNeeded, geoEngine);
+      else if (loc->type == Spine::Location::Wkt)
+        loc = query.wktGeometries.getLocation(tloc.loc->name);
+      locations.push_back(loc);
+    }
+
     unsigned int column = 0;
-    unsigned int row = 0;
 
     for (const Spine::Parameter& param : query.poptions.parameters())
     {
-      row = 0;
+      unsigned int row = 0;
       const auto& pname = param.name();
       for (const auto& tloc : query.loptions->locations())
       {
-        Spine::LocationPtr loc = tloc.loc;
-        std::string place = loc->name;
-
-        if (loc->type == Spine::Location::Path || loc->type == Spine::Location::Area)
-        {
-          loc = get_location_for_area(tloc, geometryStorage, query.language, geoEngine);
-        }
-        else if (loc->type == Spine::Location::Wkt)
-          loc = query.wktGeometries.getLocation(tloc.loc->name);
+        const auto& loc = locations[row];
 
         if (param.name() == "place")
         {
-          data.set(column, row++, place);
+          data.set(column, row++, tloc.loc->name);
         }
         else
         {

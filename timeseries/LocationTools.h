@@ -31,6 +31,7 @@ void get_svg_path(const Spine::TaggedLocation& tloc,
 Spine::LocationList get_location_list(const NFmiSvgPath& thePath,
                                       const std::string& thePathName,
                                       const double& stepInKm,
+                                      bool geonamesNeeded,
                                       const Engine::Geonames::Engine& geonames);
 
 std::string get_location_id(const Spine::LocationPtr& loc);
@@ -52,15 +53,18 @@ int get_fmisid_index(const Engine::Observation::Settings& settings);
 std::unique_ptr<Spine::Location> get_coordinate_location(double lon,
                                                          double lat,
                                                          const std::string& language,
+                                                         bool geonamesNeeded,
                                                          const Engine::Geonames::Engine& geoEngine);
 
 std::unique_ptr<Spine::Location> get_bbox_location(const std::string& bbox_string,
                                                    const std::string& language,
+                                                   bool geonamesNeeded,
                                                    const Engine::Geonames::Engine& geoengine);
 
 Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
                                          const Engine::Gis::GeometryStorage& geometryStorage,
                                          const std::string& language,
+                                         bool geonamesNeeded,
                                          const Engine::Geonames::Engine& geoengine,
                                          NFmiSvgPath* svgPath = nullptr);
 
@@ -68,6 +72,7 @@ Spine::LocationPtr get_location_for_area(const Spine::TaggedLocation& tloc,
                                          int radius,
                                          const Engine::Gis::GeometryStorage& geometryStorage,
                                          const std::string& language,
+                                         bool geonamesNeeded,
                                          const Engine::Geonames::Engine& geoengine,
                                          NFmiSvgPath* svgPath = nullptr);
 

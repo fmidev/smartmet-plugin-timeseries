@@ -150,6 +150,13 @@ class ObsEngineQuery
       const std::vector<Fmi::LocalDateTime>& ts_vector,
       const Query& query) const;
 
+  // Station locations by fmisid without GeoEngine searches. Empty if the requested
+  // parameters need the geonames information of the stations.
+  using StationLocations = std::map<int, Spine::LocationPtr>;
+  StationLocations getStationLocations(const Query& query,
+                                       const Engine::Observation::Settings& settings,
+                                       const std::set<int>& fmisids) const;
+
   void handleLocationSettings(const Query& query,
                               const std::string& producer,
                               const Spine::TaggedLocation& tloc,

@@ -173,7 +173,8 @@ class QEngineQuery
                                              const Spine::LocationPtr& loc,
                                              const Engine::Querydata::Q& theQ,
                                              NFmiSvgPath& svgPath,
-                                             bool isWkt) const;
+                                             bool isWkt,
+                                             bool terrainNeeded) const;
 
   const Plugin& itsPlugin;
 };
