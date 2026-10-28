@@ -51,23 +51,6 @@ TS::TimeSeriesByLocation timeseries_by_fmisid(const std::string& producer,
   }
 }
 
-TS::TimeSeriesGenerator::LocalTimeList get_timesteps(const TS::TimeSeries& ts)
-{
-  try
-  {
-    TS::TimeSeriesGenerator::LocalTimeList timesteps;
-
-    for (const TS::TimedValue& tv : ts)
-      timesteps.push_back(tv.time);
-
-    return timesteps;
-  }
-  catch (...)
-  {
-    throw Fmi::Exception::Trace(BCP, "Operation failed!");
-  }
-}
-
 TS::TimeSeries generate_timeseries(const std::vector<Fmi::LocalDateTime>& timestep_vector,
                                    const TS::Value& value)
 {
@@ -1089,11 +1072,16 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
 
       TS::TimeSeriesGenerator::LocalTimeList tlist;
 
-      // If all timesteps are requested or producer is syke or flash accept all timesteps
+      // If all timesteps are requested or producer is syke or flash accept all data timesteps
+      // of the requested period. The data has been fetched from starttime minus the
+      // aggregation interval. Aggregating also every data timestep before starttime would
+      // take time proportional to the square of the aggregation interval.
       if (query.toptions.all() || UtilityFunctions::is_flash_producer(producer) ||
           UtilityFunctions::is_mobile_producer(producer) || producer == SYKE_PRODUCER)
       {
-        tlist = get_timesteps(tsg->at(0).timeseries);
+        auto tz =
+            itsPlugin.itsEngines.geoEngine->getTimeZones().time_zone_from_string(query.timezone);
+        tlist = get_all_timesteps(query, tsg->at(0).timeseries, tz);
       }
       else
       {

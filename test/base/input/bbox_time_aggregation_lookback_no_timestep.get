@@ -1,0 +1,1 @@
+GET /timeseries?producer=opendata&bbox=24.5,60,25.5,60.5&starttime=201308051200&endtime=201308051200&param=fmisid,time,Temperature,nanmean_t(Temperature/120m/0m),nancount_t(Temperature/120m/0m)&precision=double HTTP/1.0
