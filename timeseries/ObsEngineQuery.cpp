@@ -856,13 +856,14 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
     const std::string& producer,
     const Spine::LocationPtr& loc,
     const ObsParameters& obsParameters,
-    const TS::TimeSeriesVector* tsv_observation_result,
+    TS::TimeSeriesVector* tsv_observation_result,
     const std::vector<Fmi::LocalDateTime>& ts_vector,
     const Query& query) const
 {
   try
   {
     TS::TimeSeriesVectorPtr observation_result_with_added_fields(new TS::TimeSeriesVector());
+    observation_result_with_added_fields->reserve(obsParameters.size());
 
     // When tz=local, format time/location parameters in the station's actual timezone
     // instead of the UTC fallback used for the observation engine fetch.  In other
@@ -900,7 +901,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
 
           location_ts.emplace_back(TS::TimedValue(ts, value));
         }
-        observation_result_with_added_fields->push_back(location_ts);
+        observation_result_with_added_fields->push_back(std::move(location_ts));
       }
       else if (TS::is_time_parameter(paramname))
       {
@@ -919,12 +920,12 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForArea(
                                                        effective_timezone,
                                                        timezones,
                                                        query);
-        observation_result_with_added_fields->push_back(time_ts);
+        observation_result_with_added_fields->push_back(std::move(time_ts));
       }
       else if (!obsParameters[i].duplicate)
       {
         observation_result_with_added_fields->push_back(
-            tsv_observation_result->at(obs_result_field_index));
+            std::move(tsv_observation_result->at(obs_result_field_index)));
         obs_result_field_index++;
       }
     }
@@ -966,8 +967,7 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
     // lets find out actual timesteps: different locations may have different timesteps
     std::vector<Fmi::LocalDateTime> ts_vector;
     std::set<Fmi::LocalDateTime> ts_set;
-    const TS::TimeSeries& ts = observation_result->at(0);
-    for (const TS::TimedValue& tval : ts)
+    for (const TS::TimedValue& tval : observation_result->at(0))
       ts_set.insert(tval.time);
     ts_vector.insert(ts_vector.end(), ts_set.begin(), ts_set.end());
     std::sort(ts_vector.begin(), ts_vector.end());
@@ -985,6 +985,9 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
     // timesteps
     TS::TimeSeriesByLocation tsv_area =
         timeseries_by_fmisid(producer, observation_result, tlist_all, fmisid_index);
+
+    // The observations have been copied to the stations' time series
+    observation_result.reset();
 
     std::vector<TS::FmisidTSVectorPair> tsv_area_with_added_fields;
     // add data for location- and time-related fields; these fields are added by timeseries
@@ -1046,21 +1049,23 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
     std::vector<TS::TimeSeriesGroupPtr> tsg_vector;
     tsg_vector.reserve(obsParameters.size());
     for (unsigned int i = 0; i < obsParameters.size(); i++)
-      tsg_vector.emplace_back(std::make_shared<TS::TimeSeriesGroup>());
-
-    // iterate locations
-
-    for (const auto& tsv_area : tsv_area_with_added_fields)
     {
-      const TS::TimeSeriesVector* tsv = tsv_area.second.get();
+      tsg_vector.emplace_back(std::make_shared<TS::TimeSeriesGroup>());
+      tsg_vector.back()->reserve(tsv_area_with_added_fields.size());
+    }
+
+    // iterate locations, moving their time series to the groups
+
+    for (auto& tsv_area : tsv_area_with_added_fields)
+    {
+      TS::TimeSeriesVector* tsv = tsv_area.second.get();
 
       // iterate fields
       for (unsigned int k = 0; k < tsv->size(); k++)
       {
         // add k:th time series to the group
         TS::LonLat lonlat(0, 0);  // location is not relevant here
-        TS::LonLatTimeSeries lonlat_ts(lonlat, tsv->at(k));
-        tsg_vector[k]->push_back(lonlat_ts);
+        tsg_vector[k]->emplace_back(lonlat, std::move(tsv->at(k)));
       }
     }
 
