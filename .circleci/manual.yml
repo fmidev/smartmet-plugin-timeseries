@@ -7,7 +7,7 @@ version: 2.1
 jobs:
   test-rhel8:
     docker:
-      - image: fmidev/smartmet-cibase-8:latest
+      - image: quay.io/fmi/smartmet-cibase-8:latest
     resource_class: xlarge
     steps:
       - checkout
@@ -28,7 +28,7 @@ jobs:
           command: ci-build test
   test-rhel9:
     docker:
-      - image: fmidev/smartmet-cibase-9:latest
+      - image: quay.io/fmi/smartmet-cibase-9:latest
     resource_class: xlarge
     steps:
       - checkout
