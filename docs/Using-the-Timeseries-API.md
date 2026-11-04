@@ -1154,9 +1154,9 @@ configuration file.
 <tr><td colspan="2"> expires</td> <td> The value used for the Expires and Cache-Control headers (seconds, default 60)</td></tr>
 <tr><td rowspan="5">request_limits </td> <td> maxlocations </td> <td> The maximum number of locations allowed in a request. 0 (the default) means unlimited, as for the other limits.</td></tr>
 <tr><td> maxparameters </td><td>The maximum number of parameters allowed in a request</td></tr>
-<tr><td> maxtimes </td><td>The maximum number of time steps allowed in a request (default 50000)</td></tr>
+<tr><td> maxtimes </td><td>The maximum number of time steps allowed in a request (default 50000). The Observation-engine also applies it to the distinct observation times read from the database, which for aggregation are the raw data times, not the requested time steps.</td></tr>
 <tr><td> maxlevels </td><td>The maximum number of levels allowed in a request</td></tr>
-<tr><td> maxelements </td><td>The maximum number of result elements allowed in a request</td></tr>
+<tr><td> maxelements </td><td>The maximum number of result elements allowed in a request. For observations it limits the rows read from the database, which for aggregated or subsampled requests is far more than the result: the Observation-engine rejects a request before querying the database if the number of rows estimated from the time period (including the aggregation intervals), the stations and the nominal interval of each parameter (for example PT1M for TA_PT1M_AVG) exceeds the limit. The estimate uses the interval in the parameter name, so data stored more sparsely than its name suggests is estimated too high.</td></tr>
 <tr><td> cache </td> <td> timeseries_size </td><td>The number of timeseries requests that are cached internally. The old settings memory_bytes, filesystem_bytes and directory are deprecated and only produce a warning.</td></tr>
 <tr><td rowspan="3">wxml </td> <td>  timestring</td> <td> The default time format used with the WXMLformat (e.g. "%Y-%b-%dT%H:%M:%S")</td></tr>
 <tr><td> version</td><td>The default WXML version (e.g. "2.00")</td></tr>
