@@ -3,8 +3,8 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.11.5
-Release: 2%{?dist}.fmi
+Version: 26.11.7
+Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
 URL: https://github.com/fmidev/smartmet-plugin-timeseries
@@ -32,7 +32,7 @@ BuildRequires: %{smartmet_boost}-devel
 BuildRequires: %{smartmet_fmt_devel}
 BuildRequires: bzip2-devel
 BuildRequires: zlib-devel
-BuildRequires: smartmet-library-timeseries-devel >= 26.11.4
+BuildRequires: smartmet-library-timeseries-devel >= 26.11.7-2
 BuildRequires: smartmet-library-spine-devel >= 26.11.4
 BuildRequires: smartmet-library-locus-devel >= 26.10.16
 BuildRequires: smartmet-library-macgyver-devel >= 26.11.3
@@ -57,7 +57,7 @@ Requires: smartmet-library-locus >= 26.10.16
 Requires: smartmet-library-macgyver >= 26.11.3
 Requires: smartmet-library-newbase >= 26.10.17
 Requires: smartmet-library-spine >= 26.11.4
-Requires: smartmet-library-timeseries >= 26.11.4
+Requires: smartmet-library-timeseries >= 26.11.7-2
 Requires: smartmet-engine-geonames >= 26.10.17
 Requires: smartmet-engine-querydata >= 26.11.5
 Requires: smartmet-engine-gis >= 26.10.17
@@ -112,6 +112,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Sat Nov 7 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> 26.11.7-1.fmi
+- Limit generated time steps with maxtimes in all query paths
+- Check maxtimes also for requests without timestep and for fixed times
+- Check maxtimes on the interpolated time list
+- Check maxlocations before creating grid point locations
+
 * Thu Nov  5 2026 Andris Pavēnis <andris.pavenis@fmi.fi> 26.11.5-2.fmi
 - Repackage due to ABI changes
 

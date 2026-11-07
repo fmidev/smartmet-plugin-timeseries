@@ -480,7 +480,7 @@ bool GridInterface::prepareDataIndependentQueryTimes(QueryServer::Query& gridQue
     options.setDataTimes(dataTimes);
 
     // Skip the times already fetched by the previous producer in a request sequence
-    for (const auto& t : TS::TimeSeriesGenerator::generate(options, tz))
+    for (const auto& t : TS::TimeSeriesGenerator::generate(options, tz, itsRequestLimits.maxtimes))
     {
       const auto utctime = t.utc_time();
       if (latestTimeUTC.is_not_a_date_time() || utctime > latestTimeUTC)
@@ -788,8 +788,12 @@ void generateTimesteps(QueryServer::Query& gridQuery,
                        uint step,
                        bool daylightSavingEnds,
                        const Fmi::LocalDateTime& latestTime,
-                       const Fmi::LocalDateTime& startTime)
+                       const Fmi::LocalDateTime& startTime,
+                       const TS::RequestLimits& limits)
 {
+  // Hard safety limit like in the time series generator, maxtimes may be disabled
+  const std::size_t max_generated_timesteps = 10ULL * 1000 * 1000;
+
   Fmi::DateTime s = grid_startTime.utc_time();
   Fmi::DateTime e = grid_endTime.utc_time();
 
@@ -816,6 +820,13 @@ void generateTimesteps(QueryServer::Query& gridQuery,
     {
       stepCount++;
       gridQuery.mForecastTimeList.insert(toTimeT(s));
+
+      // An explicit timesteps= count stops the loop and has been validated already
+      if (!masterquery.toptions.timeSteps)
+        TS::check_request_limit(limits, stepCount, TS::RequestLimitMember::TIMESTEPS);
+      if (stepCount > max_generated_timesteps)
+        throw Fmi::Exception(BCP, "Too many time steps requested")
+            .addParameter("maximum", std::to_string(max_generated_timesteps));
 
       if (masterquery.toptions.timeSteps && stepCount == steps)
         s = e;
@@ -949,7 +960,8 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
                         step,
                         daylightSavingEnds,
                         latestTime,
-                        startTime);
+                        startTime,
+                        itsRequestLimits);
     }
 
     gridQuery.mStartTime = (grid_startTime.utc_time() - y1970).total_seconds();

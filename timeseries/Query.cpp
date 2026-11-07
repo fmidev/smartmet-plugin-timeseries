@@ -107,6 +107,58 @@ Fmi::ValueFormatterParam valueformatter_params(const Spine::HTTP::Request& req)
   return opt;
 }
 
+// ----------------------------------------------------------------------
+/*!
+ * \brief Estimate the number of times generated for the request without generating them
+ *
+ * Returns 0 if the count cannot be estimated: data times, an explicit timesteps= count
+ * (checked separately) or times taken from the data. The estimate is an upper bound.
+ */
+// ----------------------------------------------------------------------
+
+std::size_t estimate_time_count(const TS::TimeSeriesGeneratorOptions& toptions)
+{
+  if (toptions.timeSteps || toptions.startTimeData || toptions.endTimeData ||
+      toptions.startTime.is_special() || toptions.endTime.is_special() ||
+      toptions.endTime < toptions.startTime)
+    return 0;
+
+  std::size_t per_day = 0;  // times per day
+  std::size_t total = 0;    // times ignoring the days filter
+
+  if (toptions.mode == TS::TimeSeriesGeneratorOptions::TimeSteps)
+  {
+    // The generator uses a 60 minute timestep by default, 0 means just the start and end times
+    const unsigned int timestep = (toptions.timeStep ? *toptions.timeStep : 60);
+    if (timestep == 0)
+      return 0;
+    const auto span_minutes = (toptions.endTime - toptions.startTime).total_minutes();
+    per_day = (24 * 60 + timestep - 1) / timestep;
+    total = static_cast<std::size_t>(span_minutes / timestep) + 1;
+  }
+  else if (toptions.mode == TS::TimeSeriesGeneratorOptions::FixedTimes)
+  {
+    // Each day touched by the period may produce all the fixed times
+    const auto ndays = (toptions.endTime.date() - toptions.startTime.date()) + 1;
+    per_day = toptions.timeList.size();
+    total = static_cast<std::size_t>(ndays) * per_day;
+  }
+  else
+    return 0;
+
+  // The days filter selects at most days.size() days in each month
+  if (!toptions.days.empty())
+  {
+    const auto d1 = toptions.startTime.date();
+    const auto d2 = toptions.endTime.date();
+    const auto nmonths = (static_cast<long>(d2.year()) - static_cast<long>(d1.year())) * 12 +
+                         static_cast<long>(d2.month()) - static_cast<long>(d1.month()) + 1;
+    total = std::min(total, static_cast<std::size_t>(nmonths) * toptions.days.size() * per_day);
+  }
+
+  return total;
+}
+
 }  // namespace
 
 // ----------------------------------------------------------------------
@@ -302,20 +354,14 @@ void Query::validate_time_options(const Config& config)
           .addParameter("timesteps", Fmi::to_string(*toptions.timeSteps))
           .addParameter("maxtimes", Fmi::to_string(maxtimes));
 
-    // A distant endtime combined with a small timestep produces just as many
-    // steps. Estimate the count from the concrete request times without generating
-    // the list, and reject if it would exceed the limit.
-    if (!toptions.timeSteps && toptions.timeStep && *toptions.timeStep > 0 &&
-        !toptions.startTimeData && !toptions.endTimeData && !toptions.startTime.is_special() &&
-        !toptions.endTime.is_special() && toptions.endTime > toptions.startTime)
-    {
-      const auto span_minutes = (toptions.endTime - toptions.startTime).total_minutes();
-      const auto estimate = static_cast<std::size_t>(span_minutes / *toptions.timeStep) + 1;
-      if (estimate > maxtimes)
-        throw Fmi::Exception(BCP, "Too many timesteps requested")
-            .addParameter("timesteps", Fmi::to_string(estimate))
-            .addParameter("maxtimes", Fmi::to_string(maxtimes));
-    }
+    // A distant endtime combined with a small timestep (or the default 60 minutes), or
+    // with fixed times, produces just as many steps. Estimate the count from the concrete
+    // request times without generating the list, and reject if it would exceed the limit.
+    const auto estimate = estimate_time_count(toptions);
+    if (estimate > maxtimes)
+      throw Fmi::Exception(BCP, "Too many timesteps requested")
+          .addParameter("timesteps", Fmi::to_string(estimate))
+          .addParameter("maxtimes", Fmi::to_string(maxtimes));
   }
   catch (...)
   {

@@ -769,7 +769,8 @@ QueryProcessingHub::LocationHash QueryProcessingHub::hash_location_timeseries(
         return LocationHash::Uncacheable;
 
       auto tz = thePlugin.getTimeZones().time_zone_from_string(subquery.timezone);
-      auto tlist = thePlugin.itsTimeSeriesCache->generate(subquery.toptions, tz);
+      auto tlist = thePlugin.itsTimeSeriesCache->generate(
+          subquery.toptions, tz, thePlugin.itsConfig.requestLimits().maxtimes);
 
       // This is enough to generate an unique hash for the request, even
       // though the timesteps may not be exactly the same as those used
