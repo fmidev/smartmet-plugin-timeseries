@@ -3,6 +3,8 @@
 #include "PostProcessing.h"
 #include "State.h"
 #include "UtilityFunctions.h"
+#include <engines/grid/Engine.h>
+#include <grid-files/identification/GridDef.h>
 #include <macgyver/Exception.h>
 #include <macgyver/TimeParser.h>
 #include <newbase/NFmiSvgTools.h>
@@ -494,6 +496,38 @@ const TS::TimeSeriesGenerator::LocalTimeList* select_aggregation_times(
     return station_tlist.get();
   agg_times_full = get_all_timesteps(query, first_result, station_tz);
   return &agg_times_full;
+}
+
+
+// Is the name of an observation parameter known to any data source? A known name which is
+// not available for the observation producer gives a column of missing values, an unknown
+// name is an error. A name is known if it is an observation parameter of any station type,
+// a newbase parameter or a parameter of the FMI (Radon) parameter definitions of the grid
+// engine.
+bool is_known_parameter(const Spine::Parameter& parameter,
+                        const std::string& producer,
+                        const Engines& engines)
+{
+  const auto& name = parameter.name();
+
+  if (parameter.type() != Spine::Parameter::Type::Data || TS::is_special_parameter(name) ||
+      TS::is_location_parameter(name) || TS::is_time_parameter(name))
+    return true;
+
+  if (parameter.number() != kFmiBadParameter)
+    return true;
+
+  if (engines.obsEngine->isParameter(name, producer) || engines.obsEngine->isParameterVariant(name))
+    return true;
+
+  if (engines.gridEngine && engines.gridEngine->isEnabled())
+  {
+    Identification::FmiParameterDef def;
+    if (Identification::gridDef.getFmiParameterDefByName(name.substr(0, name.find(':')), def))
+      return true;
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -1785,6 +1819,12 @@ std::vector<ObsParameter> ObsEngineQuery::getObsParameters(const Query& query) c
           for (const TS::ParameterAndFunctions& paramfuncs : query.poptions.parameterFunctions())
           {
             Spine::Parameter parameter(paramfuncs.parameter);
+
+            if (!is_known_parameter(parameter, producer, itsPlugin.itsEngines))
+              throw Fmi::Exception(BCP, "Unknown parameter")
+                  .addParameter("Parameter", parameter.name())
+                  .addParameter("Producer", producer)
+                  .disableStackTrace();
 
             std::string parameter_id = TS::get_parameter_id(parameter);
 
