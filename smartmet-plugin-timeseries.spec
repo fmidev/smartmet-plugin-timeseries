@@ -3,7 +3,7 @@
 %define SPECNAME smartmet-plugin-%{DIRNAME}
 Summary: SmartMet timeseries plugin
 Name: %{SPECNAME}
-Version: 26.11.7
+Version: 26.11.10
 Release: 1%{?dist}.fmi
 License: MIT
 Group: SmartMet/Plugins
@@ -51,6 +51,8 @@ BuildRequires: smartmet-engine-grid-devel >= 26.10.16
 #%if %{with observation}
 #Requires: smartmet-engine-observation >= 26.11.5
 #%endif
+# Older engines throw for parameters known only to other data sources
+Conflicts: smartmet-engine-observation < 26.11.10
 Requires: %{smartmet_fmt}
 Requires: smartmet-library-gis >= 26.10.17
 Requires: smartmet-library-locus >= 26.10.16
@@ -83,7 +85,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 26.10.17
 #TestRequires: smartmet-engine-querydata >= 26.11.5
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 26.11.5
+#TestRequires: smartmet-engine-observation >= 26.11.10
 %endif
 #TestRequires: smartmet-engine-grid >= 26.10.17
 #TestRequires: gdal312-libs
@@ -112,6 +114,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/smartmet/plugins/timeseries.so
 
 %changelog
+* Tue Nov 10 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> 26.11.10-1.fmi
+- Observation parameter names known to any data source (observations of any station type,
+  newbase or Radon) give missing values, unknown names are an error
+
 * Sat Nov 7 2026 Mika Heiskanen <mika.heiskanen@fmi.fi> 26.11.7-1.fmi
 - Limit generated time steps with maxtimes in all query paths
 - Check maxtimes also for requests without timestep and for fixed times
