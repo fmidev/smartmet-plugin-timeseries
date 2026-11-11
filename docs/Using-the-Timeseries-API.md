@@ -613,7 +613,7 @@ For example, the following request fetches temperature values from two different
 ```text
 smartmet.fmi.fi/timeseries?place=espoo&format=debug&param=name,time,T-K:SMARTMETNWC::6:2,Temperature:ECMOSKRIGING::6:2
 ```
-Notice, that we can also leave some field empty when there are no multiple values avaiable for the current field. In the previous example, we left the third field (= geometry number) empty, because these producers do not have multiple grid geometries.
+Notice, that we can also leave some field empty when there are no multiple values available for the current field. In the previous example, we left the third field (= geometry number) empty, because these producers do not have multiple grid geometries.
 
 It is also good to notice that if we are using "traditional" parameter names like "Temperature" instead of new names like "T-K", it usually means that the original data (= Temperature in Kelvins) is converted (Kelvin => Celcius) during the request. These conversions are defined in the SmartMet Server configuration / mapping files. The same files are used in order to define interpolation methods for different parameters. For example, temperature values are usully interpolated linearly, meanwhile direction parameters (like wind directions) are not necessary interpolated at all (i.e. the request picks the value from the nearest grid point).
 
@@ -883,7 +883,7 @@ percentage-function.
 
 ### Grid-Engine Functions
 
-In addition to the functions described earlier, it is possible to use functions that are implemented in the grid-engine. Techically the grid-engine allows dynamical loading of new functions into the SmartMet Server. In this case these functions are written with LUA programming language. This also means that the SmartMet Server does not need to be rebuilt or restarted when new LUA functions are added. There are also some build-in functions available which are written with C++. The point is that C++ is faster than LUA and that's why the most popular functions are usually implemented with C++.
+In addition to the functions described earlier, it is possible to use functions that are implemented in the grid-engine. Technically the grid-engine allows dynamical loading of new functions into the SmartMet Server. In this case these functions are written with LUA programming language. This also means that the SmartMet Server does not need to be rebuilt or restarted when new LUA functions are added. There are also some build-in functions available which are written with C++. The point is that C++ is faster than LUA and that's why the most popular functions are usually implemented with C++.
 
 The basic idea of the grid-engine functions is that they usually get one or multiple values as parameters and return just one value. For example function SUM{T-K;-273.15} adds 273.15 into the value of T-K (Temperature in Kelvins) parameter. This means in practice that it converts Kelvins to Celsius. Notice that in this case parameters are separated with ';' character. It is also possible to use functions inside other functions.
 
@@ -920,7 +920,7 @@ The following functions are implemented with C++:
 |           | comparison precision (= decimals)                                  | EQ{T-K;273.2;1}                                  |
 | GT        | Greater than. If (param1 > param2) return 1 else return 0.         | GT{T-K;273.15}                                   |
 | GTE       | Greater or equal. If (param1 >= param2) return 1 else return 0.    | GTE{T-K;273.15}                                  |
-| IF        | If the first parameter != 0 the function returns the second        | IF{comparsion;then;else)                         |
+| IF        | If the first parameter != 0 the function returns the second        | IF{comparison;then;else)                         |
 |           | parameter, otherwise the third parameter.                          | IF{LT{T-K;273.15};1;2}                           |
 |           |                                                                    | IF{OR{LT{T-K;273.15};GT{T-K;283.15}};1;2}        |
 | IN        | Returns 1 if the first parameter is inside the given range.        | IN{value;rangeStart;rangeEnd}                    |
@@ -937,7 +937,7 @@ The following functions are implemented with C++:
 |           |                                                                    | @MAX{T-K}                                        |
 | MEDIAN    | Median                                                             | MEDIAN{n1;n2;n3;n4;...;nN}                       |
 |           |                                                                    | @MEDIAN{T-K}                                     |
-| MIN       | Minumum value                                                      | MIN{n1;n2;n3;n4;...;nN}                          |
+| MIN       | Minimum value                                                      | MIN{n1;n2;n3;n4;...;nN}                          |
 |           |                                                                    | @MIN{T-K}                                        |
 | MUL       | Multiplication                                                     | MUL{T-K;0.001}                                   |
 | NOT       | Returns 0 if the parameter != 0. Otherwise the function returns 1. | NOT{param}                                       |
@@ -956,7 +956,7 @@ The following functions are implemented with C++:
 | RAD2DEG   | Radians to degrees                                                 | RAD2DEG{DD-RAD}                                  |
 | REPLACE   | Replaces values if they are in given range                         | REPLACE{T-K;0;1;274;2;275;3;500}                 |
 | SUM       | Addition                                                           | SUM{T-K;-273.15}                                 |
-| SUB       | Subraction                                                         | SUB{T-K;273.15}                                  |
+| SUB       | Subtraction                                                         | SUB{T-K;273.15}                                  |
 | VALID     | Returns the first parameter which value is not "missing".          | VALID{T-K:VIRENWC;T-K:VIRE}                      |
 | VARIANCE  | Variance                                                           | @VARIANCE{T-K}                                   |
 
@@ -977,7 +977,7 @@ have one of the values listed in the following table.
 | json   | The response data is returned in the JSON format (JavaScript Object Notation). The "attributes" parameter can be used  to define the field for which the values are used as attribute names.                                                                                                                                                                                        |
 | debug  | The response data is returned in the debug format (= fetched fields are expressed as a HTML table with rows and columns). The output is intended to be viewed directly with a browser.                                                                                                                                                                                              |
 | ascii  | **Not actual ASCII format!** The response data is returned as text, i.e. text line that contain requested fields. The field separator used in these lines can be defined by the "separator" parameter. Mostly useful for testing, not usually suitable for production.                                                                                                              |
-| csv    | Comma Separated Values, headers are included. Text fields are properly espaced.                                                                                                                                                                                                                                                                                                     |
+| csv    | Comma Separated Values, headers are included. Text fields are properly escaped.                                                                                                                                                                                                                                                                                                     |
 | xml    | The response data is returned in the XML format. The style of the XML format can be defined by the  "xmlstyle" parameter, which can have one of the following values: "attributes", "tags", "mixed". When using the "mixed" mode, the "attributes" parameter can be used to define which fields are expressed as attributes while the rest of the fields are expressed as elements. |
 | php    | The response data is returned in the PHP format (= PHP array). This can be used in PHP scripts. The "attributes" parameter can be used in order to define the field for which the values are used as attribute names in the output.                                                                                                                                                 |
 | serial | The response data is returned in the PHP serial format. The "attributes" parameter can be used  to define the field for which the values are used as attribute names in the output.                                                                                                                                                                                                 |
@@ -1034,7 +1034,7 @@ group. It is possible to fetch the data ungrouped using `groupareas=0`.
 
 In example observations have been requested for area named Turku and the results
 are returned for three weather stations in the area. For two locations hourly
-observations are availble, and for one location observations are made more
+observations are available, and for one location observations are made more
 often. The same data times are by default grouped together (see left side of
 image). Adding `groupareas=0` to querystring will return each location as a
 separate list. In this case the name in the returning values then refers to the

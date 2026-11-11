@@ -509,7 +509,7 @@ void GridInterface::insertFileQueries(QueryServer::Query& query,
   try
   {
     // Adding queries into the QueryStreamer. These queries fetch actual GRIB1/GRIB2 files
-    // accoding to the file attribute definitions (query.mAttributeList). The queryStreamer sends
+    // according to the file attribute definitions (query.mAttributeList). The queryStreamer sends
     // these queries to the queryServer and returns the results (= GRIB files) to the HTTP client.
 
     for (auto param = query.mQueryParameterList.begin(); param != query.mQueryParameterList.end();
@@ -844,7 +844,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
   FUNCTION_TRACE
   try
   {
-    // Timezone accoring to the requested location.
+    // Timezone according to the requested location.
 
     std::string timezoneName = loc->timezone;
     Fmi::TimeZonePtr tz = itsTimezones.time_zone_from_string(loc->timezone);
@@ -863,7 +863,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
     bool startTimeUTC = masterquery.toptions.startTimeUTC;
     bool endTimeUTC = masterquery.toptions.endTimeUTC;
 
-    // The orginal start time and the end time of the query
+    // The original start time and the end time of the query
     Fmi::LocalDateTime startTime = makeLocalDateTime(masterquery.toptions.startTime, tz, startTimeUTC);
     Fmi::LocalDateTime endTime = makeLocalDateTime(masterquery.toptions.endTime, tz, endTimeUTC);
 
@@ -915,7 +915,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
 
     // FIXME: masterquery.latestTimestamp can be in UTC or localtime depending on startTimeUTC
     //        That causes problem when lastTimestep happens to be exactly at change from DST to
-    //        normal time (requires changes in Query.cpp and probaly somwhere else).
+    //        normal time (requires changes in Query.cpp and probably somewhere else).
 
     Fmi::LocalDateTime latestTime = makeLocalDateTime(masterquery.latestTimestep, tz, startTimeUTC);
     Fmi::DateTime latestTimeUTC = latestTime.utc_time();
@@ -949,7 +949,7 @@ void GridInterface::prepareQueryTimes(QueryServer::Query& gridQuery,
     }
     else
     {
-      // This is a time-step request, which means that we shoud generate valid timesteps
+      // This is a time-step request, which means that we should generate valid timesteps
 
       generateTimesteps(gridQuery,
                         masterquery,
@@ -1188,7 +1188,7 @@ void applyParameterDetails(QueryServer::QueryParameter& qp, const Engine::Grid::
   }
 }
 
-// Agregation intervals of a parameter with a time series function
+// Aggregation intervals of a parameter with a time series function
 void setAggregationIntervals(QueryServer::QueryParameter& qParam,
                              const Query& masterquery,
                              const std::string& name)
@@ -1363,7 +1363,7 @@ void GridInterface::setParameterName(QueryServer::QueryParameter& qParam, const 
     if (isBuildInParameter(qParam.mSymbolicName.c_str()))
       qParam.mParameterKeyType = T::ParamKeyTypeValue::BUILD_IN;
 
-    // Numberic parameter is a newbase id:
+    // Numeric parameter is a newbase id:
 
     if (Fmi::stoi_opt(qParam.mParam))
       qParam.mParameterKeyType = T::ParamKeyTypeValue::NEWBASE_ID;
@@ -1407,7 +1407,7 @@ void GridInterface::prepareQueryParameters(QueryServer::Query& gridQuery,
 
       setParameterName(qParam, param);
 
-      // Agregation intervals:
+      // Aggregation intervals:
 
       if ((paramfunc->functions.innerFunction.exists() || paramfunc->functions.outerFunction.exists()))
         setAggregationIntervals(qParam, masterquery, param.name());
@@ -1423,7 +1423,7 @@ void GridInterface::prepareQueryParameters(QueryServer::Query& gridQuery,
       // the requested parameter (For example, T-K:ECG:1008:6:2).
 
       // If the geometry and the level type is unknown, then we need to searching these details
-      // from the producer's parameter definition file. Otherwise we cannot know the exact detais
+      // from the producer's parameter definition file. Otherwise we cannot know the exact details
       // needed in order to fetch correct data.
 
       Engine::Grid::ParameterDetails_vec parameters;
@@ -2206,7 +2206,7 @@ TS::Value parameterDetail(
   {
     return C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mParameterLevel);
   }
-  else if (n == "FT")  // Forcast type
+  else if (n == "FT")  // Forecast type
   {
     return C_INT(ctx.gridQuery.mQueryParameterList[i].mValueList[t]->mForecastType);
   }
@@ -2233,7 +2233,7 @@ TS::Value parameterDetail(
 void parameterDetailValue(const ResultContext& ctx, const NonGridArgs& a)
 {
   // ################################################################################
-  // # Details releated to a requested parameter (identified by index number)
+  // # Details related to a requested parameter (identified by index number)
   // ################################################################################
 
   // When the caller want to get more details about a result parameter, he/she can
@@ -2285,7 +2285,7 @@ void parameterLevelValue(const ResultContext& ctx, const NonGridArgs& a)
   // # The requested parameter is the parameter level.
   // ################################################################################
 
-  // This parameter was used earier, but it is not very informative anymore, because
+  // This parameter was used earlier, but it is not very informative anymore, because
   // each parameter can have different level.
 
   int idx = 0;
@@ -2319,7 +2319,7 @@ void producerValue(const ResultContext& ctx, const NonGridArgs& a)
   // # The requested parameter is the parameter model/producer
   // ################################################################################
 
-  // This parameter was used earier, but it is not very informative anymore, because
+  // This parameter was used earlier, but it is not very informative anymore, because
   // each parameter can have different model/producer.
 
   int idx = 0;
@@ -2362,7 +2362,7 @@ void originTimeValue(const ResultContext& ctx, const NonGridArgs& a)
   // # The requested parameter is the parameter origintime / analysis time.
   // ################################################################################
 
-  // This parameter was used earier, but it is not very informative anymore, because
+  // This parameter was used earlier, but it is not very informative anymore, because
   // each parameter can have different origintime/analysis time.
 
   int idx = 0;
@@ -2397,7 +2397,7 @@ void modificationTimeValue(const ResultContext& ctx, const NonGridArgs& a)
   // # The requested parameter is the parameter modification time.
   // ################################################################################
 
-  // This parameter was used earier, but it is not very informative anymore, because
+  // This parameter was used earlier, but it is not very informative anymore, because
   // each parameter can have different modification time.
 
   int idx = 0;

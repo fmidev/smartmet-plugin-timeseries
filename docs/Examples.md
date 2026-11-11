@@ -63,7 +63,7 @@ Other querystring fields in the example are used to filte
 - `latlon=60.1757,24.9336`: Point of interest where the nearest observations should be returned
 - `format=debug`: Return human readable HTML-table (use `format=json` for Json-formatted data)
 
-The weather observations, if any is availble, are within the requested time
+The weather observations, if any is available, are within the requested time
 range, including the start and end times.
 
 - `starttime=2018-05-14T00:00:00`: Get observations made later or at this time
@@ -155,7 +155,7 @@ _These calculated values are not available in the opendata._
 The parameter `HDD_P1D_AVG` aka. "lämmitystarveluku" or "astepäiväluku" in 
 Finnish.
 
-Example to get a single values for all availble weather startions for given time
+Example to get a single values for all available weather startions for given time
 
 ```text
 http://smartmet.fmi.fi/timeseries?producer=observations_fmi&param=stationname,utctime,HDD_P1D_AVG&precision=double&keyword=synop_fi&starttime=2021-05-01T00:00:00Z&timestep=data&timesteps=1&format=json
@@ -171,7 +171,7 @@ http://smartmet.fmi.fi/timeseries?producer=observations_fmi&param=stationname,ut
 
 ### ECMWF Calibrated Fractiles
 
-Availabe only available for
+Available only available for
 commercial use and are therefore not found in the FMI Open Data.
 
 Example returns latest forecast for Helsinki

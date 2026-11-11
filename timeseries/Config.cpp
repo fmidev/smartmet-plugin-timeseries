@@ -140,7 +140,7 @@ void Config::parse_config_precisions()
 
       if (!itsConfig.exists("precision.enabled"))
         throw Fmi::Exception(BCP,
-                             "precision.enabled missing from pointforecast congiguration file");
+                             "precision.enabled missing from pointforecast configuration file");
 
       libconfig::Setting& enabled = itsConfig.lookup("precision.enabled");
       if (!enabled.isArray())

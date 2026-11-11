@@ -432,7 +432,7 @@ std::shared_ptr<std::string> QueryProcessingHub::processQuery(
 
         if (processed)
         {
-          // We need different hash calculcations for the grid requests.
+          // We need different hash calculations for the grid requests.
           product_hash = Fmi::bad_hash;
         }
         // If the query was not processed then we should call the QEngine instead.

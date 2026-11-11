@@ -500,7 +500,7 @@ void Plugin::query(const State& state,
     if (strcasecmp(q.format.c_str(), "FILE") == 0)
     {
       std::string filename =
-          "attachement; filename=timeseries_" + std::to_string(getTime()) + ".grib";
+          "attachment; filename=timeseries_" + std::to_string(getTime()) + ".grib";
       response.setHeader("Content-type", "application/octet-stream");
       response.setHeader("Content-Disposition", filename);
       response.setContent(queryStreamer);

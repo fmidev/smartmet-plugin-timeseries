@@ -1077,7 +1077,7 @@ Spine::LocationList QEngineQuery::getLocationListForArea(const Spine::TaggedLoca
     {
       if (!isWkt)  // SVG for WKT has been extracted earlier
         get_svg_path(theTLoc, itsPlugin.itsGeometryStorage, svgPath);
-      // If SVG has been extarcted earier the radius is already included
+      // If SVG has been extracted earlier the radius is already included
       mask = NFmiIndexMaskTools::MaskExpand(theQ->grid(), svgPath, isWkt ? 0 : loc->radius);
     }
     // Indexmask (indexed locations on the area)

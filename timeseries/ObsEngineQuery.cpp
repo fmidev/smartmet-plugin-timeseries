@@ -609,7 +609,7 @@ TS::TimeSeriesVectorPtr ObsEngineQuery::handleObsParametersForPlaces(
 
         auto result_at_index = result[obs_result_field_index];
 
-        // If time independend special parameter contains missing values in some timesteps,
+        // If time independent special parameter contains missing values in some timesteps,
         // replace them with existing values to keep aggregation working
 
         if (is_location_p)
