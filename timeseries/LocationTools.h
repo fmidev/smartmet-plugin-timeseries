@@ -1,15 +1,25 @@
 #pragma once
 
-#include <engines/geonames/Engine.h>
-#include <engines/gis/Engine.h>
-#include <engines/observation/Engine.h>
-#include <gis/OGR.h>
-#include <newbase/NFmiSvgPath.h>
 #include <spine/Location.h>
-#include <spine/Parameter.h>
-#include <timeseries/TimeSeriesInclude.h>
+#include <memory>
+#include <ogr_geometry.h>
 #include <string>
-#include <utility>
+#include <vector>
+
+class NFmiSvgPath;
+namespace SmartMet::Engine::Geonames
+{
+class Engine;
+}  // namespace SmartMet::Engine::Geonames
+namespace SmartMet::Engine::Gis
+{
+class GeometryStorage;
+}  // namespace SmartMet::Engine::Gis
+namespace SmartMet::Engine::Observation
+{
+class Engine;
+class Settings;
+}  // namespace SmartMet::Engine::Observation
 
 namespace SmartMet
 {

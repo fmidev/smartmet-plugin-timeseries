@@ -1,7 +1,8 @@
 #include "LonLatDistance.h"
-
 #include <boost/math/constants/constants.hpp>
 #include <macgyver/Exception.h>
+#include <cmath>
+#include <string>
 
 namespace SmartMet
 {

@@ -4,7 +4,6 @@
 
 namespace SmartMet
 {
-/*
 namespace Engine
 {
 namespace Querydata
@@ -23,8 +22,13 @@ namespace Grid
 {
 class Engine;
 }
+#ifndef WITHOUT_OBSERVATION
+namespace Observation
+{
+class Engine;
+}
+#endif
 }  // namespace Engine
-*/
 namespace Plugin
 {
 namespace TimeSeries

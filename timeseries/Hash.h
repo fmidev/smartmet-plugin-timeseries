@@ -5,13 +5,15 @@
 // ======================================================================
 
 #pragma once
-#include "State.h"
-#include <memory>
 #include <macgyver/Hash.h>
-#include <macgyver/StringConversion.h>
-#include <list>
-#include <map>
-#include <vector>
+#include <cstddef>
+#include <memory>
+#include <optional>
+
+namespace SmartMet::Plugin::TimeSeries
+{
+class State;
+}  // namespace SmartMet::Plugin::TimeSeries
 
 namespace SmartMet
 {

@@ -6,16 +6,40 @@
 
 #include "Query.h"
 #include "Config.h"
+#include "Precision.h"
+#include "State.h"
 #include <boost/algorithm/string.hpp>
+#include <engines/geonames/Engine.h>
+#include <engines/grid/Engine.h>
 #include <engines/observation/ExternalAndMobileProducerId.h>
 #include <engines/querydata/Engine.h>
 #include <gis/CoordinateTransformation.h>
+#include <gis/SpatialReference.h>
+#include <grid-content/queryServer/definition/AliasFileCollection.h>
+#include <grid-files/common/Attribute.h>
+#include <grid-files/common/GeneralFunctions.h>
+#include <grid-files/common/Typedefs.h>
+#include <locus/QueryOptions.h>
 #include <macgyver/AnsiEscapeCodes.h>
 #include <macgyver/DistanceParser.h>
+#include <macgyver/Exception.h>
+#include <macgyver/StringConversion.h>
+#include <macgyver/TimeFormatter.h>
+#include <macgyver/TimeParser.h>
+#include <newbase/NFmiGlobals.h>
 #include <spine/Convenience.h>
-
+#include <spine/HTTP.h>
+#include <spine/Parameter.h>
+#include <timeseries/DataFunction.h>
+#include <timeseries/ParameterFactory.h>
+#include <timeseries/RequestLimits.h>
 #include <algorithm>
+#include <ctime>
+#include <iostream>
+#include <limits>
+#include <list>
 #include <memory>
+#include <utility>
 
 using namespace std;
 

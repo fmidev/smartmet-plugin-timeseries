@@ -1,8 +1,13 @@
 
 #include "ObsQueryParams.h"
+#include "State.h"
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <spine/Convenience.h>
+#include <spine/HTTP.h>
+#include <optional>
 #ifndef WITHOUT_OBSERVATION
 #include <engines/observation/Engine.h>
 #endif

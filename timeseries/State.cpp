@@ -1,10 +1,11 @@
 #include "State.h"
+#include "Engines.h"
 #include "Plugin.h"
-#include <macgyver/DateTime.h>
-#include <engines/observation/ExternalAndMobileProducerId.h>
 #include <engines/querydata/Engine.h>
+#include <macgyver/DateTime.h>
 #include <macgyver/Exception.h>
-#include <ogr_geometry.h>
+#include <memory>
+#include <utility>
 
 namespace SmartMet
 {

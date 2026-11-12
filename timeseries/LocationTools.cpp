@@ -1,11 +1,27 @@
 #include "LocationTools.h"
 #include "LonLatDistance.h"
+#include <boost/algorithm/string.hpp>
+#include <engines/geonames/Engine.h>
+#include <engines/gis/GeometryStorage.h>
+#include <engines/observation/Engine.h>
+#include <engines/observation/Settings.h>
+#include <gis/OGR.h>
 #include <grid-files/common/GraphFunctions.h>
+#include <locus/QueryOptions.h>
 #include <macgyver/Exception.h>
+#include <macgyver/StringConversion.h>
+#include <newbase/NFmiSvgPath.h>
 #include <newbase/NFmiSvgTools.h>
+#include <spine/Parameter.h>
+#include <spine/Station.h>
 #include <timeseries/ParameterKeywords.h>
-
 #include <algorithm>
+#include <cstddef>
+#include <iomanip>
+#include <list>
+#include <locale>
+#include <sstream>
+#include <utility>
 
 namespace SmartMet
 {

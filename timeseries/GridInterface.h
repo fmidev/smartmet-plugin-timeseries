@@ -6,16 +6,52 @@
 
 #pragma once
 
-#include "Plugin.h"
-
-#include "ProducerDataPeriod.h"
-#include <engines/grid/Engine.h>
+#include "Producers.h"
 #include <grid-content/queryServer/definition/QueryStreamer.h>
-#include <grid-files/common/AdditionalParameters.h>
+#include <grid-files/common/Typedefs.h>
 #include <grid-files/grid/Typedefs.h>
-#include <macgyver/TimeZones.h>
-#include <timeseries/RequestLimits.h>
+#include <macgyver/DateTime.h>
+#include <macgyver/LocalDateTime.h>
+#include <spine/Location.h>
+#include <timeseries/TimeSeriesGeneratorOptions.h>
 #include <timeseries/TimeSeriesInclude.h>
+#include <timeseries/TimeSeriesUtility.h>
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
+
+namespace Fmi
+{
+class TimeZones;
+}  // namespace Fmi
+namespace SmartMet::Engine::Grid
+{
+class Engine;
+}  // namespace SmartMet::Engine::Grid
+namespace SmartMet::Plugin::TimeSeries
+{
+class ProducerDataPeriod;
+class State;
+struct Query;
+}  // namespace SmartMet::Plugin::TimeSeries
+namespace SmartMet::QueryServer
+{
+class Query;
+class QueryParameter;
+}  // namespace SmartMet::QueryServer
+namespace SmartMet::Spine
+{
+class Parameter;
+}  // namespace SmartMet::Spine
+namespace SmartMet::TimeSeries
+{
+struct RequestLimits;
+}  // namespace SmartMet::TimeSeries
+namespace SmartMet::T
+{
+class Coordinate;
+}  // namespace SmartMet::T
 
 namespace SmartMet
 {

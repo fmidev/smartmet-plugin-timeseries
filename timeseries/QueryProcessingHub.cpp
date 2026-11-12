@@ -1,15 +1,51 @@
 #include "QueryProcessingHub.h"
-#include "GridInterface.h"
+#include "Config.h"
+#include "Engines.h"
 #include "LocationTools.h"
 #include "LonLatDistance.h"
+#include "ObsParameter.h"
 #include "Plugin.h"
 #include "PostProcessing.h"
+#include "ProducerDataPeriod.h"
 #include "State.h"
-#include <grid-files/common/GeneralFunctions.h>
+#include <engines/geonames/Engine.h>
+#include <engines/geonames/WktGeometry.h>
+#include <engines/querydata/Engine.h>
+#include <engines/querydata/Producer.h>
+#include <engines/querydata/Q.h>
+#include <macgyver/Exception.h>
 #include <macgyver/Hash.h>
+#include <macgyver/LocalDateTime.h>
+#include <macgyver/StringConversion.h>
+#include <macgyver/TimeZones.h>
+#include <newbase/NFmiPoint.h>
+#include <newbase/NFmiSvgPath.h>
+#include <spine/HTTP.h>
+#include <spine/Location.h>
+#include <spine/Parameter.h>
+#include <spine/Table.h>
+#include <spine/Value.h>
+#include <timeseries/LocationParameters.h>
+#include <timeseries/OptionParsers.h>
 #include <timeseries/ParameterKeywords.h>
 #include <timeseries/ParameterTools.h>
+#include <timeseries/RequestLimits.h>
+#include <timeseries/TimeSeriesGeneratorCache.h>
+#include <timeseries/TimeSeriesGeneratorOptions.h>
+#include <timeseries/TimeSeriesInclude.h>
+#include <timeseries/TimeSeriesUtility.h>
+#include <algorithm>
+#include <list>
+#include <optional>
 #include <set>
+#include <utility>
+#include <vector>
+
+class OGRGeometry;
+namespace SmartMet::Engine::Gis
+{
+class GeometryStorage;
+}  // namespace SmartMet::Engine::Gis
 
 namespace SmartMet
 {

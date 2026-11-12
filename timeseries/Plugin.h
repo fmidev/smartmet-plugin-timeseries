@@ -8,35 +8,41 @@
 
 #include "Config.h"
 #include "Engines.h"
+#include <engines/geonames/Engine.h>
+#include <engines/gis/GeometryStorage.h>
+#include <macgyver/CacheStats.h>
+#include <spine/SmartMetPlugin.h>
+#include <timeseries/TimeSeriesInclude.h>
+#include <memory>
+#include <set>
+#include <string>
+
+namespace Fmi
+{
+class TimeZones;
+}  // namespace Fmi
+namespace SmartMet::Spine::HTTP
+{
+class Request;
+class Response;
+}  // namespace SmartMet::Spine::HTTP
+namespace SmartMet::Spine
+{
+class Reactor;
+}  // namespace SmartMet::Spine
+namespace SmartMet::TimeSeries
+{
+class TimeSeriesGeneratorCache;
+}  // namespace SmartMet::TimeSeries
 
 namespace SmartMet
 {
-namespace Engine
-{
-namespace Querydata
-{
-class Engine;
-}
-namespace Geonames
-{
-class Engine;
-}
-namespace Gis
-{
-class Engine;
-}
-namespace Grid
-{
-class Engine;
-}
-}  // namespace Engine
 
 namespace Plugin
 {
 namespace TimeSeries
 {
 class State;
-class PluginImpl;
 
 class Plugin : public SmartMetPlugin
 {

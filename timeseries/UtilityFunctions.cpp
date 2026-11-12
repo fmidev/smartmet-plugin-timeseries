@@ -1,9 +1,22 @@
 #include "UtilityFunctions.h"
+#include "Query.h"
 #include "State.h"
 #include <engines/observation/ExternalAndMobileProducerId.h>
 #include <engines/observation/Keywords.h>
+#include <macgyver/Exception.h>
+#include <spine/LonLat.h>
+#include <timeseries/LocationParameters.h>
 #include <timeseries/ParameterKeywords.h>
 #include <timeseries/ParameterTools.h>
+#include <timeseries/TimeParameters.h>
+#include <list>
+#include <memory>
+#include <vector>
+
+namespace Fmi
+{
+class TimeZones;
+}  // namespace Fmi
 
 namespace SmartMet
 {

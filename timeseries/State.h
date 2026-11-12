@@ -16,11 +16,12 @@
 // ======================================================================
 
 #pragma once
-#include <macgyver/DateTime.h>
 #include <engines/querydata/OriginTime.h>
 #include <engines/querydata/Producer.h>
 #include <engines/querydata/Q.h>
-#include <timeseries/TimeSeriesInclude.h>
+#include <macgyver/DateTime.h>
+#include <map>
+#include <string>
 
 namespace Fmi
 {

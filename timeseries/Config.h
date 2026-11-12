@@ -7,14 +7,19 @@
 #pragma once
 
 #include "Precision.h"
-#include "Query.h"
 #include <engines/gis/GeometryStorage.h>
-#include <engines/grid/Engine.h>
-#include <spine/Parameter.h>
+#include <grid-content/queryServer/definition/AliasFileCollection.h>
+#include <grid-files/common/Typedefs.h>
 #include <spine/TableFormatterOptions.h>
 #include <timeseries/RequestLimits.h>
+#include <timeseries/TimeSeriesInclude.h>
+#include <ctime>
 #include <libconfig.h++>
+#include <locale>
+#include <map>
+#include <memory>
 #include <string>
+#include <vector>
 
 namespace SmartMet
 {

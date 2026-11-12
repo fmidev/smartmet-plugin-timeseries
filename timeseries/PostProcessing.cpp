@@ -1,8 +1,27 @@
 #include "PostProcessing.h"
 #include "LocationTools.h"
-#include "UtilityFunctions.h"
+#include "Query.h"
+#include <engines/geonames/Engine.h>
+#include <macgyver/Exception.h>
+#include <spine/Location.h>
+#include <spine/LonLat.h>
+#include <spine/Parameter.h>
+#include <timeseries/OptionParsers.h>
 #include <timeseries/ParameterKeywords.h>
 #include <timeseries/TableFeeder.h>
+#include <timeseries/TimeSeriesGeneratorOptions.h>
+#include <timeseries/TimeSeriesTypes.h>
+#include <list>
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
+#include <variant>
+
+namespace SmartMet::Spine
+{
+class Table;
+}  // namespace SmartMet::Spine
 
 namespace SmartMet
 {

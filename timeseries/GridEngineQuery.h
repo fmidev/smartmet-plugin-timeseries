@@ -7,17 +7,28 @@
 #pragma once
 
 #include "GridInterface.h"
-#include "Plugin.h"
+#include "Producers.h"
+#include <grid-content/queryServer/definition/QueryStreamer.h>
+#include <spine/Location.h>
+#include <timeseries/TimeSeriesInclude.h>
+#include <timeseries/TimeSeriesUtility.h>
+#include <memory>
+#include <vector>
+
+namespace SmartMet::Plugin::TimeSeries
+{
+class Plugin;
+class ProducerDataPeriod;
+class State;
+struct Query;
+}  // namespace SmartMet::Plugin::TimeSeries
+namespace SmartMet::T
+{
+class Coordinate;
+}  // namespace SmartMet::T
 
 namespace SmartMet
 {
-namespace Engine
-{
-namespace Grid
-{
-class Engine;
-}
-}  // namespace Engine
 
 namespace Plugin
 {

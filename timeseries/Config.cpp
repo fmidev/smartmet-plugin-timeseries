@@ -6,15 +6,15 @@
 
 #include "Config.h"
 #include "Precision.h"
-#include <grid-files/common/GeneralFunctions.h>
 #include <grid-files/common/ShowFunction.h>
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <spine/ConfigTools.h>
 #include <spine/Convenience.h>
 #include <spine/Exceptions.h>
-#include <ogr_geometry.h>
-#include <stdexcept>
+#include <filesystem>
+#include <iostream>
+#include <utility>
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 #define DEFAULT_MAXDISTANCE "60.0km"

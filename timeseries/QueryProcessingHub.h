@@ -8,10 +8,31 @@
 
 #include "GridEngineQuery.h"
 #include "ObsEngineQuery.h"
-#include "Plugin.h"
-#include "ProducerDataPeriod.h"
+#include "Producers.h"
 #include "QEngineQuery.h"
-#include <spine/HTTP.h>
+#include "Query.h"
+#include <grid-content/queryServer/definition/QueryStreamer.h>
+#include <macgyver/DateTime.h>
+#include <cstddef>
+#include <memory>
+#include <set>
+#include <string>
+
+namespace SmartMet::Plugin::TimeSeries
+{
+class Plugin;
+class ProducerDataPeriod;
+class State;
+}  // namespace SmartMet::Plugin::TimeSeries
+namespace SmartMet::Spine::HTTP
+{
+class Request;
+}  // namespace SmartMet::Spine::HTTP
+namespace SmartMet::Spine
+{
+class Table;
+struct TaggedLocation;
+}  // namespace SmartMet::Spine
 
 namespace SmartMet
 {

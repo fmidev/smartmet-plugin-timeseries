@@ -1,8 +1,21 @@
 
 #pragma once
 
-#include "State.h"
-#include <spine/HTTP.h>
+#include <timeseries/DataFilter.h>
+#include <timeseries/TimeSeriesInclude.h>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+
+namespace SmartMet::Plugin::TimeSeries
+{
+class State;
+}  // namespace SmartMet::Plugin::TimeSeries
+namespace SmartMet::Spine::HTTP
+{
+class Request;
+}  // namespace SmartMet::Spine::HTTP
 
 namespace SmartMet
 {

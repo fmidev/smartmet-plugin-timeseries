@@ -11,12 +11,43 @@
 #include "AggregationInterval.h"
 #include "ObsQueryParams.h"
 #include "Producers.h"
-#include <engines/geonames/Engine.h>
 #include <engines/geonames/WktGeometry.h>
-#include <grid-content/queryServer/definition/AliasFileCollection.h>
 #include <grid-files/common/AttributeList.h>
+#include <macgyver/DateTime.h>
+#include <macgyver/ValueFormatter.h>
+#include <newbase/NFmiPoint.h>
+#include <spine/Location.h>
 #include <timeseries/OptionParsers.h>
+#include <timeseries/TimeSeriesGeneratorOptions.h>
 #include <timeseries/TimeSeriesInclude.h>
+#include <cstddef>
+#include <locale>
+#include <memory>
+#include <optional>
+#include <set>
+#include <string>
+#include <vector>
+
+namespace Fmi
+{
+class TimeFormatter;
+}  // namespace Fmi
+namespace SmartMet::Engine::Geonames
+{
+class LocationOptions;
+}  // namespace SmartMet::Engine::Geonames
+namespace SmartMet::Plugin::TimeSeries
+{
+class State;
+}  // namespace SmartMet::Plugin::TimeSeries
+namespace SmartMet::QueryServer
+{
+class AliasFileCollection;
+}  // namespace SmartMet::QueryServer
+namespace SmartMet::Spine::HTTP
+{
+class Request;
+}  // namespace SmartMet::Spine::HTTP
 
 namespace SmartMet
 {

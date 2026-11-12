@@ -4,30 +4,70 @@
  */
 // ======================================================================
 #include "GridInterface.h"
+#include "AggregationInterval.h"
 #include "LocationTools.h"
 #include "PostProcessing.h"
+#include "Query.h"
 #include "State.h"
 #include "UtilityFunctions.h"
+#include <engines/geonames/WktGeometry.h>
 #include <engines/grid/Engine.h>
+#include <engines/grid/ParameterDetails.h>
 #include <fmt/format.h>
 #include <gis/CoordinateTransformation.h>
+#include <gis/SpatialReference.h>
+#include <grid-content/contentServer/definition/FileInfo.h>
+#include <grid-content/contentServer/definition/GenerationInfo.h>
+#include <grid-content/contentServer/definition/GenerationInfoList.h>
+#include <grid-content/contentServer/definition/ProducerInfo.h>
+#include <grid-content/contentServer/definition/ServiceInterface.h>
+#include <grid-content/queryServer/definition/ParameterValues.h>
+#include <grid-content/queryServer/definition/Query.h>
+#include <grid-content/queryServer/definition/QueryParameter.h>
+#include <grid-files/common/AdditionalParameters.h>
+#include <grid-files/common/Attribute.h>
+#include <grid-files/common/AttributeList.h>
+#include <grid-files/common/Coordinate.h>
 #include <grid-files/common/GeneralFunctions.h>
-#include <grid-files/common/ImageFunctions.h>
-#include <grid-files/common/ImagePaint.h>
 #include <grid-files/common/ShowFunction.h>
+#include <grid-files/grid/GridValue.h>
+#include <grid-files/grid/GridValueList.h>
 #include <grid-files/identification/GridDef.h>
-#include <macgyver/Astronomy.h>
-#include <macgyver/CharsetTools.h>
+#include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <macgyver/TimeFormatter.h>
-#include <macgyver/TimeParser.h>
-#include <macgyver/TimeZoneFactory.h>
+#include <macgyver/TimeZones.h>
+#include <macgyver/ValueFormatter.h>
+#include <spine/Parameter.h>
+#include <timeseries/DataFunction.h>
+#include <timeseries/LocationParameters.h>
+#include <timeseries/OptionParsers.h>
+#include <timeseries/ParameterFactory.h>
 #include <timeseries/ParameterKeywords.h>
 #include <timeseries/ParameterTools.h>
+#include <timeseries/RequestLimits.h>
+#include <timeseries/TimeParameters.h>
+#include <timeseries/TimeSeries.h>
 #include <timeseries/TimeSeriesGenerator.h>
+#include <timeseries/TimeSeriesTypes.h>
 #include <timeseries/TimeSeriesUtility.h>
-
 #include <algorithm>
+#include <cctype>
+#include <cstring>
+#include <ctime>
+#include <iterator>
+#include <list>
+#include <map>
+#include <ogr_geometry.h>
+#include <optional>
+#include <sstream>
+#include <strings.h>
+#include <utility>
+
+namespace SmartMet::Plugin::TimeSeries
+{
+class ProducerDataPeriod;
+}  // namespace SmartMet::Plugin::TimeSeries
 
 #define FUNCTION_TRACE FUNCTION_TRACE_OFF
 

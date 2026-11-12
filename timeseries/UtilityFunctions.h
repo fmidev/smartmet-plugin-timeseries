@@ -6,9 +6,21 @@
 
 #pragma once
 
-#include "ObsParameter.h"
-#include "Query.h"
+#include <spine/Location.h>
+#include <timeseries/TimeSeries.h>
+#include <timeseries/TimeSeriesGenerator.h>
 #include <timeseries/TimeSeriesInclude.h>
+#include <string>
+
+namespace Fmi
+{
+class TimeZones;
+}  // namespace Fmi
+namespace SmartMet::Plugin::TimeSeries
+{
+class State;
+struct Query;
+}  // namespace SmartMet::Plugin::TimeSeries
 
 namespace SmartMet
 {

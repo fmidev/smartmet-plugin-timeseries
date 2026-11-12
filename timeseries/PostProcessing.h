@@ -7,8 +7,19 @@
 #pragma once
 
 #include "ObsParameter.h"
-#include "Query.h"
+#include <timeseries/TimeSeries.h>
 #include <timeseries/TimeSeriesInclude.h>
+#include <timeseries/TimeSeriesUtility.h>
+#include <vector>
+
+namespace SmartMet::Plugin::TimeSeries
+{
+struct Query;
+}  // namespace SmartMet::Plugin::TimeSeries
+namespace SmartMet::Spine
+{
+class Table;
+}  // namespace SmartMet::Spine
 
 namespace SmartMet
 {

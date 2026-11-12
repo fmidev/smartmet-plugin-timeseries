@@ -6,19 +6,36 @@
 
 #pragma once
 
-#include "Plugin.h"
-#include "ProducerDataPeriod.h"
-#include "QueryLevelDataCache.h"
+#include "Producers.h"
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <engines/querydata/Producer.h>
+#include <engines/querydata/Q.h>
+#include <newbase/NFmiPoint.h>
+#include <spine/Location.h>
+#include <timeseries/TimeSeries.h>
+#include <timeseries/TimeSeriesGenerator.h>
+#include <timeseries/TimeSeriesInclude.h>
+#include <timeseries/TimeSeriesUtility.h>
+#include <optional>
+#include <string>
+#include <vector>
+
+class NFmiSvgPath;
+namespace SmartMet::Plugin::TimeSeries
+{
+class Plugin;
+class ProducerDataPeriod;
+class State;
+struct Query;
+struct QueryLevelDataCache;
+}  // namespace SmartMet::Plugin::TimeSeries
+namespace SmartMet::TimeSeries
+{
+struct ParameterAndFunctions;
+}  // namespace SmartMet::TimeSeries
 
 namespace SmartMet
 {
-namespace Engine
-{
-namespace Querydata
-{
-class Engine;
-}
-}  // namespace Engine
 
 namespace Plugin
 {

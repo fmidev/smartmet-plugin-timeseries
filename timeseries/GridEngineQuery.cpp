@@ -1,10 +1,35 @@
 #include "GridEngineQuery.h"
+#include "Config.h"
+#include "Engines.h"
 #include "GridInterface.h"
 #include "LocationTools.h"
-#include "PostProcessing.h"
-#include "State.h"
-#include "UtilityFunctions.h"
+#include "Plugin.h"
+#include "Query.h"
+#include <boost/algorithm/string.hpp>
+#include <engines/geonames/Engine.h>
+#include <engines/geonames/WktGeometry.h>
+#include <engines/gis/GeometryStorage.h>
+#include <engines/grid/Engine.h>
 #include <fmt/format.h>
+#include <gis/OGR.h>
+#include <grid-files/common/Coordinate.h>
+#include <grid-files/common/GraphFunctions.h>
+#include <grid-files/grid/Typedefs.h>
+#include <macgyver/DateTime.h>
+#include <macgyver/Exception.h>
+#include <macgyver/StringConversion.h>
+#include <newbase/NFmiSvgPath.h>
+#include <iostream>
+#include <list>
+#include <ogr_geometry.h>
+#include <string>
+#include <strings.h>
+
+namespace SmartMet::Plugin::TimeSeries
+{
+class ProducerDataPeriod;
+class State;
+}  // namespace SmartMet::Plugin::TimeSeries
 
 namespace SmartMet
 {

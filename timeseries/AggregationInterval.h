@@ -9,6 +9,7 @@
 
 #include <iosfwd>
 #include <map>
+#include <string>
 
 namespace SmartMet
 {
