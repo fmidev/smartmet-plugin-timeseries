@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Producers.h"
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <engines/querydata/Producer.h>
 #include <engines/querydata/Q.h>
 #include <newbase/NFmiPoint.h>

@@ -10,7 +10,6 @@
 #include "State.h"
 #include "UtilityFunctions.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/bimap.hpp>
 #include <engines/gis/Engine.h>
 #include <engines/grid/Engine.h>
 #include <engines/observation/Engine.h>
