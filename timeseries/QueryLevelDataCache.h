@@ -9,6 +9,12 @@
 
 #pragma once
 
+#include <timeseries/TimeSeries.h>
+#include <timeseries/TimeSeriesInclude.h>
+#include <map>
+#include <string>
+#include <utility>
+
 namespace SmartMet
 {
 namespace Plugin
