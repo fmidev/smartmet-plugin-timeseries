@@ -1,0 +1,1 @@
+GET /timeseries?format=json&keyword=ely_L1&param=stationname,Precipitation24h&producer=road&starttime=201301090400&endtime=201301090800 HTTP/1.0

@@ -85,7 +85,7 @@ Obsoletes: smartmet-brainstorm-timeseries-debuginfo < 16.11.1
 #TestRequires: smartmet-engine-gis >= 26.10.17
 #TestRequires: smartmet-engine-querydata >= 26.11.5
 %if %{with observation}
-#TestRequires: smartmet-engine-observation >= 26.11.10
+#TestRequires: smartmet-engine-observation >= 26.11.20-2
 %endif
 #TestRequires: smartmet-engine-grid >= 26.10.17
 #TestRequires: gdal312-libs
