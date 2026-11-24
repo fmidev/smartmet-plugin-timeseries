@@ -13,6 +13,7 @@
 #include <engines/querydata/Engine.h>
 #include <engines/querydata/Producer.h>
 #include <engines/querydata/Q.h>
+#include <macgyver/Cancellation.h>
 #include <macgyver/Exception.h>
 #include <macgyver/Hash.h>
 #include <macgyver/LocalDateTime.h>
@@ -437,6 +438,8 @@ std::shared_ptr<std::string> QueryProcessingHub::processQuery(
     std::size_t producer_group = 0;
     for (const AreaProducers& areaproducers : masterquery.timeproducers)
     {
+      Fmi::check_cancelled();
+
       Query q = masterquery;
 
       q.timeproducers.clear();  // not used

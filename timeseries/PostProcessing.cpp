@@ -2,6 +2,7 @@
 #include "LocationTools.h"
 #include "Query.h"
 #include <engines/geonames/Engine.h>
+#include <macgyver/Cancellation.h>
 #include <macgyver/Exception.h>
 #include <spine/Location.h>
 #include <spine/LonLat.h>
@@ -213,6 +214,9 @@ void add_data_to_table(const TS::OptionParsers::ParameterList& paramlist,
     int j = 0;
     for (const TS::TimeSeriesData& tsdata : outdata)
     {
+      // A column of one location, or for observations of one station
+      Fmi::check_cancelled();
+
       tf.setCurrentRow(startRow);
       tf.setCurrentColumn(j);
 
