@@ -16,6 +16,7 @@
 #include <engines/querydata/Engine.h>
 #include <engines/querydata/ParameterOptions.h>
 #include <engines/querydata/ValidTimeList.h>
+#include <macgyver/Cancellation.h>
 #include <macgyver/DateTime.h>
 #include <macgyver/Exception.h>
 #include <macgyver/LocalDateTime.h>
@@ -464,6 +465,8 @@ std::vector<std::string> QEngineQuery::processQEngineQuery(
       int column = 0;
       for (const TS::ParameterAndFunctions& paramfunc : q.poptions.parameterFunctions())
       {
+        Fmi::check_cancelled();
+
         // reset to original start time for each new location
         q.toptions.startTime = old_start_time;
 
@@ -678,6 +681,7 @@ void QEngineQuery::fetchQEngineValues(const State& state,
         if (!query.levels.empty() && query.levels.find(level) == query.levels.end())
           continue;
 
+        Fmi::check_cancelled();
         fetchQEngineValues(state,
                            query,
                            producer,
@@ -700,6 +704,7 @@ void QEngineQuery::fetchQEngineValues(const State& state,
 
     for (auto pressure : query.pressures)
     {
+      Fmi::check_cancelled();
       fetchQEngineValues(state,
                          query,
                          producer,
@@ -721,6 +726,7 @@ void QEngineQuery::fetchQEngineValues(const State& state,
 
     for (auto height : query.heights)
     {
+      Fmi::check_cancelled();
       fetchQEngineValues(state,
                          query,
                          producer,

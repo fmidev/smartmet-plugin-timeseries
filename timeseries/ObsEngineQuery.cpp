@@ -21,6 +21,7 @@
 #include <gis/OGR.h>
 #include <grid-files/identification/FmiParameterDef.h>
 #include <grid-files/identification/GridDef.h>
+#include <macgyver/Cancellation.h>
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <macgyver/TimeParser.h>
@@ -410,6 +411,8 @@ void ObsEngineQuery::processObsEngineQuery(const State& state,
 
       for (auto& item : settingsVector)
       {
+        Fmi::check_cancelled();
+
         Engine::Observation::Settings& settings = item.settings;
         settings.requestLimits = itsPlugin.itsConfig.requestLimits();
 
@@ -772,6 +775,8 @@ void ObsEngineQuery::fetchObsEngineValuesForPlaces(const State& state,
     // iterate locations
     for (const auto& observation_result_location : observation_result_by_location)
     {
+      Fmi::check_cancelled();
+
       observation_result = observation_result_location.second;
       int fmisid = observation_result_location.first;
 
@@ -1055,6 +1060,8 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
     // plugin
     for (TS::FmisidTSVectorPair& val : tsv_area)
     {
+      Fmi::check_cancelled();
+
       TS::TimeSeriesVector* tsv_observation_result = val.second.get();
 
       const TS::TimeSeries& fmisid_ts = tsv_observation_result->at(fmisid_index);
@@ -1151,6 +1158,8 @@ void ObsEngineQuery::fetchObsEngineValuesForArea(const State& state,
 
     for (const auto& obsparam : obsParameters)
     {
+      Fmi::check_cancelled();
+
       unsigned int data_column = obsparam.data_column;
       TS::TimeSeriesGroupPtr tsg = tsg_vector.at(data_column);
       const bool last_user = (--group_users[data_column] == 0);

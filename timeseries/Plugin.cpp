@@ -18,6 +18,7 @@
 #include <grid-content/queryServer/definition/QueryStreamer.h>
 #include <grid-files/common/GeneralFunctions.h>
 #include <locus/QueryOptions.h>
+#include <macgyver/Cancellation.h>
 #include <macgyver/DateTime.h>
 #include <macgyver/Exception.h>
 #include <macgyver/Hash.h>
@@ -702,7 +703,9 @@ void Plugin::requestHandler(Spine::Reactor& /* theReactor */,
     auto apikey = Spine::FmiApiKey::getFmiApiKey(theRequest, check_token);
     ex.addParameter("Apikey", (apikey ? *apikey : std::string("-")));
 
-    ex.printError();
+    // The server reports and answers cancelled requests itself
+    if (!Fmi::is_cancellation(ex))
+      ex.printError();
 
     std::string firstMessage = ex.what();
     if (isdebug)

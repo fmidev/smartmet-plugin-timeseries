@@ -33,6 +33,7 @@
 #include <grid-files/grid/GridValue.h>
 #include <grid-files/grid/GridValueList.h>
 #include <grid-files/identification/GridDef.h>
+#include <macgyver/Cancellation.h>
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
 #include <macgyver/TimeFormatter.h>
@@ -2768,6 +2769,8 @@ void GridInterface::exteractQueryResult(const std::shared_ptr<QueryServer::Query
       if ((gridQuery->mQueryParameterList[pp].mFlags &
            QueryServer::QueryParameter::Flags::AlternativeParameter) == 0)
       {
+        Fmi::check_cancelled();
+
         std::vector<TS::TimeSeriesData> aggregatedData;
 
         TS::TimeSeriesPtr tsForParameter(new TS::TimeSeries);
@@ -2904,6 +2907,8 @@ void GridInterface::processGridQuery(const State& state,
         // Executing the query. The reqsult query object is returned as a shared pointer to a
         // Query-object. This object can point to the original query-object as well as a cached
         // query-object.
+
+        Fmi::check_cancelled();
 
         std::shared_ptr<QueryServer::Query> gridQuery =
             itsGridEngine->executeQuery(originalGridQuery);

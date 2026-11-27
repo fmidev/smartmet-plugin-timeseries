@@ -15,6 +15,7 @@
 #include <grid-files/common/Coordinate.h>
 #include <grid-files/common/GraphFunctions.h>
 #include <grid-files/grid/Typedefs.h>
+#include <macgyver/Cancellation.h>
 #include <macgyver/DateTime.h>
 #include <macgyver/Exception.h>
 #include <macgyver/StringConversion.h>
@@ -302,6 +303,8 @@ bool GridEngineQuery::processGridEngineQuery(const State& state,
 
     for (const auto& tloc : query.loptions->locations())
     {
+      Fmi::check_cancelled();
+
       query.latestTimestep = latestTimestep;
 
       Spine::LocationPtr loc = tloc.loc;
